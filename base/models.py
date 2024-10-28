@@ -4,14 +4,15 @@ from django.contrib.auth.models import User
 
 #Ne mai trebuie sau nu un class aici?
 
+
 class Type(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
 
-
 class Location(models.Model):
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     gallery = models.ImageField(upload_to='images/', null=True, blank=True)

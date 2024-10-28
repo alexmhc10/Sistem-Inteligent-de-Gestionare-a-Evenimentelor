@@ -2,9 +2,24 @@
 
 
 {% block content %}
+
 <div class="display-container" style="display:grid;grid-template-columns: 1fr 2fr;">
     <div>
         <h1>{{ location.name }}</h1>
+        <h2>
+            Potrivit pentru:  
+            <br>
+            <br>
+            
+            {% if location.types.count == 1 %}
+                {{ location.types.first.name }}.
+            {% else %}
+                {% for type in location.types.all %}
+                    {{ type.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            {% endif %}
+        </h2>
+        
         <img style="height: 400px;width: auto;" src="{{ location.gallery.url }}" alt="{{ location.name }}">
     </div>
     <div>

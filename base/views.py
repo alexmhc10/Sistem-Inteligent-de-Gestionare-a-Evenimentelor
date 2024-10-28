@@ -1,7 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Location
-
+from .forms import LocationForm
 
 # locations = [
 #     {'id' : 1,
@@ -38,3 +38,15 @@ def location(request, pk):
     context = {'location': location}
     return render(request, 'base/location.html', context)
 
+
+def addLocation(request):
+    form = LocationForm()
+    if request.method == 'POST':
+        form = LocationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    context = {
+        'form': form
+    }
+    return render(request, 'base/location_form.html', context)
