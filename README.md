@@ -21,3 +21,10 @@ Fiecare modificare o sa aiba aici o mica descriere care contine ce a fost modifi
 Adaugarile de fisiere vor fi cu commit, cu descriere in commit, pentru a putea fi usor de inteles
 
 ''''
+
+
+
+Avem modele pentru Reviews, Location si Type, cu Location legat de Type, accesibil in baza de date a admin panelului
+
+Aveti un cont in fisieru "user" cu care sa va logati si va puteti face si voi in terminal unul, folosind 
+'py manage.py createsuperuser'
