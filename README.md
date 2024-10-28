@@ -28,3 +28,11 @@ Avem modele pentru Reviews, Location si Type, cu Location legat de Type, accesib
 
 Aveti un cont in fisieru "user" cu care sa va logati si va puteti face si voi in terminal unul, folosind 
 'py manage.py createsuperuser'
+
+
+
+''''
+
+Acum putem adauga un location direct din aplicatie care va fi afisat pe pagina de home
+
+''''
