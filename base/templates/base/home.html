@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<h1>Home</h1>
+
+<div>
+    <div>
+        {% for location in locations %}
+            <div>
+                <h1><a style="text-decoration: none;" href="{% url 'location' location.name %}">{{ location.name }}</a></h1>
+                <img style="height: 200px;
+                 width: auto;" src="{{ location.gallery.url }}"
+                  alt="{{ location.name }}">
+                  <hr>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock content %}

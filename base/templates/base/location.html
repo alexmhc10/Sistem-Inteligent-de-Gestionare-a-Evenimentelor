@@ -1,0 +1,15 @@
+{% extends 'main.html' %}
+
+
+{% block content %}
+<div class="display-container" style="display:grid;grid-template-columns: 1fr 2fr;">
+    <div>
+        <h1>{{ location.name }}</h1>
+        <img style="height: 400px;width: auto;" src="{{ location.gallery.url }}" alt="{{ location.name }}">
+    </div>
+    <div>
+        <h3>{{ location.description }}</h3>
+        <h4>{{ location.location }}</h4>
+    </div>
+</div>
+{% endblock content %}
