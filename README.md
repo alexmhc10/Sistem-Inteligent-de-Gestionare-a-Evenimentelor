@@ -28,3 +28,6 @@ Avem modele pentru Reviews, Location si Type, cu Location legat de Type, accesib
 
 Aveti un cont in fisieru "user" cu care sa va logati si va puteti face si voi in terminal unul, folosind 
 'py manage.py createsuperuser'
+
+
+Am adaugat login/logout,requirements to update/delete doar admin poate sterge o locatie, doar ownerul locatiei o poate updata, search bar care functioneaza dupa location owner, description, location name, locatia efectiva a unei locatii(modelele, url urile si view urile sunt complete si functionale)

@@ -2,21 +2,62 @@
 
 {% block content %}
 
-<h1>Home</h1>
+<style>
+    .home-container{
+        display: grid;
+        grid-template-columns: 1fr 2fr 2fr;
+    }
+</style>
 
-<div>
-    <a href="{% url 'add_location' %}">Add Location</a>
+<div class="home-container">
     <div>
-        {% for location in locations %}
+        <h3>
+            Browse Locations
+        </h3>
+        <div>
+            <a href="{% url 'home' %}">Toate</a>
+        </div>
+        {% for type in types %}
+        <div>
+            <a href="{% url 'home' %}?q={{ type.name }}">{{ type.name }}</a>
+        </div>
+        {% endfor %}
+        <hr>
+    </div>
+    <div>
+        <h5>
+            {% if location_count == 1 %}
+                O singură locație existentă
+            {% elif location_count == 0 %}
+                Nu există nicio locație care corespunde criteriilor
+            {% else %}
+                Există {{ location_count }} locații disponibile
+            {% endif %}
+        </h5>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'add_location' %}">Add Location</a>
+        {% endif %}
+        <br>
+        <br>
+        <div>
+            {% for location in locations %}
             <div>
-                <h1><a style="text-decoration: none;" href="{% url 'location' location.name %}">{{ location.name }}</a></h1>
+                {% if request.user == location.owner %}
+                <a href="{% url 'update_location' location.name %}">Update Location</a>
+                {% endif %}
+                <br>
+                {% if request.user.is_superuser %}
+                <a href="{% url 'delete_location' location.name %}">Delete Location</a>
+                {% endif %}
+                <h1><a style="text-decoration: none;" href="{% url 'location' location.name %}">{{ location.name }}</a>
+                </h1>
                 <h2>Detinut de {{ location.owner }} </h2>
                 <img style="height: 200px;
-                 width: auto;" src="{{ location.gallery.url }}"
-                  alt="{{ location.name }}">
-                  <hr>
+                 width: auto;" src="{{ location.gallery.url }}" alt="{{ location.name }}">
+                <hr>
             </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
 </div>
 

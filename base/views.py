@@ -1,35 +1,59 @@
 from django.shortcuts import render, redirect
+from django.db.models import Q
+from django.contrib import messages
+from django.contrib.auth.models import User
 from django.http import HttpResponse
-from .models import Location
+from django.contrib.auth import authenticate, login,logout
+from .models import Location, Type
 from .forms import LocationForm
 
-# locations = [
-#     {'id' : 1,
-#      'name': 'Romanita',
-#      'description': 'Situată în inima orașului, Sala Regală oferă un cadru elegant pentru evenimente de amploare. Cu o capacitate de până la 500 de persoane, această sală este dotată cu tehnologie audio-vizuală de ultimă generație și un sistem de iluminat spectaculos. Decorul rafinat, cu candelabre strălucitoare și feronerie din aur, creează o atmosferă sofisticată, ideală pentru nunți, gale de premiere sau conferințe internaționale.',
-#      'gallery': 'https://www.romanitahotel.ro/wp-content/uploads/2024/08/Sala-de-Evenimente-Romanita-Baia-Mare-3-min-1.png'
-#      },
 
-#      {
-#          'id': 2,
-#          'name': 'La Ionut',
-#          'description': 'Grădina Verde este un spațiu idilic în aer liber, perfect pentru evenimente informale și petreceri de vară. Împădurită de copaci mari și flori colorate, această locație poate găzdui până la 300 de invitați. Facilitațile includ un podium pentru muzică live și o zonă de relaxare cu hamace, ideală pentru o atmosferă relaxantă și prietenoasă. Oferim opțiuni de catering cu preparate locale și organice.',
-#          'gallery': 'https://www.weddingo.ro/_next/image?url=https%3A%2F%2Fhoneypot0.s3.amazonaws.com%2Fgallery%2F1716541034240-gallery-Sala%2520de%2520evenimente%2520La%2520Ionut%2520%2520%25281%2529.webp&w=1920&q=75'
-#      },
-#      {'id' :3,
-#      'name': "Amour de l'evenement",
-#      'description': 'Centrul de Conferințe Urban este o alegere excelentă pentru evenimente corporate și workshop-uri. Dotat cu săli multifuncționale, capacitatea totală variază între 50 și 400 de persoane, în funcție de aranjamentul dorit. Tehnologia de comunicație avansată și accesul la internet de mare viteză asigură un mediu de lucru eficient. Cafeneaua de pe loc oferă pauze de cafea și prânzuri sănătoase pentru participanți.',
-#      'gallery': 'https://lh3.googleusercontent.com/p/AF1QipOVAmn9bMCrwcgDREO47-81ykn0vQdGVH42HYK1=s1360-w1360-h1020-rw'
-#      },
-#      {'id' : 4,
-#      'name': 'Ghitta ',
-#      'description': 'Teatrul Antic, cu o istorie bogată și o arhitectură impresionantă, este locul ideal pentru evenimente culturale, spectacole de teatru și concerte. Capacitatea sa de 600 de locuri oferă o experiență intimă, iar acustica excelentă garantează un sunet de calitate. Grădinile adiacente sunt perfecte pentru recepții și fotografii, creând un cadru de poveste pentru invitați.',
-#      'gallery': 'https://lh3.googleusercontent.com/p/AF1QipMw9LPwjSWNpSQX5_3acVPv10ZTqv4Z8J6NRFkw=s1360-w1360-h1020-rw'
-#      }
-# ]
+def loginPage(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            messages.warning(request, "User does not exist!")
+            return render(request, 'base/login_register.html')
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect('home')
+        else:
+            messages.error(request, "Error. Wrong credentials")
+
+    context = {}
+    return render(request, 'base/login_register.html', context)
+
+
+
+def logoutPage(request):
+    logout(request)
+    return redirect('home')
+
+
+
 def home(request):
-    locations = Location.objects.all()
-    context = {'locations' : locations}
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    locations = Location.objects.filter(
+        Q(types__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q) | 
+        Q(owner__username__icontains=q) |
+        Q(location__icontains=q)
+        )
+    types = Type.objects.all()
+    location_count = locations.count()
+    context = {
+        'locations' : locations,
+        'types' : types,
+        'location_count' : location_count
+        }
     return render(request, 'base/home.html', context)
 
 
@@ -50,3 +74,25 @@ def addLocation(request):
         'form': form
     }
     return render(request, 'base/location_form.html', context)
+
+
+def updateLocation(request, pk):
+    location = Location.objects.get(name=pk)
+    form = LocationForm(instance=location)
+    if request.method == 'POST':
+        form = LocationForm(request.POST, instance=location)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    context = {
+        'form': form,
+    }
+    return render(request, 'base/location_form.html', context)
+
+def deleteLocation(request, pk):
+    location = Location.objects.get(name=pk)
+    if request.method == 'POST':
+        location.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj': location})
+
