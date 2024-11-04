@@ -1,4 +1,8 @@
 git status
 git add .
 git commit -m "Descriere a ce ati facut"
+<<<<<<< HEAD
 git push origin main
+=======
+git push main
+>>>>>>> e12b8c0c3bf0f7c8186e08dcd4d2cb56a3d8ad70
