@@ -1,5 +1,4 @@
 git status
 git add .
 git commit -m "Descriere a ce ati facut"
-
-git commit -m "Added functionalities"
+git push main
