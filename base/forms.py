@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from .models import Location, User, Profile
+from django.contrib.auth.hashers import make_password
 
 class LocationForm(ModelForm):
     class Meta:
@@ -21,3 +22,9 @@ class ProfileForm(forms.ModelForm):
         widgets = {
             'password': forms.PasswordInput(),
         }
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        profile.password = make_password(self.cleaned_data["password"])  # Securizează parola
+        if commit:
+            profile.save()
+        return profile

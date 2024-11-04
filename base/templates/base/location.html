@@ -3,7 +3,43 @@
 
 {% block content %}
 
-<div class="display-container" style="display:grid;grid-template-columns: 1fr 2fr;">
+<style>
+.rating {
+    width: 300px;
+    direction: rtl;
+    display: flex;
+    justify-content: space-between;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    font-size: 30px;
+    color: lightgray;
+    cursor: pointer;
+}
+
+.rating input:checked ~ label {
+    color: gold;
+}
+
+.rating label:hover,
+.rating label:hover ~ label {
+    color: gold;
+}
+
+.star {
+    font-size: 25px;
+    color: lightgray; 
+}
+
+.star.filled {
+    color: gold;
+}
+</style>
+<div class="display-container" style="display:grid;grid-template-columns: 1fr 2.5fr 1fr;">
     <div>
         <h1>{{ location.name }}</h1>
         <h2>
@@ -20,11 +56,59 @@
             {% endif %}
         </h2>
         
-        <img style="height: 400px;width: auto;" src="{{ location.gallery.url }}" alt="{{ location.name }}">
+        <img style="height: 300px;width: auto;" src="{{ location.gallery.url }}" alt="{{ location.name }}">
     </div>
     <div>
         <h3>{{ location.description }}</h3>
         <h4>{{ location.location }}</h4>
     </div>
+    <div class="reviews_comments">
+        <h3>Recenzii recente</h3>
+        <hr>
+        {% for review in reviews %}
+        <div>
+            {% if request.user == review.user %}
+            <a href="{% url 'delete_review' review.id %}">Sterge review-ul</a>
+            {% endif %}
+            <br>
+            <small>{{ review.user.username }} <br>
+                {% for i in star_range %}
+                {% if i <= review.stars %}
+                    <span class="star filled">★</span>
+                {% else %}
+                    <span class="star empty">★</span>
+                {% endif %}
+            {% endfor %}
+            </small> 
+            <p>{{ review.comment }}</p>
+        </div>
+        {% empty %}
+        <p>Nu există recenzii încă.</p> 
+        {% endfor %}
+    </div>
+    {% if user.is_authenticated %}
+ <div class="review-form">
+        <form action="" method="POST">
+            {% csrf_token %}
+            <input type="text" name="comment" placeholder="Scrie un comentariu"/>
+            
+            <div class="rating">
+                <input type="radio" name="rating" id="r5" value="5">
+                <label for="r5">★</label>
+                <input type="radio" name="rating" id="r4" value="4">
+                <label for="r4">★</label>
+                <input type="radio" name="rating" id="r3" value="3">
+                <label for="r3">★</label>
+                <input type="radio" name="rating" id="r2" value="2">
+                <label for="r2">★</label>
+                <input type="radio" name="rating" id="r1" value="1">
+                <label for="r1">★</label>
+            </div>
+    
+            <button type="submit">Adauga recenzia</button>
+        </form>
+    </div>
+    {% endif %}
+    
 </div>
 {% endblock content %}

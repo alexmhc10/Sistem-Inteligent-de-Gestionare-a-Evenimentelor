@@ -1,18 +1,23 @@
 <a href="{% url 'home' %}">
-    <h1>Logo</h1>
+    <img  style="width: 80px; height:auto; border-radius: 80px;" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo" height="50">
 </a>
 
+<br>
+
 {% if request.user.is_authenticated %}
-    <h1>Hello {{ user.username }} </h1>
-    <a href="{% url 'logout' %}">Logout</a>
+    {% if request.path == '/' %}
+        <h1>Hello {{ user.username }} </h1>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% endif %}
 {% else %}
-    {% if not request.path == '/login/' and not request.path == '/register/' %}  {# Verificăm dacă nu suntem pe pagina de login #}
+    {% if request.path != '/login/' and request.path != '/register/' %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}
 {% endif %}
 
+
 {% if request.user.is_authenticated %}
-{% if request.path != '/login/' and request.path != '/register/' and request.path != '/new_users/' %}
+{% if request.path == '/' %}
 <form action="{% url 'home' %}" method="GET">
     <input type="text" name="q" placeholder="Cauta Locatii..."/>
 </form>

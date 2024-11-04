@@ -5,7 +5,7 @@
 <style>
     .home-container{
         display: grid;
-        grid-template-columns: 1fr 2fr 2fr;
+        grid-template-columns: 1.5fr 3fr 1fr;
     }
 </style>
 
@@ -59,8 +59,21 @@
             </div>
             {% endfor %}
         </div>
-        
     </div>
+    {% if request.user.is_superuser %}
+    <div>
+        Users:
+        {% for user in users %}
+        <ul style="list-style-type: none;">
+            {% if not user.is_superuser %}
+            <li>
+                <a style="text-decoration: none;" href="{% url 'profile' user.username%}">{{ user.username }}</a>
+            </li>
+            {% endif %}
+        </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 
 {% endblock content %}

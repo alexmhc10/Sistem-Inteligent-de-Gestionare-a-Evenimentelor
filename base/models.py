@@ -24,6 +24,7 @@ class Location(models.Model):
 
 
 class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
@@ -32,7 +33,7 @@ class Profile(models.Model):
     approved = models.BooleanField(default=False) 
 
     def __str__(self):
-        return self.username
+        return self.user.username
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
