@@ -23,7 +23,16 @@ class Location(models.Model):
         return self.name
 
 
+class Profile(models.Model):
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128) 
+    email = models.EmailField()
+    description = models.TextField(null=True, blank=True)
+    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+    approved = models.BooleanField(default=False) 
 
+    def __str__(self):
+        return self.username
 
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 
@@ -34,3 +43,4 @@ class Review(models.Model):
     def __str__(self):
         return self.comment[0:20]
     
+

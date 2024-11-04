@@ -1,12 +1,24 @@
 <a href="{% url 'home' %}">
     <h1>Logo</h1>
 </a>
+
 {% if request.user.is_authenticated %}
+    <h1>Hello {{ user.username }} </h1>
     <a href="{% url 'logout' %}">Logout</a>
 {% else %}
-    <a href="{% url 'login' %}">Login</a>
+    {% if not request.path == '/login/' and not request.path == '/register/' %}  {# Verificăm dacă nu suntem pe pagina de login #}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
 {% endif %}
+
+{% if request.user.is_authenticated %}
+{% if request.path != '/login/' and request.path != '/register/' and request.path != '/new_users/' %}
 <form action="{% url 'home' %}" method="GET">
     <input type="text" name="q" placeholder="Cauta Locatii..."/>
 </form>
 <hr>
+{% if request.user.is_superuser %}
+        <a href="{% url 'new_users' %}">New users</a>
+        {% endif %}
+{% endif %}
+{% endif %}

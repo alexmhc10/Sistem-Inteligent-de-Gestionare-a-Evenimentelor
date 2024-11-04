@@ -5,9 +5,12 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('login/', views.loginPage, name="login"),
+    path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
     path('', views.home, name="home"),
     path('location/<str:pk>/', views.location, name="location"),
+    path('new_users/', views.new_users, name='new_users'),
+    path('approve_user/<int:pk>/', views.approve_user, name='approve_user'),
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),  
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),  
