@@ -43,9 +43,9 @@ def registerPage(request):
     if request.method == 'POST':
         form = ProfileForm(request.POST, request.FILES)
         if form.is_valid():
-            profile = form.save(commit=False)  # Salvează fără a scrie în baza de date
-            profile.approved = False  # Asigură-te că profilul nu este aprobat inițial
-            profile.save()  # Acum salvează profilul
+            profile = form.save(commit=False)  
+            profile.approved = False
+            profile.save()
             messages.success(request, "Profile submitted for approval.")
             return redirect('login')
     context = {'form': form, 'page': 'register'}

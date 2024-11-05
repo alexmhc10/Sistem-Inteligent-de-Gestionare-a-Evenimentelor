@@ -1,6 +1,6 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h1>Hello {{ profile.username }}</h1>
+<h1>{{ profile.username }}</h1>
 <img src="{{ profile.photo.url }}" alt="{{ profile.username }}'s photo" style="width: 200px; height:auto;">
 {% endblock content %}

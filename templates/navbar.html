@@ -3,10 +3,9 @@
 </a>
 
 <br>
-
 {% if request.user.is_authenticated %}
     {% if request.path == '/' %}
-        <h1>Hello {{ user.username }} </h1>
+        <h1>Hello {{ request.user.username }}</h1>
         <a href="{% url 'logout' %}">Logout</a>
     {% endif %}
 {% else %}
@@ -17,13 +16,8 @@
 
 
 {% if request.user.is_authenticated %}
-{% if request.path == '/' %}
-<form action="{% url 'home' %}" method="GET">
-    <input type="text" name="q" placeholder="Cauta Locatii..."/>
-</form>
-<hr>
+
 {% if request.user.is_superuser %}
         <a href="{% url 'new_users' %}">New users</a>
         {% endif %}
-{% endif %}
 {% endif %}
