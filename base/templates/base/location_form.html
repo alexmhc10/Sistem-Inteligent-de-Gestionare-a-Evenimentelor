@@ -2,12 +2,68 @@
 
 {% block content %}
 
-<div>
-    <form action="" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Submit">
-    </form>
+
+<form action="" method="POST" enctype="multipart/form-data">
+
+{% csrf_token %}
+<!-- 
+<div class="form_group">
+    <label for="location_name">Location Name</label>
+    <input type="text" name="location_name" required id="location_name" placeholder="Write The New Location's Name">
 </div>
+
+<div class="form_group">
+    <label for="location_type">Location's Accepted Events</label>
+    
+    <input type="text" name="location_type" list="location_type_list" required id="location_type" placeholder="Select one of the popular types">
+
+    <datalist id="location_type_list">
+        {% for type in types %}
+        <option value="{{ type.name }}">{{ type.name }}</option>
+        {% endfor %}
+    </datalist> -->
+    <div class="form_group">
+        <label for="location_name">Location name</label>
+        {{ form.name }}
+    </div>
+
+    <div class="form_group">
+        <label for="location_description">Location Description</label>
+        {{ form.description }}
+    </div>
+
+
+    <div class="form_group">
+        <label for="location_gallery">Location Pictures</label>
+        {{ form.gallery }}
+    </div>
+
+    <div class="form_group">
+        <label for="location_location">Location:</label>
+        {{ form.location }}
+    </div>
+
+     <div class="form_group">
+        <label for="id_types">Location's Accepted Events</label>
+        {{ form.types }}  
+    </div>
+
+    <div class="form_group">
+        <label for="id_custom_types">Or write the types separated by commas</label>
+        {{ form.custom_types }}
+    </div>
+
+    
+
+    <div class="form_group">
+        <label for="location_seats_numbers">Maximum Number of guests</label>
+        {{ form.seats_numbers }}
+    </div>
+</div>
+<input type="submit" value="Submit">
+
+
+</form>
+
 
 {% endblock content %}

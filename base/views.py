@@ -100,7 +100,7 @@ def home(request):
         Q(description__icontains=q) | 
         Q(owner__username__icontains=q) |
         Q(location__icontains=q)
-        )
+        ).distinct()
     users = User.objects.all()
     types = Type.objects.all()
     location_count = locations.count()
@@ -144,20 +144,46 @@ def location(request, pk):
 @login_required(login_url='/login')
 def addLocation(request):
     form = LocationForm()
+    types = Type.objects.all()
+    
     if request.method == 'POST':
         form = LocationForm(request.POST, request.FILES)
         if form.is_valid():
-            form.save()
-            return redirect('home')
+            # Prevenirea duplicării locației
+            location = form.save(commit=False)
+            location.owner = request.user  # Atribuie utilizatorul
+            location.save()  # Salvează locația înainte de a adăuga tipurile
+
+            custom_types = form.cleaned_data.get('custom_types')
+            if custom_types:  # Dacă există tipuri personalizate
+                for type_name in custom_types:
+                    type_instance, created = Type.objects.get_or_create(name=type_name.strip())  # Crează sau obține tipul
+                    if type_instance not in location.types.all():  # Verifică dacă tipul nu a fost deja adăugat
+                        location.types.add(type_instance)  # Adaugă tipul la locație
+            else:
+                # Dacă nu sunt tipuri personalizate, folosim tipurile selectate din formular
+                selected_types = form.cleaned_data.get('types')
+                for type_instance in selected_types:
+                    if type_instance not in location.types.all():  # Verifică dacă tipul nu a fost deja adăugat
+                        location.types.add(type_instance)  # Adaugă tipul la locație
+
+            # Logare pentru a verifica
+        print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
+        return redirect('home')
     context = {
-        'form': form
+        'form': form,
+        'types': types
     }
     return render(request, 'base/location_form.html', context)
+
+
+
 
 @login_required(login_url='/login')
 def updateLocation(request, pk):
     location = Location.objects.get(name=pk)
     form = LocationForm(instance=location)
+    types = Type.objects.all()     
     if request.user != location.owner:
         return HttpResponse("You don't have permission over this room.")
     if request.method == 'POST':
@@ -167,6 +193,7 @@ def updateLocation(request, pk):
             return redirect('home')
     context = {
         'form': form,
+        'types': types
     }
     return render(request, 'base/location_form.html', context)
 

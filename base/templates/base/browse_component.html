@@ -1,0 +1,15 @@
+<div>
+    <h3>
+        Browse Eveniment Types
+    </h3>
+    <div>
+        <a href="{% url 'home' %}">Toate</a>
+    </div>
+    {% for type in types %}
+    <div>
+        <a href="{% url 'home' %}?q={{ type.name }}">{{ type.name }}</a>
+    </div>
+    {% endfor %}
+    <hr>
+
+</div>

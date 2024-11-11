@@ -1,12 +1,27 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Location, User, Profile
+from .models import Location, User, Profile, Type
 from django.contrib.auth.hashers import make_password
 
 class LocationForm(ModelForm):
+    custom_types = forms.CharField(
+        max_length=200,
+        required=False,
+        label="Or write the types separated by commas"
+    )
+
     class Meta:
         model = Location
-        fields = '__all__'
+        fields = ['name', 'description', 'gallery', 'location', 'seats_numbers', 'types']
+        exclude = ['owner']
+
+    def clean_custom_types(self):
+        custom_types = self.cleaned_data.get('custom_types')
+        if custom_types:
+            return [type.strip() for type in custom_types.split(',')]
+        return None
+
+
 
 class RegisterForm(ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")

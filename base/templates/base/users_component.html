@@ -1,0 +1,14 @@
+{% if request.user.is_superuser %}
+    <div>
+        Users: 
+        {% for user in users %}
+        <ul style="list-style-type: none;">
+            {% if not user.is_superuser %}
+            <li>
+                <a style="text-decoration: none;" href="{% url 'profile' user.username%}">{{ user.username }}</a>
+            </li>
+            {% endif %}
+        </ul>
+        {% endfor %}
+    </div>
+    {% endif %}

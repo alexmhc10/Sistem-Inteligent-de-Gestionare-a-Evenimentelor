@@ -7,17 +7,15 @@
     {% if request.path == '/' %}
         <h1>Hello {{ request.user.username }}</h1>
         <a href="{% url 'logout' %}">Logout</a>
+        <br>
+
+{% if request.user.is_superuser %}
+        <a href="{% url 'new_users' %}">New users</a>
+        {% endif %}
+
     {% endif %}
 {% else %}
     {% if request.path != '/login/' and request.path != '/register/' %}
         <a href="{% url 'login' %}">Login</a>
     {% endif %}
-{% endif %}
-
-
-{% if request.user.is_authenticated %}
-
-{% if request.user.is_superuser %}
-        <a href="{% url 'new_users' %}">New users</a>
-        {% endif %}
 {% endif %}
