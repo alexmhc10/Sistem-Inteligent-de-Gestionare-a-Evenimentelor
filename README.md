@@ -34,3 +34,6 @@ Am adaugat login/logout,requirements to update/delete doar admin poate sterge o 
 
 
 Adaugare verificare user, adaugare recenzii, stergere recenzii, adminul poate refuza un user, adminul poate sterge o locatie, persoanele logate pot da review uri pe locatie
+
+
+Adaugare tipuri de evenimente, organizatorul poate selecta un tip/mai multe tipuri existent(e) sau crea unul nou, adaugat nr locuri la locatie, aplicatie functionala
