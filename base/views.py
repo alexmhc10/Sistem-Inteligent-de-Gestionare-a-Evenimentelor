@@ -149,25 +149,22 @@ def addLocation(request):
     if request.method == 'POST':
         form = LocationForm(request.POST, request.FILES)
         if form.is_valid():
-            # Prevenirea duplicării locației
             location = form.save(commit=False)
-            location.owner = request.user  # Atribuie utilizatorul
-            location.save()  # Salvează locația înainte de a adăuga tipurile
+            location.owner = request.user 
+            location.save()
 
             custom_types = form.cleaned_data.get('custom_types')
-            if custom_types:  # Dacă există tipuri personalizate
+            if custom_types:  
                 for type_name in custom_types:
-                    type_instance, created = Type.objects.get_or_create(name=type_name.strip())  # Crează sau obține tipul
-                    if type_instance not in location.types.all():  # Verifică dacă tipul nu a fost deja adăugat
-                        location.types.add(type_instance)  # Adaugă tipul la locație
+                    type_instance, created = Type.objects.get_or_create(name=type_name.strip()) 
+                    if type_instance not in location.types.all(): 
+                        location.types.add(type_instance) 
             else:
-                # Dacă nu sunt tipuri personalizate, folosim tipurile selectate din formular
                 selected_types = form.cleaned_data.get('types')
                 for type_instance in selected_types:
-                    if type_instance not in location.types.all():  # Verifică dacă tipul nu a fost deja adăugat
-                        location.types.add(type_instance)  # Adaugă tipul la locație
+                    if type_instance not in location.types.all():  
+                        location.types.add(type_instance)  
 
-            # Logare pentru a verifica
         print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
         return redirect('home')
     context = {
