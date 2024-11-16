@@ -10,3 +10,22 @@ Meniul complet generat pentru 80 invitați:
 - Risotto cu șofran (italiană - Non-Vegan, alergeni: lactoză)
 - Mochi cu înghețată (asiatică - Non-Vegan, alergeni: lactoză)
 - Prăjitură cu mere (românească - Vegan, alergeni: gluten)
+
+
+Meniul complet generat pentru 100 invitați:
+- Spring rolls cu legume (asiatică - Vegan, alergeni: gluten, soia)
+- Frigărui de legume (vegană - Vegan, alergeni: Nu contine)
+- Paella cu fructe de mare (spaniolă - Non-Vegan, alergeni: pește, crustacee)
+- Croissant cu ciocolată (franceză - Non-Vegan, alergeni: gluten, lactoză)
+- Platou de brânzeturi și fructe (românească - Non-Vegan, alergeni: lactoză)
+- Falafel cu humus (orientală - Vegan, alergeni: soia)
+- Bruschete cu roșii și busuioc (italiană - Vegan, alergeni: gluten)
+- Vin alb/roșu (universală - Vegan, alergeni: sulfiți)
+- Cocktail Aperol Spritz (italiană - Vegan, alergeni: Nu contine)
+- Prăjitură cu mere (românească - Vegan, alergeni: gluten)
+- Moussaka cu carne de miel (grecească - Non-Vegan, alergeni: gluten, lactoză)
+- Guacamole cu nachos (mexicană - Vegan, alergeni: gluten)
+- Tabbouleh cu lămâie (orientală - Vegan, alergeni: Nu contine)
+- Sucuri naturale (universală - Vegan, alergeni: Nu contine)
+- Bere artizanală (universală - Non-Vegan, alergeni: gluten)
+- Risotto cu șofran (italiană - Non-Vegan, alergeni: lactoză)

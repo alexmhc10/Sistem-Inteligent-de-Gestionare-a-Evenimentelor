@@ -3,8 +3,10 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import Location, Review, Type
+from .models import Location, Review, Type, Menu, Guests
 
 admin.site.register(Location)
 admin.site.register(Review)
 admin.site.register(Type)
+admin.site.register(Menu)
+admin.site.register(Guests)
