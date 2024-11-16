@@ -1,31 +1,37 @@
-Meniul complet generat pentru 80 invitați:
-- Vin alb/roșu (universală - Vegan, alergeni: sulfiți)
-- Tofu cu legume la wok (asiatică - Vegan, alergeni: soia)
-- Frigărui de legume (vegană - Vegan, alergeni: Nu contine)
-- Platou de brânzeturi și fructe (românească - Non-Vegan, alergeni: lactoză)
-- Bruschete cu roșii și busuioc (italiană - Vegan, alergeni: gluten)
-- Spring rolls cu legume (asiatică - Vegan, alergeni: gluten, soia)
-- Cocktail Aperol Spritz (italiană - Vegan, alergeni: Nu contine)
-- Chifteluțe marinate (românească - Non-Vegan, alergeni: gluten, ouă)
-- Risotto cu șofran (italiană - Non-Vegan, alergeni: lactoză)
-- Mochi cu înghețată (asiatică - Non-Vegan, alergeni: lactoză)
-- Prăjitură cu mere (românească - Vegan, alergeni: gluten)
 
+Meniul complet generat pentru 17 preparate:
 
-Meniul complet generat pentru 100 invitați:
-- Spring rolls cu legume (asiatică - Vegan, alergeni: gluten, soia)
-- Frigărui de legume (vegană - Vegan, alergeni: Nu contine)
-- Paella cu fructe de mare (spaniolă - Non-Vegan, alergeni: pește, crustacee)
-- Croissant cu ciocolată (franceză - Non-Vegan, alergeni: gluten, lactoză)
-- Platou de brânzeturi și fructe (românească - Non-Vegan, alergeni: lactoză)
-- Falafel cu humus (orientală - Vegan, alergeni: soia)
-- Bruschete cu roșii și busuioc (italiană - Vegan, alergeni: gluten)
-- Vin alb/roșu (universală - Vegan, alergeni: sulfiți)
-- Cocktail Aperol Spritz (italiană - Vegan, alergeni: Nu contine)
-- Prăjitură cu mere (românească - Vegan, alergeni: gluten)
-- Moussaka cu carne de miel (grecească - Non-Vegan, alergeni: gluten, lactoză)
-- Guacamole cu nachos (mexicană - Vegan, alergeni: gluten)
-- Tabbouleh cu lămâie (orientală - Vegan, alergeni: Nu contine)
-- Sucuri naturale (universală - Vegan, alergeni: Nu contine)
-- Bere artizanală (universală - Non-Vegan, alergeni: gluten)
-- Risotto cu șofran (italiană - Non-Vegan, alergeni: lactoză)
+Cuisine: asiatică
+- Spring rolls cu legume (Vegan, alergeni: gluten, soia)
+
+Cuisine: franceză
+- Brownie vegan (Vegan, alergeni: gluten, soia)
+- Croissant cu ciocolată (Non-Vegan, alergeni: gluten, lactoză)
+
+Cuisine: grecească
+- Moussaka cu carne de miel (Non-Vegan, alergeni: gluten, lactoză)
+
+Cuisine: italiană
+- Bruschete cu roșii și busuioc (Vegan, alergeni: gluten)
+- Cocktail Aperol Spritz (Vegan, alergeni: Nu conține)
+- Risotto cu șofran (Non-Vegan, alergeni: lactoză)
+
+Cuisine: mexicană
+- Guacamole cu nachos (Vegan, alergeni: gluten)
+
+Cuisine: orientală
+- Falafel cu humus (Vegan, alergeni: soia)
+- Tabbouleh cu lămâie (Vegan, alergeni: Nu conține)
+
+Cuisine: românească
+- Platou de brânzeturi și fructe (Non-Vegan, alergeni: lactoză)
+- Prăjitură cu mere (Vegan, alergeni: gluten)
+
+Cuisine: spaniolă
+- Gazpacho (Vegan, alergeni: Nu conține)
+- Paella cu fructe de mare (Non-Vegan, alergeni: pește, crustacee)
+
+Cuisine: universală
+- Bere artizanală (Non-Vegan, alergeni: gluten)
+- Sucuri naturale (Vegan, alergeni: Nu conține)
+- Vin alb/roșu (Vegan, alergeni: sulfiți)
