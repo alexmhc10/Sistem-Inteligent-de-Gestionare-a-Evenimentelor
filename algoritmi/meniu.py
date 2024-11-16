@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 menu = [
     {"item": "Bruschete cu roșii și busuioc", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
     {"item": "Platou de brânzeturi și fructe", "cuisine": "românească", "vegan": False, "alergeni": ["lactoză"]},
@@ -7,17 +7,15 @@ menu = [
     {"item": "Chifteluțe marinate", "cuisine": "românească", "vegan": False, "alergeni": ["gluten", "ouă"]},
     {"item": "Mini sandwich-uri cu somon", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "pește"]},
     {"item": "Sushi rolls cu avocado", "cuisine": "asiatică", "vegan": True, "alergeni": ["gluten", "soia"]},
-    {"item": "Frigărui de legume", "cuisine": "vegană", "vegan": True, "alergeni": []},
     {"item": "Sarmale cu mămăligă", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
     {"item": "Lasagna cu legume", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten", "lactoză"]},
     {"item": "Pui teriyaki", "cuisine": "asiatică", "vegan": False, "alergeni": ["gluten", "soia"]},
-    {"item": "Burger vegan de năut", "cuisine": "vegană", "vegan": True, "alergeni": ["gluten"]},
     {"item": "Risotto cu șofran", "cuisine": "italiană", "vegan": False, "alergeni": ["lactoză"]},
     {"item": "Tofu cu legume la wok", "cuisine": "asiatică", "vegan": True, "alergeni": ["soia"]},
     {"item": "Gulaș de vită", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
     {"item": "Paste bolognese", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten"]},
     {"item": "Cheesecake cu fructe de pădure", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
-    {"item": "Brownie vegan", "cuisine": "vegană", "vegan": True, "alergeni": ["gluten", "soia"]},
+    {"item": "Brownie vegan", "cuisine": "franceză", "vegan": True, "alergeni": ["gluten", "soia"]},
     {"item": "Prăjitură cu mere", "cuisine": "românească", "vegan": True, "alergeni": ["gluten"]},
     {"item": "Mochi cu înghețată", "cuisine": "asiatică", "vegan": False, "alergeni": ["lactoză"]},
     {"item": "Cocktail Aperol Spritz", "cuisine": "italiană", "vegan": True, "alergeni": []},
@@ -34,17 +32,17 @@ menu = [
     {"item": "Quiche cu spanac și brânză", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză"]},
     {"item": "Moussaka cu carne de miel", "cuisine": "grecească", "vegan": False, "alergeni": ["gluten", "lactoză"]},
     {"item": "Focaccia cu rozmarin", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Pasta carbonara", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]}
+    {"item": "Pasta carbonara", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
+    {"item": "Empanadas cu carne", "cuisine": "spaniolă", "vegan": False, "alergeni": ["gluten"]},
+    {"item": "Gazpacho", "cuisine": "spaniolă", "vegan": True, "alergeni": []}
 ]
-
-
 guests = [
-    {'name': 'Invitat 1', 'cuisine_preference': 'asiatică', 'vegan': True, 'allergens': []} ,
-{'name': 'Invitat 2', 'cuisine_preference': 'vegană', 'vegan': False, 'allergens': ['gluten']} ,
-{'name': 'Invitat 3', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['ouă']} ,
+{'name': 'Invitat 1', 'cuisine_preference': 'asiatică', 'vegan': False, 'allergens': []} ,
+{'name': 'Invitat 2', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['gluten']} ,
+{'name': 'Invitat 3', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['ouă']} ,
 {'name': 'Invitat 4', 'cuisine_preference': 'spaniolă', 'vegan': False, 'allergens': ['nuci']} ,
 {'name': 'Invitat 5', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['pește']} ,
-{'name': 'Invitat 6', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['soia']} ,
+{'name': 'Invitat 6', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['soia']} ,
 {'name': 'Invitat 7', 'cuisine_preference': 'românească', 'vegan': False, 'allergens': ['gluten']} ,
 {'name': 'Invitat 8', 'cuisine_preference': 'orientală', 'vegan': False, 'allergens': ['gluten']} ,
 {'name': 'Invitat 9', 'cuisine_preference': 'asiatică', 'vegan': False, 'allergens': ['pește']} ,
@@ -61,7 +59,7 @@ guests = [
 {'name': 'Invitat 20', 'cuisine_preference': 'orientală', 'vegan': True, 'allergens': ['sulfiți']} ,
 {'name': 'Invitat 21', 'cuisine_preference': 'orientală', 'vegan': False, 'allergens': ['lactoză']} ,
 {'name': 'Invitat 22', 'cuisine_preference': 'românească', 'vegan': True, 'allergens': ['lactoză']} ,
-{'name': 'Invitat 23', 'cuisine_preference': 'vegană', 'vegan': False, 'allergens': ['pește']} ,
+{'name': 'Invitat 23', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['pește']} ,
 {'name': 'Invitat 24', 'cuisine_preference': 'mexicană', 'vegan': True, 'allergens': ['gluten']} ,
 {'name': 'Invitat 25', 'cuisine_preference': 'asiatică', 'vegan': False, 'allergens': ['pește']} ,
 {'name': 'Invitat 26', 'cuisine_preference': 'orientală', 'vegan': True, 'allergens': []} ,
@@ -79,17 +77,17 @@ guests = [
 {'name': 'Invitat 38', 'cuisine_preference': 'universală', 'vegan': True, 'allergens': ['crustacee']} ,
 {'name': 'Invitat 39', 'cuisine_preference': 'mexicană', 'vegan': False, 'allergens': ['sulfiți']} ,
 {'name': 'Invitat 40', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': []} ,
-{'name': 'Invitat 41', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['muștar']} ,
-{'name': 'Invitat 42', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['nuci']} ,
+{'name': 'Invitat 41', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['muștar']} ,
+{'name': 'Invitat 42', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['nuci']} ,
 {'name': 'Invitat 43', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['soia']} ,
 {'name': 'Invitat 44', 'cuisine_preference': 'asiatică', 'vegan': False, 'allergens': ['ouă']} ,
-{'name': 'Invitat 45', 'cuisine_preference': 'vegană', 'vegan': False, 'allergens': ['gluten']} ,
+{'name': 'Invitat 45', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['gluten']} ,
 {'name': 'Invitat 46', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['nuci']} ,
 {'name': 'Invitat 47', 'cuisine_preference': 'spaniolă', 'vegan': True, 'allergens': ['pește']} ,
 {'name': 'Invitat 48', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['muștar']} ,
 {'name': 'Invitat 49', 'cuisine_preference': 'mexicană', 'vegan': True, 'allergens': ['soia']} ,
 {'name': 'Invitat 50', 'cuisine_preference': 'românească', 'vegan': True, 'allergens': ['lactoză']} ,
-{'name': 'Invitat 51', 'cuisine_preference': 'vegană', 'vegan': False, 'allergens': ['sulfiți']} ,
+{'name': 'Invitat 51', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['sulfiți']} ,
 {'name': 'Invitat 52', 'cuisine_preference': 'orientală', 'vegan': True, 'allergens': ['soia']} ,
 {'name': 'Invitat 53', 'cuisine_preference': 'universală', 'vegan': True, 'allergens': ['crustacee']} ,
 {'name': 'Invitat 54', 'cuisine_preference': 'spaniolă', 'vegan': False, 'allergens': ['gluten']} ,
@@ -110,7 +108,7 @@ guests = [
 {'name': 'Invitat 69', 'cuisine_preference': 'mexicană', 'vegan': False, 'allergens': ['muștar']} ,
 {'name': 'Invitat 70', 'cuisine_preference': 'orientală', 'vegan': True, 'allergens': []} ,
 {'name': 'Invitat 71', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['sulfiți']} ,
-{'name': 'Invitat 72', 'cuisine_preference': 'vegană', 'vegan': False, 'allergens': ['muștar']} ,
+{'name': 'Invitat 72', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['muștar']} ,
 {'name': 'Invitat 73', 'cuisine_preference': 'italiană', 'vegan': True, 'allergens': ['pește']} ,
 {'name': 'Invitat 74', 'cuisine_preference': 'românească', 'vegan': False, 'allergens': ['crustacee']} ,
 {'name': 'Invitat 75', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['soia']} ,
@@ -124,7 +122,7 @@ guests = [
 {'name': 'Invitat 83', 'cuisine_preference': 'grecească', 'vegan': False, 'allergens': ['muștar']} ,
 {'name': 'Invitat 84', 'cuisine_preference': 'asiatică', 'vegan': False, 'allergens': ['muștar']} ,
 {'name': 'Invitat 85', 'cuisine_preference': 'spaniolă', 'vegan': False, 'allergens': ['lactoză']} ,
-{'name': 'Invitat 86', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['crustacee']} ,
+{'name': 'Invitat 86', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['crustacee']} ,
 {'name': 'Invitat 87', 'cuisine_preference': 'italiană', 'vegan': False, 'allergens': ['gluten']} ,
 {'name': 'Invitat 88', 'cuisine_preference': 'universală', 'vegan': True, 'allergens': ['lactoză']} ,
 {'name': 'Invitat 89', 'cuisine_preference': 'mexicană', 'vegan': True, 'allergens': ['nuci']} ,
@@ -135,7 +133,7 @@ guests = [
 {'name': 'Invitat 94', 'cuisine_preference': 'mexicană', 'vegan': False, 'allergens': ['gluten']} ,
 {'name': 'Invitat 95', 'cuisine_preference': 'orientală', 'vegan': True, 'allergens': ['lactoză']} ,
 {'name': 'Invitat 96', 'cuisine_preference': 'franceză', 'vegan': False, 'allergens': ['soia']} ,
-{'name': 'Invitat 97', 'cuisine_preference': 'vegană', 'vegan': True, 'allergens': ['ouă']} ,
+{'name': 'Invitat 97', 'cuisine_preference': 'grecească', 'vegan': True, 'allergens': ['ouă']} ,
 {'name': 'Invitat 98', 'cuisine_preference': 'orientală', 'vegan': False, 'allergens': ['sulfiți']} ,
 {'name': 'Invitat 99', 'cuisine_preference': 'românească', 'vegan': True, 'allergens': ['ouă']} ,
 {'name': 'Invitat 100', 'cuisine_preference': 'spaniolă', 'vegan': True, 'allergens': []} 
@@ -153,24 +151,17 @@ for guest in guests:
 allergen_counts = Counter(majority_allergens)
 menu_selected = []
 
-for guest in guests:
-    print(f"Generând meniul pentru {guest['name']}:")
-    
+for guest in guests:    
     available_dishes = [dish for dish in menu if dish["cuisine"] == guest["cuisine_preference"]]
-    
     if guest["vegan"]:
         available_dishes = [dish for dish in available_dishes if dish["vegan"]]
-
+    if not guest["vegan"]:
+        available_dishes = [dish for dish in available_dishes]
     for allergen in guest["allergens"]:
         available_dishes = [dish for dish in available_dishes if allergen not in dish["alergeni"]]
-    
     if available_dishes:
         selected_dish = available_dishes[0]
         menu_selected.append(selected_dish)
-        print(f"  - Selecționat: {selected_dish['item']}")
-    else:
-        print("  - Nu există preparate disponibile pentru acest invitat.")
-
 
 unique_menu = []
 seen = set()
@@ -180,13 +171,18 @@ for dish in menu_selected:
         unique_menu.append(dish)
         seen.add(dish['item'])
 
+grouped_menu = defaultdict(list)
+for dish in unique_menu:
+    grouped_menu[dish['cuisine']].append(dish)
 
-invitati = 0
-for guest in guests:
-    invitati += 1
-
-
-with open("meniu_generat.txt", "a", encoding="utf-8") as f:
-    f.write(f"\nMeniul complet generat pentru {invitati} invitați:\n")
-    for dish in unique_menu:
-        f.write(f"- {dish['item']} ({dish['cuisine']} - {'Vegan' if dish['vegan'] else 'Non-Vegan'}, alergeni: {', '.join(dish['alergeni'])if dish['alergeni'] else "Nu contine"})\n")
+with open("meniu_generat.txt", "w", encoding="utf-8") as f:
+    f.write(f"\nMeniul complet generat pentru {len(unique_menu)} preparate:\n")
+    
+    for cuisine, dishes in sorted(grouped_menu.items()):
+        f.write(f"\nCuisine: {cuisine}\n")
+        
+        sorted_dishes = sorted(dishes, key=lambda x: x['item'])
+        
+        for dish in sorted_dishes:
+            alergeni = ', '.join(dish['alergeni']) if dish['alergeni'] else "Nu conține"
+            f.write(f"- {dish['item']} ({'Vegan' if dish['vegan'] else 'Non-Vegan'}, alergeni: {alergeni})\n")
