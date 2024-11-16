@@ -1,0 +1,12 @@
+Meniul complet generat pentru 80 invitați:
+- Vin alb/roșu (universală - Vegan, alergeni: sulfiți)
+- Tofu cu legume la wok (asiatică - Vegan, alergeni: soia)
+- Frigărui de legume (vegană - Vegan, alergeni: Nu contine)
+- Platou de brânzeturi și fructe (românească - Non-Vegan, alergeni: lactoză)
+- Bruschete cu roșii și busuioc (italiană - Vegan, alergeni: gluten)
+- Spring rolls cu legume (asiatică - Vegan, alergeni: gluten, soia)
+- Cocktail Aperol Spritz (italiană - Vegan, alergeni: Nu contine)
+- Chifteluțe marinate (românească - Non-Vegan, alergeni: gluten, ouă)
+- Risotto cu șofran (italiană - Non-Vegan, alergeni: lactoză)
+- Mochi cu înghețată (asiatică - Non-Vegan, alergeni: lactoză)
+- Prăjitură cu mere (românească - Vegan, alergeni: gluten)

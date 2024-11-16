@@ -45,3 +45,23 @@ class Review(models.Model):
         return self.comment[0:20]
     
 
+class Guests(models.Model):
+    firstname = models.CharField(max_length=20, unique=True)
+    lastname = models.CharField(max_length=20, unique=True)
+    age = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=10)
+    picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
+    cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
+    allergens = models.JSONField(default=list)
+    def __str__(self):
+        return f"{self.firstname} {self.lastname}"
+
+
+class Menu(models.Model):
+    item_name = models.CharField(max_length=60, unique=True)
+    item_cuisine = models.CharField(max_length=20, unique=True)
+    item_vegan = models.BooleanField(default=False)
+    allergens = models.JSONField(default=list)
+    
+    def __str__(self):
+        return self.item_name
