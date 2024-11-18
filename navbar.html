@@ -1,0 +1,73 @@
+<style>
+    /* Stilizare pentru header */
+    .header {
+        display: flex;
+        align-items: center;
+        background-color: #FAF9F6; /* Alb perlat */
+        padding: 5px 10px;
+        border-bottom: 2px solid #D4AF37; /* Auriu */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Efect subtil de umbră */
+    }
+
+    /* Logo-ul */
+    .logo {
+        width: 60px;
+        height: auto;
+        border-radius: 40px; /* Formă rotundă */
+        margin-right: 10px; 
+        border: 2px solid #D4AF37; /* Auriu */
+    }
+
+    /* Mesaj de salut */
+    .greeting {
+        font-size: 1.2em;
+        color: #D4AF37; /* Text auriu */
+        font-weight: bold;
+    }
+
+    /* Bara din colțul dreapta sus */
+    .top-right {
+        position: absolute;
+        top: 10px;
+        right: 20px;
+    }
+
+    .top-right a {
+        color: #D4AF37; /* Linkuri aurii */
+        font-size: 1em;
+        text-decoration: none;
+        margin-left: 15px; 
+        font-weight: bold;
+    }
+
+    .top-right a:hover {
+        color: #B08A2E; /* Nuanță mai închisă de auriu la hover */
+        text-decoration: underline;
+    }
+</style>
+
+<div class="header">
+    <a href="{% url 'home' %}">
+        <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+    </a>
+
+    {% if request.user.is_authenticated and request.path == '/' %}
+        <h1 class="greeting">Hello {{ request.user.username }}</h1>
+    {% endif %}
+</div>
+
+<div class="top-right">
+    {% if request.user.is_authenticated %}
+        {% if request.path == '/' %}
+            <a href="{% url 'logout' %}">Logout</a>
+
+            {% if request.user.is_superuser %}
+                <a href="{% url 'new_users' %}">New users</a>
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% if request.path != '/login/' and request.path != '/register/' %}
+            <a href="{% url 'login' %}">Login</a>
+        {% endif %}
+    {% endif %}
+</div>
