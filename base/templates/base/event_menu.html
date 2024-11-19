@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+
+<h2>Meniul pentru {{ guests_count }} Invitati</h2>
+
+
+{% for dish in eventmenu %}
+
+
+<ul>
+    <li style="display: grid;grid-template-columns: 1fr 5fr;">
+        <h4> {{ dish.item_name }} </h4>
+        <img style="width:120px; height:160px; object-fit: contain;" src="{{ dish.item_picture.url }}" alt="">
+    </li>
+</ul>
+
+
+{% endfor %}
+{% endblock %}

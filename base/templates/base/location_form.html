@@ -6,22 +6,7 @@
 <form action="" method="POST" enctype="multipart/form-data">
 
 {% csrf_token %}
-<!-- 
-<div class="form_group">
-    <label for="location_name">Location Name</label>
-    <input type="text" name="location_name" required id="location_name" placeholder="Write The New Location's Name">
-</div>
 
-<div class="form_group">
-    <label for="location_type">Location's Accepted Events</label>
-    
-    <input type="text" name="location_type" list="location_type_list" required id="location_type" placeholder="Select one of the popular types">
-
-    <datalist id="location_type_list">
-        {% for type in types %}
-        <option value="{{ type.name }}">{{ type.name }}</option>
-        {% endfor %}
-    </datalist> -->
     <div class="form_group">
         <label for="location_name">Location name</label>
         {{ form.name }}

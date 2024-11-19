@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('carousel/', views.carousel_view, name='carousel'),
     path('login/', views.loginPage, name="login"),
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
@@ -16,4 +17,6 @@ urlpatterns = [
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),  
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),  
     path('delete_review/<str:pk>/', views.deleteReview, name="delete_review"),  
+    path('menu-items', views.MenuItems, name="menu-items"),  
+    path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),  
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

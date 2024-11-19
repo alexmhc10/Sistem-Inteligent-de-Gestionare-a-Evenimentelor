@@ -6,3 +6,7 @@ git push origin main
 =======
 git push main
 >>>>>>> e12b8c0c3bf0f7c8186e08dcd4d2cb56a3d8ad70
+git branch -m main primul-main
+git fetch origin
+git branch -u origin/primul-main primul-main
+git remote set-head origin -a

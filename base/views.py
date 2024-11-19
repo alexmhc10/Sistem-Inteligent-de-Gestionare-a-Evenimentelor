@@ -6,10 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.contrib.auth import authenticate, login,logout
-from .models import Location, Type, Profile, User, Review
+from .models import Location, Type, Profile, User, Review, Menu, Guests, Event, EventMenu
 from .forms import LocationForm, ProfileForm
 from django.conf import settings
-
+from collections import Counter, defaultdict
+import json
 
 def loginPage(request):
     page = 'login'
@@ -59,7 +60,6 @@ def approve_user(request, pk):
     profile = Profile.objects.get(id=pk)
     if request.method == 'POST':
         if 'approve' in request.POST:
-            # Creează utilizatorul abia acum
             user = User.objects.create_user(
                 username=profile.username,
                 password=profile.password,
@@ -113,6 +113,96 @@ def home(request):
         'profiles' : profiles
         }
     return render(request, 'base/home.html', context)
+
+
+def MenuItems(request):
+    menu = Menu.objects.all()
+    context = {
+        'menu': menu,
+    }
+    return render(request, 'base/menu_items.html', context)
+
+
+
+def MenuForEvent(request, event_id):
+    event = Event.objects.get(id=event_id)
+    guests = event.guests.all()
+    menu_items = Menu.objects.all()
+    menu_items = menu_items.reverse() 
+    countguests = guests.count() 
+    majority_allergens = []
+
+    for guest in guests:
+        if isinstance(guest.allergens, str):
+            try:
+                guest_allergens = json.loads(guest.allergens)
+            except json.JSONDecodeError:
+                guest_allergens = [guest.allergens]
+        else:
+            guest_allergens = guest.allergens
+
+        for allergen in guest_allergens:
+            majority_allergens.append(allergen)
+    allergen_counts = Counter(majority_allergens)
+    menu_selected = []
+    for guest in guests:
+        available_dishes = [dish for dish in menu_items if dish.item_cuisine == guest.cuisine_preference]
+        if guest.vegan:
+            available_dishes = [dish for dish in available_dishes if dish.item_vegan]
+        if not guest.vegan:
+            available_dishes = [dish for dish in available_dishes]
+        if isinstance(guest.allergens, str):
+            try:
+                guest_allergens = json.loads(guest.allergens)
+            except json.JSONDecodeError:
+                guest_allergens = [guest.allergens]
+        else:
+            guest_allergens = guest.allergens
+        for allergen in guest_allergens:
+            available_dishes_filtered = []
+            for dish in available_dishes:
+                if isinstance(dish.allergens, str):
+                    try:
+                        dish_allergens = json.loads(dish.allergens)
+                    except json.JSONDecodeError:
+                        dish_allergens = [dish.allergens]
+                else:
+                    dish_allergens = dish.allergens
+
+                if not set(dish_allergens).intersection(set(guest_allergens)):
+                    available_dishes_filtered.append(dish)
+
+        available_dishes = available_dishes_filtered
+        if available_dishes:
+                selected_dish = available_dishes[0]
+                menu_selected.append(selected_dish)
+    unique_menu = []
+    seen = set()
+    for selected_dish in menu_selected:
+        if hasattr(selected_dish, 'item_name') and selected_dish.item_name not in seen:
+            unique_menu.append(selected_dish)
+            seen.add(selected_dish.item_name)
+    grouped_menu = defaultdict(list)
+    for dish in unique_menu:
+        grouped_menu[dish.item_cuisine].append(dish)
+    EventMenu.objects.filter(event=event).delete()
+    for dish in unique_menu:
+        EventMenu.objects.create(
+            event=event,
+            item_name=dish.item_name,
+            item_cuisine=dish.item_cuisine,
+            item_vegan=dish.item_vegan,
+            allergens=dish.allergens,
+            item_picture=dish.item_picture
+        )
+    eventmenu = EventMenu.objects.filter(event=event)
+    context = {
+        'eventmenu': eventmenu,
+        'event': event,
+        'guests_count': countguests,
+    }
+    return render(request, 'base/event_menu.html', context)
+
 
 
 @login_required(login_url='/login')
@@ -194,7 +284,8 @@ def updateLocation(request, pk):
     }
     return render(request, 'base/location_form.html', context)
 
-
+def carousel_view(request):
+    return render(request, 'base/carousel-imagini.html')
 
 
 @login_required(login_url='/login')
@@ -214,5 +305,4 @@ def deleteReview(request, pk):
     if request.method == 'POST':
         review.delete()
         return redirect('location', pk=location_name)
-    return render(request, 'base/delete.html', {
-        'obj': review})
+    return render(request, 'base/delete.html', {'obj': review})

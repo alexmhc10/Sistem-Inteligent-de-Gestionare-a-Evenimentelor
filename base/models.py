@@ -42,23 +42,69 @@ class Review(models.Model):
         return self.comment[0:20]
     
 
+# class Guests(models.Model):
+#     firstname = models.CharField(max_length=20, unique=True)
+#     lastname = models.CharField(max_length=20, unique=True)
+#     email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
+#     age = models.IntegerField(null=True, blank=True)
+    # gender = models.CharField(max_length=10)
+#     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
+#     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
+#     vegan = models.BooleanField(default=False)
+    # allergens = models.JSONField(default=list, blank=True, null=True)
+#     def __str__(self):
+#         return f"{self.firstname} {self.lastname}"
+
 class Guests(models.Model):
-    firstname = models.CharField(max_length=20, unique=True)
-    lastname = models.CharField(max_length=20, unique=True)
+    GENDER_CHOICES = [
+        ('M', 'Masculin'),
+        ('F', 'Feminin')
+        ]
+    firstname = models.CharField(max_length=20)
+    lastname = models.CharField(max_length=20)
+    email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=10)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
-    allergens = models.JSONField(default=list)
+    vegan = models.BooleanField(default=False)
+    allergens = models.JSONField(default=list, blank=True, null=True)
+
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
-
-
+    
 class Menu(models.Model):
     item_name = models.CharField(max_length=80)
     item_cuisine = models.CharField(max_length=20)
     item_vegan = models.BooleanField(default=False)
-    allergens = models.JSONField(default=list)
-    
+    allergens = models.JSONField(default=list, blank=True, null=True)
+    item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
     def __str__(self):
         return self.item_name
+    
+    
+class Event(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    event_name = models.CharField(max_length=100)
+    event_date = models.DateField()
+    event_time = models.TimeField()
+    event_description = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    guests = models.ManyToManyField(Guests, related_name='events', blank=True)
+    def __str__(self):
+        return self.event_name
+
+
+
+class EventMenu(models.Model):
+    event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)
+    item_name = models.CharField(max_length=80)
+    item_cuisine = models.CharField(max_length=20)
+    item_vegan = models.BooleanField(default=False)
+    allergens = models.JSONField(default=list, blank=True, null=True)
+    item_picture = models.ImageField(upload_to='event_menus/', null=True, blank=True)
+
+    def __str__(self):
+        return self.item_name
+
+

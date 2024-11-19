@@ -1,0 +1,26 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<style>
+    .dish{
+        display:grid;
+        grid-template-columns: 1fr 3fr;
+        margin-bottom: 20px;
+}
+</style>
+
+<a href="{% url 'event-menu' 2 %}">Meniu Pentru Eveniment</a>
+{% for item in menu %}
+
+<div class="dish">
+
+    <p> {{ item.item_name }} </p>
+    <img src="{{ item.item_picture.url }}" style="height:200px;width: auto;" alt="">
+
+</div>
+
+{% endfor %}
+
+
+{% endblock content %}
