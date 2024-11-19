@@ -1,72 +1,45 @@
+from models import Menu
 from collections import Counter, defaultdict
-menu = [
-    {"item": "Bruschete cu roșii și busuioc", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Platou de brânzeturi și fructe", "cuisine": "românească", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Spring rolls cu legume", "cuisine": "asiatică", "vegan": True, "alergeni": ["gluten", "soia"]},
-    {"item": "Rulouri de șuncă cu hrean", "cuisine": "românească", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Chifteluțe marinate", "cuisine": "românească", "vegan": False, "alergeni": ["gluten", "ouă"]},
-    {"item": "Mini sandwich-uri cu somon", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "pește"]},
-    {"item": "Sushi rolls cu avocado", "cuisine": "asiatică", "vegan": True, "alergeni": ["gluten", "soia"]},
-    {"item": "Sarmale cu mămăligă", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Lasagna cu legume", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten", "lactoză"]},
-    {"item": "Pui teriyaki", "cuisine": "asiatică", "vegan": False, "alergeni": ["gluten", "soia"]},
-    {"item": "Risotto cu șofran", "cuisine": "italiană", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Tofu cu legume la wok", "cuisine": "asiatică", "vegan": True, "alergeni": ["soia"]},
-    {"item": "Gulaș de vită", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Paste bolognese", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Cheesecake cu fructe de pădure", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
-    {"item": "Brownie vegan", "cuisine": "franceză", "vegan": True, "alergeni": ["gluten", "soia"]},
-    {"item": "Prăjitură cu mere", "cuisine": "românească", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Mochi cu înghețată", "cuisine": "asiatică", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Cocktail Aperol Spritz", "cuisine": "italiană", "vegan": True, "alergeni": []},
-    {"item": "Vin alb/roșu", "cuisine": "universală", "vegan": True, "alergeni": ["sulfiți"]},
-    {"item": "Bere artizanală", "cuisine": "universală", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Sucuri naturale", "cuisine": "universală", "vegan": True, "alergeni": []},
-    {"item": "Apă minerală/plată", "cuisine": "universală", "vegan": True, "alergeni": []},
-    {"item": "Guacamole cu nachos", "cuisine": "mexicană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Tacos cu carne de vită", "cuisine": "mexicană", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Falafel cu humus", "cuisine": "orientală", "vegan": True, "alergeni": ["soia"]},
-    {"item": "Tabbouleh cu lămâie", "cuisine": "orientală", "vegan": True, "alergeni": []},
-    {"item": "Paella cu fructe de mare", "cuisine": "spaniolă", "vegan": False, "alergeni": ["pește", "crustacee"]},
-    {"item": "Croissant cu ciocolată", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză"]},
-    {"item": "Quiche cu spanac și brânză", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză"]},
-    {"item": "Moussaka cu carne de miel", "cuisine": "grecească", "vegan": False, "alergeni": ["gluten", "lactoză"]},
-    {"item": "Focaccia cu rozmarin", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Pasta carbonara", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
-    {"item": "Empanadas cu carne", "cuisine": "spaniolă", "vegan": False, "alergeni": ["gluten"]},
-    {"item": "Gazpacho", "cuisine": "spaniolă", "vegan": True, "alergeni": []},
-    {"item": "Ratatouille", "cuisine": "franceză", "vegan": True, "alergeni": []},
-    {"item": "Poke Bowl cu ton și avocado", "cuisine": "hawaiiană", "vegan": False, "alergeni": ["pește", "soia"]},
-    {"item": "Ceviche de pește", "cuisine": "peruană", "vegan": False, "alergeni": ["pește"]},
-    {"item": "Quesadilla cu legume", "cuisine": "mexicană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Salată Caesar cu pui", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "pește"]},
-    {"item": "Pizza Margherita", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză"]},
-    {"item": "Shakshuka", "cuisine": "orientală", "vegan": True, "alergeni": ["ouă"]},
-    {"item": "Tarta de lămâie", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
-    {"item": "Bruschete cu avocado și roșii cherry", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Platou de sushi sashimi", "cuisine": "japoneză", "vegan": False, "alergeni": ["pește", "soia"]},
-    {"item": "Gnocchi cu sos de roșii", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Salată cu pepene galben și prosciutto", "cuisine": "italiană", "vegan": False, "alergeni": []},
-    {"item": "Tartă cu fructe de pădure", "cuisine": "franceză", "vegan": True, "alergeni": ["gluten"]},
-    {"item": "Paneer Tikka", "cuisine": "indiană", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Fish & Chips", "cuisine": "engleză", "vegan": False, "alergeni": ["pește", "gluten"]},
-    {"item": "Cocktail Mojito", "cuisine": "cubaneză", "vegan": True, "alergeni": []},
-    {"item": "Negroni", "cuisine": "italiană", "vegan": True, "alergeni": []},
-    {"item": "Limonadă cu mentă și ghimbir", "cuisine": "universală", "vegan": True, "alergeni": []},
-    {"item": "Smoothie de mango și ananas", "cuisine": "universală", "vegan": True, "alergeni": []},
-    {"item": "Frappuccino cu caramel", "cuisine": "americană", "vegan": False, "alergeni": ["lactoză"]},
-    {"item": "Sangria", "cuisine": "spaniolă", "vegan": True, "alergeni": ["sulfiți"]},
-    {"item": "Cafea turcească", "cuisine": "turcească", "vegan": True, "alergeni": []},
-    {"item": "Vin rose", "cuisine": "universală", "vegan": True, "alergeni": ["sulfiți"]},
-    {"item": "Matcha Latte", "cuisine": "japoneză", "vegan": True, "alergeni": ["lactoză"]},
-    {"item": "Suc de portocale proaspăt stors", "cuisine": "universală", "vegan": True, "alergeni": []},
-    {"item": "Martini clasic", "cuisine": "americană", "vegan": True, "alergeni": []},
-    {"item": "Chai Latte", "cuisine": "indiană", "vegan": True, "alergeni": ["lactoză"]},
-    {"item": "Paloma", "cuisine": "mexicană", "vegan": True, "alergeni": []},
-    {"item": "Cuba Libre", "cuisine": "cubaneză", "vegan": True, "alergeni": []},
-    {"item": "Mimosa", "cuisine": "franceză", "vegan": True, "alergeni": ["sulfiți"]}
-]
+# menu = [
+#     {"item": "Bruschete cu roșii și busuioc", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
+#     {"item": "Platou de brânzeturi și fructe", "cuisine": "românească", "vegan": False, "alergeni": ["lactoză"]},
+#     {"item": "Spring rolls cu legume", "cuisine": "asiatică", "vegan": True, "alergeni": ["gluten", "soia"]},
+#     {"item": "Rulouri de șuncă cu hrean", "cuisine": "românească", "vegan": False, "alergeni": ["lactoză"]},
+#     {"item": "Chifteluțe marinate", "cuisine": "românească", "vegan": False, "alergeni": ["gluten", "ouă"]},
+#     {"item": "Mini sandwich-uri cu somon", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "pește"]},
+#     {"item": "Sushi rolls cu avocado", "cuisine": "asiatică", "vegan": True, "alergeni": ["gluten", "soia"]},
+#     {"item": "Sarmale cu mămăligă", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Lasagna cu legume", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten", "lactoză"]},
+#     {"item": "Pui teriyaki", "cuisine": "asiatică", "vegan": False, "alergeni": ["gluten", "soia"]},
+#     {"item": "Risotto cu șofran", "cuisine": "italiană", "vegan": False, "alergeni": ["lactoză"]},
+#     {"item": "Tofu cu legume la wok", "cuisine": "asiatică", "vegan": True, "alergeni": ["soia"]},
+#     {"item": "Gulaș de vită", "cuisine": "românească", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Paste bolognese", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Cheesecake cu fructe de pădure", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
+#     {"item": "Brownie vegan", "cuisine": "franceză", "vegan": True, "alergeni": ["gluten", "soia"]},
+#     {"item": "Prăjitură cu mere", "cuisine": "românească", "vegan": True, "alergeni": ["gluten"]},
+#     {"item": "Mochi cu înghețată", "cuisine": "asiatică", "vegan": False, "alergeni": ["lactoză"]},
+#     {"item": "Cocktail Aperol Spritz", "cuisine": "italiană", "vegan": True, "alergeni": []},
+#     {"item": "Vin alb/roșu", "cuisine": "universală", "vegan": True, "alergeni": ["sulfiți"]},
+#     {"item": "Bere artizanală", "cuisine": "universală", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Sucuri naturale", "cuisine": "universală", "vegan": True, "alergeni": []},
+#     {"item": "Apă minerală/plată", "cuisine": "universală", "vegan": True, "alergeni": []},
+#     {"item": "Guacamole cu nachos", "cuisine": "mexicană", "vegan": True, "alergeni": ["gluten"]},
+#     {"item": "Tacos cu carne de vită", "cuisine": "mexicană", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Falafel cu humus", "cuisine": "orientală", "vegan": True, "alergeni": ["soia"]},
+#     {"item": "Tabbouleh cu lămâie", "cuisine": "orientală", "vegan": True, "alergeni": []},
+#     {"item": "Paella cu fructe de mare", "cuisine": "spaniolă", "vegan": False, "alergeni": ["pește", "crustacee"]},
+#     {"item": "Croissant cu ciocolată", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză"]},
+#     {"item": "Quiche cu spanac și brânză", "cuisine": "franceză", "vegan": False, "alergeni": ["gluten", "lactoză"]},
+#     {"item": "Moussaka cu carne de miel", "cuisine": "grecească", "vegan": False, "alergeni": ["gluten", "lactoză"]},
+#     {"item": "Focaccia cu rozmarin", "cuisine": "italiană", "vegan": True, "alergeni": ["gluten"]},
+#     {"item": "Pasta carbonara", "cuisine": "italiană", "vegan": False, "alergeni": ["gluten", "lactoză", "ouă"]},
+#     {"item": "Empanadas cu carne", "cuisine": "spaniolă", "vegan": False, "alergeni": ["gluten"]},
+#     {"item": "Gazpacho", "cuisine": "spaniolă", "vegan": True, "alergeni": []}
+# ]
 
+menu = []
+menu = Menu.objects.all()
 
 
 guests = [
@@ -194,15 +167,11 @@ for guest in guests:
         available_dishes = [dish for dish in available_dishes if allergen not in dish["alergeni"]]
     if available_dishes:
         selected_dish = available_dishes[0]
-        if selected_dish['item'] == "Sucuri naturale":
-            print(guest)
-            print(available_dishes)
         menu_selected.append(selected_dish)
 
 unique_menu = []
 seen = set()
 
-    
 for dish in menu_selected:
     if dish['item'] not in seen:
         unique_menu.append(dish)
