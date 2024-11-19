@@ -122,7 +122,7 @@ def MenuItems(request):
     }
     return render(request, 'base/menu_items.html', context)
 
-
+###
 
 def MenuForEvent(request, event_id):
     event = Event.objects.get(id=event_id)
