@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django_extensions',
@@ -39,7 +40,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
+    'channels',
 ]
+
+
+ASGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default':{
+        "BACKEND" : "channels.layers.InMemoryChannelLayer",
+        
+    }
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'sistem_inteligent_de_gestionare_a_evenimentelor.urls'
@@ -72,7 +85,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.wsgi.application'
+ASGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.asgi.application'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'

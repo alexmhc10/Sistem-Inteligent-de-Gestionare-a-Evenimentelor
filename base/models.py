@@ -108,3 +108,14 @@ class EventMenu(models.Model):
         return self.item_name
 
 
+class Message(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    body = models.CharField(max_length=300)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.author.username}: {self.body}'
+    
+    class Meta:
+        ordering = ['-created']
+    

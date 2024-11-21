@@ -1,0 +1,267 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+<div class="chat-container">
+    <div class="profiles_list">
+        <h1 class="title">Users in chat:</h1>
+        {% for profile in profiles %}
+        <div class="profile-item">
+            <img src="{{ profile.photo.url }}" style="height:4vw;width:4vw;border-radius: 50px;" alt="Profile Picture">
+            <p>@{{ profile.username }}</p>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="chat-area" id=chat-area>
+        
+        <div class="message-area">
+            <div id="messages" class="">
+            {% for message in messages reversed %}
+                {% include 'base/chat_message.html' %}
+            {% endfor %}
+        </div>
+            <form method="post" 
+            hx-post="{% url 'chat' %}" 
+            hx-target="#messages" 
+            hx-swap="beforeend"
+            _="on htmx:afterRequest reset() me">
+                {% csrf_token %}
+                {{ form.body }}
+                <input class="submit" value="Send" type="submit" name="Submit" id="">
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.title{
+    font-size:1vw;
+    text-align: center;
+    margin:auto;
+    color:#D4AF37
+}
+    .chat-container {
+        height: 90vh;
+        margin: auto;
+        border-radius: 10px;
+        border: 5px solid #D4AF37;
+        margin-top: 1%;
+        width: 50%;
+        max-width: 1200px;
+        height: 90vh;
+        display: grid;
+        grid-template-columns: 0.5fr 3fr;
+        box-sizing: border-box;
+    }
+    .submit{
+        margin-right:1vw;
+        background: none;
+        outline: none;
+        border:1px solid #D4AF37;
+        border-radius:20px;
+        padding:0.4vw;
+        color: white;
+        width:4.5vw;
+    }
+    .chat-area {
+        background: #140d55;
+        padding: 10px;
+        color: #fff;
+        display: flex;
+        height: 100%;
+        overflow: auto;
+        width: 100%;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        box-sizing: border-box;
+        flex-grow: 1;
+    }
+
+    .message-area {
+        flex-direction: column;
+        display: flex;
+        max-height: 100%;
+        width: 100%;
+    }
+
+    .message-input {
+        outline: none;
+        border-radius: 20px;
+        position: sticky;
+        bottom: 1vw;
+        border:none;
+        display: flex;
+        background: #140d55;
+        margin: auto;
+        margin-bottom: 1vw;
+        margin-top:1vw;
+        width: inherit;
+        height: 2.5vw;
+        font-size: 1.2vw;
+        color: white;
+        justify-content: flex-start;
+        padding-bottom: 20px;
+        padding: 20px;
+    }
+
+    .message-description {
+        padding: 1vw;
+        display: flex;
+        flex-direction: column;
+        margin-left: 10px;
+        background: #D4AF37;
+        border-radius: 5px;
+        overflow-wrap: break-word;
+        max-width: 30vw;
+    }
+
+
+
+    form {
+        background:#140d55;
+        border: 1px solid #D4AF37 !important;
+        position: sticky;
+        width: 35vw;
+        margin: auto;
+        bottom:0.2vw;
+        align-items: center;
+        display: flex;
+        border-radius: 20px;
+        height: 3vw;
+    }
+
+    .message-input:focus {
+        border: none;
+        outline: none;
+    }
+
+    .message-input::placeholder {
+        color: white;
+    }
+
+    .message img {
+        height: 4vw;
+        width: 4vw;
+        border-radius: 50%;
+        margin: 10px;
+    }
+
+    .message {
+        width:90%;
+        display: flex;
+        flex-direction: row;
+        margin-bottom: 2vw;
+    }
+
+    .message-description {
+        flex-grow: 1;
+    }
+
+    .message.author {
+        margin-left: auto;
+    }
+
+
+
+
+    .profiles_list {
+        padding-top: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 10vw;
+        align-items: flex-start;
+        transition: background-color 0.3s ease;
+        color: #140d55;
+        box-sizing: border-box;
+    }
+
+    .profile-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        position: relative;
+    }
+
+    .profile-item img {
+        margin: 20px;
+    }
+
+    .profile-item.clicked {
+        background: rgb(243, 243, 243);
+    }
+
+    .profile-item.clicked::after {
+        content: '';
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 12px;
+        background-color: #140d55;
+        border-top-left-radius: 9px;
+        border-bottom-left-radius: 9px;
+    }
+
+    .no-profile-selected {
+        font-size: 18px;
+        text-align: center;
+        color: #D4AF37;
+        padding: 20px;
+        width: 100%;
+    }
+
+    .no-profile-selected h1 {
+        margin-top: 4vw;
+        margin-bottom: 2vw;
+    }
+</style>
+<!-- <script>
+    var profileItems = document.querySelectorAll('.profile-item');
+    var messageArea = document.querySelector('.message-area');
+    var chatContainer = document.querySelector('.chat-container'); // New
+
+    messageArea.style.display = 'none';
+
+    profileItems.forEach(function (item) {
+        item.addEventListener('click', function () {
+            profileItems.forEach(function (profile) {
+                profile.classList.remove('clicked');
+            });
+            item.classList.add('clicked');
+            messageArea.style.display = 'flex';
+            noProfileMessage.style.display = 'none';
+            scrollToBottom();
+            scrollToBottom();
+        });
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!event.target.closest('.chat-container') && event.target !== chatContainer) {
+            noProfileMessage.style.display = 'block';
+            messageArea.style.display = 'none';
+            profileItems.forEach(function (profile) {
+                profile.classList.remove('clicked');
+            });
+        }
+    });
+
+</script> -->
+
+{% endblock content %}
+
+{% block javascript %}
+<script>
+function scrollToBottom() {
+    const container = document.getElementById('chat-area');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    } else {
+        console.error("Container '.message-area' not found!");
+    }
+}
+document.addEventListener('DOMContentLoaded', scrollToBottom);
+</script>
+{% endblock %}

@@ -4,37 +4,45 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login,logout
-from .models import Location, Type, Profile, User, Review, Menu, Guests, Event, EventMenu
-from .forms import LocationForm, ProfileForm
+from .models import *
+from .forms import *
 from django.conf import settings
 from collections import Counter, defaultdict
 import json
 
 def loginPage(request):
     page = 'login'
-    if request.user.is_authenticated:
-        return redirect('home')
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             messages.warning(request, "User does not exist!")
-            return render(request, 'base/login_register.html')
-
+            return render(request, 'base/login_register.html', {'page': page})
         user = authenticate(request, username=username, password=password)
-
         if user is not None:
             login(request, user)
-            return redirect('home')
+            print(f"User is authenticated: {user.username}")
+            print(f"Is superuser: {user.is_superuser}")
+
+            if user.is_superuser:
+                return redirect('home-admin')
+            else:
+                return redirect('home')
         else:
             messages.error(request, "Error. Wrong credentials")
-
-    context = {'page' : page}
+            return render(request, 'base/login_register.html', {'page': page})
+    if request.user.is_authenticated:
+        print(f"User is authenticated: {request.user.username}")
+        print(f"Is superuser: {request.user.is_superuser}")
+        if request.user.is_superuser:
+            return redirect('menu-items')
+        else:
+            return redirect('home')
+    context = {'page': page}
     return render(request, 'base/login_register.html', context)
 
 
@@ -75,6 +83,13 @@ def approve_user(request, pk):
         return redirect('new_users')
     return render(request, 'base/approve_user.html', {'profile': profile})
 
+
+
+@login_required(login_url='login')
+def homeAdmin(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    return render(request, 'base/home-admin.html', {})
 
 @login_required(login_url='login')
 def new_users(request):
@@ -122,7 +137,6 @@ def MenuItems(request):
     }
     return render(request, 'base/menu_items.html', context)
 
-###
 
 def MenuForEvent(request, event_id):
     event = Event.objects.get(id=event_id)
@@ -306,3 +320,41 @@ def deleteReview(request, pk):
         review.delete()
         return redirect('location', pk=location_name)
     return render(request, 'base/delete.html', {'obj': review})
+
+
+
+
+@login_required(login_url='/login')
+def chat(request):
+    print("DATE:")
+    print(request.POST)
+    profiles = Profile.objects.all()
+    messages = Message.objects.all()
+    form = MessageForm()
+    
+    if request.htmx:
+        form = MessageForm(request.POST)
+        print("DARi")
+        if form.is_valid():
+            print("Formularul este valid")
+            message = form.save(commit=False)
+            message.author = request.user
+            print(message.author)
+            message.save()
+            context = {
+                'message': message,
+                'form': form,
+                'messages':messages,
+                'profiles': profiles,
+            }
+            print(f"Message saved: {message.body, message.author}") 
+            return render(request, 'base/partials/chat_message_p.html', context)
+        else:
+            print("Formularul nu este valid:", form.errors) 
+    
+    return render(request, 'base/chat.html', {
+        'form': form,
+        'profiles': profiles,
+        'messages': messages
+    })
+

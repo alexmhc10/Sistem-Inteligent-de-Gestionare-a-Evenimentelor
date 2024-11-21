@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Location, User, Profile, Type
+from .models import *
 from django.contrib.auth.hashers import make_password
 
 class LocationForm(ModelForm):
@@ -39,7 +39,15 @@ class ProfileForm(forms.ModelForm):
         }
     def save(self, commit=True):
         profile = super().save(commit=False)
-        profile.password = make_password(self.cleaned_data["password"])  # Securizează parola
+        profile.password = make_password(self.cleaned_data["password"])  
         if commit:
             profile.save()
         return profile
+    
+class MessageForm(forms.ModelForm):
+    class Meta:
+        model = Message
+        fields = ['body']
+        widgets ={ 
+            'body': forms.TextInput(attrs={'placeholder': 'Write a message...', 'class': 'message-input', 'maxlength': '300', 'autofocus': True })
+        }

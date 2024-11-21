@@ -1,0 +1,17 @@
+<div class="message {% if request.user.username == message.author.profile.username %}author{% endif %}"> 
+    {% if request.user.username == message.author.profile.username %}
+            <div class="message-description">
+                <strong>{{ message.body }}</strong>
+                <small>@{{ message.author.profile.username }}</small>
+                <small> {{ message.created|timesince }} ago</small>
+            </div>
+            <img src="{{ message.author.profile.photo.url }}" alt="Profile Picture">
+        {% else %}
+            <img src="{{ message.author.profile.photo.url }}" alt="Profile Picture">
+            <div class="message-description">
+                <strong>{{ message.body }}</strong>
+                <small>@{{ message.author.profile.username }}</small>
+                <small> {{ message.created|timesince }} ago</small>
+            </div>
+        {% endif %}
+    </div>
