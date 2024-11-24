@@ -43,13 +43,9 @@ INSTALLED_APPS = [
     'channels',
 ]
 
-
-ASGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.asgi.application'
-
-CHANNEL_LAYERS = {
-    'default':{
-        "BACKEND" : "channels.layers.InMemoryChannelLayer",
-        
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',  # dezactivează cache-ul
     }
 }
 
@@ -69,9 +65,7 @@ ROOT_URLCONF = 'sistem_inteligent_de_gestionare_a_evenimentelor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            BASE_DIR / 'templates'
-        ],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

@@ -127,6 +127,7 @@ def home(request):
         'location_count' : location_count,
         'profiles' : profiles
         }
+    print("Se incarca home")
     return render(request, 'base/home.html', context)
 
 

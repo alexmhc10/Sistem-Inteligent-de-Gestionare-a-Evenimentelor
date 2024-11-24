@@ -80,7 +80,7 @@
     }
 
     a:hover {
-        color: #2E8B57; /* Verde smarald la hover pentru un contrast elegant */
+        color: #2E8B57;
     }
 
 </style>
@@ -138,3 +138,16 @@
 </script>
 
 {% endblock content %}
+{% block javascript %}
+<script>
+function scrollToBottom() {
+    const container = document.getElementById('chat-area');
+    if (container) {
+        container.scrollTop = container.scrollHeight;
+    } else {
+        console.error("Container '.message-area' not found!");
+    }
+}
+document.addEventListener('DOMContentLoaded', scrollToBottom);
+</script>
+{% endblock %}
