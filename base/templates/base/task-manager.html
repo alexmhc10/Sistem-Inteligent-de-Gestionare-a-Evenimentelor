@@ -42,6 +42,21 @@
 
 <div class="task_manager">
     <h3>Task Manager</h3>
-    <p>Momentan nu ai niciun task.</p>
-    <button>Adaugă task</button>
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Adaugă task</button>
+    </form>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.title }}
+                {% if not task.completed %}
+                    <a href="{% url 'complete_task' task.id %}">Mark as Completed</a>
+                {% else %}
+                    <span>Completed</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
 </div>

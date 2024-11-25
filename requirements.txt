@@ -1,3 +1,9 @@
 django-cleanup
 django-allauth
 django-htmx
+django==5.1.2
+daphne
+django-allauth
+django-htmx
+django-extensions
+channels

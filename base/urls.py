@@ -3,7 +3,11 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 
+
 urlpatterns = [
+    path('task-manager/', views.task_manager_view, name='task_manager'),
+    path('add-task/', views.add_task, name='add_task'),
+    path('complete-task/<int:task_id>/', views.complete_task, name='complete_task'),
     path('carousel/', views.carousel_view, name='carousel'),
     path('login/', views.loginPage, name="login"),
     path('register/', views.registerPage, name='register'),

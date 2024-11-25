@@ -11,7 +11,55 @@ from .forms import *
 from django.conf import settings
 from collections import Counter, defaultdict
 import json
+from .forms import EventForm
+from .models import Task
+from .forms import TaskForm
 
+
+def task_manager_view(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+    else:
+        form = TaskForm()
+
+    tasks = Task.objects.filter(user=request.user)
+    return render(request, 'base/task-manager.html', {'form': form, 'tasks': tasks})
+#task manager
+@login_required(login_url='/login')
+def add_task(request):
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('home')  
+    else:
+        form = TaskForm()
+    return render(request, 'base/add_task.html', {'form': form})
+
+@login_required(login_url='/login')
+def complete_task(request, task_id):
+    task = Task.objects.get(id=task_id, user=request.user)
+    task.completed = True
+    task.save()
+    return redirect('task_manager')
+#pentru form 
+def carousel_view(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            # Procesează datele formularului
+            # De exemplu, salvează-le într-o bază de date sau trimite un email
+            return redirect('home')
+    else:
+        form = EventForm()
+
+    return render(request, 'base/carousel-imagini.html', {'form': form})
 def loginPage(request):
     page = 'login'
     if request.method == 'POST':

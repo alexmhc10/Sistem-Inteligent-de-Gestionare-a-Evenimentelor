@@ -2,7 +2,30 @@ from django.forms import ModelForm
 from django import forms
 from .models import *
 from django.contrib.auth.hashers import make_password
+from .models import Task
 
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title']
+
+#pentru form
+class EventForm(forms.Form):
+    EVENT_TYPES = [
+        ('wedding', 'Nuntă'),
+        ('conference', 'Conferință'),
+        ('birthday', 'Petrecere aniversară'),
+        ('team-building', 'Team Building'),
+    ]
+
+    event_type = forms.ChoiceField(choices=EVENT_TYPES, required=True, label='Tip eveniment')
+    participants = forms.IntegerField(min_value=1, required=True, label='Număr estimat de participanți')
+    event_date = forms.DateField(required=True, label='Data preferată')
+    location = forms.CharField(max_length=100, required=True, label='Locație')
+    budget = forms.DecimalField(max_digits=10, decimal_places=2, required=True, label='Buget estimativ (€)')
+
+
+    
 class LocationForm(ModelForm):
     custom_types = forms.CharField(
         max_length=200,
