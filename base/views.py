@@ -162,7 +162,7 @@ def logoutPage(request):
 
 
 def home(request):
-    form = TaskForm()
+    form1 = TaskForm()
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     locations = Location.objects.filter(
         Q(types__name__icontains=q) |
@@ -177,8 +177,10 @@ def home(request):
     tasks = Task.objects.all()
     tasks_count = tasks.count()
     profiles = Profile.objects.filter(approved=True)
+    form2 = EventForm
     context = {
-        'form':form, 
+        'form2':form2,
+        'form1':form1, 
         'tasks': tasks,
         'tasks_count':tasks_count,
         'users' : users,
