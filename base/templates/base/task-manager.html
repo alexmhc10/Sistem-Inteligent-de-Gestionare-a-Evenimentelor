@@ -47,7 +47,7 @@
         {{ form.as_p }}
         <button type="submit">Adaugă task</button>
     </form>
-    <ul>
+    <ul style="list-style-type: none;" >
         {% for task in tasks %}
             <li>
                 {{ task.title }}

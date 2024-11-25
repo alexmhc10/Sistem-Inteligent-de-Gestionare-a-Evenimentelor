@@ -108,6 +108,7 @@ def registerPage(request):
     context = {'form': form, 'page': 'register'}
     return render(request, 'base/login_register.html', context)
 
+
 @login_required(login_url='login')
 def approve_user(request, pk):
     if not request.user.is_superuser:
@@ -167,8 +168,12 @@ def home(request):
     users = User.objects.all()
     types = Type.objects.all()
     location_count = locations.count()
+    tasks = Task.objects.all()
+    tasks_count = tasks.count()
     profiles = Profile.objects.filter(approved=True)
     context = {
+        'tasks': tasks,
+        'tasks_count':tasks_count,
         'users' : users,
         'locations' : locations,
         'types' : types,
