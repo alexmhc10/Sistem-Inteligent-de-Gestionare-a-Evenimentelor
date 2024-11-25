@@ -37,41 +37,30 @@
 
 <div class="form-container">
     <h2>Formular de orientare</h2>
-    <form method="POST" action="#">
+    <form method="POST">
         {% csrf_token %}
-    {{ form.as_p }}
-        <!-- Tipul evenimentului -->
-        <label for="event-type">Tip eveniment</label>
-        <select id="event-type" name="event-type" required>
-            <option value="">Selectează tipul</option>
-            <option value="wedding">Nuntă</option>
-            <option value="conference">Conferință</option>
-            <option value="birthday">Petrecere aniversară</option>
-            <option value="team-building">Team Building</option>
-        </select>
-
-        <!-- Numărul de participanți -->
-        <label for="participants">Număr estimat de participanți</label>
-        <input type="number" id="participants" name="participants" min="1" placeholder="Ex: 50" required>
-
-        <!-- Data preferată -->
-        <label for="event-date">Data preferată</label>
-        <input type="date" id="event-date" name="event-date" required>
-
-        <!-- Locație preferată -->
+        
+        <label for="event_name">Numele evenimentului</label>
+        {{ form.event_name }}
+    
+        <label for="event_date">Data evenimentului</label>
+        {{ form.event_date }}
+    
+        <label for="event_time">Ora evenimentului</label>
+        {{ form.event_time }}
+    
+        <label for="event_description">Descriere eveniment</label>
+        {{ form.event_description }}
+    
         <label for="location">Locație</label>
-        <input type="text" id="location" name="location" placeholder="Ex: București" required>
-
-        <!-- Buget estimativ -->
-        <label for="budget">Buget estimativ (€)</label>
-        <select id="budget" name="budget" required>
-            <option value="">Selectează bugetul</option>
-            <option value="under-1000">&lt; 1000</option>
-            <option value="1000-3000">1000 - 3000</option>
-            <option value="over-3000">&gt; 3000</option>
-        </select>
-
-        <!-- Butonul de trimitere -->
-        <button type="submit">Caută locații</button>
+        {{ form.location }}
+    
+        <label for="guests">Invitați</label>
+        {{ form.guests }}
+    
+        <button type="submit">Creează Eveniment</button>
     </form>
+    
+    
 </div>
+

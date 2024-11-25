@@ -38,6 +38,22 @@
         background-color: #002B5B; /* Bleumarin la hover */
         color: #FAF9F6; /* Alb perlat pentru textul butonului */
     }
+
+
+    .task_manager li{
+        display:flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-left:0;
+    }
+    .task_manager span,a{
+        margin-left:auto;
+    }
+    .task_manager h5{
+        text-align: left;
+        margin-left:-20px;
+        margin-right:20px;
+        }
 </style>
 
 <div class="task_manager">
@@ -50,7 +66,7 @@
     <ul style="list-style-type: none;" >
         {% for task in tasks %}
             <li>
-                {{ task.title }}
+                <h5>{{ task.title }}</h5>
                 {% if not task.completed %}
                     <a href="{% url 'complete_task' task.id %}">Mark as Completed</a>
                 {% else %}
@@ -60,3 +76,5 @@
         {% endfor %}
     </ul>
 </div>
+
+

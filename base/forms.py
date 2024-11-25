@@ -10,21 +10,35 @@ class TaskForm(forms.ModelForm):
         fields = ['title']
 
 #pentru form
-class EventForm(forms.Form):
-    EVENT_TYPES = [
-        ('wedding', 'Nuntă'),
-        ('conference', 'Conferință'),
-        ('birthday', 'Petrecere aniversară'),
-        ('team-building', 'Team Building'),
-    ]
+# class EventForm(forms.Form):
+#     EVENT_TYPES = [
+#         ('wedding', 'Nuntă'),
+#         ('conference', 'Conferință'),
+#         ('birthday', 'Petrecere aniversară'),
+#         ('team-building', 'Team Building'),
+#     ]
+#     event_name = forms.CharField(max_length=100, required=True, label='Nume eveniment')
+#     event_type = forms.ChoiceField(choices=EVENT_TYPES, required=True, label='Tip eveniment')
+#     participants = forms.IntegerField(min_value=1, required=True, label='Număr estimat de participanți')
+#     event_date = forms.DateField(required=True, label='Data preferată')
+#     location = forms.ModelChoiceField(queryset=Location.objects.all(), required=True, label='Locație')
+#     budget = forms.DecimalField(max_digits=10, decimal_places=2, required=True, label='Buget estimativ (€)')
 
-    event_type = forms.ChoiceField(choices=EVENT_TYPES, required=True, label='Tip eveniment')
-    participants = forms.IntegerField(min_value=1, required=True, label='Număr estimat de participanți')
-    event_date = forms.DateField(required=True, label='Data preferată')
-    location = forms.CharField(max_length=100, required=True, label='Locație')
-    budget = forms.DecimalField(max_digits=10, decimal_places=2, required=True, label='Buget estimativ (€)')
-
-
+class EventForm(forms.ModelForm):
+    class Meta:
+        model = Event
+        fields = [
+            'event_name', 
+            'event_date', 
+            'event_time', 
+            'event_description', 
+            'location', 
+            'guests'
+        ]
+        widgets = {
+            'event_date': forms.DateInput(attrs={'type': 'date'}),
+            'event_time': forms.TimeInput(attrs={'type': 'time'}),
+        }
     
 class LocationForm(ModelForm):
     custom_types = forms.CharField(

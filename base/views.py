@@ -28,7 +28,8 @@ def task_manager_view(request):
 
     tasks = Task.objects.filter(user=request.user)
     return render(request, 'base/task-manager.html', {'form': form, 'tasks': tasks})
-#task manager
+
+
 @login_required(login_url='/login')
 def add_task(request):
     if request.method == 'POST':
@@ -42,24 +43,28 @@ def add_task(request):
         form = TaskForm()
     return render(request, 'base/add_task.html', {'form': form})
 
+
+
 @login_required(login_url='/login')
 def complete_task(request, task_id):
     task = Task.objects.get(id=task_id, user=request.user)
     task.completed = True
     task.save()
-    return redirect('task_manager')
-#pentru form 
+    return redirect('home')
+
+
+
 def carousel_view(request):
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
-            # Procesează datele formularului
-            # De exemplu, salvează-le într-o bază de date sau trimite un email
-            return redirect('home')
+            form.save()  
+            return redirect('home')  
     else:
         form = EventForm()
-
     return render(request, 'base/carousel-imagini.html', {'form': form})
+
+
 def loginPage(request):
     page = 'login'
     if request.method == 'POST':
@@ -157,6 +162,7 @@ def logoutPage(request):
 
 
 def home(request):
+    form = TaskForm()
     q = request.GET.get('q') if request.GET.get('q') != None else ''
     locations = Location.objects.filter(
         Q(types__name__icontains=q) |
@@ -172,6 +178,7 @@ def home(request):
     tasks_count = tasks.count()
     profiles = Profile.objects.filter(approved=True)
     context = {
+        'form':form, 
         'tasks': tasks,
         'tasks_count':tasks_count,
         'users' : users,
@@ -180,7 +187,13 @@ def home(request):
         'location_count' : location_count,
         'profiles' : profiles
         }
-    print("Se incarca home")
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('home')
     return render(request, 'base/home.html', context)
 
 
@@ -352,8 +365,7 @@ def updateLocation(request, pk):
     }
     return render(request, 'base/location_form.html', context)
 
-def carousel_view(request):
-    return render(request, 'base/carousel-imagini.html')
+
 
 
 @login_required(login_url='/login')
