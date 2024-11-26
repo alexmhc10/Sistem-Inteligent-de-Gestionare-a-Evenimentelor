@@ -8,6 +8,9 @@ class TaskForm(forms.ModelForm):
     class Meta:
         model = Task
         fields = ['title']
+        labels = {
+            'title': 'Task Nou',
+        }
 
 #pentru form
 # class EventForm(forms.Form):

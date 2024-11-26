@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
@@ -15,6 +15,12 @@ from .forms import EventForm
 from .models import Task
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
+
+@login_required(login_url='/login')
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id, user=request.user)
+    task.delete()
+    return redirect('home')
 
 
 # def task_manager_view(request):

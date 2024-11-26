@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
     # path('task-manager/', views.task_manager_view, name='task_manager'),
     path('add-task/', views.add_task, name='add_task'),
     path('complete-task/<int:task_id>/', views.complete_task, name='complete_task'),

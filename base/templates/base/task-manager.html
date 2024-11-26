@@ -58,6 +58,7 @@
         }
 </style>
 
+
 <div class="task_manager">
     <h3>Task Manager</h3>
     <form method="POST">
@@ -65,7 +66,7 @@
         {{ form1.as_p }}
         <button type="submit">Adaugă task</button>
     </form>
-    <ul style="list-style-type: none;" >
+    <ul style="list-style-type: none;">
         {% for task in tasks %}
         {% if task.user == request.user %}
             <li>
@@ -75,7 +76,7 @@
                 {% else %}
                     <span>Completed</span>
                 {% endif %}
-            </li>
+                <a href="{% url 'delete_task' task.id %}" onclick="return confirm('Are you sure you want to delete this task?');">Delete</a>            </li>
         {% endif %}
         {% endfor %}
     </ul>
