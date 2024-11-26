@@ -39,7 +39,9 @@
         color: #FAF9F6; /* Alb perlat pentru textul butonului */
     }
 
-
+    .task_manager form{
+        width:auto;
+    }
     .task_manager li{
         display:flex;
         flex-direction: row;
@@ -65,6 +67,7 @@
     </form>
     <ul style="list-style-type: none;" >
         {% for task in tasks %}
+        {% if task.user == request.user %}
             <li>
                 <h5>{{ task.title }}</h5>
                 {% if not task.completed %}
@@ -73,8 +76,10 @@
                     <span>Completed</span>
                 {% endif %}
             </li>
+        {% endif %}
         {% endfor %}
     </ul>
 </div>
+
 
 

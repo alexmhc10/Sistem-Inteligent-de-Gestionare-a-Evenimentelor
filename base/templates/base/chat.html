@@ -1,7 +1,3 @@
-{% extends 'main.html' %}
-
-{% block content %}
-
 <div class="chat-container">
     <div class="profiles_list">
         <h1 class="title">Users in chat:</h1>
@@ -21,7 +17,7 @@
             {% endfor %}
         </div>
             <form method="post" 
-            hx-post="{% url 'chat' %}" 
+            hx-post="{% url 'home-admin' %}" 
             hx-target="#messages" 
             hx-swap="beforeend"
             _="on htmx:afterRequest reset() me">
@@ -117,7 +113,7 @@
 
 
 
-    form {
+    .chat-area form {
         background:#140d55;
         border: 1px solid #D4AF37 !important;
         position: sticky;
@@ -250,7 +246,7 @@
 
 </script> -->
 
-{% endblock content %}
+
 
 {% block javascript %}
 <script>

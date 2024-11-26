@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
-    path('task-manager/', views.task_manager_view, name='task_manager'),
+    # path('task-manager/', views.task_manager_view, name='task_manager'),
     path('add-task/', views.add_task, name='add_task'),
     path('complete-task/<int:task_id>/', views.complete_task, name='complete_task'),
     path('carousel/', views.carousel_view, name='carousel'),
@@ -13,7 +13,6 @@ urlpatterns = [
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
     path('', views.home, name="home"),
-    path('chat', views.chat, name="chat"),
     path('admin-home', views.homeAdmin, name="home-admin"),
     path('location/<str:pk>/', views.location, name="location"),
     path('profile/<str:username>/', views.profilePage, name='profile'),
@@ -22,6 +21,7 @@ urlpatterns = [
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),  
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),  
+    path('delete_user/<str:pk>/', views.deleteUser, name="delete_user"),  
     path('delete_review/<str:pk>/', views.deleteReview, name="delete_review"),  
     path('menu-items', views.MenuItems, name="menu-items"),  
     path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),  

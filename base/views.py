@@ -14,20 +14,21 @@ import json
 from .forms import EventForm
 from .models import Task
 from .forms import TaskForm
+from django.http import HttpResponseRedirect
 
 
-def task_manager_view(request):
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
-    else:
-        form = TaskForm()
+# def task_manager_view(request):
+#     if request.method == 'POST':
+#         form = TaskForm(request.POST)
+#         if form.is_valid():
+#             task = form.save(commit=False)
+#             task.user = request.user
+#             task.save()
+#     else:
+#         form = TaskForm()
 
-    tasks = Task.objects.filter(user=request.user)
-    return render(request, 'base/task-manager.html', {'form': form, 'tasks': tasks})
+#     tasks = Task.objects.filter(user=request.user)
+#     return render(request, 'base/task-manager.html', {'form': form, 'tasks': tasks})
 
 
 @login_required(login_url='/login')
@@ -50,7 +51,7 @@ def complete_task(request, task_id):
     task = Task.objects.get(id=task_id, user=request.user)
     task.completed = True
     task.save()
-    return redirect('home')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 
@@ -143,7 +144,42 @@ def approve_user(request, pk):
 def homeAdmin(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    return render(request, 'base/home-admin.html', {})
+    form1 = TaskForm()
+    profiles = Profile.objects.all()
+    messages = Message.objects.all()
+    form = MessageForm()
+    if request.method == 'POST' and request.htmx:
+        form = MessageForm(request.POST)
+        if form.is_valid():
+            message = form.save(commit=False)
+            message.author = request.user
+            message.save()
+            context = {
+                'message': message,
+                'form': form,
+                'messages': messages,
+                'profiles': profiles,
+            }
+            return render(request, 'base/partials/chat_message_p.html', context)
+    tasks = Task.objects.all()
+    users = User.objects.all()
+    context = {
+        'users':users,
+        'tasks':tasks,
+        'form1':form1,
+        'profiles': profiles,
+        'messages': messages,
+        'form': form,
+    }
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('home-admin')
+    return render(request, 'base/home-admin.html', context)
+
 
 @login_required(login_url='login')
 def new_users(request):
@@ -389,40 +425,48 @@ def deleteReview(request, pk):
         return redirect('location', pk=location_name)
     return render(request, 'base/delete.html', {'obj': review})
 
-
-
-
 @login_required(login_url='/login')
-def chat(request):
-    print("DATE:")
-    print(request.POST)
-    profiles = Profile.objects.all()
-    messages = Message.objects.all()
-    form = MessageForm()
+def deleteUser(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponse("Only superusers can approve users.")
+    user = User.objects.get(username=pk)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('admin-home')
+    return render(request, 'base/delete.html', {
+        'obj': user})
+
+# @login_required(login_url='/login')
+# def chat(request):
+#     print("DATE:")
+#     print(request.POST)
+#     profiles = Profile.objects.all()
+#     messages = Message.objects.all()
+#     form = MessageForm()
     
-    if request.htmx:
-        form = MessageForm(request.POST)
-        print("DARi")
-        if form.is_valid():
-            print("Formularul este valid")
-            message = form.save(commit=False)
-            message.author = request.user
-            print(message.author)
-            message.save()
-            context = {
-                'message': message,
-                'form': form,
-                'messages':messages,
-                'profiles': profiles,
-            }
-            print(f"Message saved: {message.body, message.author}") 
-            return render(request, 'base/partials/chat_message_p.html', context)
-        else:
-            print("Formularul nu este valid:", form.errors) 
+#     if request.htmx:
+#         form = MessageForm(request.POST)
+#         print("DARi")
+#         if form.is_valid():
+#             print("Formularul este valid")
+#             message = form.save(commit=False)
+#             message.author = request.user
+#             print(message.author)
+#             message.save()
+#             context = {
+#                 'message': message,
+#                 'form': form,
+#                 'messages':messages,
+#                 'profiles': profiles,
+#             }
+#             print(f"Message saved: {message.body, message.author}") 
+#             return render(request, 'base/partials/chat_message_p.html', context)
+#         else:
+#             print("Formularul nu este valid:", form.errors) 
     
-    return render(request, 'base/chat.html', {
-        'form': form,
-        'profiles': profiles,
-        'messages': messages
-    })
+#     return render(request, 'base/chat.html', {
+#         'form': form,
+#         'profiles': profiles,
+#         'messages': messages
+#     })
 

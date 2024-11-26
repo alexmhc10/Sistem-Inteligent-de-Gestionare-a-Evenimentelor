@@ -1,8 +1,102 @@
 {% extends 'main.html' %}
 
-
 {% block content %}
+<h1>Admin Dashboard</h1>
+<div class="admin-dashboard">
+    {% include 'base/chat.html' with profiles=profiles messages=messages %}
+    <div class="task-manager-container equal-height">
+        {% include 'base/task-manager.html' %}
+    </div>
+</div>
+    <div class="data">
+        <div id="myPlot" style="width:100%;max-width:700px"></div>
+    <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Username</th>
+            <th scope="col">Email</th>
+            <th scope="col">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+        {% if not user.is_superuser %}
+        <tr>
+            <th scope="row"> {{ user.id|add:"-1" }} </th>
+            <td>{{ user.username }}</td>
+            <td> {{ user.email }} </td>
+            <td> <a href="{% url 'delete_user' user.username %}">Delete User</a> / Update User</td>
+          </tr>
+        {% endif %}
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <script>
+        const xArray = ["Italy", "France", "Spain", "USA", "Argentina"];
+        const yArray = [55, 49, 44, 24, 15];
 
+        const layout = { title: "Events based on locations" };
 
+        const data = [{ labels: xArray, values: yArray, type: "pie" }];
 
+        Plotly.newPlot("myPlot", data, layout);
+    </script>
+    
+<style>
+    .data{
+        display: flex;
+        flex-direction: row;
+        margin: auto;
+        margin-top:1vw;
+        
+    }
+    .equal-height {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        background-color: #FAF9F6;
+        padding: 15px;
+        border: 1px solid #ECECEC; 
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .task-manager-container {
+        margin:auto;
+        width:auto;
+        grid-column: 1 / 2;
+        background-color: #FAF9F6; 
+        border: 1px solid #ECECEC;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    .admin-dashboard{
+        display:flex;
+        flex-direction: column;
+    }
+    #myPlot{
+        margin-right:5vw;
+    }
+    table{
+        width:200px;
+        border-radius:10px;
+        margin-right:auto;
+    }
+    table tr{
+        border:none;
+        outline:1px solid #D4AF37;
+        border:1 px solid #D4AF37;
+    }
+    th,tr{
+        height:10px;
+    }
+</style>
 {% endblock content %}
+
+{% block javascript %}
+<script>
+    scrollToBottom();
+</script>
+{% endblock javascript %}
