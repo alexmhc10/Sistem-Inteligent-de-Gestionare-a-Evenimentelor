@@ -15,7 +15,27 @@ from .forms import EventForm
 from .models import Task
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 
+
+
+def vizualizare_eveniment(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'base/panou_eveniment.html', {'event': event})
+
+@login_required(login_url='/login')
+def my_events(request):
+   
+    events = Event.objects.all()
+    context = {
+        'events': events,
+    }
+    return render(request, 'base/my_events.html', context)
+@login_required(login_url='/login')
+def delete_task(request, task_id):
+    task = get_object_or_404(Task, id=task_id, user=request.user)
+    task.delete()
+    return redirect('home')
 
 @login_required(login_url='/login')
 def delete_task(request, task_id):
@@ -142,7 +162,7 @@ def approve_user(request, pk):
         elif 'reject' in request.POST:
             profile.delete()
             messages.warning(request, f"User {profile.username} has been rejected.")
-        return redirect('new_users')
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'base/approve_user.html', {'profile': profile})
 
 
@@ -170,13 +190,25 @@ def homeAdmin(request):
             return render(request, 'base/partials/chat_message_p.html', context)
     tasks = Task.objects.all()
     users = User.objects.all()
+    locations_data = []
+    locations = Location.objects.all()
+    
+    for location in locations:
+        event_count = location.event_set.count()  # numără evenimentele pentru locația curentă
+        locations_data.append({
+            'name': location.name,
+            'event_count': event_count,
+        })
+    
     context = {
+        'locations_data': json.dumps(locations_data),  # Trimite lista de locații și numărul de evenimente
         'users':users,
         'tasks':tasks,
         'form1':form1,
         'profiles': profiles,
         'messages': messages,
         'form': form,
+        'hx_post_url': reverse('home-admin')
     }
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -187,6 +219,22 @@ def homeAdmin(request):
             return redirect('home-admin')
     return render(request, 'base/home-admin.html', context)
 
+@login_required(login_url='login')
+def users(request):
+    if not request.user.is_superuser:
+        return HttpResponse("Only superusers can approve users.")
+    
+    awaiting_profiles = Profile.objects.filter(approved=False)
+    waiting_count = Profile.objects.filter(approved=False).count()
+    profiles = Profile.objects.filter(approved=True)
+    users = User.objects.all()
+    context = {
+        'waiting_count':waiting_count,
+        'users':users,
+        'profiles':profiles,
+        'awaiting_profiles':awaiting_profiles
+    }
+    return render(request, 'base/users.html', context) 
 
 @login_required(login_url='login')
 def new_users(request):

@@ -5,8 +5,10 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('eveniment/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
+    path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
+    path('my_events/', views.my_events, name='my_events'),
     path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
-    # path('task-manager/', views.task_manager_view, name='task_manager'),
     path('add-task/', views.add_task, name='add_task'),
     path('complete-task/<int:task_id>/', views.complete_task, name='complete_task'),
     path('carousel/', views.carousel_view, name='carousel'),
@@ -18,6 +20,7 @@ urlpatterns = [
     path('location/<str:pk>/', views.location, name="location"),
     path('profile/<str:username>/', views.profilePage, name='profile'),
     path('new_users/', views.new_users, name='new_users'),
+    path('users/', views.users, name='users'),
     path('approve_user/<int:pk>/', views.approve_user, name='approve_user'),
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),  

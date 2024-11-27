@@ -1,0 +1,25 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="text-center">{{ event.event_name }}</h2>
+    <p><strong>Data:</strong> {{ event.event_date }}</p>
+    <p><strong>Ora:</strong> {{ event.event_time }}</p>
+    <p><strong>Descriere:</strong> {{ event.event_description }}</p>
+    <p><strong>Locație:</strong> {{ event.location }}</p>
+    <p><strong>Invitați:</strong> {{ event.guests.all|join:", " }}</p>
+
+    <p><strong>Stare:</strong> In lucru</p>
+
+    <div class="btn-group" role="group" aria-label="Event Actions">
+        <a href="" class="btn btn-warning">Editează Eveniment</a>
+        <a href="" class="btn btn-info">Gestionare Participanți</a>
+        <a href="" class="btn btn-secondary">Vizualizează Rapoarte</a>
+        <a href="" class="btn btn-primary">Galerie Foto/Video</a>
+        <a href="" class="btn btn-success">Lista de Sarcini</a>
+        <a href="" class="btn btn-dark">Trimite Invitatii</a>
+        <a href="" class="btn btn-light">Modifică Meniu</a>
+        <a href="" class="btn btn-warning">Configurează Notificări</a>
+    </div>
+</div>
+{% endblock %}

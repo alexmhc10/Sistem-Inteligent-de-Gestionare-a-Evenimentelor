@@ -1,80 +1,82 @@
 <style>
-.header {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #FAF9F6;
-    padding: 5px 10px;
-    border-bottom: 2px solid #D4AF37;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.logo {
-    width: 60px;
-    margin-right: 10px;
-    height: auto;
-    border-radius: 40px;
-    border: 2px solid #D4AF37;
-}
-
-.greeting {
-    font-size: 1.2em;
-    color: #D4AF37;
-    font-weight: bold;
-}
-
-.first {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-}
-
-.second {
-    margin-left: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.second a {
-    color: #D4AF37;
-    font-size: 1em;
-    text-decoration: none;
-    margin-left: 15px;
-    font-weight: bold;
-}
-
-.second a:hover {
-    color: #B08A2E;
-    text-decoration: underline;
-}
-
-</style>
-
-<div class="header">
+    .header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: #FAF9F6;
+        padding: 5px 10px;
+        border-bottom: 2px solid #D4AF37;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
     
-    <div class="first">
-        <a href="{% url 'home' %}">
-            <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
-        </a>
-        {% if request.user.is_authenticated and request.path == '/' %}
-        <h1 class="greeting">Hello {{ request.user.username }}</h1>
-        {% endif %}
-    </div>
+    .logo {
+        width: 60px;
+        margin-right: 10px;
+        height: auto;
+        border-radius: 40px;
+        border: 2px solid #D4AF37;
+    }
     
-    <div class="second">
-        {% if request.user.is_authenticated %}
-        {% if request.path == '/' %}
-            <a href="{% url 'logout' %}">Logout</a>
-
-            {% if request.user.is_superuser %}
-                <a href="{% url 'new_users' %}">New users</a>
+    .greeting {
+        font-size: 1.2em;
+        color: #D4AF37;
+        font-weight: bold;
+        margin-right: 20px;
+    }
+    
+    .first {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .second {
+        margin-left: auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .second a {
+        color: #D4AF37;
+        font-size: 1em;
+        text-decoration: none;
+        margin-left: 15px;
+        font-weight: bold;
+    }
+    
+    .second a:hover {
+        color: #B08A2E;
+        text-decoration: underline;
+    }
+    </style>
+    
+    <div class="header">
+        <div class="first">
+            <a href="{% url 'home' %}">
+                <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+            </a>
+            {% if request.user.is_authenticated and request.path == '/' %}
+                <h1 class="greeting">Hello {{ request.user.username }}</h1>
             {% endif %}
-        {% endif %}
-    {% else %}
-        {% if request.path != '/login/' and request.path != '/register/' %}
-            <a href="{% url 'login' %}">Login</a>
-        {% endif %}
-    {% endif %}
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'my_events' %}">Managementul evenimentelor</a>
+            {% endif %}
+        </div>
+        
+        <div class="second">
+            {% if request.user.is_authenticated %}
+                {% if request.path == '/' %}
+                    <a href="{% url 'logout' %}">Logout</a>
+    
+                    {% if request.user.is_superuser %}
+                        <a href="{% url 'new_users' %}">New users</a>
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% if request.path != '/login/' and request.path != '/register/' %}
+                    <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            {% endif %}
+        </div>
     </div>
-</div>
