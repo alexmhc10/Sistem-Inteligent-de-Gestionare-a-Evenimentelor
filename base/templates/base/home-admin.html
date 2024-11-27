@@ -34,7 +34,6 @@
                         </a>
                     </li>
                 
-                    <!-- Link spre locații -->
                     <li>
                         <a href="#" class="nav-link px-0 align-middle">
                             <i class="fs-4 bi-geo-alt"></i>
@@ -88,7 +87,7 @@
     const yArray = locationsData.map(location => location.event_count);
     yArray.forEach((value, index) => {
   if (value === 0) {
-    yArray[index] = null;  // Poți seta la null sau o valoare mică pentru a ignora 0% în grafic
+    yArray[index] = null; 
   }
 });
     const layout = { title: "Events based on locations" };
