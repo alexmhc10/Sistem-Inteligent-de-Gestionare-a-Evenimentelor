@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 #task mhc
 class Task(models.Model):
@@ -99,9 +100,15 @@ class Event(models.Model):
     event_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
+    completed = models.BooleanField(default=False) 
+
     def __str__(self):
         return self.event_name
 
+    def check_completed(self):
+        if self.event_date <= now().date():
+            self.completed = True
+            self.save()
 
 
 class EventMenu(models.Model):

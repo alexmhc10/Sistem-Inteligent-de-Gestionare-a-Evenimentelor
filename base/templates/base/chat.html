@@ -17,7 +17,7 @@
             {% endfor %}
         </div>
             <form method="post" 
-            hx-post="{% url 'home-admin' %}" 
+            hx-post="{{ hx_post_url }}" 
             hx-target="#messages" 
             hx-swap="beforeend"
             _="on htmx:afterRequest reset() me">
