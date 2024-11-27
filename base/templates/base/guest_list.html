@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container my-4">
+    <h2 class="text-center">Lista de invitați pentru {{ event.event_name }}</h2>
+    <ul>
+        <li><div class="alert alert-warning" role="alert">Ion Popescu - <strong>în așteptare</strong></div></li>
+        <li><div class="alert alert-success" role="alert">Maria Ionescu - <strong>acceptat</strong></div></li>
+        <li><div class="alert alert-danger" role="alert">George Marinescu - <strong>refuzat</strong></div></li>
+        <li><div class="alert alert-warning" role="alert">Elena Dumitrescu - <strong>în așteptare</strong></div></li>
+        <li><div class="alert alert-success" role="alert">Andrei Vasile - <strong>acceptat</strong></div></li>
+    </ul>
+
+    <h3 class="mt-4">Statusul Evenimentului</h3>
+    <div class="alert alert-info" role="alert">
+        Evenimentul este planificat pentru <strong>{{ event.event_date }}</strong> la <strong>{{ event.event_time }}</strong>. Detalii complete vor fi trimise participanților în următoarele zile.
+    </div>
+
+    <h3 class="mt-4">Găsește Participanții Confirmati</h3>
+    <div class="alert alert-success" role="alert">
+        Participanți confirmați: <strong>Maria Ionescu</strong>, <strong>Andrei Vasile</strong>
+    </div>
+
+    <h3 class="mt-4">Mesaje recente</h3>
+    <div class="alert alert-secondary" role="alert">
+        Ultimul mesaj trimis participanților: "Nu uitați să confirmați prezența până pe 1 decembrie!"
+    </div>
+    {% include 'back_button.html' %}
+</div>
+{% endblock %}

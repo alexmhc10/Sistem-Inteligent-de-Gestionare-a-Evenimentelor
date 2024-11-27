@@ -12,14 +12,9 @@
     <p><strong>Stare:</strong> In lucru</p>
 
     <div class="btn-group" role="group" aria-label="Event Actions">
-        <a href="" class="btn btn-warning">Editează Eveniment</a>
-        <a href="" class="btn btn-info">Gestionare Participanți</a>
-        <a href="" class="btn btn-secondary">Vizualizează Rapoarte</a>
-        <a href="" class="btn btn-primary">Galerie Foto/Video</a>
-        <a href="" class="btn btn-success">Lista de Sarcini</a>
-        <a href="" class="btn btn-dark">Trimite Invitatii</a>
-        <a href="" class="btn btn-light">Modifică Meniu</a>
-        <a href="" class="btn btn-warning">Configurează Notificări</a>
-    </div>
+   
+        <a href="{% url 'guest_list' %}" class="btn btn-success">Lista de invitati</a>
+      
+    </div>{% include 'back_button.html' %}
 </div>
 {% endblock %}

@@ -17,7 +17,10 @@ from .forms import TaskForm
 from django.http import HttpResponseRedirect
 from .models import Event
 
-
+@login_required(login_url='/login')
+def guest_list(request):
+    guests = Guests.objects.all()
+    return render(request, 'base/guest_list.html', {'guests': guests})
 
 def vizualizare_eveniment(request, event_id):
     event = get_object_or_404(Event, id=event_id)

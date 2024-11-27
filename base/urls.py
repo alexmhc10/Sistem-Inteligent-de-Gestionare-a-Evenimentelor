@@ -5,6 +5,7 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('guest_list/', views.guest_list, name='guest_list'),
     path('eveniment/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
     path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
     path('my_events/', views.my_events, name='my_events'),
