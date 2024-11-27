@@ -1,57 +1,148 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h1>Admin Dashboard</h1>
-<div class="admin-dashboard">
-    {% include 'base/chat.html' with profiles=profiles messages=messages %}
-    <div class="task-manager-container equal-height">
-        {% include 'base/task-manager.html' %}
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-dark">
+            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <span class="fs-5 d-none d-sm-inline">Menu</span>
+                </a>
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link align-middle px-0">
+                            <i class="fs-4 bi-house"></i> <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#submenu1" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
+                        </a>
+                        <ul class="collapse show nav flex-column ms-1" id="submenu1" data-bs-parent="#menu">
+                            <li class="w-100">
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Stats</span> 1 </a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span> 2 </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-table"></i> <span class="ms-1 d-none d-sm-inline">Events</span></a>
+                    </li>
+                    <li>
+                        <a href="#submenu2" data-bs-toggle="collapse" class="nav-link px-0 align-middle ">
+                            <i class="fs-4 bi-bootstrap"></i> <span class="ms-1 d-none d-sm-inline">Bootstrap</span></a>
+                        <ul class="collapse nav flex-column ms-1" id="submenu2" data-bs-parent="#menu">
+                            <li class="w-100">
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span> 1</a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Item</span> 2</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#submenu3" data-bs-toggle="collapse" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-grid"></i> <span class="ms-1 d-none d-sm-inline">Products</span> </a>
+                        <ul class="collapse nav flex-column ms-1" id="submenu3" data-bs-parent="#menu">
+                            <li class="w-100">
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 1</a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 2</a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 3</a>
+                            </li>
+                            <li>
+                                <a href="#" class="nav-link px-0"> <span class="d-none d-sm-inline">Product</span> 4</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle">
+                            <i class="fs-4 bi-people"></i> <span class="ms-1 d-none d-sm-inline">Managers</span> </a>
+                    </li>
+                </ul>
+                <hr>
+                <div class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="https://github.com/mdo.png" alt="hugenerd" width="30" height="30"
+                            class="rounded-circle">
+                        <span class="d-none d-sm-inline mx-1">loser</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col py-3">
+            <div class="admin-dashboard">
+                {% include 'base/chat.html' with profiles=profiles messages=messages %}
+                <div class="task-manager-container equal-height">
+                    {% include 'base/task-manager.html' %}
+                </div>
+            </div>
+            <div class="data">
+                <div id="myPlot" style="width:100%;max-width:700px"></div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        {% if not user.is_superuser %}
+                        <tr>
+                            <th scope="row"> {{ user.id|add:"-1" }} </th>
+                            <td>{{ user.username }}</td>
+                            <td> {{ user.email }} </td>
+                            <td> <a href="{% url 'delete_user' user.username %}">Delete User</a> / Update User</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
-    <div class="data">
-        <div id="myPlot" style="width:100%;max-width:700px"></div>
-    <table class="table">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">Username</th>
-            <th scope="col">Email</th>
-            <th scope="col">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-        {% if not user.is_superuser %}
-        <tr>
-            <th scope="row"> {{ user.id|add:"-1" }} </th>
-            <td>{{ user.username }}</td>
-            <td> {{ user.email }} </td>
-            <td> <a href="{% url 'delete_user' user.username %}">Delete User</a> / Update User</td>
-          </tr>
-        {% endif %}
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
-    <script>
-        const xArray = ["Italy", "France", "Spain", "USA", "Argentina"];
-        const yArray = [55, 49, 44, 24, 15];
 
-        const layout = { title: "Events based on locations" };
+<script>
+    const xArray = ["Italy", "France", "Spain", "USA", "Argentina"];
+    const yArray = [55, 49, 44, 24, 15];
 
-        const data = [{ labels: xArray, values: yArray, type: "pie" }];
+    const layout = { title: "Events based on locations" };
 
-        Plotly.newPlot("myPlot", data, layout);
-    </script>
-    
+    const data = [{ labels: xArray, values: yArray, type: "pie" }];
+
+    Plotly.newPlot("myPlot", data, layout);
+</script>
+
 <style>
-    .data{
+    .data {
         display: flex;
         flex-direction: row;
         margin: auto;
-        margin-top:1vw;
-        
+        margin-top: 1vw;
+
     }
+
     .equal-height {
         display: flex;
         flex-direction: column;
@@ -59,38 +150,45 @@
         height: 100%;
         background-color: #FAF9F6;
         padding: 15px;
-        border: 1px solid #ECECEC; 
+        border: 1px solid #ECECEC;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
+
     .task-manager-container {
-        margin:auto;
-        width:auto;
+        margin: auto;
+        width: auto;
         grid-column: 1 / 2;
-        background-color: #FAF9F6; 
+        background-color: #FAF9F6;
         border: 1px solid #ECECEC;
         border-radius: 8px;
         padding: 20px;
     }
-    .admin-dashboard{
-        display:flex;
+
+    .admin-dashboard {
+        display: flex;
         flex-direction: column;
     }
-    #myPlot{
-        margin-right:5vw;
+
+    #myPlot {
+        margin-right: 5vw;
     }
-    table{
-        width:200px;
-        border-radius:10px;
-        margin-right:auto;
+
+    table {
+        width: 200px;
+        border-radius: 10px;
+        margin-right: auto;
     }
-    table tr{
-        border:none;
-        outline:1px solid #D4AF37;
-        border:1 px solid #D4AF37;
+
+    table tr {
+        border: none;
+        outline: 1px solid #D4AF37;
+        border: 1 px solid #D4AF37;
     }
-    th,tr{
-        height:10px;
+
+    th,
+    tr {
+        height: 10px;
     }
 </style>
 {% endblock content %}
