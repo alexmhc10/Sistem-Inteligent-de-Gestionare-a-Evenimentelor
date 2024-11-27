@@ -5,6 +5,9 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('eveniment/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
+    path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
+    path('my_events/', views.my_events, name='my_events'),
     path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
     # path('task-manager/', views.task_manager_view, name='task_manager'),
     path('add-task/', views.add_task, name='add_task'),

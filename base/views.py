@@ -15,8 +15,23 @@ from .forms import EventForm
 from .models import Task
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
+from .models import Event
 
 
+
+def vizualizare_eveniment(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'base/panou_eveniment.html', {'event': event})
+
+
+@login_required(login_url='/login')
+def my_events(request):
+   
+    events = Event.objects.all()
+    context = {
+        'events': events,
+    }
+    return render(request, 'base/my_events.html', context)
 @login_required(login_url='/login')
 def delete_task(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
