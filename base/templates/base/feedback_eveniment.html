@@ -1,0 +1,99 @@
+{% extends 'main.html' %}
+{% load static %} <!-- Load static files -->
+
+{% block content %}
+<style>
+    .feedback-list-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #FAF9F6;
+        border: 1px solid #ECECEC;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-list-container h2 {
+        text-align: center;
+        color: #002B5B;
+    }
+
+    .event-image {
+        width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .feedback-item {
+        border-bottom: 1px solid #ECECEC;
+        padding: 15px 0;
+    }
+
+    .feedback-item:last-child {
+        border-bottom: none;
+    }
+
+    .feedback-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .feedback-name {
+        font-weight: bold;
+        color: #002B5B;
+    }
+
+    .feedback-rating {
+        color: #FFD700; /* Gold color for stars */
+    }
+
+    .feedback-comments {
+        margin-top: 10px;
+        color: #555;
+    }
+</style>
+
+<div class="feedback-list-container">
+    <!-- Event Image -->
+    <img src="{{ MEDIA_URL }}images/perla.jpg" alt="Event Image" class="event-image">
+
+    <h2>Recenzii Eveniment</h2>
+    
+    <!-- Fictitious Review 1 -->
+    <div class="feedback-item">
+        <div class="feedback-header">
+            <div class="feedback-name">Alice</div>
+            <div class="feedback-rating">
+                <span>&#9733;&#9733;&#9733;&#9733;&#9733;</span> <!-- 5 stars -->
+            </div>
+        </div>
+        <div class="feedback-comments">A fost un eveniment minunat! Organizare excelentă și atmosferă plăcută.</div>
+    </div>
+
+    <!-- Fictitious Review 2 -->
+    <div class="feedback-item">
+        <div class="feedback-header">
+            <div class="feedback-name">Bob</div>
+            <div class="feedback-rating">
+                <span>&#9733;&#9733;&#9733;&#9733;&#9734;</span> <!-- 4 stars -->
+            </div>
+        </div>
+        <div class="feedback-comments">Mi-a plăcut mult, dar aș fi vrut mai multă diversitate în activități.</div>
+    </div>
+
+    <!-- Fictitious Review 3 -->
+    <div class="feedback-item">
+        <div class="feedback-header">
+            <div class="feedback-name">Charlie</div>
+            <div class="feedback-rating">
+                <span>&#9733;&#9733;&#9733;&#9734;&#9734;</span> <!-- 3 stars -->
+            </div>
+        </div>
+        <div class="feedback-comments">A fost ok, dar se putea mai bine. Mâncarea nu a fost pe gustul meu.</div>
+    </div>
+
+    <!-- Add more fictitious reviews as needed -->
+</div>
+{% endblock %}

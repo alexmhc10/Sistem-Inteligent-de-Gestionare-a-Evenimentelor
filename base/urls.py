@@ -5,6 +5,8 @@ from django.conf.urls.static import static
 
 
 urlpatterns = [
+    path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
+    path('istoric_evenimente/', views.event_history, name='event_history'),
     path('guest_list/', views.guest_list, name='guest_list'),
     path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
     path('my_events/', views.my_events, name='my_events'),

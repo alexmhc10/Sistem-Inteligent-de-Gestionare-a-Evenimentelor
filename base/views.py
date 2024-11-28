@@ -18,6 +18,14 @@ from django.http import HttpResponseRedirect
 from .models import Event
 
 @login_required(login_url='/login')
+def feedback_event(request):
+    return render(request, 'base/feedback_eveniment.html')
+@login_required(login_url='/login')
+def event_history(request):
+    
+    events = Event.objects.all()
+    return render(request, 'base/istoric_evenimente.html', {'events': events})
+@login_required(login_url='/login')
 def guest_list(request):
     guests = Guests.objects.all()
     return render(request, 'base/guest_list.html', {'guests': guests})
