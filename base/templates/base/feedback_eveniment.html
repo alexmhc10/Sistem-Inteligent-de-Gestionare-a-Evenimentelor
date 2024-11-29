@@ -1,6 +1,7 @@
 {% extends 'main.html' %}
 {% load static %} <!-- Load static files -->
-
+<!-- Nu mihalca, nu "loadam" staticul in toate fisierele, ele extind main, care contine css-ul
+ nu dai load unde deja exista css -->
 {% block content %}
 <style>
     .feedback-list-container {
