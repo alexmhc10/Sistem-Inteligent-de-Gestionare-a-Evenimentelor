@@ -10,7 +10,12 @@
     max-width: 100%; 
 }
 
-canvas {
-    margin: 10px; 
-    flex-shrink: 0;
+.col.py-3.charts .column{
+    display: flex;
+    flex-direction: column;
+}
+
+#EventsChart{
+    margin: 10px;
+    height:400px !important; 
 }

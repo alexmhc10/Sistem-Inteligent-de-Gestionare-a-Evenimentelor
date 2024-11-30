@@ -69,60 +69,58 @@
             </div>
         </div>
         <div class="col py-3 charts">
-            <canvas id="EventsChart" style="max-width:45%; height:100px;"></canvas>
-            <div id="myChart" style="width:100%; max-width:800px; height:500px;"></div>
-            <canvas id="ProfitChart" style="width:100%; max-width:800px; height:500px;"></canvas>
+            <div class="column">
+                <canvas id="EventsChart" style="max-width:100%; height:50px;"></canvas>
+                <div id="myPlot" style="width:100%;max-width:700px"></div>
+            </div>
+            <canvas id="ProfitChart" style="width:100%; max-width:800px; height:400px;"></canvas>
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    
-var datasets = [
-  {
-    label: 'Profit',
-    data: [-960, -640, -220, 30, -80, 300, 660],
-    backgroundColor: ['#3F88C5'] 
-  }
-]
+    const locationsData = JSON.parse('{{ locations_data|escapejs }}');
 
-for (var i = 0; i < datasets[0].data.length; i++) {
-  if (datasets[0].data[i] > 0) {
-    datasets[0].backgroundColor[i] = '#3F88C5'
-  } else {
-    datasets[0].backgroundColor[i] = '#FF5E5B' 
-  }
-}
+    const xArray = locationsData.map(location => location.name);
+    const yArray = locationsData.map(location => location.event_count);
+    yArray.forEach((value, index) => {
+        if (value === 0) {
+            yArray[index] = null;
+        }
+    });
+    const layout = { title: "Events based on locations" };
 
-var ctx = document.getElementById("ProfitChart");
-var myChart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['2014', '2015', '2016', '2017', '2018', '2019', '2020'],
-    datasets: datasets
-  },
-});
+    const data = [{ labels: xArray, values: yArray, type: "pie" }];
+
+    Plotly.newPlot("myPlot", data, layout);
 </script>
-<script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    
-    function drawChart() {
-        const users = JSON.parse('{{ users | escapejs }}');
-        const data = new google.visualization.arrayToDataTable([
-            ['Employee\'s name', 'Salary'],
-            ...users.map(user => [user.username, user.salary])
-        ]);
-    
-    const options = {
-      title:'Employees salaries'
-    };
-    
-    const chart = new google.visualization.BarChart(document.getElementById('myChart'));
-    chart.draw(data, options);
-    
+<script>
+
+    var datasets = [
+        {
+            label: 'Profit',
+            data: [-960, -640, -220, 30, -80, 300, 660],
+            backgroundColor: ['#3F88C5']
+        }
+    ]
+
+    for (var i = 0; i < datasets[0].data.length; i++) {
+        if (datasets[0].data[i] > 0) {
+            datasets[0].backgroundColor[i] = '#3F88C5'
+        } else {
+            datasets[0].backgroundColor[i] = '#FF5E5B'
+        }
     }
-    </script>
+
+    var ctx = document.getElementById("ProfitChart");
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['2014', '2015', '2016', '2017', '2018', '2019', '2020'],
+            datasets: datasets
+        },
+    });
+</script>
 <script>
     const xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const yValues = [7, 6, 8, 9, 9, 9, 10, 11, 14, 14, 15, 10];
@@ -151,10 +149,20 @@ var myChart = new Chart(ctx, {
             plugins: {
                 title: {
                     display: true,
-                    text: "Events in the last 12 months"
+                    text: "Events in the last 12 months",
+                    font: {
+                        size: 25
+                    }
                 }
             },
             scales: {
+                x: {
+                    ticks: {
+                        font: {
+                            size: 15
+                        }
+                    }
+                },
                 y: {
                     min: 5,
                     max: 16
@@ -163,5 +171,6 @@ var myChart = new Chart(ctx, {
         }
     });
 </script>
+
 
 {% endblock content %}

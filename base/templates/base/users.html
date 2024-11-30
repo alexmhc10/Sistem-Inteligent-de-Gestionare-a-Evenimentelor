@@ -84,34 +84,57 @@
                 </form>
             </div>
             {% endfor %}
-            <table class="table" style="max-width: 50%;">
-                <thead>
-                    <tr>
-                        <th scope="col">#</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Action</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    {% if not user.is_superuser %}
-                    <tr>
-                        <th scope="row"> {{ user.id|add:"-1" }} </th>
-                        <td>{{ user.username }}</td>
-                        <td> {{ user.email }} </td>
-                        <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / Update User</td>
-                    </tr>
-                    {% endif %}
-                    {% endfor %}
-                </tbody>
-            </table>
+            
+
+            <div class="users-info">
+                <table class="table" style="max-width: 50%;">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Username</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        {% if not user.is_superuser %}
+                        <tr>
+                            <th scope="row"> {{ user.id|add:"-1" }} </th>
+                            <td>{{ user.username }}</td>
+                            <td> {{ user.email }} </td>
+                            <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / <a href="{% url 'update_user_admin' user.username %}">Update User</a></td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div id="myChart" style="width:100%; max-width:800px; height:500px;"></div>    
+            </div>
+
         </div>
     </div>
 </div>
-<style>
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
     
-</style>
+    function drawChart() {
+        const users = JSON.parse('{{ chartusers | escapejs }}');
+        const data = new google.visualization.arrayToDataTable([
+            ['Employee\'s name', 'Salary'],
+            ...users.map(chartuser => [chartuser.username, chartuser.salary])
+        ]);
+    
+    const options = {
+      title:'Employees salaries'
+    };
+    
+    const chart = new google.visualization.BarChart(document.getElementById('myChart'));
+    chart.draw(data, options);
+    
+    }
+    </script>
 
 
 {% endblock %}

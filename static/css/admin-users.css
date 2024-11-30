@@ -1,0 +1,9 @@
+.users-info{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.users-info table{
+    height:200px;
+}

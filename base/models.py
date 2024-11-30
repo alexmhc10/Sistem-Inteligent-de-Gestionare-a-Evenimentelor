@@ -15,6 +15,9 @@ class Type(models.Model):
     def __str__(self):
         return self.name
 
+
+
+
 class Location(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100)

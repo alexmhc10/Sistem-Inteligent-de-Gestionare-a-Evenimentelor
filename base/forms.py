@@ -3,6 +3,7 @@ from django import forms
 from .models import *
 from django.contrib.auth.hashers import make_password
 from .models import Task
+from django.contrib.auth.forms import UserChangeForm
 
 class TaskForm(forms.ModelForm):
     class Meta:
@@ -42,7 +43,15 @@ class EventForm(forms.ModelForm):
             'event_date': forms.DateInput(attrs={'type': 'date'}),
             'event_time': forms.TimeInput(attrs={'type': 'time'}),
         }
-    
+
+
+
+class CustomUserChangeForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+
+
 class LocationForm(ModelForm):
     custom_types = forms.CharField(
         max_length=200,

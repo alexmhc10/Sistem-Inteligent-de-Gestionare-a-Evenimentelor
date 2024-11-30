@@ -30,6 +30,7 @@ urlpatterns = [
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),  
     path('delete_user/<str:pk>/', views.deleteUser, name="delete_user"),  
     path('delete_user_admin/<str:pk>/', views.deleteUserAdmin, name="delete_user_admin"),
+    path('update_user_admin/<str:pk>/', views.updateUserAdmin, name="update_user_admin"),
     path('delete_review/<str:pk>/', views.deleteReview, name="delete_review"),  
     path('menu-items', views.MenuItems, name="menu-items"),  
     path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),  
