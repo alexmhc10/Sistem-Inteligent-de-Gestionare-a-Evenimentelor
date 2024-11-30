@@ -32,8 +32,8 @@
                     </a>
                 </li>
                 <li>
-                    <a href="" class="nav-link px-0 align-middle text-white">
-                        <i class="fs-4 bi-bar-chart-line me-2"></i> <!-- Icon pentru statistică -->
+                    <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
+                        <i class="fs-4 bi-bar-chart-line me-2"></i> 
                         <span class="ms-1 d-none d-sm-inline">Charts</span>
                     </a>
                 </li>
@@ -84,7 +84,7 @@
                 </form>
             </div>
             {% endfor %}
-            <table class="table">
+            <table class="table" style="max-width: 50%;">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
@@ -100,7 +100,7 @@
                         <th scope="row"> {{ user.id|add:"-1" }} </th>
                         <td>{{ user.username }}</td>
                         <td> {{ user.email }} </td>
-                        <td> <a href="{% url 'delete_user' user.username %}">Delete User</a> / Update User</td>
+                        <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / Update User</td>
                     </tr>
                     {% endif %}
                     {% endfor %}

@@ -16,6 +16,8 @@ from .models import Task
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
 from .models import Event
+import random
+
 
 @login_required(login_url='/login')
 def feedback_event(request):
@@ -63,12 +65,6 @@ def my_events(request):
         'events': events,
     }
     return render(request, 'base/my_events.html', context)
-@login_required(login_url='/login')
-def delete_task(request, task_id):
-    task = get_object_or_404(Task, id=task_id, user=request.user)
-    task.delete()
-    return redirect('home')
-
 
 # def task_manager_view(request):
 #     if request.method == 'POST':
@@ -194,12 +190,18 @@ def approve_user(request, pk):
 
 @login_required(login_url='login')
 def admin_charts(request):
+    users = User.objects.filter(is_superuser=True)
+    profiles = Profile.objects.exclude(user__in=users)
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
+    
+    user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
+    
     context = {
-
+        'users': json.dumps(user_data)
     }
     return render(request, 'base/admin-charts.html', context)
+
 
 
 @login_required(login_url='login')
@@ -493,6 +495,16 @@ def updateLocation(request, pk):
     }
     return render(request, 'base/location_form.html', context)
 
+@login_required(login_url='/login')
+def deleteUserAdmin(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponse("Only superusers can approve users.")
+    user = User.objects.get(username=pk)
+    if request.method == 'POST':
+        user.delete()
+        return redirect('home-admin')
+    return render(request, 'base/admin-delete-user.html', {
+        'obj': user})
 
 
 

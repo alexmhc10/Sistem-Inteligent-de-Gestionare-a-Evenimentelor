@@ -3,10 +3,9 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="container-fluid">
     <div class="row flex-nowrap">
-        <div class="col-auto col-md-2 forcharts px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
+        <div class="col-auto col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
             <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                 <a href="#" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                     <span class="fs-5 d-none d-sm-inline">Menu</span>
@@ -27,6 +26,7 @@
                         </a>
                     </li>
 
+                    <!-- Link spre evenimente -->
                     <li>
                         <a href="#" class="nav-link px-0 align-middle text-white">
                             <i class="fs-4 bi-calendar-event"></i>
@@ -34,7 +34,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
+                        <a href="" class="nav-link px-0 align-middle text-white">
                             <i class="fs-4 bi-bar-chart-line me-2"></i>
                             <span class="ms-1 d-none d-sm-inline">Charts</span>
                         </a>
@@ -69,99 +69,13 @@
             </div>
         </div>
         <div class="col py-3 charts">
-            <canvas id="EventsChart" style="max-width:45%; height:100px;"></canvas>
-            <div id="myChart" style="width:100%; max-width:800px; height:500px;"></div>
-            <canvas id="ProfitChart" style="width:100%; max-width:800px; height:500px;"></canvas>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <p>Are you sure you want to delete "{{ obj }}"?</p>
+                <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'users' %}{% endif %}">Go back</a>
+                <input type="submit" value="Confirm"/>
+            </form>
         </div>
     </div>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    
-var datasets = [
-  {
-    label: 'Profit',
-    data: [-960, -640, -220, 30, -80, 300, 660],
-    backgroundColor: ['#3F88C5'] 
-  }
-]
-
-for (var i = 0; i < datasets[0].data.length; i++) {
-  if (datasets[0].data[i] > 0) {
-    datasets[0].backgroundColor[i] = '#3F88C5'
-  } else {
-    datasets[0].backgroundColor[i] = '#FF5E5B' 
-  }
-}
-
-var ctx = document.getElementById("ProfitChart");
-var myChart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    labels: ['2014', '2015', '2016', '2017', '2018', '2019', '2020'],
-    datasets: datasets
-  },
-});
-</script>
-<script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
-    google.charts.setOnLoadCallback(drawChart);
-    
-    function drawChart() {
-        const users = JSON.parse('{{ users | escapejs }}');
-        const data = new google.visualization.arrayToDataTable([
-            ['Employee\'s name', 'Salary'],
-            ...users.map(user => [user.username, user.salary])
-        ]);
-    
-    const options = {
-      title:'Employees salaries'
-    };
-    
-    const chart = new google.visualization.BarChart(document.getElementById('myChart'));
-    chart.draw(data, options);
-    
-    }
-    </script>
-<script>
-    const xValues = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    const yValues = [7, 6, 8, 9, 9, 9, 10, 11, 14, 14, 15, 10];
-
-    new Chart("EventsChart", {
-        type: "line",
-        data: {
-            labels: xValues,
-            datasets: [{
-                fill: false,
-                lineTension: 0,
-                borderWidth: 2,
-                data: yValues,
-                segment: {
-                    borderColor: ctx => {
-                        const prevValue = ctx.p0.parsed.y;
-                        const currentValue = ctx.p1.parsed.y;
-                        return currentValue > prevValue ? "green" : "red";
-                    }
-                },
-                pointRadius: 5,
-                pointBackgroundColor: "blue",
-            }]
-        },
-        options: {
-            plugins: {
-                title: {
-                    display: true,
-                    text: "Events in the last 12 months"
-                }
-            },
-            scales: {
-                y: {
-                    min: 5,
-                    max: 16
-                }
-            }
-        }
-    });
-</script>
-
 {% endblock content %}

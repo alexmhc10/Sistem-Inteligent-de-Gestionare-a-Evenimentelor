@@ -1,0 +1,16 @@
+.col-auto.col-md-2.forcharts {
+    position:fixed;
+}
+.col.py-3.charts {
+    margin-left: 12.5%; /* Adaugă un spațiu pentru a face loc sidebar-ului */
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    overflow-y: auto; 
+    max-width: 100%; 
+}
+
+canvas {
+    margin: 10px; 
+    flex-shrink: 0;
+}
