@@ -2,7 +2,7 @@
     position:fixed;
 }
 .col.py-3.charts {
-    margin-left: 12.5%; /* Adaugă un spațiu pentru a face loc sidebar-ului */
+    margin-left: 12.5%;
     display: flex;
     flex-direction: row; 
     flex-wrap: wrap; 
