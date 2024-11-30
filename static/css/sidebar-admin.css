@@ -4,3 +4,29 @@
 #menu li {
     font-weight: bold !important;
 }
+
+#menu li, .dropdown {
+    transition: transform 0.5s ease;
+}
+
+#menu li:hover , .dropdown:hover{
+    transform: translateX(5px);
+}
+
+#dropdownUser1::after{
+    transition:transform 0.2s ease;
+}
+
+#dropdownUser1.show::after {
+    transform: rotate(180deg);
+}
+.dropdown-menu {
+    transform: translateY(5px);
+    opacity: 0; 
+    transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.dropdown-menu.show {
+    transform: translateY(0); 
+    opacity: 1;
+}

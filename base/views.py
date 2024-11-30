@@ -192,6 +192,15 @@ def approve_user(request, pk):
     return render(request, 'base/approve_user.html', {'profile': profile})
 
 
+@login_required(login_url='login')
+def admin_charts(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context = {
+
+    }
+    return render(request, 'base/admin-charts.html', context)
+
 
 @login_required(login_url='login')
 def homeAdmin(request):
