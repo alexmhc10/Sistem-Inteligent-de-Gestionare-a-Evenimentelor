@@ -6,73 +6,75 @@
     <div class="row flex-nowrap">
         <div class="col-auto col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
             <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-            <a href="#" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                <span class="fs-5 d-none d-sm-inline">Menu</span>
-            </a>
-            <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                <li class="nav-item">
-                    <a href="{% url 'home-admin' %}" class="nav-link align-middle px-0 text-white">
-                        <i class="fs-4 bi-house"></i> 
-                        <span class="ms-1 d-none d-sm-inline">Home</span>
-                    </a>
-                </li>
-            
-                <li>
-                    <a href="{% url 'users' %}" class="nav-link px-0 align-middle text-white">
-                        <i class="fs-4 bi-people"></i>
-                        <span class="ms-1 d-none d-sm-inline">Users</span>
-                    </a>
-                </li>
-            
-                <!-- Link spre evenimente -->
-                <li>
-                    <a href="#" class="nav-link px-0 align-middle text-white">
-                        <i class="fs-4 bi-calendar-event"></i>
-                        <span class="ms-1 d-none d-sm-inline">Events</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
-                        <i class="fs-4 bi-bar-chart-line me-2"></i> 
-                        <span class="ms-1 d-none d-sm-inline">Charts</span>
-                    </a>
-                </li>
-            
-                <li>
-                    <a href="#" class="nav-link px-0 align-middle text-white">
-                        <i class="fs-4 bi-geo-alt"></i>
-                        <span class="ms-1 d-none d-sm-inline">Locations</span>
-                    </a>
-                </li>
-            </ul>
-            
-            <hr>
-            <div class="dropdown pb-4">
-                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                    id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                    <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
-                        class="rounded-circle">
-                    <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
+                <a href="{% url 'home-admin' %}"
+                    class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                    <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg"
+                        alt="EventEase Logo">
                 </a>
-                <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-                    <li><a class="dropdown-item" href="#">New project...</a></li>
-                    <li><a class="dropdown-item" href="#">Settings</a></li>
-                    <li><a class="dropdown-item" href="#">Profile</a></li>
-                    <li>
-                        <hr class="dropdown-divider">
+                <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start"
+                    id="menu">
+                    <li class="nav-item">
+                        <a href="{% url 'home-admin' %}" class="nav-link align-middle px-0 text-white">
+                            <i class="fs-4 bi-house"></i>
+                            <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
                     </li>
-                    <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+
+                    <li>
+                        <a href="{% url 'users' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-people"></i>
+                            <span class="ms-1 d-none d-sm-inline">Users</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-calendar-event"></i>
+                            <span class="ms-1 d-none d-sm-inline">Events</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-bar-chart-line me-2"></i>
+                            <span class="ms-1 d-none d-sm-inline">Charts</span>
+                        </a>
+                    </li>
+
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-geo-alt"></i>
+                            <span class="ms-1 d-none d-sm-inline">Locations</span>
+                        </a>
+                    </li>
                 </ul>
+
+                <hr>
+                <div class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                            class="rounded-circle">
+                        <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
         <div class="col py-3">
             <h2>Pending User Approvals</h2>
             {% if waiting_count == 0 %}
             <h4>No new Users</h4>
             {% endif %}
             {% for profile in awaiting_profiles %}
-            <div>
+            <!-- <div>
                 <p><strong>Username:</strong> {{ profile.username }}</p>
                 <p><strong>Email:</strong> {{ profile.email }}</p>
                 <p><strong>Description:</strong> {{ profile.description }}</p>
@@ -82,9 +84,26 @@
                     <button type="submit" name="approve">Approve</button>
                     <button type="submit" name="reject">Reject</button>
                 </form>
+            </div> -->
+            <div class="card" style="width: 23rem;">
+                <div class="card-body">
+                    <div class="primary-info">
+                        <div class="titles">
+                            <h5 class="card-title"><strong> Username: <br> </strong> {{ profile.username }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted"><strong>Email:</strong> {{ profile.email }}</h6>
+                        </div>
+                        <img src="{{ profile.photo.url }}" alt="Profile Photo">
+                    </div>
+                    <p class="card-text"><strong>Description:</strong> {{ profile.description }}</p>
+                    <form method="POST" action="{% url 'approve_user' profile.id %}">
+                        {% csrf_token %}
+                        <button class="card-link" type="submit" name="approve">Approve</button>
+                        <button class="card-link" type="submit" name="reject">Reject</button>
+                    </form>
+                </div>
             </div>
             {% endfor %}
-            
+
 
             <div class="users-info">
                 <table class="table" style="max-width: 50%;">
@@ -103,38 +122,39 @@
                             <th scope="row"> {{ user.id|add:"-1" }} </th>
                             <td>{{ user.username }}</td>
                             <td> {{ user.email }} </td>
-                            <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / <a href="{% url 'update_user_admin' user.username %}">Update User</a></td>
+                            <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / <a
+                                    href="{% url 'update_user_admin' user.username %}">Update User</a></td>
                         </tr>
                         {% endif %}
                         {% endfor %}
                     </tbody>
                 </table>
-                <div id="myChart" style="width:100%; max-width:800px; height:500px;"></div>    
+                <div id="myChart" style="width:100%; max-width:800px; height:500px;"></div>
             </div>
 
         </div>
     </div>
 </div>
 <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart']});
+    google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart);
-    
+
     function drawChart() {
         const users = JSON.parse('{{ chartusers | escapejs }}');
         const data = new google.visualization.arrayToDataTable([
             ['Employee\'s name', 'Salary'],
             ...users.map(chartuser => [chartuser.username, chartuser.salary])
         ]);
-    
-    const options = {
-      title:'Employees salaries'
-    };
-    
-    const chart = new google.visualization.BarChart(document.getElementById('myChart'));
-    chart.draw(data, options);
-    
+
+        const options = {
+            title: 'Employees salaries'
+        };
+
+        const chart = new google.visualization.BarChart(document.getElementById('myChart'));
+        chart.draw(data, options);
+
     }
-    </script>
+</script>
 
 
 {% endblock %}

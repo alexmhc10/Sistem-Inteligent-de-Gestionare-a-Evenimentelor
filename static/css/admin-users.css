@@ -7,3 +7,17 @@
 .users-info table{
     height:200px;
 }
+
+.card-body .primary-info{
+    display: flex;
+    flex-direction: row;
+}
+
+.card-body .titles{
+    display:flex;
+    flex-direction: column;
+}
+.primary-info img{
+    width:6vw;
+    height: auto;
+}

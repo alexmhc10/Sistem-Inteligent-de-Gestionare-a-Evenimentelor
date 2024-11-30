@@ -190,17 +190,13 @@ def approve_user(request, pk):
 
 @login_required(login_url='login')
 def admin_charts(request):
-    users = User.objects.filter(is_superuser=True)
-    profiles = Profile.objects.exclude(user__in=users)
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    
-    user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     locations_data = []
     locations = Location.objects.all()
     
     for location in locations:
-        event_count = location.event_set.count()  # numără evenimentele pentru locația curentă
+        event_count = location.event_set.count() 
         locations_data.append({
             'name': location.name,
             'event_count': event_count,
@@ -208,7 +204,6 @@ def admin_charts(request):
     
     context = {
         'locations_data': json.dumps(locations_data),
-        'chartusers': json.dumps(user_data)
     }
     return render(request, 'base/admin-charts.html', context)
 
