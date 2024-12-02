@@ -24,9 +24,9 @@ def feedback_event(request):
     return render(request, 'base/feedback_eveniment.html')
 @login_required(login_url='/login')
 def event_history(request):
-    
     events = Event.objects.all()
     return render(request, 'base/istoric_evenimente.html', {'events': events})
+
 @login_required(login_url='/login')
 def guest_list(request):
     guests = Guests.objects.all()
@@ -206,6 +206,18 @@ def admin_charts(request):
         'locations_data': json.dumps(locations_data),
     }
     return render(request, 'base/admin-charts.html', context)
+
+
+
+@login_required(login_url='login')
+def admin_events(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context ={
+
+    }
+    return render(request, 'base/admin-events.html', context)
+
 
 
 @login_required(login_url='login')
