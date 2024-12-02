@@ -1,0 +1,17 @@
+.col-auto.col-md-2.forevents {
+    position:fixed;
+}
+.col.py-3.events {
+    margin-left: 12.5%;
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap; 
+    overflow-y: auto; 
+    max-width: 100%; 
+}
+.nav-link{
+    color:#D4AF37;
+}
+.nav-link:hover{
+    color:rgb(20, 24, 52); 
+}

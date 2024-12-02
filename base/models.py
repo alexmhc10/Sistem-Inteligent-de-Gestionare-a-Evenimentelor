@@ -103,6 +103,7 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
+    types = models.ManyToManyField(Type, blank=True)
 
     def __str__(self):
         return self.event_name

@@ -213,8 +213,18 @@ def admin_charts(request):
 def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
+    events = Event.objects.all()
+    users = User.objects.filter(is_superuser=False)
+    types = Type.objects.all()
+    types_with_event_count = []
+    for type in types:
+        event_count = Event.objects.filter(types=type).count()  
+        types_with_event_count.append({'type': type.name, 'count': event_count})
+    print("Date evenimente", types_with_event_count)
     context ={
-
+        'types_with_event_count': types_with_event_count,
+        'events':events,
+        'users': users
     }
     return render(request, 'base/admin-events.html', context)
 
