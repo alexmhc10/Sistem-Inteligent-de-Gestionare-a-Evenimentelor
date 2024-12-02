@@ -15,3 +15,45 @@
 .nav-link:hover{
     color:rgb(20, 24, 52); 
 }
+.modal-dialog{
+    margin:auto;
+}
+#custom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1050;
+    background-color: rgba(0, 0, 0, 0.5); 
+}
+#product-price-range {
+    height: 10px; 
+    align-items: center;
+}
+
+.noUi-handle {
+    height: 5px !important;
+    background-color: #007bff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.noUi-handle-lower, .noUi-handle-upper {
+    margin-top:-0.1rem !important;
+    height: 1.4vw !important; 
+}
+.dropdown-menu {
+    position: absolute !important;
+    z-index: 2050 !important; /* Crește valoarea pentru a fi deasupra altor elemente */
+    top: 100%; /* Asigură-te că dropdown-ul apare sub buton */
+    left: 0;
+}
+.dropdown {
+    position: relative;
+}

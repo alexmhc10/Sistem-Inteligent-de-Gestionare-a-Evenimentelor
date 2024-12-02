@@ -213,19 +213,49 @@ def admin_charts(request):
 def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
+    
     events = Event.objects.all()
     users = User.objects.filter(is_superuser=False)
     types = Type.objects.all()
     types_with_event_count = []
+    
     for type in types:
-        event_count = Event.objects.filter(types=type).count()  
+        event_count = Event.objects.filter(types=type).count()
         types_with_event_count.append({'type': type.name, 'count': event_count})
-    print("Date evenimente", types_with_event_count)
-    context ={
+    
+    events_count = events.count()
+
+    detailed_events = []
+    for event in events:
+        guest_count = event.guests.count()  
+        event_types = [type.name for type in event.types.all()] 
+        detailed_events.append({
+            'name': event.event_name,
+            'location': event.location,
+            'event_date': event.event_date,
+            'event_time': event.event_time,
+            'completed': event.completed,
+            'types': event_types,
+            'guest_count': guest_count,
+        })
+    print("Date evenimente: ", detailed_events)
+    detailed_incompleted_events = []
+    finished_count = 0
+    for item in detailed_events:
+        if item['completed'] == True:
+            finished_count += 1
+            print(item)
+            detailed_incompleted_events.append(item)
+    context = {
+        'finished_count':finished_count,
+        'detailed_incompleted_events':detailed_incompleted_events,
+        'detailed_events': detailed_events,
+        'events_count': events_count,
         'types_with_event_count': types_with_event_count,
-        'events':events,
+        'events': events,
         'users': users
     }
+
     return render(request, 'base/admin-events.html', context)
 
 
