@@ -1,12 +1,6 @@
 /* styles.css */
 /* Stiluri pentru butoanele din formular_eveniment, dar tot nu merg */
-.btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-}
+
 .btn-next {
     background-color: #2E8B57; /* Verde smarald */
     color: white; /* Text alb */
@@ -15,7 +9,7 @@
     border-radius: 5px; /* Colțuri rotunjite */
     font-size: 16px; /* Dimensiune text */
     cursor: pointer; /* Cursor pointer */
-    transition: background-color 0.3s ease; /* Tranziție pentru hover */
+    transition: background-color 0.3s ease; 
 }
 
 .btn-next:hover {
@@ -54,6 +48,38 @@
     background-color: #001F3F; /* Bleumarin mai închis */
 }
 
+
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.card h3 {
+    margin-bottom: 8px;
+    color: #002B5B;
+}
+.card p {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+.btn-view {
+    background-color: #28a745; 
+    color: white;
+    margin-right: 10px;
+}
+.btn-delete {
+    background-color: #dc3545; 
+    color: white;
+}
+.btn {
+    padding: 8px 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+}
 .formular_eveniment {
     background-color: white;
     border: 1px solid #ECECEC;
