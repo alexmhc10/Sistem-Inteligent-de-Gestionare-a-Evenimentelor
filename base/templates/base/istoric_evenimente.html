@@ -1,104 +1,22 @@
 {% extends 'main.html' %}
-{% load static %}
+
 {% block content %}
 
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #FAF9F6; 
-        margin: 0;
-        padding: 20px;
-    }
 
-    .container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-    }
-
-    .event-card {
-        width: 300px;
-        border: 1px solid #ECECEC; /* Gri deschis */
-        border-radius: 8px;
-        background-color: white;
-        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .event-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .event-card img {
-        width: 100%;
-        height: 180px;
-        object-fit: cover;
-    }
-
-    .event-details {
-        text-align: center;
-        padding: 10px;
-    }
-
-    .event-title {
-        font-size: 18px;
-        color: #002B5B; /* Bleumarin */
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .event-date {
-        font-size: 14px;
-        color: #2E8B57; /* Verde smarald */
-        margin-bottom: 10px;
-    }
-
-    .event-description {
-        font-size: 14px;
-        color: #555; /* Gri neutru */
-        margin-bottom: 10px;
-    }
-
-    .event-actions {
-        display: flex;
-        justify-content: space-around;
-        padding: 10px;
-        border-top: 1px solid #ECECEC;
-    }
-
-    .event-actions a {
-        background-color: #2E8B57; /* Verde smarald */
-        color: white;
-        border: none;
-        border-radius: 5px;
-        padding: 8px 12px;
-        font-size: 14px;
-        text-decoration: none;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-    }
-
-    .event-actions a:hover {
-        background-color: #206341; /* Verde mai închis */
-    }
-</style>
 
 <h1 style="text-align: center; color: #002B5B;">Istoric Evenimente</h1>
 
 <div class="container">
     <!-- Eveniment 1 -->
     <div class="event-card">
-        <img src="{% static 'images/event1.jpg' %}" alt="Event Image">
+        <img src="" alt="Event Image">
         <div class="event-details">
             <div class="event-title">Eveniment 1</div>
             <div class="event-date">12 Noiembrie 2024</div>
             <div class="event-description">Un eveniment elegant organizat la locația X.</div>
         </div>
         <div class="event-actions">
-            <a href="{% url 'feedback_event' %}">Feedback</a>
+            <a href="">Feedback</a>
             <button>Galerie</button>
             <button>Detalii</button>
         </div>
@@ -107,14 +25,14 @@
     <!-- Repeat for other events -->
     <!-- Eveniment 2 -->
     <div class="event-card">
-        <img src="{% static 'images/event2.jpg' %}" alt="Event Image">
+        <img src="" alt="Event Image">
         <div class="event-details">
             <div class="event-title">Eveniment 2</div>
             <div class="event-date">15 Noiembrie 2024</div>
             <div class="event-description">Un eveniment corporate la locația Y.</div>
         </div>
         <div class="event-actions">
-            <a href="{% url 'feedback_event' %}">Feedback</a>
+            <a href="">Feedback</a>
             <button>Galerie</button>
             <button>Detalii</button>
         </div>

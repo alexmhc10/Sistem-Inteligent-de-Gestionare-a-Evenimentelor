@@ -1,0 +1,73 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+<body>
+    <div class="formular_eveniment">
+        <h3>Creare Eveniment Nou</h3>
+        <form id="eventForm" method="POST" action="/create-event/">
+            {% csrf_token %}
+            
+            <!-- Pagina despre detalii evenimentului -->
+            <div class="form-step" id="step1">
+                <label for="event_name">Nume Eveniment</label>
+                <input type="text" id="event_name" name="event_name" placeholder="Introdu numele evenimentului" required>
+                
+                <label for="event_date">Data Evenimentului</label>
+                <input type="date" id="event_date" name="event_date" required>
+                
+                <label for="event_time">Ora Evenimentului</label>
+                <input type="time" id="event_time" name="event_time" required>
+                
+                <label for="event_description">Descriere Eveniment</label>
+                <textarea id="event_description" name="event_description" placeholder="Adaugă o descriere scurtă a evenimentului" rows="4" required></textarea>
+                
+                <div class="form-step-buttons">
+                    <button type="button" class="btn-next" onclick="nextStep(2)">Înainte</button>
+                </div>
+            </div>
+            
+            <!-- Pagina despre invitati -->
+            <div class="form-step" id="step2" style="display:none;">
+                <label for="guests">Număr de Invitați</label>
+                <input type="number" id="guests" name="guests" placeholder="Ex: 50" min="1" required>
+                
+                <div class="form-step-buttons">
+                    <button type="button" class="btn-prev" onclick="prevStep(1)">Înapoi</button>
+                    <button type="button" class="btn-next" onclick="nextStep(3)">Înainte</button>
+                </div>
+            </div>
+            
+            <!-- Pagina despre servicii -->
+            <div class="form-step" id="step3" style="display:none;">
+                <label for="catering">Catering</label>
+                <input type="text" id="catering" name="catering" placeholder="Detalii catering" required>
+                
+                <label for="decorations">Decorațiuni</label>
+                <input type="text" id="decorations" name="decorations" placeholder="Detalii decorațiuni" required>
+                
+                <div class="form-step-buttons">
+                    <button type="button" class="btn-prev" onclick="prevStep(2)">Înapoi</button>
+                    <button type="submit" class="btn-submit">Salvează Eveniment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        function nextStep(step) {
+            document.querySelectorAll('.form-step').forEach(function(stepDiv) {
+                stepDiv.style.display = 'none';
+            });
+            document.getElementById('step' + step).style.display = 'block';
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.form-step').forEach(function(stepDiv) {
+                stepDiv.style.display = 'none';
+            });
+            document.getElementById('step' + step).style.display = 'block';
+        }
+    </script>
+</body>
+{% endblock %}

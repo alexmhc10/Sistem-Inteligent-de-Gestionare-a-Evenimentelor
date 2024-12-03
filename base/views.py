@@ -19,7 +19,20 @@ from .models import Event
 import random
 from datetime import datetime
 
+@login_required(login_url='/login')
+def event_builder(request):
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.organized_by = request.user
+            event.save()
+            form.save_m2m()  
+            return redirect('my_events')  
+    else:
+        form = EventForm()
 
+    return render(request, 'base/event_builder.html', {'form2': form})
 
 @login_required(login_url='/login')
 def feedback_event(request):

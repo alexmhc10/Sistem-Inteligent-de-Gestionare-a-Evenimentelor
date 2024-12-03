@@ -1,13 +1,209 @@
 /* styles.css */
+/* Stiluri pentru butoanele din formular_eveniment, dar tot nu merg */
+.btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+.btn-next {
+    background-color: #2E8B57; /* Verde smarald */
+    color: white; /* Text alb */
+    padding: 10px 20px; /* Spațiere interioară */
+    border: none; /* Fără bordură */
+    border-radius: 5px; /* Colțuri rotunjite */
+    font-size: 16px; /* Dimensiune text */
+    cursor: pointer; /* Cursor pointer */
+    transition: background-color 0.3s ease; /* Tranziție pentru hover */
+}
 
+.btn-next:hover {
+    background-color: #206341; /* Verde smarald mai închis */
+}
+
+.btn-prev {
+    background-color: #D4AF37; /* Auriu */
+    color: white; /* Text alb */
+    padding: 10px 20px; /* Spațiere interioară */
+    border: none; /* Fără bordură */
+    border-radius: 5px; /* Colțuri rotunjite */
+    font-size: 16px; /* Dimensiune text */
+    cursor: pointer; /* Cursor pointer */
+    transition: background-color 0.3s ease; /* Tranziție pentru hover */
+}
+
+.btn-prev:hover {
+    background-color: #B8912A; /* Auriu mai închis */
+}
+
+.btn-submit {
+    background-color: #002B5B; /* Bleumarin */
+    color: white; /* Text alb */
+    padding: 12px 25px; /* Spațiere mai mare pentru butonul final */
+    border: none; /* Fără bordură */
+    border-radius: 8px; /* Colțuri rotunjite */
+    font-size: 18px; /* Dimensiune text mai mare */
+    font-weight: bold; /* Text îngroșat */
+    cursor: pointer; /* Cursor pointer */
+    transition: background-color 0.3s ease; /* Tranziție pentru hover */
+    margin-top: 15px; /* Spațiere suplimentară deasupra */
+}
+
+.btn-submit:hover {
+    background-color: #001F3F; /* Bleumarin mai închis */
+}
+
+.formular_eveniment {
+    background-color: white;
+    border: 1px solid #ECECEC;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto;
+    font-family: Arial, sans-serif;
+}
+
+.formular_eveniment h3 {
+    text-align: center;
+    color: #002B5B;
+    margin-bottom: 20px;
+}
+
+.formular_eveniment label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #2E8B57;
+}
+
+.formular_eveniment input,
+.formular_eveniment textarea,
+.formular_eveniment select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+.formular_eveniment button {
+    width: 100%;
+    padding: 10px;
+    background-color: #D4AF37;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.formular_eveniment button:hover {
+    background-color: #B8912A;
+}
+
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background-color: #FAF9F6;
+    padding: 5px 10px;
+    border-bottom: 2px solid #D4AF37;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FAF9F6;
+    margin: 0;
+   
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.event-card {
+    width: 300px;
+    border: 1px solid #ECECEC; /* Gri deschis */
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 2px 2px 15px rgba(0, 0, 0, 0.2);
+}
+
+.event-card img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+}
+
+.event-details {
+    text-align: center;
+    padding: 10px;
+}
+
+.event-title {
+    font-size: 18px;
+    color: #002B5B; /* Bleumarin */
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.event-date {
+    font-size: 14px;
+    color: #2E8B57; /* Verde smarald */
+    margin-bottom: 10px;
+}
+
+.event-description {
+    font-size: 14px;
+    color: #555; /* Gri neutru */
+    margin-bottom: 10px;
+}
+
+.event-actions {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    border-top: 1px solid #ECECEC;
+}
+
+.event-actions a {
+    background-color: #2E8B57; /* Verde smarald */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 14px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.event-actions a:hover {
+    background-color: #206341; /* Verde mai închis */
+}
 .equal-height {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     height: 100%;
-    background-color: #FAF9F6; /* Alb perlat pentru fundal */
+    background-color: #FAF9F6;
     padding: 15px;
-    border: 1px solid #ECECEC; /* Gri deschis pentru borduri */
+    border: 1px solid #ECECEC;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -17,7 +213,7 @@
     grid-template-columns: 1fr 2fr 1fr;
     gap: 20px;
     margin-top: 30px;
-    background-color: #FAF9F6; /* Alb perlat pentru fundal */
+    background-color: #FAF9F6;
     padding: 20px;
 }
 
@@ -29,7 +225,7 @@
     background-color: #FAF9F6;
     border: 1px solid #ECECEC;
     border-radius: 8px;
-    padding: 20px;
+   
 }
 
 .lower-container {
@@ -41,12 +237,123 @@
     padding: 20px;
 }
 
-/* Accente aurii pentru linkuri sau butoane */
 a {
-    color: #D4AF37; /* Auriu pentru linkuri */
+    color: #D4AF37;
     text-decoration: none;
 }
 
 a:hover {
     color: #2E8B57;
+}
+
+.feedback-list-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #FAF9F6;
+    border: 1px solid #ECECEC;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.feedback-list-container h2 {
+    text-align: center;
+    color: #002B5B;
+}
+
+.event-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.feedback-item {
+    border-bottom: 1px solid #ECECEC;
+    padding: 15px 0;
+}
+
+.feedback-item:last-child {
+    border-bottom: none;
+}
+
+.feedback-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.feedback-name {
+    font-weight: bold;
+    color: #002B5B;
+}
+
+.feedback-rating {
+    color: #FFD700;
+}
+
+.feedback-comments {
+    margin-top: 10px;
+    color: #555;
+}
+
+.task_manager {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    background-color: #FAF9F6;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #002B5B;
+    max-width: 500px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.task_manager h3 {
+    color: #D4AF37;
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+.task_manager p {
+    font-size: 1.2em;
+    color: #002B5B;
+}
+
+.task_manager button {
+    background-color: #D4AF37;
+    color: #FAF9F6;
+    font-size: 1.1em;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.task_manager button:hover {
+    background-color: #002B5B;
+    color: #FAF9F6;
+}
+
+.task_manager form {
+    width: auto;
+}
+
+.task_manager li {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-left: 0;
+}
+
+.task_manager span, a {
+    margin-left: auto;
+}
+
+.task_manager h5 {
+    text-align: left;
+    margin-left: -20px;
+    margin-right: 20px;
 }
