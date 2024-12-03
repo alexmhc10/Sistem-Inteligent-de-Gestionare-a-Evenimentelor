@@ -43,6 +43,11 @@ class EventForm(forms.ModelForm):
             'event_date': forms.DateInput(attrs={'type': 'date'}),
             'event_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+    def clean_organized_by(self):
+        user = self.cleaned_data.get('organized_by')
+        if user.is_superuser:
+            raise forms.ValidationError("Admin-ul nu poate organiza evenimente.")
+        return user
 
 
 

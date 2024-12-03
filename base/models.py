@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.core.exceptions import ValidationError
 
 class Task(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -26,7 +27,8 @@ class Location(models.Model):
     location = models.TextField(max_length=30)
     types = models.ManyToManyField(Type, blank=True)
     seats_numbers = models.IntegerField(null=True, blank=True)
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    cost = models.IntegerField(default=3000)
     def __str__(self):
         return self.name
 
@@ -104,7 +106,16 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
-
+    organized_by = models.ForeignKey(
+            User,
+            on_delete=models.CASCADE, 
+            related_name="organized_events",
+            blank=True,
+            null=True
+        )
+    def clean(self):
+        if self.organized_by and self.organized_by.is_superuser:
+            raise ValidationError("Superuser-ul nu poate organiza evenimente.")
     def __str__(self):
         return self.event_name
 

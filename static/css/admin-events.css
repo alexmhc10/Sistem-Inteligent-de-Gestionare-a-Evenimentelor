@@ -50,10 +50,16 @@
 }
 .dropdown-menu {
     position: absolute !important;
-    z-index: 2050 !important; /* Crește valoarea pentru a fi deasupra altor elemente */
-    top: 100%; /* Asigură-te că dropdown-ul apare sub buton */
+    z-index: 2050 !important; 
+    top: 100%; 
     left: 0;
 }
 .dropdown {
     position: relative;
+}
+.star {
+    color: lightgray;
+}
+.star.filled {
+    color: gold;
 }

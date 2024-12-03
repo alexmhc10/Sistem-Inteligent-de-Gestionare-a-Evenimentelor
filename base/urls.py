@@ -34,6 +34,7 @@ urlpatterns = [
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),
+    path('admin-locations', views.admin_locations, name="admin-locations"),
 
     # Recenzii
     path('delete_review/<str:pk>/', views.deleteReview, name="delete_review"),

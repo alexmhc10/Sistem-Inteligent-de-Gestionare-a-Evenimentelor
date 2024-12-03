@@ -17,6 +17,8 @@ from .forms import TaskForm
 from django.http import HttpResponseRedirect
 from .models import Event
 import random
+from datetime import datetime
+
 
 
 @login_required(login_url='/login')
@@ -210,10 +212,53 @@ def admin_charts(request):
 
 
 @login_required(login_url='login')
+def admin_locations(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    locations = Location.objects.all()
+    detailed_locations = []
+    for location in locations:
+        detailed_locations.append({
+            'name':location.name,
+            'added_by':location.owner,
+            'photo':location.gallery,
+            'located':location.location,
+            'seats':location.seats_numbers,
+            'added_at':location.created_at,
+            'cost': location.cost
+        })
+    organizers = User.objects.filter(is_superuser = False)
+    count_organizers = organizers.count()
+    filter_date = datetime(2024, 12, 2, 0, 0, 0)
+    new_locations_count = sum(1 for location in detailed_locations 
+            if location['added_at'].replace(tzinfo=None) > filter_date)
+    new_locations_detailed = []
+    for location in detailed_locations:
+        if location['added_at'].replace(tzinfo=None) > filter_date:
+            new_locations_detailed.append(location)
+    all_locations_count = locations.count()
+    types_with_location_count = []
+    types = Type.objects.all()
+    for type in types:
+        location_count = Location.objects.filter(types=type).count()
+        types_with_location_count.append({'type': type.name, 'count': location_count})
+    print("Date locatii cu tipuri:" ,types_with_location_count)
+    context = {
+        'new_locations_detailed':new_locations_detailed,
+        'types_with_location_count':types_with_location_count,
+        'organizers':organizers,
+        'count_organizers':count_organizers,
+        'all_locations_count':all_locations_count,
+        'new_locations_count':new_locations_count,
+        'detailed_locations':detailed_locations
+    }
+    return render(request, 'base/admin-locations.html', context)
+
+
+@login_required(login_url='login')
 def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    
     events = Event.objects.all()
     users = User.objects.filter(is_superuser=False)
     types = Type.objects.all()
@@ -237,6 +282,7 @@ def admin_events(request):
             'completed': event.completed,
             'types': event_types,
             'guest_count': guest_count,
+            'organized_by':event.organized_by
         })
     print("Date evenimente: ", detailed_events)
     detailed_incompleted_events = []
@@ -255,9 +301,7 @@ def admin_events(request):
         'events': events,
         'users': users
     }
-
     return render(request, 'base/admin-events.html', context)
-
 
 
 @login_required(login_url='login')
