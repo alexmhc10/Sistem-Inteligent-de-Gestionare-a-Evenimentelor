@@ -96,6 +96,7 @@ class Menu(models.Model):
         return self.item_name
     
     
+    
 class Event(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     event_name = models.CharField(max_length=100)
@@ -106,6 +107,7 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
+    cost = models.IntegerField(default= 3000)
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 
@@ -123,6 +125,7 @@ class Event(models.Model):
         if self.event_date <= now().date():
             self.completed = True
             self.save()
+
 
 
 class EventMenu(models.Model):
