@@ -1,51 +1,112 @@
 /* styles.css */
-/* Stiluri pentru butoanele din formular_eveniment, dar tot nu merg */
+/* Stiluri pentru butoanele din event_builder */
+.event_builder {
+    max-width: 800px; 
+    margin: 20px auto; 
+    padding: 30px;
+    background-color: #FAF9F6; 
+    border-radius: 8px;
+    border: 1px solid #ECECEC; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    font-family: Arial, sans-serif; 
+}
+
+.event_builder h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #002B5B; 
+    font-size: 24px; 
+}
+
+.event_builder label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #2E8B57; 
+}
+
+.event_builder input[type="text"],
+.event_builder input[type="date"],
+.event_builder input[type="time"],
+.event_builder input[type="number"],
+.event_builder textarea {
+    width: 100%;
+    padding: 12px; 
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 6px; 
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+.event_builder .form-step-buttons {
+    margin-top: 25px;
+    text-align: right;
+}
+
+.event_builder .btn-next,
+.event_builder .btn-prev,
+.event_builder .btn-submit {
+    background-color: #D4AF37; 
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.event_builder .btn-next:hover,
+.event_builder .btn-prev:hover,
+.event_builder .btn-submit:hover {
+    background-color: #B8912A;
+}
 
 .btn-next {
-    background-color: #2E8B57; /* Verde smarald */
-    color: white; /* Text alb */
-    padding: 10px 20px; /* Spațiere interioară */
-    border: none; /* Fără bordură */
-    border-radius: 5px; /* Colțuri rotunjite */
-    font-size: 16px; /* Dimensiune text */
-    cursor: pointer; /* Cursor pointer */
+    background-color: #2E8B57; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none;
+    font-size: 16px; 
+    cursor: pointer;
     transition: background-color 0.3s ease; 
 }
 
 .btn-next:hover {
-    background-color: #206341; /* Verde smarald mai închis */
+    background-color: #206341;
 }
 
 .btn-prev {
-    background-color: #D4AF37; /* Auriu */
-    color: white; /* Text alb */
-    padding: 10px 20px; /* Spațiere interioară */
-    border: none; /* Fără bordură */
-    border-radius: 5px; /* Colțuri rotunjite */
-    font-size: 16px; /* Dimensiune text */
-    cursor: pointer; /* Cursor pointer */
-    transition: background-color 0.3s ease; /* Tranziție pentru hover */
+    background-color: #D4AF37; 
+    color: white; 
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    font-size: 16px; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
 }
 
 .btn-prev:hover {
-    background-color: #B8912A; /* Auriu mai închis */
+    background-color: #B8912A; 
 }
 
 .btn-submit {
-    background-color: #002B5B; /* Bleumarin */
-    color: white; /* Text alb */
-    padding: 12px 25px; /* Spațiere mai mare pentru butonul final */
-    border: none; /* Fără bordură */
-    border-radius: 8px; /* Colțuri rotunjite */
-    font-size: 18px; /* Dimensiune text mai mare */
-    font-weight: bold; /* Text îngroșat */
-    cursor: pointer; /* Cursor pointer */
-    transition: background-color 0.3s ease; /* Tranziție pentru hover */
-    margin-top: 15px; /* Spațiere suplimentară deasupra */
+    background-color: #002B5B; 
+    color: white; 
+    padding: 12px 25px; 
+    border: none; 
+    border-radius: 8px; 
+    font-size: 18px;
+    font-weight: bold; 
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 15px; 
 }
 
 .btn-submit:hover {
-    background-color: #001F3F; /* Bleumarin mai închis */
+    background-color: #001F3F;
 }
 
 
@@ -376,4 +437,9 @@ a:hover {
     text-align: left;
     margin-left: -20px;
     margin-right: 20px;
+}
+:root {
+    --primary-color: #2E8B57;
+    --secondary-color: #D4AF37;
+    --text-color: #002B5B;
 }
