@@ -181,3 +181,9 @@
 .mult-select-tag .rounded {
     border-radius: .375rem
 }
+.fw-medium{
+    color: #D4AF37;
+}
+.fw-medium:hover{
+    color:rgb(20, 24, 52); 
+}
