@@ -609,7 +609,7 @@ def updateUserAdmin(request, pk):
     if not request.user.is_superuser:
             return HttpResponse("Only superusers can approve users.")
     user = User.objects.get(username=pk)
-    form = CustomUserChangeForm(instance=user)  # Folosește formularul personalizat
+    form = CustomUserChangeForm(instance=user)  
     if request.method == 'POST':
         form = CustomUserChangeForm(request.POST, instance=user)
         if form.is_valid():

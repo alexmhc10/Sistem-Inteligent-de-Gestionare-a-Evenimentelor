@@ -73,13 +73,7 @@
     background-color: #dc3545; 
     color: white;
 }
-.btn {
-    padding: 8px 16px;
-    border-radius: 5px;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 14px;
-}
+
 .formular_eveniment {
     background-color: white;
     border: 1px solid #ECECEC;

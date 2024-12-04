@@ -78,17 +78,7 @@
                                 <div class="col-sm">
                                     <h5 class="card-title mb-0">Events History</h5>
                                 </div>
-                                <div class="col-sm-auto">
-                                    <div class="d-flex gap-1 flex-wrap">
-                                        <button type="button" class="btn btn-success add-btn" data-bs-toggle="modal"
-                                            id="create-btn" data-bs-target="#showModal"><i
-                                                class="ri-add-line align-bottom me-1"></i> Create Order</button>
-                                        <button type="button" class="btn btn-info"><i
-                                                class="ri-file-download-line align-bottom me-1"></i> Import</button>
-                                        <button class="btn btn-soft-danger" id="remove-actions"
-                                            onclick="deleteMultiple()"><i class="ri-delete-bin-2-line"></i></button>
-                                    </div>
-                                </div>
+                                
                             </div>
                         </div>
                         <div class="card-body border border-dashed border-end-0 border-start-0">
@@ -96,9 +86,15 @@
                                 <div class="row g-3">
                                     <div class="col-xxl-5 col-sm-6">
                                         <div class="search-box">
-                                            <input type="text" class="form-control search"
-                                                placeholder="Search for order ID, customer, order status or something...">
-                                            <i class="ri-search-line search-icon"></i>
+                                            <form action="" >
+                                                <select name="countries" id="countries" multiple>Search for an Eveniment
+                                                    <option value="1">Afghanistan</option>
+                                                    <option value="2">Australia</option>
+                                                    <option value="3">Germany</option>
+                                                    <option value="4">Canada</option>
+                                                    <option value="5">Russia</option>
+                                                </select>
+                                                </form>
                                         </div>
                                     </div>
                                     <!--end col-->
@@ -128,11 +124,7 @@
                                                         <option value="Returns">Returns</option>
                                                         <option value="Delivered">Delivered</option>
                                                     </select>
-                                                    <div class="choices__list choices__list--single">
-                                                        <div class="choices__item choices__item--selectable"
-                                                            data-item="" data-id="2" data-value="all"
-                                                            aria-selected="true" role="option">All</div>
-                                                    </div>
+                                                    
                                                 </div>
                                                 <div class="choices__list choices__list--dropdown"
                                                     aria-expanded="false">
@@ -181,62 +173,71 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        
                                     </div>
                                     <!--end col-->
                                     <div class="col-xxl-2 col-sm-4">
                                         <div>
                                             <div class="choices" data-type="select-one" tabindex="0" role="listbox"
                                                 aria-haspopup="true" aria-expanded="false">
-                                                <div class="choices__inner"><select class="form-control choices__input choices-single"
+                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
                                                         data-choices="" data-choices-search-false=""
                                                         name="choices-single-default" id="idPayment" hidden=""
                                                         tabindex="-1" data-choice="active">
-                                                        <option value="">Select Payment</option>
+                                                        <option value="">Status</option>
                                                         <option value="all" selected="">All</option>
-                                                        <option value="Mastercard">Mastercard</option>
-                                                        <option value="Paypal">Paypal</option>
-                                                        <option value="Visa">Visa</option>
-                                                        <option value="COD">COD</option>
+                                                        <option value="Pending">Pending</option>
+                                                        <option value="Inprogress">Inprogress</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                        <option value="Pickups">Pickups</option>
+                                                        <option value="Returns">Returns</option>
+                                                        <option value="Delivered">Delivered</option>
                                                     </select>
-                                                    <div class="choices__list choices__list--single">
-                                                        <div class="choices__item choices__item--selectable"
-                                                            data-item="" data-id="2" data-value="all"
-                                                            aria-selected="true" role="option">All</div>
-                                                    </div>
+                                                    
                                                 </div>
                                                 <div class="choices__list choices__list--dropdown"
                                                     aria-expanded="false">
                                                     <div class="choices__list" role="listbox">
-                                                        <div id="choices--idPayment-item-choice-1"
+                                                        <div id="choices--idStatus-item-choice-1"
                                                             class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
                                                             role="option" data-choice="" data-id="1" data-value=""
                                                             data-select-text="Press to select" data-choice-selectable=""
-                                                            aria-selected="true">Select Payment</div>
-                                                        <div id="choices--idPayment-item-choice-2"
+                                                            aria-selected="true">Status</div>
+                                                        <div id="choices--idStatus-item-choice-2"
                                                             class="choices__item choices__item--choice is-selected choices__item--selectable"
                                                             role="option" data-choice="" data-id="2" data-value="all"
                                                             data-select-text="Press to select"
                                                             data-choice-selectable="">All</div>
-                                                        <div id="choices--idPayment-item-choice-6"
+                                                        <div id="choices--idStatus-item-choice-5"
                                                             class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="6" data-value="COD"
-                                                            data-select-text="Press to select"
-                                                            data-choice-selectable="">COD</div>
-                                                        <div id="choices--idPayment-item-choice-3"
+                                                            role="option" data-choice="" data-id="5"
+                                                            data-value="Cancelled" data-select-text="Press to select"
+                                                            data-choice-selectable="">Cancelled</div>
+                                                        <div id="choices--idStatus-item-choice-8"
+                                                            class="choices__item choices__item--choice choices__item--selectable"
+                                                            role="option" data-choice="" data-id="8"
+                                                            data-value="Delivered" data-select-text="Press to select"
+                                                            data-choice-selectable="">Delivered</div>
+                                                        <div id="choices--idStatus-item-choice-4"
+                                                            class="choices__item choices__item--choice choices__item--selectable"
+                                                            role="option" data-choice="" data-id="4"
+                                                            data-value="Inprogress" data-select-text="Press to select"
+                                                            data-choice-selectable="">Inprogress</div>
+                                                        <div id="choices--idStatus-item-choice-3"
                                                             class="choices__item choices__item--choice choices__item--selectable"
                                                             role="option" data-choice="" data-id="3"
-                                                            data-value="Mastercard" data-select-text="Press to select"
-                                                            data-choice-selectable="">Mastercard</div>
-                                                        <div id="choices--idPayment-item-choice-4"
+                                                            data-value="Pending" data-select-text="Press to select"
+                                                            data-choice-selectable="">Pending</div>
+                                                        <div id="choices--idStatus-item-choice-6"
                                                             class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="4" data-value="Paypal"
-                                                            data-select-text="Press to select"
-                                                            data-choice-selectable="">Paypal</div>
-                                                        <div id="choices--idPayment-item-choice-5"
+                                                            role="option" data-choice="" data-id="6"
+                                                            data-value="Pickups" data-select-text="Press to select"
+                                                            data-choice-selectable="">Pickups</div>
+                                                        <div id="choices--idStatus-item-choice-7"
                                                             class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="5" data-value="Visa"
-                                                            data-select-text="Press to select"
-                                                            data-choice-selectable="">Visa</div>
+                                                            role="option" data-choice="" data-id="7"
+                                                            data-value="Returns" data-select-text="Press to select"
+                                                            data-choice-selectable="">Returns</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1103,19 +1104,60 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/js/multi-select-tag.js"></script>
+<script>
+    new MultiSelectTag('countries')
+    document.querySelector('.mult-select-tag .input').setAttribute('placeholder', 'Search for an event');
+
+</script>
 {% endblock content %}
 {% block javascript %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const statusSelect = new Choices('#idStatus', {
-            searchEnabled: false,
-            itemSelectText: '',
-        });
-
-        const paymentSelect = new Choices('#idPayment', {
-            searchEnabled: false,
-            itemSelectText: '',
-        });
+    flatpickr("#demo-datepicker", {
+        dateFormat: "d M, Y",
+        mode: "range",
     });
+});
+document.addEventListener('DOMContentLoaded', function () {
+  const statusElement = document.getElementById('idStatus');
+  const paymentElement = document.getElementById('idPayment');
+
+  // Funcție pentru a reseta complet Choices.js
+  function resetChoices(element) {
+    if (element.choicesInstance) {
+      element.choicesInstance.destroy(); // Distruge instanța existentă
+      element.choicesInstance = null;
+    }
+    // Restaurează elementul select la forma inițială
+    element.removeAttribute('hidden'); // Asigură-te că este vizibil
+    const clonedElement = element.cloneNode(true); // Clonează structura originală
+    element.replaceWith(clonedElement); // Înlocuiește vechiul element
+    return clonedElement; // Returnează elementul resetat
+  }
+
+  // Resetează elementele
+  const resetStatusElement = resetChoices(statusElement);
+  const resetPaymentElement = resetChoices(paymentElement);
+
+  console.log('Element before reinitialization:', resetStatusElement);
+
+  // Inițializează Choices.js
+  resetStatusElement.choicesInstance = new Choices(resetStatusElement, {
+    searchEnabled: false,
+    itemSelectText: '',
+    shouldSort: false,
+  });
+
+  resetPaymentElement.choicesInstance = new Choices(resetPaymentElement, {
+    searchEnabled: false,
+    itemSelectText: '',
+    shouldSort: false,
+  });
+
+  console.log('Choices initialized successfully for idStatus and idPayment');
+});
+
+
 </script>
 {% endblock %}
