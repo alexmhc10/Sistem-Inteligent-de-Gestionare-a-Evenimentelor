@@ -443,3 +443,67 @@ a:hover {
     --secondary-color: #D4AF37;
     --text-color: #002B5B;
 }
+
+/* Specific Styling for the Location Form */
+.location-form {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 30px;
+    background-color: #FAF9F6; 
+    border-radius: 8px;
+    border: 1px solid #ECECEC; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.location-form .form_group {
+    margin-bottom: 20px;
+}
+
+
+.location-form .form_group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #2E8B57; 
+}
+
+
+.location-form input[type="text"],
+.location-form input[type="file"],
+.location-form input[type="number"],
+.location-form textarea,
+.location-form select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+
+.location-form input:focus,
+.location-form textarea:focus,
+.location-form select:focus {
+    border-color: #2E8B57;
+    outline: none;
+}
+
+
+.location-form input[type="submit"] {
+    background-color: #D4AF37;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.location-form input[type="submit"]:hover {
+    background-color: #B8912A; 
+}
+
