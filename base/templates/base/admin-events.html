@@ -347,7 +347,7 @@
                                                         <li class="list-inline-item" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
                                                             title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
+                                                            <a href="{% url 'admin-view-event' item.name %}"
                                                                 class="text-primary d-inline-block">
                                                                 <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
                                                             </a>
@@ -451,8 +451,7 @@
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-success" id="add-btn">Add
-                                                        Order</button>
+                                                    <button type="submit" class="btn btn-success" id="add-btn">Update Event</button>
                                                     <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
                                             </div>
@@ -461,7 +460,6 @@
                                 </div>
                             </div>
 
-                            <!-- Modal -->
                             <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
@@ -505,13 +503,11 @@
 {% block javascript %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Inițializare Flatpickr pentru câmpul de dată
         const eventDateInput = document.getElementById('eventDate');
         flatpickr(eventDateInput, {
-            dateFormat: "d M, Y", // Formatul dorit
+            dateFormat: "d M, Y", 
         });
 
-        // Gestionare evenimente pe butoanele "edit-item-btn"
         document.querySelectorAll('.edit-item-btn').forEach(function(editButton) {
             editButton.addEventListener('click', function(event) {
                 // Obține valorile din atributul data-id
@@ -525,14 +521,12 @@
                 console.log('Event Organizer:', eventOrganizer);
                 console.log('Event Date:', eventDate);
 
-                // Setarea valorilor în câmpurile formularului
                 document.getElementById('orderId').value = eventId;
                 document.getElementById('orderCost').value = eventOrganizer;
                 document.getElementById('eventName').value = eventName;
                 document.getElementById('eventOrganizer').value = eventOrganizer;
                 document.getElementById('eventLocation').value = eventLocation;
 
-                // Parsează data în format compatibil cu Flatpickr
                 const parsedDate = new Date(eventDate);
                 if (isNaN(parsedDate)) {
                     console.error("Invalid date format:", eventDate);

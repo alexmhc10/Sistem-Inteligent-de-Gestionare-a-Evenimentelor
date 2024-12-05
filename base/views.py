@@ -288,6 +288,8 @@ def admin_events(request):
         guest_count = event.guests.count()  
         event_types = [type.name for type in event.types.all()] 
         detailed_events.append({
+            'id':event.id,
+            'cost':event.cost,
             'name': event.event_name,
             'location': event.location,
             'event_date': event.event_date,
@@ -315,6 +317,29 @@ def admin_events(request):
         'users': users
     }
     return render(request, 'base/admin-events.html', context)
+
+
+
+@login_required(login_url='login')
+def admin_view_events(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context = {
+
+    }
+    return render(request, 'base/admin-view-event.html', context)
+
+
+
+@login_required(login_url='login')
+def admin_view_locations(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context = {
+
+    }
+    return render(request, 'base/admin-view-location.html', context)
+
 
 
 @login_required(login_url='login')
