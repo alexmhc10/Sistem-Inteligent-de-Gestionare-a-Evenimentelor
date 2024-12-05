@@ -105,7 +105,7 @@
                                                 <th scope="col">Events cost</th>
                                                 <th scope="col">Guests</th>
                                                 <th scope="col">Rating</th>
-                                                <th scope="col" class="text-end">Total Amount</th>
+                                                <th scope="col" class="text-end">Profit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -132,7 +132,8 @@
                                                     </span>
                                                 </td>
                                                 <td class="fw-medium text-end">
-                                                    $239.98
+                                                    {% widthratio event.cost 100 15 %}
+
                                                 </td>
                                             </tr>
                                             {% endfor %}
@@ -299,9 +300,8 @@
                                 <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
                                     <li class="fw-medium fs-14"> {{location.name}} </li>
                                     <li> {{ location.number }} </li>
-                                    <li>2186 Joyce Street Rocky Mount</li>
-                                    <li>New York - 25645</li>
-                                    <li>United States</li>
+                                    <li> {{ location.location }} </li>
+                                    <li>Romania</li>
                                 </ul>
                             </div>
                         </div>
