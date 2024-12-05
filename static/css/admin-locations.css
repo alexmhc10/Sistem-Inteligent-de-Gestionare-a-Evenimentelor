@@ -3,11 +3,12 @@
 }
 .col.py-3.events {
     margin-left: 12.5%;
-    display: flex;
-    flex-direction: row; 
-    flex-wrap: wrap; 
+  
     overflow-y: auto; 
     max-width: 100%; 
+}
+.col.py-3.events.view{
+    overflow:hidden;
 }
 .nav-link{
     color:#D4AF37;
