@@ -338,7 +338,7 @@
                                                             value="option{{ forloop.counter0 }}">
                                                     </div>
                                                 </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
+                                                <td class="id"><a href="{% url 'admin-view-event' item.name %}"
                                                         class="fw-medium link-primary"> # {{ item.id }} </a></td>
                                                 <td class="customer_name"> {{ item.organized_by }} </td>
                                                 <td class="product_name"> {{ item.name }} </td>
@@ -517,50 +517,48 @@
 {% endblock content %}
 {% block javascript %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const eventDateInput = document.getElementById('eventDate');
-        flatpickr(eventDateInput, {
-            dateFormat: "d M, Y", 
-        });
+document.addEventListener('DOMContentLoaded', function () {
+    const eventDateInput = document.getElementById('eventDate');
+    const flatpickrInstance = flatpickr(eventDateInput, {
+        dateFormat: "d M, Y",
+    });
 
-        document.querySelectorAll('.edit-item-btn').forEach(function(editButton) {
-            editButton.addEventListener('click', function(event) {
-                // Obține valorile din atributul data-id
-                const dataId = event.target.closest('a').getAttribute('data-id');
-                const [eventId, eventCost, eventName, eventOrganizer, eventLocation, eventDate] =
-                    dataId.split(',').map(value => value.trim());
+    document.querySelectorAll('.edit-item-btn').forEach(function (editButton) {
+        editButton.addEventListener('click', function (event) {
+            const dataId = event.target.closest('a').getAttribute('data-id');
+            const [eventId, eventCost, eventName, eventOrganizer, eventLocation, eventDate, eventDate2] =
+                dataId.split(',').map(value => value.trim());
+            const fullEventDate = `${eventDate} ${eventDate2}`; 
+            
+            console.log('Full Event Date:', fullEventDate);
+            const parsedDate = new Date(fullEventDate);
+            if (isNaN(parsedDate.getTime())) {
+                console.error("Data nu este validă:", fullEventDate);
+                return;
+            }
 
-                console.log('Event ID:', eventId);
-                console.log('Event Cost:', eventCost);
-                console.log('Event Name:', eventName);
-                console.log('Event Organizer:', eventOrganizer);
-                console.log('Event Date:', eventDate);
+            const formattedDate = parsedDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            }); 
 
-                document.getElementById('orderId').value = eventId;
-                document.getElementById('orderCost').value = eventOrganizer;
-                document.getElementById('eventName').value = eventName;
-                document.getElementById('eventOrganizer').value = eventOrganizer;
-                document.getElementById('eventLocation').value = eventLocation;
+            console.log('Formatted Date:', formattedDate);
 
-                const parsedDate = new Date(eventDate);
-                if (isNaN(parsedDate)) {
-                    console.error("Invalid date format:", eventDate);
-                } else {
-                    const formattedDate = parsedDate.toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                    });
-
-                    if (eventDateInput._flatpickr) {
-                        eventDateInput._flatpickr.setDate(formattedDate);
-                    } else {
-                        console.error("Flatpickr instance not initialized on eventDate input.");
-                    }
-                }
-            });
+            if (flatpickrInstance) {
+                flatpickrInstance.setDate(formattedDate, true);
+            } else {
+                console.error("Flatpickr nu este inițializat corect.");
+            }
+            document.getElementById('orderId').value = eventId;
+            document.getElementById('orderCost').value = eventOrganizer;
+            document.getElementById('eventName').value = eventName;
+            document.getElementById('eventOrganizer').value = eventOrganizer;
+            document.getElementById('eventLocation').value = eventLocation;
         });
     });
+});
+
 </script>
 
 <script>
