@@ -29,6 +29,7 @@ class Location(models.Model):
     seats_numbers = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     cost = models.IntegerField(default=3000)
+    number = models.CharField(max_length=20, default="+(40) 74 83 64 823")
     def __str__(self):
         return self.name
 

@@ -109,7 +109,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for event in events %}
+                                            {% for event in detailed_events %}
                                             <tr>
                                                 <td>
                                                     <div class="d-flex">
@@ -117,18 +117,19 @@
                                                             <img src="assets/images/products/img-8.png" alt="" class="img-fluid d-block">
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary"> {{ event.event_name }} </a></h5>
-                                                            <p class="text-muted mb-0">Color: <span class="fw-medium">Pink</span></p>
-                                                            <p class="text-muted mb-0">Size: <span class="fw-medium">M</span></p>
+                                                            <h5 class="fs-15"><a href="{% url 'admin-view-event' event.name %}" class="link-primary"> {{ event.name }} </a></h5>
+                                                            <p class="text-muted mb-0">Type: <span class="fw-medium">{% for type in event.type.all %} {{ type }} {% endfor %}</span></p>
+                                                            <p class="text-muted mb-0">Size:  <span class="fw-medium">M</span></p>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>$119.99</td>
-                                                <td>02</td>
+                                                <td> {{ event.cost }}$ </td>
+                                                <td>{{ event.guests }}</td>
                                                 <td>
-                                                    <div class="text-warning fs-15">
-                                                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
-                                                    </div>
+                                                    <span class="badge bg-light text-body fs-12 fw-medium">
+                                                        <span class="star filled">★</span>
+                                                        4.2
+                                                    </span>
                                                 </td>
                                                 <td class="fw-medium text-end">
                                                     $239.98
@@ -250,38 +251,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="accordion-item border-0">
-                                            <div class="accordion-header" id="headingFour">
-                                                <a class="accordion-button p-2 shadow-none" data-bs-toggle="collapse" href="#collapseFour" aria-expanded="false">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title bg-light text-success rounded-circle material-shadow">
-                                                                <i class="ri-takeaway-fill"></i>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="fs-14 mb-0 fw-semibold">Out For Delivery</h6>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="accordion-item border-0">
-                                            <div class="accordion-header" id="headingFive">
-                                                <a class="accordion-button p-2 shadow-none" data-bs-toggle="collapse" href="#collapseFile" aria-expanded="false">
-                                                    <div class="d-flex align-items-center">
-                                                        <div class="flex-shrink-0 avatar-xs">
-                                                            <div class="avatar-title bg-light text-success rounded-circle material-shadow">
-                                                                <i class="mdi mdi-package-variant"></i>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h6 class="fs-14 mb-0 fw-semibold">Delivered</h6>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </div>
-                                        </div>
+                                        
                                     </div>
                                     <!--end accordion-->
                                 </div>
@@ -291,25 +261,7 @@
                     </div>
                     <!--end col-->
                     <div class="col-xl-3">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="d-flex">
-                                    <h5 class="card-title flex-grow-1 mb-0"><i class="mdi mdi-truck-fast-outline align-middle me-1 text-muted"></i> Logistics Details</h5>
-                                    <div class="flex-shrink-0">
-                                        <a href="javascript:void(0);" class="badge bg-primary-subtle text-primary fs-11">Track Order</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <div class="text-center">
-                                    <lord-icon src="https://cdn.lordicon.com/uetqnvvg.json" trigger="loop" colors="primary:#405189,secondary:#0ab39c" style="width:80px;height:80px"></lord-icon>
-                                    <h5 class="fs-16 mt-2">RQK Logistics</h5>
-                                    <p class="text-muted mb-0">ID: MFDS1400457854</p>
-                                    <p class="text-muted mb-0">Payment Mode : Debit Card</p>
-                                </div>
-                            </div>
-                        </div>
-                        <!--end card-->
+                        
 
                         <div class="card">
                             <div class="card-header">
@@ -341,12 +293,12 @@
                         <!--end card-->
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Billing Address</h5>
+                                <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Location Address</h5>
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
-                                    <li class="fw-medium fs-14">Joseph Parker</li>
-                                    <li>+(256) 245451 451</li>
+                                    <li class="fw-medium fs-14"> {{location.name}} </li>
+                                    <li> {{ location.number }} </li>
                                     <li>2186 Joyce Street Rocky Mount</li>
                                     <li>New York - 25645</li>
                                     <li>United States</li>
@@ -354,69 +306,7 @@
                             </div>
                         </div>
                         <!--end card-->
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Shipping Address</h5>
-                            </div>
-                            <div class="card-body">
-                                <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
-                                    <li class="fw-medium fs-14">Joseph Parker</li>
-                                    <li>+(256) 245451 451</li>
-                                    <li>2186 Joyce Street Rocky Mount</li>
-                                    <li>California - 24567</li>
-                                    <li>United States</li>
-                                </ul>
-                            </div>
-                        </div>
-                        <!--end card-->
-
-                        <div class="card">
-                            <div class="card-header">
-                                <h5 class="card-title mb-0"><i class="ri-secure-payment-line align-bottom me-1 text-muted"></i> Payment Details</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="flex-shrink-0">
-                                        <p class="text-muted mb-0">Transactions:</p>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-0">#VLZ124561278124</h6>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="flex-shrink-0">
-                                        <p class="text-muted mb-0">Payment Method:</p>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-0">Debit Card</h6>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="flex-shrink-0">
-                                        <p class="text-muted mb-0">Card Holder Name:</p>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-0">Joseph Parker</h6>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="flex-shrink-0">
-                                        <p class="text-muted mb-0">Card Number:</p>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-0">xxxx xxxx xxxx 2456</h6>
-                                    </div>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="flex-shrink-0">
-                                        <p class="text-muted mb-0">Total Amount:</p>
-                                    </div>
-                                    <div class="flex-grow-1 ms-2">
-                                        <h6 class="mb-0">$415.96</h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                         <!--end card-->
                     </div>
                     <!--end col-->

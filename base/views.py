@@ -336,9 +336,25 @@ def admin_view_locations(request, name):
     location = Location.objects.get(name=name)
     profile = Profile.objects.get(username=location.owner)
     events = Event.objects.filter(location=location)
+    detailed_events = []
+    for event in events:
+        detailed_events.append({
+            'organizer':event.organized_by,
+            'name':event.event_name,
+            'guests':event.guests.count(),
+            'location':event.location,
+            'date':event.event_date,
+            'time':event.event_time,
+            'description':event.event_description,
+            'created_at':event.created_at,
+            'completed':event.completed,
+            'type':event.types,
+            'cost':event.cost
+        })
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     context = {
+        'detailed_events':detailed_events,
         'events':events,
         'profile':profile,
         'location':location
