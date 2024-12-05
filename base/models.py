@@ -40,7 +40,8 @@ class Profile(models.Model):
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-    approved = models.BooleanField(default=False) 
+    approved = models.BooleanField(default=False)
+    number = models.CharField(max_length=15,default="+(40) 748364823")
 
     def __str__(self):
         return self.user.username

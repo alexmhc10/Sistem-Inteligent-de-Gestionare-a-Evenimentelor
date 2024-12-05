@@ -109,6 +109,7 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {% for event in events %}
                                             <tr>
                                                 <td>
                                                     <div class="d-flex">
@@ -116,7 +117,7 @@
                                                             <img src="assets/images/products/img-8.png" alt="" class="img-fluid d-block">
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">Sweatshirt for Men (Pink)</a></h5>
+                                                            <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary"> {{ event.event_name }} </a></h5>
                                                             <p class="text-muted mb-0">Color: <span class="fw-medium">Pink</span></p>
                                                             <p class="text-muted mb-0">Size: <span class="fw-medium">M</span></p>
                                                         </div>
@@ -133,54 +134,7 @@
                                                     $239.98
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
-                                                            <img src="assets/images/products/img-7.png" alt="" class="img-fluid d-block">
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">Noise NoiseFit Endure Smart Watch</a></h5>
-                                                            <p class="text-muted mb-0">Color: <span class="fw-medium">Black</span></p>
-                                                            <p class="text-muted mb-0">Size: <span class="fw-medium">32.5mm</span></p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>$94.99</td>
-                                                <td>01</td>
-                                                <td>
-                                                    <div class="text-warning fs-15">
-                                                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
-                                                    </div>
-                                                </td>
-                                                <td class="fw-medium text-end">
-                                                    $94.99
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <div class="d-flex">
-                                                        <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
-                                                            <img src="assets/images/products/img-3.png" alt="" class="img-fluid d-block">
-                                                        </div>
-                                                        <div class="flex-grow-1 ms-3">
-                                                            <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">350 ml Glass Grocery Container</a></h5>
-                                                            <p class="text-muted mb-0">Color: <span class="fw-medium">White</span></p>
-                                                            <p class="text-muted mb-0">Size: <span class="fw-medium">350 ml</span></p>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>$24.99</td>
-                                                <td>01</td>
-                                                <td>
-                                                    <div class="text-warning fs-15">
-                                                        <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i><i class="ri-star-line"></i><i class="ri-star-line"></i>
-                                                    </div>
-                                                </td>
-                                                <td class="fw-medium text-end">
-                                                    $24.99
-                                                </td>
-                                            </tr>
+                                            {% endfor %}
                                             <!-- <tr class="border-top border-top-dashed">
                                                 <td colspan="3"></td>
                                                 <td colspan="2" class="fw-medium p-0">
@@ -360,7 +314,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <div class="d-flex">
-                                    <h5 class="card-title flex-grow-1 mb-0">Customer Details</h5>
+                                    <h5 class="card-title flex-grow-1 mb-0">Organizer Details</h5>
                                     <div class="flex-shrink-0">
                                         <a href="javascript:void(0);" class="link-secondary">View Profile</a>
                                     </div>
@@ -371,16 +325,16 @@
                                     <li>
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img src="assets/images/users/avatar-3.jpg" alt="" class="avatar-sm rounded material-shadow">
+                                                <img style="width:3vw; height:3vw;" src="{{ profile.photo.url }}" alt="" class="avatar-sm rounded material-shadow">
                                             </div>
                                             <div class="flex-grow-1 ms-3">
-                                                <h6 class="fs-14 mb-1">Joseph Parkers</h6>
-                                                <p class="text-muted mb-0">Customer</p>
+                                                <h6 class="fs-14 mb-1"> {{ location.owner }} </h6>
+                                                <p class="text-muted mb-0">Organizer</p>
                                             </div>
                                         </div>
                                     </li>
-                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i>josephparker@gmail.com</li>
-                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i>+(256) 245451 441</li>
+                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i> {{ profile.email }} </li>
+                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i> {{ profile.number }} </li>
                                 </ul>
                             </div>
                         </div>
@@ -474,3 +428,4 @@
     </div>
 </div>
 {% endblock content %}
+

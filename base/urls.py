@@ -32,7 +32,7 @@ urlpatterns = [
     path('event_builder/', views.event_builder, name='event_builder'),
 
     # Locații
-    path('admin-view-location/<str:pk>/', views.admin_view_locations, name="admin-view-location"),
+    path('admin-view-location/<str:name>/', views.admin_view_locations, name="admin-view-location"),
     path('location/<str:pk>/', views.location, name="location"),
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),

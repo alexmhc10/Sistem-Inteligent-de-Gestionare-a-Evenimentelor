@@ -332,11 +332,16 @@ def admin_view_events(request, pk):
 
 
 @login_required(login_url='login')
-def admin_view_locations(request, pk):
+def admin_view_locations(request, name):
+    location = Location.objects.get(name=name)
+    profile = Profile.objects.get(username=location.owner)
+    events = Event.objects.filter(location=location)
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     context = {
-
+        'events':events,
+        'profile':profile,
+        'location':location
     }
     return render(request, 'base/admin-view-location.html', context)
 
