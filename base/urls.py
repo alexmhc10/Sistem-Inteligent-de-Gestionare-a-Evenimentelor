@@ -53,4 +53,8 @@ urlpatterns = [
 
     # Altele
     path('carousel/', views.carousel_view, name='carousel'),
+
+    #Formular invitati
+    path('invite_form/', views.invite_form, name='invite_form'),
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

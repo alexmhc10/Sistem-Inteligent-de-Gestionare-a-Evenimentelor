@@ -710,6 +710,9 @@ def deleteUser(request, pk):
     return render(request, 'base/delete.html', {
         'obj': user})
 
+def invite_form(request):
+    return render(request, 'base/invite_form.html')
+
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")
