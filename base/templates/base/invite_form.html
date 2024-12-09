@@ -27,7 +27,7 @@ body {
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
-    height: 20%;
+    height: 10%;
 }
 
 .step {
@@ -131,9 +131,9 @@ form button:hover {
             </div>
         </div>
 
-        <div id="form-2" class="form-container" >
+        <div id="form-2" class="form-container">
             <h2>Introducerea datelor tale personale</h2>
-            <form action="" method="post" enctype="multipart/form-data">
+            <form action="" method="post">
                 <label for="nume">Nume:</label>
                 <input type="text" class="form-control" id="nume" name="nume" required>
 
@@ -147,7 +147,8 @@ form button:hover {
                 <input type="file" class="form-control" id="poza" name="poza" required>
 
                 <button type="submit" id="continue-1">Continuă</button>
-            
+                <button id="back-1">Mergi inapoi</button>
+
         </div>
 
 
@@ -161,7 +162,14 @@ form button:hover {
                 <option value="Spre_iesire">Spre iesire</option>
                 <option value="Langa_scena">Langa scena</option>
             </select>
-
+            <label for="prieteni">Cu cine vei veni la eveniment?</label>
+            <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
+                Scrie numele complet al priteninilor cu care vei veni la eveniment
+            </textarea>
+            <label for="dusmani">Cu cine vei veni la eveniment?</label>
+            <textarea id="dusmani", name="dusmani" rows="2" cols="30" placeholder="">
+            Scrie numele complet al persoanelor cu care ai prefera sa nu stai aproape
+            </textarea>
             <label for="meniu">Preferințe meniu:</label>
             <select id="meniu" class="form-select" name="meniu" required>
                 <option value="Iberic">Iberic</option>
@@ -185,6 +193,8 @@ form button:hover {
                 </div>
 
             <button type="submit" id="submit">Finalizeaza</button>
+            <button id="back-2">Back</button>
+
         </form>
         </div> 
 
@@ -192,85 +202,9 @@ form button:hover {
             <h2>Multumim pentu ca ai ales sa participi la eveniment</h2>
             <h3>Te asteptam cu nerabdare!!</h3>
             <button type="button" id="exit-button">Vezi detaliile evenimentului!</button>
+            <button id="back-3">Back</button>
+
         </div>
-        <!-- <div class="Content__FormContainer-sc-3sh3bs-0 zBbTw">
-            <div class="WidgetTitle__Container-sc-ruy1gu-0 hCfIOW">
-               <div class="WidgetTitle__Inner-sc-ruy1gu-1 SZtf">
-                  <div class="WidgetTitle__Header-sc-ruy1gu-2 eiIViH">Event Registration Form</div>
-                  <div class="WidgetTitle__Caption-sc-ruy1gu-3 bdpray">Please fill out the form below to register for the event.</div>
-               </div>
-            </div>
-            <form class="FormLayout__Container-sc-2kg2eg-0 iNyYeg">
-               <div class="FieldsGrid__Grid-sc-1luipcv-0 ddugXe">
-                  <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
-                     <div class="FormFieldLayout__Container-sc-1m85c11-4 euqRLn FieldContainer__FieldLayout-sc-gwguj-0 hiQEnO">
-                        <label for="0i7vye0f" class="FormFieldLayout__Label-sc-1m85c11-0 sKRvb">First Name</label>
-                        <div class="FormFieldLayout__Element-sc-1m85c11-1 fxodGM">
-                           <span class="TextMeasure__TextMeasureComponent-sc-bpafkg-0 ePiSec"></span>
-                           <div class="TextControlBase__TextControlBaseContainer-sc-1s66zih-0 bBKQWp" style="padding: 10px 15px; border-width: 1px; border-radius: 4px; font-style: normal; font-weight: normal; font-size: 15px; line-height: 20px; height: max-content; border-color: rgba(17, 17, 17, 0.2); background: transparent; color: rgb(17, 17, 17); opacity: 1;">
-                              <div class="TextControlBase__TextControlBaseInner-sc-1s66zih-1 cjvHgB">
-                                 <div class="TextControlBase__TextControlBaseInputWrapper-sc-1s66zih-3 ckjMpy" style="opacity: 1; transform: none;">
-                                    <div class="TextControlBase__TextControlBasePlaceholder-sc-1s66zih-8 CWjVC" style="font-style: normal; font-weight: 400; color: rgba(17, 17, 17, 0.45);">John</div>
-                                    <input id="0i7vye0f" aria-required="false" placeholder="John" inputmode="text" type="shortText" autocomplete="off" class="TextControlBase__TextControlBaseInput-sc-1s66zih-4 fTxTOY" value="">
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <div class="FormFieldLayout__Container-sc-1m85c11-4 knnLiq FieldContainer__FieldLayout-sc-gwguj-0 iKflQj">
-                        <label for="b1t2yde8" class="FormFieldLayout__Label-sc-1m85c11-0 sKRvb">Last Name</label>
-                        <div class="FormFieldLayout__Element-sc-1m85c11-1 fxodGM">
-                           <span class="TextMeasure__TextMeasureComponent-sc-bpafkg-0 ePiSec"></span>
-                           <div class="TextControlBase__TextControlBaseContainer-sc-1s66zih-0 bBKQWp" style="padding: 10px 15px; border-width: 1px; border-radius: 4px; font-style: normal; font-weight: normal; font-size: 15px; line-height: 20px; height: max-content; border-color: rgba(17, 17, 17, 0.2); background: transparent; color: rgb(17, 17, 17); opacity: 1;">
-                              <div class="TextControlBase__TextControlBaseInner-sc-1s66zih-1 cjvHgB">
-                                 <div class="TextControlBase__TextControlBaseInputWrapper-sc-1s66zih-3 ckjMpy" style="opacity: 1; transform: none;">
-                                    <div class="TextControlBase__TextControlBasePlaceholder-sc-1s66zih-8 CWjVC" style="font-style: normal; font-weight: 400; color: rgba(17, 17, 17, 0.45);">Doe</div>
-                                    <input id="b1t2yde8" aria-required="false" placeholder="Doe" inputmode="text" type="shortText" autocomplete="off" class="TextControlBase__TextControlBaseInput-sc-1s66zih-4 fTxTOY" value="">
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
-                     <div class="FormFieldLayout__Container-sc-1m85c11-4 kYxxJj FieldContainer__FieldLayout-sc-gwguj-0 iKflQj">
-                        <label for="x5ep3iyh" class="FormFieldLayout__Label-sc-1m85c11-0 sKRvb">Email Address</label>
-                        <div class="FormFieldLayout__Element-sc-1m85c11-1 fxodGM">
-                           <span class="TextMeasure__TextMeasureComponent-sc-bpafkg-0 ePiSec"></span>
-                           <div class="TextControlBase__TextControlBaseContainer-sc-1s66zih-0 bBKQWp" style="padding: 10px 15px; border-width: 1px; border-radius: 4px; font-style: normal; font-weight: normal; font-size: 15px; line-height: 20px; height: max-content; border-color: rgba(17, 17, 17, 0.2); background: transparent; color: rgb(17, 17, 17); opacity: 1;">
-                              <div class="TextControlBase__TextControlBaseInner-sc-1s66zih-1 cjvHgB">
-                                 <div class="TextControlBase__TextControlBaseInputWrapper-sc-1s66zih-3 ckjMpy" style="opacity: 1; transform: none;">
-                                    <div class="TextControlBase__TextControlBasePlaceholder-sc-1s66zih-8 CWjVC" style="font-style: normal; font-weight: 400; color: rgba(17, 17, 17, 0.45);">john.doe@example.com</div>
-                                    <input id="x5ep3iyh" aria-required="false" placeholder="john.doe@example.com" inputmode="text" type="email" autocomplete="off" class="TextControlBase__TextControlBaseInput-sc-1s66zih-4 fTxTOY" value="">
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
-                     <div class="FormFieldLayout__Container-sc-1m85c11-4 kYxxJj FieldContainer__FieldLayout-sc-gwguj-0 iKflQj">
-                        <label for="jbt1mwan" class="FormFieldLayout__Label-sc-1m85c11-0 sKRvb">Phone Number</label>
-                        <div class="FormFieldLayout__Element-sc-1m85c11-1 fxodGM">
-                           <span class="TextMeasure__TextMeasureComponent-sc-bpafkg-0 ePiSec"></span>
-                           <div class="TextControlBase__TextControlBaseContainer-sc-1s66zih-0 bBKQWp" style="padding: 10px 15px; border-width: 1px; border-radius: 4px; font-style: normal; font-weight: normal; font-size: 15px; line-height: 20px; height: max-content; border-color: rgba(17, 17, 17, 0.2); background: transparent; color: rgb(17, 17, 17); opacity: 1;">
-                              <div class="TextControlBase__TextControlBaseInner-sc-1s66zih-1 cjvHgB">
-                                 <div class="TextControlBase__TextControlBaseInputWrapper-sc-1s66zih-3 ckjMpy" style="opacity: 1; transform: none;">
-                                    <div class="TextControlBase__TextControlBasePlaceholder-sc-1s66zih-8 CWjVC" style="font-style: normal; font-weight: 400; color: rgba(17, 17, 17, 0.45);">+1 (555) 123-4567</div>
-                                    <input id="jbt1mwan" aria-required="false" placeholder="+1 (555) 123-4567" inputmode="text" type="tel" autocomplete="off" class="TextControlBase__TextControlBaseInput-sc-1s66zih-4 fTxTOY" value="">
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
-                     
-                  </div>
-               </div>
-               <div class="FieldsGrid__ButtonsGroup-sc-1luipcv-2 kBaLmY"><button size="15" aria-label="Register Now" type="button" class="ButtonBase__ButtonContainer-sc-p43e7i-3 euBiGU" tabindex="0" style="border-radius: 4px; border-color: rgba(0, 0, 0, 0); line-height: 1.32; color: rgb(255, 255, 255); font-family: inherit; font-weight: bold; font-size: 15px; font-style: normal; background-color: rgb(25, 123, 255); border-width: 2px;"><span class="ButtonBase__Overlay-sc-p43e7i-4 jhGZeV" style="padding: 8px 21px; border-radius: calc(2px); background-color: rgba(0, 0, 0, 0);"><span class="ButtonBase__Ellipsis-sc-p43e7i-5 dqiKFy">Register Now</span></span></button></div>
-            </form>
-         </div>-->
     </div>
 
 
@@ -299,7 +233,21 @@ document.getElementById('submit').addEventListener('click', function(e) {
     document.getElementById('form-3').style.display = 'none';
     document.getElementById('final-page').style.display = 'block';
 });
-
+document.getElementById('back-1').addEventListener('click', function () {
+    document.getElementById('form-2').style.display = 'none';
+    document.getElementById('form-1').style.display = 'block';
+    document.getElementById('step-1').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
+document.getElementById('back-2').addEventListener('click', function () {
+    document.getElementById('form-3').style.display = 'none';
+    document.getElementById('form-2').style.display = 'block';
+    document.getElementById('step-2').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
+document.getElementById('back-3').addEventListener('click', function () {
+    document.getElementById('final-page').style.display = 'none';
+    document.getElementById('form-3').style.display = 'block';
+    document.getElementById('step-3').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
 
     </script>
 {% endblock content %}
