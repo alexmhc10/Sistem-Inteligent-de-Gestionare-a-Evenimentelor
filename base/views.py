@@ -353,7 +353,9 @@ def admin_view_locations(request, name):
         })
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
+    events_count = events.count()
     context = {
+        'events_count':events_count,
         'detailed_events':detailed_events,
         'events':events,
         'profile':profile,
@@ -711,7 +713,11 @@ def deleteUser(request, pk):
         'obj': user})
 
 def invite_form(request):
-    return render(request, 'base/invite_form.html')
+    guests = Guests.objects.all()
+    context = {
+        'guests_list' : guests
+    }
+    return render(request, 'base/invite_form.html', context)
 
 # @login_required(login_url='/login')
 # def chat(request):

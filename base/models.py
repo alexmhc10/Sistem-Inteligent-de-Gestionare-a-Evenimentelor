@@ -17,8 +17,6 @@ class Type(models.Model):
         return self.name
 
 
-
-
 class Location(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100)
@@ -95,10 +93,9 @@ class Menu(models.Model):
     allergens = models.JSONField(default=list, blank=True, null=True)
     item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
     def __str__(self):
-        return self.item_name
+        return self.item_name    
     
-    
-    
+
 class Event(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     event_name = models.CharField(max_length=100)
@@ -127,8 +124,7 @@ class Event(models.Model):
         if self.event_date <= now().date():
             self.completed = True
             self.save()
-
-
+            
 
 class EventMenu(models.Model):
     event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)

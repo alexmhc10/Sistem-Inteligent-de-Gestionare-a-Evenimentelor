@@ -3,7 +3,7 @@
 {% endblock %}
 {% block content %}
 <style>
-        body {
+body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f9;
     display: flex;
@@ -16,6 +16,7 @@
 .container {
     width: 80%;
     max-width: 600px;
+    height: 80%;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
@@ -26,12 +27,15 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 20px;
+    height: 20%;
 }
 
 .step {
+    margin:0px 5% 0 5%;
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-size: 10px;
 }
 
 .circle {
@@ -73,18 +77,38 @@ form button:hover {
     background-color: #45a049;
 }
 
+
 .form-container {
     display: none;
+    min-height: 50%;
 }
 
 #form-1 {
     display: block;
 }
 
+#form-1 .button-container{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.logo{
+    width: 50%;
+    height: 50%;
+    margin-right: 0;
+}
+
+/* .logo_img{
+    height:10%;
+    width: 10%;
+} */
+
 </style>
 
 <div class="container">
-        <!-- <div class="steps">
+        <div class="steps">
+            
             <div class="step" id="step-1">
                 <div class="circle"></div>
                 <p>Confirmare participare</p>
@@ -101,34 +125,75 @@ form button:hover {
 
         <div id="form-1" class="form-container">
             <h2>Vrei să participi la eveniment?</h2>
-            <button id="accept-btn">Da</button>
-            <button id="decline-btn">Nu</button>
+            <div class = button-container>
+                <button class="btn" id="accept-btn">Da</button>
+                <button class="btn" id="decline-btn">Nu</button>
+            </div>
         </div>
 
-        <div id="form-2" class="form-container">
+        <div id="form-2" class="form-container" >
             <h2>Introducerea datelor tale personale</h2>
-            <form>
+            <form action="" method="post" enctype="multipart/form-data">
                 <label for="nume">Nume:</label>
-                <input type="text" id="nume" name="nume" required>
+                <input type="text" class="form-control" id="nume" name="nume" required>
 
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
+                <input type="email" class="form-control" id="email" name="email" required>
+
+                <label for="varsta">Varsta:</label>
+                <input type="text" class="form-control" id="varsta" name="varsta" required>
+
+                <label for="poza">Poza pentru accesul la eveniment:</label>
+                <input type="file" class="form-control" id="poza" name="poza" required>
 
                 <button type="submit" id="continue-1">Continuă</button>
-            </form>
+            
         </div>
+
 
         <div id="form-3" class="form-container">
             <h2>Detalii Eveniment</h2>
             <label for="zona">Zona la masă:</label>
-            <input type="text" id="zona" name="zona" required>
+            <select id="zona" class="form-select" name="zona">
+                <option value="Margine">Margine</option>
+                <option value="Central">Central</option>
+                <option value="Oriunde" selected>Oriunde</option>
+                <option value="Spre_iesire">Spre iesire</option>
+                <option value="Langa_scena">Langa scena</option>
+            </select>
 
             <label for="meniu">Preferințe meniu:</label>
-            <input type="text" id="meniu" name="meniu" required>
+            <select id="meniu" class="form-select" name="meniu" required>
+                <option value="Iberic">Iberic</option>
+                <option value="Italienesc">Italienesc</option>
+                <option value="Chinezesc" selected>Chinezesc</option>
+                <option value="Fara_preferinte">Fara preferinte</option>
+                <option value="Oriental">Oriental</option>
+            </select>
+                <h4>Esti alergic la ceva?</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                    <label class="form-check-label" for="inlineCheckbox1">Lactoza</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                    <label class="form-check-label" for="inlineCheckbox2">Gluten</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                    <label class="form-check-label" for="inlineCheckbox3">Soia</label>
+                </div>
 
-            <button type="submit" id="submit">Trimite</button>
-        </div> -->
-        <div class="Content__FormContainer-sc-3sh3bs-0 zBbTw">
+            <button type="submit" id="submit">Finalizeaza</button>
+        </form>
+        </div> 
+
+        <div id="final-page" class="form-container">
+            <h2>Multumim pentu ca ai ales sa participi la eveniment</h2>
+            <h3>Te asteptam cu nerabdare!!</h3>
+            <button type="button" id="exit-button">Vezi detaliile evenimentului!</button>
+        </div>
+        <!-- <div class="Content__FormContainer-sc-3sh3bs-0 zBbTw">
             <div class="WidgetTitle__Container-sc-ruy1gu-0 hCfIOW">
                <div class="WidgetTitle__Inner-sc-ruy1gu-1 SZtf">
                   <div class="WidgetTitle__Header-sc-ruy1gu-2 eiIViH">Event Registration Form</div>
@@ -202,428 +267,15 @@ form button:hover {
                   <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
                      
                   </div>
-                  <div class="FieldsGrid__Row-sc-1luipcv-1 bDKrtu">
-                     <div class="FormFieldLayout__Container-sc-1m85c11-4 hfdlkz FieldContainer__FieldLayout-sc-gwguj-0 iKflQj">
-                        <label for="m4cs1vsh" class="FormFieldLayout__Label-sc-1m85c11-0 sKRvb">Number Scale</label>
-                        <div class="FormFieldLayout__Element-sc-1m85c11-1 fxodGM">
-                           <div class="NumberScale__Container-sc-f4rnzk-0 jIjlwa">
-                              <div role="radiogroup" aria-required="false" class="NumberScale__Numbers-sc-f4rnzk-1 hBWcna">
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="1">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">1</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="2">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">2</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="3">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">3</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="4">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">4</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="5">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">5</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="6">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">6</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="7">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">7</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="8">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">8</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="9">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">9</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="10">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">10</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="11">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">11</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="12">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">12</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="13">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">13</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="14">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">14</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="15">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">15</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="16">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">16</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="17">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">17</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="18">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">18</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="19">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">19</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="20">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">20</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="21">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">21</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="22">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">22</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="23">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">23</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="24">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">24</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="25">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">25</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="26">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">26</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="27">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">27</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="28">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">28</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="29">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">29</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="30">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">30</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="31">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">31</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="32">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">32</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="33">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">33</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="34">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">34</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="35">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">35</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="36">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">36</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="37">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">37</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="38">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">38</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="39">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">39</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="40">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">40</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="41">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">41</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="42">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">42</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="43">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">43</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="44">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">44</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="45">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">45</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="46">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">46</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="47">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">47</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="48">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">48</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="49">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">49</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="50">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">50</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="51">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">51</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="52">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">52</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="53">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">53</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="54">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">54</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="55">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">55</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="56">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">56</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="57">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">57</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="58">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">58</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="59">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">59</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="60">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">60</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="61">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">61</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="62">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">62</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="63">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">63</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="64">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">64</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="65">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">65</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="66">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">66</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="67">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">67</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="68">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">68</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="69">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">69</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="70">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">70</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="71">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">71</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="72">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">72</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="73">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">73</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="74">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">74</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="75">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">75</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="76">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">76</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="77">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">77</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="78">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">78</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="79">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">79</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="80">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">80</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="81">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">81</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="82">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">82</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="83">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">83</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="84">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">84</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="85">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">85</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="86">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">86</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="87">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">87</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="88">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">88</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="89">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">89</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="90">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">90</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="91">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">91</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="92">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">92</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="93">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">93</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="94">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">94</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="95">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">95</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="96">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">96</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="97">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">97</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="98">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">98</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="99">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">99</div>
-                                 </label>
-                                 <label class="NumberScale__NumberContainer-sc-f4rnzk-2 fYJvjQ">
-                                    <input type="radio" name="Number Scale" class="NumberScale__Input-sc-f4rnzk-3 dpJlhc" value="100">
-                                    <div class="NumberScale__NumberLabel-sc-f4rnzk-4 egiRJV">100</div>
-                                 </label>
-                              </div>
-                              <div class="NumberScale__Caption-sc-f4rnzk-5 NumberScale__LeftCaption-sc-f4rnzk-6 bSAVkH ihFsej">Not likely</div>
-                              <div class="NumberScale__Caption-sc-f4rnzk-5 NumberScale__RightCaption-sc-f4rnzk-7 bSAVkH gsyftx">Very likely</div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
                </div>
                <div class="FieldsGrid__ButtonsGroup-sc-1luipcv-2 kBaLmY"><button size="15" aria-label="Register Now" type="button" class="ButtonBase__ButtonContainer-sc-p43e7i-3 euBiGU" tabindex="0" style="border-radius: 4px; border-color: rgba(0, 0, 0, 0); line-height: 1.32; color: rgb(255, 255, 255); font-family: inherit; font-weight: bold; font-size: 15px; font-style: normal; background-color: rgb(25, 123, 255); border-width: 2px;"><span class="ButtonBase__Overlay-sc-p43e7i-4 jhGZeV" style="padding: 8px 21px; border-radius: calc(2px); background-color: rgba(0, 0, 0, 0);"><span class="ButtonBase__Ellipsis-sc-p43e7i-5 dqiKFy">Register Now</span></span></button></div>
             </form>
-         </div>
+         </div>-->
     </div>
 
 
 
-    <script>
+<script>
         document.getElementById('accept-btn').addEventListener('click', function() {
     document.getElementById('form-1').style.display = 'none';
     document.getElementById('form-2').style.display = 'block';
@@ -635,7 +287,7 @@ document.getElementById('decline-btn').addEventListener('click', function() {
 });
 
 document.getElementById('continue-1').addEventListener('click', function(e) {
-    e.preventDefault(); // Previne trimiterea formularului
+    e.preventDefault();
     document.getElementById('form-2').style.display = 'none';
     document.getElementById('form-3').style.display = 'block';
     document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
@@ -644,8 +296,10 @@ document.getElementById('continue-1').addEventListener('click', function(e) {
 document.getElementById('submit').addEventListener('click', function(e) {
     e.preventDefault();
     document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
-    alert('Mulțumim pentru înscriere!');
+    document.getElementById('form-3').style.display = 'none';
+    document.getElementById('final-page').style.display = 'block';
 });
+
 
     </script>
 {% endblock content %}
