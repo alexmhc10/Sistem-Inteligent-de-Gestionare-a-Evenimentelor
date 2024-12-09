@@ -57,4 +57,7 @@ urlpatterns = [
     #Formular invitati
     path('invite_form/', views.invite_form, name='invite_form'),
 
+    #Personal
+    path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveminet_home')
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
