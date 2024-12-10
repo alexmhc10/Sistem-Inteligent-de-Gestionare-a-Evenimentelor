@@ -3,8 +3,6 @@
 {% endblock %}
 
 {% block content %}
-<style>
-</style>
 <div class="container-fluid">
     <div class="row flex-nowrap">
         <div class="col-auto siderbar col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
@@ -68,7 +66,7 @@
                 </div>
             </div>
         </div>
-        <div class="col py-3">
+        <!-- <div class="col py-3">
             <div class="container-xxl flex-grow-1 container-p-y">
                <div class="row g-4">
                     <div class="col-sm-8 mb-6 order-0">
@@ -114,7 +112,7 @@
                                  </div>
                                  <p class="mb-1">Ora curenta:</p>
                                  <h4 class="card-title mb-3">22:45</h4>
-                                 <!-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small> -->
+                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
                               </div>
                            </div>
                         </div>
@@ -178,7 +176,7 @@
                                     <div class="avatar flex-shrink-0">
                                        <img src="" alt="wallet info" class="rounded">
                                     </div>
-                                 </div> -->
+                                 </div> 
                                  <h4 class="card-title mb-3">Vizualizarea asezarii invitatiilor</h4>
                                  <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> Vizualizarea invitatiilor in spatiu real</small>
                               </div></a>
@@ -188,26 +186,122 @@
                   </div>
             
         </div>
+        </div> -->
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.4.2/konva.min.js"></script>
+    <style>
+        #container {
+            border: 1px solid #ccc;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+        }
+    </style>
+    <h1 style="text-align: center;">Diagramă Sală Eveniment</h1>
+    <div id="container"></div>
+    <button id="save-btn" style="display: block; margin: 20px auto;">Salvează Pozițiile</button>
+
+    <script>
+        // Dimensiuni canvas
+        const width = 800;
+        const height = 600;
+
+        // Mock pentru structura sălii
+        const sala = {
+            mese: [
+                { id: 1, numar: 1, x: 100, y: 150, tip: 'rotunda' },
+                { id: 2, numar: 2, x: 300, y: 200, tip: 'dreptunghiulara' },
+                { id: 3, numar: 3, x: 500, y: 400, tip: 'rotunda' },
+            ],
+            elemente: [
+                { tip: 'scena', x: 50, y: 50, lungime: 200, latime: 50 },
+            ],
+        };
+
+        // Crearea scenei Konva
+        const stage = new Konva.Stage({
+            container: 'container',
+            width: width,
+            height: height,
+        });
+
+        // Layer principal
+        const layer = new Konva.Layer();
+
+        // Desenează elementele sălii
+        sala.elemente.forEach(element => {
+            const rect = new Konva.Rect({
+                x: element.x,
+                y: element.y,
+                width: element.lungime,
+                height: element.latime,
+                fill: element.tip === 'scena' ? 'green' : 'gray',
+                stroke: 'black',
+                strokeWidth: 1,
+            });
+            layer.add(rect);
+        });
+
+        // Desenează mesele
+        sala.mese.forEach(masa => {
+            const shape = masa.tip === 'rotunda'
+                ? new Konva.Circle({
+                      x: masa.x,
+                      y: masa.y,
+                      radius: 30,
+                      fill: 'blue',
+                      stroke: 'black',
+                      strokeWidth: 2,
+                      draggable: true,
+                  })
+                : new Konva.Rect({
+                      x: masa.x - 30,
+                      y: masa.y - 20,
+                      width: 60,
+                      height: 40,
+                      fill: 'blue',
+                      stroke: 'black',
+                      strokeWidth: 2,
+                      draggable: true,
+                  });
+
+            // Etichetează mesele
+            const text = new Konva.Text({
+                x: masa.x - 10,
+                y: masa.y - 10,
+                text: masa.numar.toString(),
+                fontSize: 16,
+                fill: 'white',
+            });
+
+            // Actualizează poziția textului la drag-and-drop
+            shape.on('dragmove', function () {
+                text.x(shape.x() - 10);
+                text.y(shape.y() - 10);
+            });
+
+            layer.add(shape);
+            layer.add(text);
+        });
+
+        // Adaugă layer-ul la scenă
+        stage.add(layer);
+
+        // Buton pentru salvare
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const newPositions = sala.mese.map((masa, index) => {
+                const shape = layer.children[index * 2]; // Obține forma mesei
+                return {
+                    id: masa.id,
+                    x: shape.x(),
+                    y: shape.y(),
+                };
+            });
+
+            // Mock salvare (înlocuiește cu un request real API)
+            console.log('Poziții noi salvate:', newPositions);
+            alert('Pozițiile meselor au fost salvate!');
+        });
+    </script>
     </div>
-    </div>
-</div>
-
-
-
-
-
-
- 
-{% endblock content %}
-
-{% block javascript %}
-<script>
-    scrollToBottom();
-
-    const instance = new mdb.Datatable(document.getElementById('datatable'), data)
-
-document.getElementById('datatable-search-input').addEventListener('input', (e) => {
-  instance.search(e.target.value);
-});
-</script>
-{% endblock javascript %}
+</div>    
+{% endblock %}

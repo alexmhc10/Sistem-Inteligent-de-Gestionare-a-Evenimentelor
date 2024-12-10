@@ -723,7 +723,19 @@ def personal_eveniment_home(request):
     return render(request, 'base/personal_eveniment_home.html')
 
 def personal_vizualizare_eveniment(request):
-    return render(request, 'base/personal_vizualizare_eveniment.html')
+    events = Event.objects.first()
+    locations = Location.objects.all()
+    menus = Menu.objects.all()
+    context = {
+        'event_list': events,
+        'locations': locations,
+        'menus': menus
+    }
+    return render(request, 'base/personal_vizualizare_eveniment.html', context)
+
+def personal_aranjament_invitati(request):
+    return render(request, 'base/personal_aranjament_invitati.html')
+
 
 # @login_required(login_url='/login')
 # def chat(request):
