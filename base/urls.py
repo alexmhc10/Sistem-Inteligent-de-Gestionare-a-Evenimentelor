@@ -58,6 +58,8 @@ urlpatterns = [
     path('invite_form/', views.invite_form, name='invite_form'),
 
     #Personal
-    path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveminet_home')
+    path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveminet_home'),
+    path('personal_vizualizare_eveniment/', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment')
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

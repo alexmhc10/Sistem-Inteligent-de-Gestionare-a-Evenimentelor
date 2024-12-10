@@ -719,6 +719,12 @@ def invite_form(request):
     }
     return render(request, 'base/invite_form.html', context)
 
+def personal_eveniment_home(request):
+    return render(request, 'base/personal_eveniment_home.html')
+
+def personal_vizualizare_eveniment(request):
+    return render(request, 'base/personal_vizualizare_eveniment.html')
+
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")
