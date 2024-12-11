@@ -69,8 +69,6 @@
         </div>
         <div class="col py-3 events view">
             <div class="container-fluid">
-
-                <!-- start page title -->
                 <div class="row">
                     <div class="col-12">
                         <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
@@ -105,12 +103,10 @@
                                                 <th scope="col">Events Name</th>
                                                 <th scope="col">Events cost</th>
                                                 <th scope="col">Guests</th>
-                                                <th scope="col">Rating</th>
                                                 <th scope="col" class="text-end">Profit</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {% for event in detailed_events %}
                                             <tr>
                                                 <td>
                                                     <div class="d-flex">
@@ -118,26 +114,21 @@
                                                             <img src="assets/images/products/img-8.png" alt="" class="img-fluid d-block">
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h5 class="fs-15"><a href="{% url 'admin-view-event' event.name %}" class="link-primary"> {{ event.name }} </a></h5>
-                                                            <p class="text-muted mb-0">Type: <span class="fw-medium">{% for type in event.type.all %} {{ type }} {% endfor %}</span></p>
-                                                            <p class="text-muted mb-0">Size:  <span class="fw-medium">M</span></p>
+                                                            <h5 class="fs-15"><a href="#" class="link-primary" style="color:#D4AF37;"> {{ event.event_name }} </a></h5>
+                                                            <p class="text-muted mb-0">Type: <span class="fw-medium"> {{ event.types.all|join:", " }} </span></p>
+                                                            <p class="text-muted mb-0">Size:  <span class="fw-medium"> {% if guests_count >= 100 %}  Medium Event 
+                                                                {% elif guests_count >= 200 %} Big Event {% else %} Small Event {% endif %}</span></p>
                                                         </div>
                                                     </div>
                                                 </td>
                                                 <td> {{ event.cost }}$ </td>
-                                                <td>{{ event.guests }}</td>
-                                                <td>
-                                                    <span class="badge bg-light text-body fs-12 fw-medium">
-                                                        <span class="star filled">★</span>
-                                                        4.2
-                                                    </span>
-                                                </td>
+                                                <td>{{ guests_count }}</td>
+                                                
                                                 <td class="fw-medium text-end">
                                                     {% widthratio event.cost 100 15 %}
 
                                                 </td>
                                             </tr>
-                                            {% endfor %}
                                             <!-- <tr class="border-top border-top-dashed">
                                                 <td colspan="3"></td>
                                                 <td colspan="2" class="fw-medium p-0">
@@ -176,7 +167,7 @@
                         <div class="card">
                             <div class="card-header">
                                 <div class="d-sm-flex align-items-center">
-                                    <h5 class="card-title flex-grow-1 mb-0">Actions on various dates</h5>
+                                    <h5 class="card-title flex-grow-1 mb-0">Event timespan</h5>
                                     
                                 </div>
                             </div>
@@ -193,18 +184,18 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h6 class="fs-15 mb-0 fw-semibold">Order Placed - <span class="fw-normal">Wed, 15 Dec 2021</span></h6>
+                                                            <h6 class="fs-15 mb-0 fw-semibold">Event Created - <span class="fw-normal"> {{ event.created_at }} </span></h6>
                                                         </div>
                                                     </div>
                                                 </a>
                                             </div>
                                             <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body ms-2 ps-5 pt-0">
-                                                    <h6 class="mb-1">An order has been placed.</h6>
-                                                    <p class="text-muted">Wed, 15 Dec 2021 - 05:34PM</p>
+                                                    <h6 class="mb-1">The event has been created</h6>
+                                                    <p class="text-muted">{{ event.created_at }}</p>
 
-                                                    <h6 class="mb-1">Seller has processed your order.</h6>
-                                                    <p class="text-muted mb-0">Thu, 16 Dec 2021 - 5:48AM</p>
+                                                    <h6 class="mb-1">The location has been selected</h6>
+                                                    <p class="text-muted mb-0">{{ event.created_at }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -218,18 +209,19 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h6 class="fs-15 mb-1 fw-semibold">Packed - <span class="fw-normal">Thu, 16 Dec 2021</span></h6>
+                                                            <h6 class="fs-15 mb-1 fw-semibold">The confirming of the guests has been completed <span class="fw-normal">{{ event.event_date }}</span></h6>
                                                         </div>
                                                     </div>
                                                 </a>
                                             </div>
                                             <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body ms-2 ps-5 pt-0">
-                                                    <h6 class="mb-1">Your Item has been picked up by courier partner</h6>
-                                                    <p class="text-muted mb-0">Fri, 17 Dec 2021 - 9:45AM</p>
+                                                    <h6 class="mb-1">60 / 100 guests have confirmed participation</h6>
+                                                    <p class="text-muted mb-0">{{ event.event_date }}</p>
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if event.completed == True %}
                                         <div class="accordion-item border-0">
                                             <div class="accordion-header" id="headingThree">
                                                 <a class="accordion-button p-2 shadow-none" data-bs-toggle="collapse" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
@@ -240,20 +232,20 @@
                                                             </div>
                                                         </div>
                                                         <div class="flex-grow-1 ms-3">
-                                                            <h6 class="fs-15 mb-1 fw-semibold">Shipping - <span class="fw-normal">Thu, 16 Dec 2021</span></h6>
+                                                            <h6 class="fs-15 mb-1 fw-semibold">Completed <span class="fw-normal">{{ next_day }}</span></h6>
                                                         </div>
                                                     </div>
                                                 </a>
                                             </div>
                                             <div id="collapseThree" class="accordion-collapse collapse show" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body ms-2 ps-5 pt-0">
-                                                    <h6 class="fs-14">RQK Logistics - MFDS1400457854</h6>
-                                                    <h6 class="mb-1">Your item has been shipped.</h6>
-                                                    <p class="text-muted mb-0">Sat, 18 Dec 2021 - 4.54PM</p>
+                                                    <h6 class="mb-1">Event has been completed</h6>
+                                                    <p class="text-muted mb-0">{{ next_day }}</p>
                                                 </div>
                                             </div>
                                         </div>
                                         
+                                        {% endif %}
                                     </div>
                                     <!--end accordion-->
                                 </div>
@@ -279,16 +271,16 @@
                                     <li>
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img style="width:3vw; height:3vw;" src="{{ profile.photo.url }}" alt="" class="avatar-sm rounded material-shadow">
+                                                <img style="width:3vw; height:3vw;" src="{{ event.organized_by.profile.photo.url }}" alt="" class="avatar-sm rounded material-shadow">
                                             </div>
                                             <div class="flex-grow-1 ms-3">
-                                                <h6 class="fs-14 mb-1"> {{ location.owner }} </h6>
+                                                <h6 class="fs-14 mb-1"> {{ event.organized_by }} </h6>
                                                 <p class="text-muted mb-0">Organizer</p>
                                             </div>
                                         </div>
                                     </li>
-                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i> {{ profile.email }} </li>
-                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i> {{ profile.number }} </li>
+                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile.email }} </li>
+                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile.number }} </li>
                                 </ul>
                             </div>
                         </div>
@@ -299,7 +291,7 @@
                             </div>
                             <div class="card-body">
                                 <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
-                                    <li class="fw-medium fs-14"> {{location.name}} </li>
+                                    <li class="fw-medium fs-14"> <a href="{% url 'admin-view-location'  location.name  %}">{{location.name}}</a> </li>
                                     <li> {{ location.number }} </li>
                                     <li> {{ location.location }} </li>
                                     <li>Romania</li>
