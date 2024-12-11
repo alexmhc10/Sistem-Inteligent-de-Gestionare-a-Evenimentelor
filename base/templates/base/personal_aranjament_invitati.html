@@ -3,12 +3,20 @@
 {% endblock %}
 
 {% block content %}
+<style>
+    #container {
+        border: 1px solid #ccc;
+        width: 800px;
+        height: 600px;
+        margin: 20px auto;
+    }
+</style>
 <div class="container-fluid">
-    <div class="row flex-nowrap">
+    <div class="row flex-nowrap gap-5">
         <div class="col-auto siderbar col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                     <a href="{% url 'personal_eveniment_home' %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                        <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+                        <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}/images/Amour_de_levenement_NMuX45m.jpg" alt="EventEase Logo">
                     </a>
                 <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
                     <li class="nav-item">
@@ -66,140 +74,73 @@
                 </div>
             </div>
         </div>
-        <!-- <div class="col py-3">
-            <div class="container-xxl flex-grow-1 container-p-y">
-               <div class="row g-4">
-                    <div class="col-sm-8 mb-6 order-0">
-                        <div class="card h-100">
-                              <div class="card-body">
-                                 <h5 class="card-title text-primary mb-3">{{ event_list.location }}🎉</h5>
-                                 <p class="mb-6">Acest evenimnet este in desfasurare<br></p>
-                              </div>
+        <div class="col-auto">
+            <div class="row mt-5 gap-5">   
+                <div class="col-auto align-items-center p-0">
+                    <div class="mx-auto">
+                        <div class="align-items-center mt-2">
+                            <h1 style="text-align: center;">Diagramă Sală Eveniment</h1>
+                        </div>
+                        <div id="container"></div>
+                        <button class="btn btn-primary" id="save-btn" style="display: block; margin: 20px auto;">Salvează Pozițiile</button>
+                    </div>
+                </div> 
+                <div class="col-auto">
+                    <div class="row-cols-auto gap-5">
+                        <div class="col-auto align-items-center mt">
+                            <div class="card border-primary mb-3 mt-2" style="max-width: 18rem;">
+                                <div class="card-header">Masa nr. 1</div>
+                                <div class="card-body text-primary pb-0">
+                                    <h5 class="card-title">Invitatii de la aceasta masa:</h5>
+                                    <ul>
+                                        <li>Mihalca Alex</li>
+                                        <li>Mihalca Alex</li>
+                                        <li>Mihalca Alex</li>
+                                        <li>Mihalca Alex</li>
+                                        <li>Mihalca Alex</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto align-items-center mt">
+                            <div class="card border-primary mb-3 mt-2" style="max-width: 18rem;">
+                                <div class="card-header">Masa nr. 2</div>
+                                <div class="card-body text-primary pb-0">
+                                    <h5 class="card-title">Invitatii de la aceasta masa:</h5>
+                                    <ul>
+                                        <li>Holczi Andrei</li>
+                                        <li>Holczi Andrei</li>
+                                        <li>Holczi Andrei</li>
+                                        <li>Holczi Andrei</li>
+                                        <li>Holczi Andrei</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-auto align-items-center mt">
+                            <div class="card border-primary mb-3 mt-2" style="max-width: 18rem;">
+                                <div class="card-header">Masa nr. 3</div>
+                                <div class="card-body text-primary pb-0">
+                                    <h5 class="card-title">Invitatii de la aceasta masa:</h5>
+                                    <ul>
+                                        <li>Petric Darius</li>
+                                        <li>Petric Darius</li>
+                                        <li>Petric Darius</li>
+                                        <li>Petric Darius</li>
+                                        <li>Petric Darius</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-sm-4 mb-6 order-0">
-                        <div class="card h-100">
-                               <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_NMuX45m.jpg"  class="" alt="View Badge User">
-                                 <div class="card-img-overlay">
-                                    <h5 class="card-title text-primary mb-3"></h5>
-                                    <p class="mb-6"><br></p>
-                                 </div>
-                       </div>
-                  </div>
-                  <div class="col-lg-4 col-md-4">
-                     <div class="row">
-                        <div class="col-lg-6 col-md-12 col-6 mb-6">
-                           <div class="card h-100">
-                              <div class="card-body">
-                                 <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                       <img src="" alt="Guests number" class="rounded">
-                                    </div>
-                                 </div>
-                                 <p class="mb-1">Numarul de invitati in timp live:</p>
-                                 <h4 class="card-title mb-3">123</h4>
-                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>78% din total</small>
-                              </div>
-                           </div>
-                        </div>
-                        <div class="col-lg-6 col-md-12 col-6 mb-6">
-                           <div class="card h-100">
-                              <div class="card-body">
-                                 <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                       <img src="" alt="" class="rounded">
-                                    </div>
-                                 </div>
-                                 <p class="mb-1">Ora curenta:</p>
-                                 <h4 class="card-title mb-3">22:45</h4>
-                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-                  <div class="col-lg-8 col-md-8">
-                    <div data-mdb-input-init class="form-outline mb-4">                        
-                        <input type="text" class="form-control" id="datatable-search-input" placeholder="Search" />
-                        <table class="table">
-                            <thead>
-                              <tr>
-                                <th scope="col">Nr.</th>
-                                <th scope="col">Nume</th>
-                                <th scope="col">Prenume</th>
-                                <th scope="col">Prezent la evenimnet</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <th scope="row">1</th>
-                                <td>Pop</td>
-                                <td>Andrei</td>
-                                <td>yes</td>
-                                <td></td>
-                              </tr>
-                              <tr>
-                                <th scope="row">2</th>
-                                <td>Mihalca</td>
-                                <td>Alex</td>
-                                <td>no</td>
-                              </tr>
-                              <tr>
-                                <th scope="row">3</th>
-                                <td>Petric</td>
-                                <td>Darius</td>
-                                <td>yes</td>
-                              </tr>
-                            </tbody>
-                          </table>
-                      </div>
-                      <div id="datatable">
-                      </div>
-                  </div></div>
-                   <div class="col-lg-4 col-md-4">
-                     <div class="row">
-                        <div class="col-lg-6 col-md-12 col-6 mb-6">
-                           <div class="card h-100">
-                            <a href="">
-                              <div class="card-body">
-                                 <h4 class="card-title mb-3">Validarea invitatiilor</h4>
-                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>Valideaza prezenta invitatiilor prin realziarea detectiei faciale la intrarea in sala.</small>
-                              </div>
-                              </a>
-                           </div>
-                        </div>
-                        <div class="col-lg-6 col-md-12 col-6 mb-6">
-                           <div class="card h-100">
-                            <a href="{% url 'personal_aranjament_invitati' %}">
-                              <div class="card-body">
-                                 <!-- <div class="card-title d-flex align-items-start justify-content-between mb-4">
-                                    <div class="avatar flex-shrink-0">
-                                       <img src="" alt="wallet info" class="rounded">
-                                    </div>
-                                 </div> 
-                                 <h4 class="card-title mb-3">Vizualizarea asezarii invitatiilor</h4>
-                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> Vizualizarea invitatiilor in spatiu real</small>
-                              </div></a>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-            
+                </div>    
+            </div> 
         </div>
-        </div> -->
+    </div>
+</div>
     <script src="https://cdn.jsdelivr.net/npm/konva@8.4.2/konva.min.js"></script>
-    <style>
-        #container {
-            border: 1px solid #ccc;
-            width: 800px;
-            height: 600px;
-            margin: 20px auto;
-        }
-    </style>
-    <h1 style="text-align: center;">Diagramă Sală Eveniment</h1>
-    <div id="container"></div>
-    <button id="save-btn" style="display: block; margin: 20px auto;">Salvează Pozițiile</button>
-
     <script>
         // Dimensiuni canvas
         const width = 800;
@@ -301,7 +242,5 @@
             console.log('Poziții noi salvate:', newPositions);
             alert('Pozițiile meselor au fost salvate!');
         });
-    </script>
-    </div>
-</div>    
+    </script>  
 {% endblock %}

@@ -17,7 +17,7 @@ from .forms import TaskForm
 from django.http import HttpResponseRedirect
 from .models import Event
 import random
-from datetime import datetime
+from datetime import datetime,timedelta
 
 @login_required(login_url='/login')
 def event_builder(request):
