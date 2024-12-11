@@ -1,4 +1,7 @@
 {% extends 'main.html' %}
+{% block navbar %}
+{% endblock %}
+
 
 {% block content %}
 <style>
@@ -23,22 +26,24 @@
         height: 10px;
         background-color: coral;
     }
+    #img_past{
+        filter: grayscale(100);
+    }
+
 </style>
 
 <div class="live_event_section">
     <div class="live_text">
-        <span class="live_title">Upcoming events!!!</span>
+        <span class="live_title">Eventimentele din aceasta seara!</span>
     </div>
     <div class="live_underline"></div>
 
 			
     <div class="row row-cols-1 mt-2">
-        <div class="col-4">
+        <div class="col-3">
             <a href="{% url 'personal_vizualizare_eveniment' %}">
-                <div class="card text-bg-dark">
-                    
-                        <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_vXROP1r.jpg" class="card-img" alt="Nu se incarca poza">
-
+                <div class="card text-bg-dark border border-2 border-warning">                   
+                    <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_vXROP1r.jpg" class="card-img" alt="Nu se incarca poza">
                 <div class="card-img-overlay">
                     <h5 class="card-title">Nunta Ana si Florea</h5>
                     <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
@@ -50,7 +55,29 @@
 </div>
 <div class="live_event_section">
     <div class="live_text">
-        <span class="live_title">Future events</span>
+        <span class="live_title">Evenimente viitoare</span>
     </div>
-    <div class="live_underline"></div></div>
+    <div class="live_underline"></div>
+</div>
+<div class="live_event_section">
+    <div class="live_text">
+        <span class="live_title">Evenimente trecute</span>
+    </div>
+    <div class="live_underline"></div>
+
+			
+    <div class="row row-cols-1 mt-2">
+        <div class="col-3">
+            <a href="{% url 'personal_vizualizare_eveniment' %}">
+                <div class="card text-bg-dark">
+                    <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_vXROP1r.jpg" class="card-img" id="img_past" alt="Nu se incarca poza">
+                <div class="card-img-overlay">
+                    <h5 class="card-title">Nunta Ana si Florea</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p class="card-text"><small>14.05.2025</small></p>
+                </div>
+            </div></a>
+        </div>
+    </div>
+</div>
 {% endblock %}
