@@ -17,8 +17,6 @@ class Type(models.Model):
         return self.name
 
 
-
-
 class Location(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=100)
@@ -29,6 +27,7 @@ class Location(models.Model):
     seats_numbers = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     cost = models.IntegerField(default=3000)
+    number = models.CharField(max_length=20, default="+(40) 74 83 64 823")
     def __str__(self):
         return self.name
 
@@ -40,7 +39,8 @@ class Profile(models.Model):
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
-    approved = models.BooleanField(default=False) 
+    approved = models.BooleanField(default=False)
+    number = models.CharField(max_length=15,default="+(40) 748364823")
 
     def __str__(self):
         return self.user.username
@@ -93,9 +93,9 @@ class Menu(models.Model):
     allergens = models.JSONField(default=list, blank=True, null=True)
     item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
     def __str__(self):
-        return self.item_name
+        return self.item_name    
     
-    
+
 class Event(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     event_name = models.CharField(max_length=100)
@@ -106,6 +106,7 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
+    cost = models.IntegerField(default= 3000)
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 
@@ -123,7 +124,7 @@ class Event(models.Model):
         if self.event_date <= now().date():
             self.completed = True
             self.save()
-
+            
 
 class EventMenu(models.Model):
     event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)

@@ -1,0 +1,253 @@
+{% extends 'main.html' %}
+{% block navbar %}
+{% endblock %}
+{% block content %}
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    width: 80%;
+    max-width: 600px;
+    height: 80%;
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    height: 10%;
+}
+
+.step {
+    margin:0px 5% 0 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 10px;
+}
+
+.circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form label {
+    margin-bottom: 5px;
+}
+
+form input {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+form button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #45a049;
+}
+
+
+.form-container {
+    display: none;
+    min-height: 50%;
+}
+
+#form-1 {
+    display: block;
+}
+
+#form-1 .button-container{
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.logo{
+    width: 50%;
+    height: 50%;
+    margin-right: 0;
+}
+
+/* .logo_img{
+    height:10%;
+    width: 10%;
+} */
+
+</style>
+
+<div class="container">
+        <div class="steps">
+            
+            <div class="step" id="step-1">
+                <div class="circle"></div>
+                <p>Confirmare participare</p>
+            </div>
+            <div class="step" id="step-2">
+                <div class="circle"></div>
+                <p>Detalii personale</p>
+            </div>
+            <div class="step" id="step-3">
+                <div class="circle"></div>
+                <p>Detalii eveniment</p>
+            </div>
+        </div>
+
+        <div id="form-1" class="form-container">
+            <h2>Vrei să participi la eveniment?</h2>
+            <div class = button-container>
+                <button class="btn" id="accept-btn">Da</button>
+                <button class="btn" id="decline-btn">Nu</button>
+            </div>
+        </div>
+
+        <div id="form-2" class="form-container">
+            <h2>Introducerea datelor tale personale</h2>
+            <form action="" method="post">
+                <label for="nume">Nume:</label>
+                <input type="text" class="form-control" id="nume" name="nume" required>
+
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+
+                <label for="varsta">Varsta:</label>
+                <input type="text" class="form-control" id="varsta" name="varsta" required>
+
+                <label for="poza">Poza pentru accesul la eveniment:</label>
+                <input type="file" class="form-control" id="poza" name="poza" required>
+
+                <button type="submit" id="continue-1">Continuă</button>
+                <button id="back-1">Mergi inapoi</button>
+
+        </div>
+
+
+        <div id="form-3" class="form-container">
+            <h2>Detalii Eveniment</h2>
+            <label for="zona">Zona la masă:</label>
+            <select id="zona" class="form-select" name="zona">
+                <option value="Margine">Margine</option>
+                <option value="Central">Central</option>
+                <option value="Oriunde" selected>Oriunde</option>
+                <option value="Spre_iesire">Spre iesire</option>
+                <option value="Langa_scena">Langa scena</option>
+            </select>
+            <label for="prieteni">Cu cine vei veni la eveniment?</label>
+            <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
+                Scrie numele complet al priteninilor cu care vei veni la eveniment
+            </textarea>
+            <label for="dusmani">Cu cine vei veni la eveniment?</label>
+            <textarea id="dusmani", name="dusmani" rows="2" cols="30" placeholder="">
+            Scrie numele complet al persoanelor cu care ai prefera sa nu stai aproape
+            </textarea>
+            <label for="meniu">Preferințe meniu:</label>
+            <select id="meniu" class="form-select" name="meniu" required>
+                <option value="Iberic">Iberic</option>
+                <option value="Italienesc">Italienesc</option>
+                <option value="Chinezesc" selected>Chinezesc</option>
+                <option value="Fara_preferinte">Fara preferinte</option>
+                <option value="Oriental">Oriental</option>
+            </select>
+                <h4>Esti alergic la ceva?</h4>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                    <label class="form-check-label" for="inlineCheckbox1">Lactoza</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                    <label class="form-check-label" for="inlineCheckbox2">Gluten</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                    <label class="form-check-label" for="inlineCheckbox3">Soia</label>
+                </div>
+
+            <button type="submit" id="submit">Finalizeaza</button>
+            <button id="back-2">Back</button>
+
+        </form>
+        </div> 
+
+        <div id="final-page" class="form-container">
+            <h2>Multumim pentu ca ai ales sa participi la eveniment</h2>
+            <h3>Te asteptam cu nerabdare!!</h3>
+            <button type="button" id="exit-button">Vezi detaliile evenimentului!</button>
+            <button id="back-3">Back</button>
+
+        </div>
+    </div>
+
+
+
+<script>
+        document.getElementById('accept-btn').addEventListener('click', function() {
+    document.getElementById('form-1').style.display = 'none';
+    document.getElementById('form-2').style.display = 'block';
+    document.getElementById('step-1').querySelector('.circle').style.backgroundColor = 'green';
+});
+
+document.getElementById('decline-btn').addEventListener('click', function() {
+    alert('Ne pare rău că nu poți participa!');
+});
+
+document.getElementById('continue-1').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('form-2').style.display = 'none';
+    document.getElementById('form-3').style.display = 'block';
+    document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
+});
+
+document.getElementById('submit').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
+    document.getElementById('form-3').style.display = 'none';
+    document.getElementById('final-page').style.display = 'block';
+});
+document.getElementById('back-1').addEventListener('click', function () {
+    document.getElementById('form-2').style.display = 'none';
+    document.getElementById('form-1').style.display = 'block';
+    document.getElementById('step-1').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
+document.getElementById('back-2').addEventListener('click', function () {
+    document.getElementById('form-3').style.display = 'none';
+    document.getElementById('form-2').style.display = 'block';
+    document.getElementById('step-2').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
+document.getElementById('back-3').addEventListener('click', function () {
+    document.getElementById('final-page').style.display = 'none';
+    document.getElementById('form-3').style.display = 'block';
+    document.getElementById('step-3').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
+});
+
+    </script>
+{% endblock content %}

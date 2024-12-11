@@ -24,6 +24,7 @@ urlpatterns = [
     # Evenimente
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
     path('admin-events', views.admin_events, name="admin-events"),
+    path('admin-view-event/<str:pk>/', views.admin_view_events, name="admin-view-event"),
     path('istoric_evenimente/', views.event_history, name='event_history'),
     path('guest_list/', views.guest_list, name='guest_list'),
     path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),
@@ -31,6 +32,7 @@ urlpatterns = [
     path('event_builder/', views.event_builder, name='event_builder'),
 
     # Locații
+    path('admin-view-location/<str:name>/', views.admin_view_locations, name="admin-view-location"),
     path('location/<str:pk>/', views.location, name="location"),
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),
@@ -51,4 +53,14 @@ urlpatterns = [
 
     # Altele
     path('carousel/', views.carousel_view, name='carousel'),
+
+    #Formular invitati
+    path('invite_form/', views.invite_form, name='invite_form'),
+
+    #Personal
+    path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveniment_home'),
+    path('personal_vizualizare_eveniment/', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
+    path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
+
+
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

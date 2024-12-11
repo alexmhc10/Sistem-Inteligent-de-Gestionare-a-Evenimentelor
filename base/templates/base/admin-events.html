@@ -71,6 +71,21 @@
         </div>
         <div class="col py-3">
             <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+                        <h4 class="mb-sm-0">Events</h4>
+
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
+                                <li class="breadcrumb-item active">Events</li>
+                            </ol>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="row">
                 <div class="col-lg-12">
                     <div class="card" id="orderList">
                         <div class="card-header border-0">
@@ -88,11 +103,9 @@
                                         <div class="search-box">
                                             <form action="" >
                                                 <select name="countries" id="countries" multiple>Search for an Eveniment
-                                                    <option value="1">Afghanistan</option>
-                                                    <option value="2">Australia</option>
-                                                    <option value="3">Germany</option>
-                                                    <option value="4">Canada</option>
-                                                    <option value="5">Russia</option>
+                                                    {% for event in events %}
+                                                    <option value="{{ forloop.counter0 }}"> {{ event.event_name }} </option>
+                                                    {% endfor %}
                                                 </select>
                                                 </form>
                                         </div>
@@ -263,28 +276,30 @@
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link All py-3 active" data-bs-toggle="tab" id="All" href="#home1"
                                             role="tab" aria-selected="true">
-                                            <i class="ri-store-2-fill me-1 align-bottom"></i> All Orders
+                                            <i class="ri-store-2-fill me-1 align-bottom"></i> All Events
                                         </a>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link py-3 Delivered" data-bs-toggle="tab" id="Delivered"
                                             href="#delivered" role="tab" aria-selected="false" tabindex="-1">
-                                            <i class="ri-checkbox-circle-line me-1 align-bottom"></i> Delivered
+                                            <i class="ri-checkbox-circle-line me-1 align-bottom"></i> Completed
+                                            {% if finished_count %}
+                                            <span
+                                                class="badge bg-danger align-middle ms-1"> {{ finished_count }} </span>
+                                            {% endif %}
                                         </a>
                                     </li>
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link py-3 Pickups" data-bs-toggle="tab" id="Pickups"
                                             href="#pickups" role="tab" aria-selected="false" tabindex="-1">
-                                            <i class="ri-truck-line me-1 align-bottom"></i> Pickups <span
-                                                class="badge bg-danger align-middle ms-1">2</span>
+                                            <i class="ri-truck-line me-1 align-bottom"></i> Ongoing 
+                                            {% if unfinished_count %}
+                                            <span
+                                                class="badge bg-danger align-middle ms-1"> {{ unfinished_count }} </span>
+                                            {% endif %}
                                         </a>
                                     </li>
-                                    <li class="nav-item" role="presentation">
-                                        <a class="nav-link py-3 Returns" data-bs-toggle="tab" id="Returns"
-                                            href="#returns" role="tab" aria-selected="false" tabindex="-1">
-                                            <i class="ri-arrow-left-right-fill me-1 align-bottom"></i> Returns
-                                        </a>
-                                    </li>
+                                    
                                     <li class="nav-item" role="presentation">
                                         <a class="nav-link py-3 Cancelled" data-bs-toggle="tab" id="Cancelled"
                                             href="#cancelled" role="tab" aria-selected="false" tabindex="-1">
@@ -303,51 +318,67 @@
                                                             value="option">
                                                     </div>
                                                 </th>
-                                                <th class="sort" data-sort="id">Order ID</th>
-                                                <th class="sort" data-sort="customer_name">Customer</th>
-                                                <th class="sort asc" data-sort="product_name">Product</th>
-                                                <th class="sort" data-sort="date">Order Date</th>
-                                                <th class="sort" data-sort="amount">Amount</th>
-                                                <th class="sort" data-sort="payment">Payment Method</th>
-                                                <th class="sort" data-sort="status">Delivery Status</th>
+                                                <th class="sort" data-sort="id">Event ID</th>
+                                                <th class="sort" data-sort="customer_name">Organizer</th>
+                                                <th class="sort asc" data-sort="product_name">Event Name</th>
+                                                <th class="sort" data-sort="date">Event Date and Time</th>
+                                                <th class="sort" data-sort="amount">Guests</th>
+                                                <th class="sort" data-sort="payment">Event's Price</th>
+                                                <th class="sort" data-sort="status">Status</th>
                                                 <th class="sort" data-sort="city">Action</th>
                                             </tr>
                                         </thead>
                                         <tbody class="list form-check-all">
+                                            
+                                            {% for item in detailed_events %}
                                             <tr>
                                                 <th scope="row">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
+                                                            value="option{{ forloop.counter0 }}">
                                                     </div>
                                                 </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ3</a></td>
-                                                <td class="customer_name">James Price</td>
-                                                <td class="product_name">350 ml Glass Grocery Container</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
+                                                <td class="id"><a href="{% url 'admin-view-event' item.name %}"
+                                                        class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                <td class="customer_name"> {{ item.organized_by }} </td>
+                                                <td class="product_name"> {{ item.name }} </td>
+                                                <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small>
                                                 </td>
-                                                <td class="amount">$829</td>
-                                                <td class="payment">Visa</td>
+                                                <td class="amount"> {{ item.guest_count }} </td>
+                                                <td class="payment"> {{ item.cost }}$ </td>
+                                                {% if item.completed == True %}
                                                 <td class="status"><span
-                                                        class="badge bg-secondary-subtle text-secondary text-uppercase">Inprogress</span>
+                                                    class="badge bg-success-subtle text-success text-uppercase">Completed</span>
                                                 </td>
+                                                {% elif item.completed == False %}
+                                                <td class="status"><span
+                                                    class="badge bg-info-subtle text-info text-uppercase">INPROGRESS</span>
+                                            </td>
+
+
+                                                {% endif %}
                                                 <td>
                                                     <ul class="list-inline hstack gap-2 mb-0">
                                                         <li class="list-inline-item" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
                                                             title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
+                                                            <a href="{% url 'admin-view-event' item.name %}"
                                                                 class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
+                                                                <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
                                                             </a>
                                                         </li>
                                                         <li class="list-inline-item edit" data-bs-toggle="tooltip"
                                                             data-bs-trigger="hover" data-bs-placement="top"
                                                             title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
+                                                            <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="
+                                                            {{ item.id }},
+                                                            {{ item.cost }},
+                                                            {{ item.name }},
+                                                            {{ item.organized_by }},
+                                                            {{ item.location }},
+                                                            {{ item.event_date }}
+                                                            ">
+                                                                <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
                                                             </a>
                                                         </li>
                                                         <li class="list-inline-item" data-bs-toggle="tooltip"
@@ -355,341 +386,13 @@
                                                             title="Remove">
                                                             <a class="text-danger d-inline-block remove-item-btn"
                                                                 data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
+                                                                <i class="bi bi-trash fs-16"></i>
                                                             </a>
                                                         </li>
                                                     </ul>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ2</a></td>
-                                                <td class="customer_name">Rickey Teran</td>
-                                                <td class="product_name">Adidas Sneakers</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$354</td>
-                                                <td class="payment">Paypal</td>
-                                                <td class="status"><span
-                                                        class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ4</a></td>
-                                                <td class="customer_name">Nettie Deloatch</td>
-                                                <td class="product_name">American egale outfitters Shirt</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$142</td>
-                                                <td class="payment">COD</td>
-                                                <td class="status"><span
-                                                        class="badge bg-warning-subtle text-warning text-uppercase">Pending</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ6</a></td>
-                                                <td class="customer_name">James Price</td>
-                                                <td class="product_name">Apple iPhone 12</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$1240</td>
-                                                <td class="payment">Visa</td>
-                                                <td class="status"><span
-                                                        class="badge bg-secondary-subtle text-secondary text-uppercase">Inprogress</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="View" data-bs-original-title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Edit" data-bs-original-title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Remove" data-bs-original-title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ10</a></td>
-                                                <td class="customer_name">Henry Baird</td>
-                                                <td class="product_name">Classic Short Sleeve Shirt</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$342</td>
-                                                <td class="payment">Mastercard</td>
-                                                <td class="status"><span
-                                                        class="badge bg-secondary-subtle text-secondary text-uppercase">Inprogress</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="View" data-bs-original-title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Edit" data-bs-original-title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Remove" data-bs-original-title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ7</a></td>
-                                                <td class="customer_name">Nancy Martino</td>
-                                                <td class="product_name">Funky Prints T-shirt</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$180</td>
-                                                <td class="payment">COD</td>
-                                                <td class="status"><span
-                                                        class="badge bg-primary-subtle text-primary text-uppercase">Returns</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="View" data-bs-original-title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Edit" data-bs-original-title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Remove" data-bs-original-title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ5</a></td>
-                                                <td class="customer_name">Thomas Taylor</td>
-                                                <td class="product_name">Galaxy Watch4</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$408</td>
-                                                <td class="payment">Mastercard</td>
-                                                <td class="status"><span
-                                                        class="badge bg-info-subtle text-info text-uppercase">Pickups</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="View" data-bs-original-title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Edit" data-bs-original-title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Remove" data-bs-original-title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll"
-                                                            value="option1">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="apps-ecommerce-order-details.html"
-                                                        class="fw-medium link-primary">#VZ11</a></td>
-                                                <td class="customer_name">Diana Kohler</td>
-                                                <td class="product_name">Half Sleeve T-Shirts (Blue)</td>
-                                                <td class="date">20 Apr,2022 <small class="text-muted">4:05 PM</small>
-                                                </td>
-                                                <td class="amount">$874</td>
-                                                <td class="payment">Visa</td>
-                                                <td class="status"><span
-                                                        class="badge bg-success-subtle text-success text-uppercase">Delivered</span>
-                                                </td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="View" data-bs-original-title="View">
-                                                            <a href="apps-ecommerce-order-details.html"
-                                                                class="text-primary d-inline-block">
-                                                                <i class="ri-eye-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Edit" data-bs-original-title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal"
-                                                                class="text-primary d-inline-block edit-item-btn">
-                                                                <i class="ri-pencil-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip"
-                                                            data-bs-trigger="hover" data-bs-placement="top"
-                                                            aria-label="Remove" data-bs-original-title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn"
-                                                                data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="ri-delete-bin-5-fill fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
                                     <div class="noresult" style="display: none">
@@ -724,7 +427,7 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header bg-light p-3">
-                                            <h5 class="modal-title" id="exampleModalLabel">&nbsp;</h5>
+                                            <h5 class="modal-title" id="exampleModalLabel">&nbsp;Edit event</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
@@ -737,330 +440,33 @@
                                                     <input type="text" id="orderId" class="form-control"
                                                         placeholder="ID" readonly="">
                                                 </div>
-
                                                 <div class="mb-3">
-                                                    <label for="customername-field" class="form-label">Customer
-                                                        Name</label>
-                                                    <input type="text" id="customername-field" class="form-control"
+                                                    <label for="customername-field" class="form-label">Organizer
+                                                        </label>
+                                                    <input type="text" id="orderCost" class="form-control"
                                                         placeholder="Enter name" required="">
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label for="productname-field" class="form-label">Product</label>
-                                                    <div class="choices" data-type="select-one" tabindex="0"
-                                                        role="combobox" aria-autocomplete="list" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <div class="choices__inner"><select
-                                                                class="form-control choices__input" data-trigger=""
-                                                                name="productname-field" id="productname-field"
-                                                                required="" hidden="" tabindex="-1"
-                                                                data-choice="active">
-                                                                <option value="" selected="">Product</option>
-                                                                <option value="Puma Tshirt">Puma Tshirt</option>
-                                                                <option value="Adidas Sneakers">Adidas Sneakers</option>
-                                                                <option value="350 ml Glass Grocery Container">350 ml
-                                                                    Glass Grocery Container</option>
-                                                                <option value="American egale outfitters Shirt">American
-                                                                    egale outfitters Shirt</option>
-                                                                <option value="Galaxy Watch4">Galaxy Watch4</option>
-                                                                <option value="Apple iPhone 12">Apple iPhone 12</option>
-                                                                <option value="Funky Prints T-shirt">Funky Prints
-                                                                    T-shirt</option>
-                                                                <option
-                                                                    value="USB Flash Drive Personalized with 3D Print">
-                                                                    USB Flash Drive Personalized with 3D Print</option>
-                                                                <option value="Oxford Button-Down Shirt">Oxford
-                                                                    Button-Down Shirt</option>
-                                                                <option value="Classic Short Sleeve Shirt">Classic Short
-                                                                    Sleeve Shirt</option>
-                                                                <option value="Half Sleeve T-Shirts (Blue)">Half Sleeve
-                                                                    T-Shirts (Blue)</option>
-                                                                <option value="Noise Evolve Smartwatch">Noise Evolve
-                                                                    Smartwatch</option>
-                                                            </select>
-                                                            <div class="choices__list choices__list--single"
-                                                                role="listbox">
-                                                                <div class="choices__item choices__placeholder choices__item--selectable"
-                                                                    data-item="" data-id="1" data-value=""
-                                                                    aria-selected="true" role="option"
-                                                                    data-placeholder="">Product</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="choices__list choices__list--dropdown"
-                                                            aria-expanded="false"><input type="search"
-                                                                class="choices__input choices__input--cloned"
-                                                                autocomplete="off" autocapitalize="off"
-                                                                spellcheck="false" role="textbox"
-                                                                aria-autocomplete="list" aria-label="Product"
-                                                                placeholder="">
-                                                            <div class="choices__list" role="listbox">
-                                                                <div id="choices--productname-field-item-choice-1"
-                                                                    class="choices__item choices__item--choice is-selected choices__placeholder choices__item--selectable is-highlighted"
-                                                                    role="option" data-choice="" data-id="1"
-                                                                    data-value="" data-select-text="Press to select"
-                                                                    data-choice-selectable="" aria-selected="true">
-                                                                    Product</div>
-                                                                <div id="choices--productname-field-item-choice-4"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="4"
-                                                                    data-value="350 ml Glass Grocery Container"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">350 ml Glass Grocery
-                                                                    Container</div>
-                                                                <div id="choices--productname-field-item-choice-3"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="3"
-                                                                    data-value="Adidas Sneakers"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Adidas Sneakers</div>
-                                                                <div id="choices--productname-field-item-choice-5"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="5"
-                                                                    data-value="American egale outfitters Shirt"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">American egale outfitters
-                                                                    Shirt</div>
-                                                                <div id="choices--productname-field-item-choice-7"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="7"
-                                                                    data-value="Apple iPhone 12"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Apple iPhone 12</div>
-                                                                <div id="choices--productname-field-item-choice-11"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="11"
-                                                                    data-value="Classic Short Sleeve Shirt"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Classic Short Sleeve Shirt
-                                                                </div>
-                                                                <div id="choices--productname-field-item-choice-8"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="8"
-                                                                    data-value="Funky Prints T-shirt"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Funky Prints T-shirt</div>
-                                                                <div id="choices--productname-field-item-choice-6"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="6"
-                                                                    data-value="Galaxy Watch4"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Galaxy Watch4</div>
-                                                                <div id="choices--productname-field-item-choice-12"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="12"
-                                                                    data-value="Half Sleeve T-Shirts (Blue)"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Half Sleeve T-Shirts
-                                                                    (Blue)</div>
-                                                                <div id="choices--productname-field-item-choice-13"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="13"
-                                                                    data-value="Noise Evolve Smartwatch"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Noise Evolve Smartwatch
-                                                                </div>
-                                                                <div id="choices--productname-field-item-choice-10"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="10"
-                                                                    data-value="Oxford Button-Down Shirt"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Oxford Button-Down Shirt
-                                                                </div>
-                                                                <div id="choices--productname-field-item-choice-2"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="2"
-                                                                    data-value="Puma Tshirt"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Puma Tshirt</div>
-                                                                <div id="choices--productname-field-item-choice-9"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="9"
-                                                                    data-value="USB Flash Drive Personalized with 3D Print"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">USB Flash Drive
-                                                                    Personalized with 3D Print</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <label for="productname-field" class="form-label">Event name</label>
+                                                    <input type="text" id="eventName" class="form-control"
+                                                        placeholder="Enter name" required="">
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label for="date-field" class="form-label">Order Date</label>
-                                                    <input type="text" id="date-field"
+                                                    <label for="date-field" class="form-label">Event Date</label>
+                                                    <input type="text" id="eventDate"
                                                         class="form-control flatpickr-input" data-provider="flatpickr"
                                                         required="" data-date-format="d M, Y" data-enable-time=""
                                                         placeholder="Select date" readonly="readonly">
                                                 </div>
-
-                                                <div class="row gy-4 mb-3">
-                                                    <div class="col-md-6">
-                                                        <div>
-                                                            <label for="amount-field" class="form-label">Amount</label>
-                                                            <input type="text" id="amount-field" class="form-control"
-                                                                placeholder="Total amount" required="">
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div>
-                                                            <label for="payment-field" class="form-label">Payment
-                                                                Method</label>
-                                                            <div class="choices" data-type="select-one" tabindex="0"
-                                                                role="combobox" aria-autocomplete="list"
-                                                                aria-haspopup="true" aria-expanded="false">
-                                                                <div class="choices__inner"><select
-                                                                        class="form-control choices__input"
-                                                                        data-trigger="" name="payment-method"
-                                                                        required="" id="payment-field" hidden=""
-                                                                        tabindex="-1" data-choice="active">
-                                                                        <option value="" selected="">Payment Method
-                                                                        </option>
-                                                                        <option value="Mastercard">Mastercard</option>
-                                                                        <option value="Visa">Visa</option>
-                                                                        <option value="COD">COD</option>
-                                                                        <option value="Paypal">Paypal</option>
-                                                                    </select>
-                                                                    <div class="choices__list choices__list--single"
-                                                                        role="listbox">
-                                                                        <div class="choices__item choices__placeholder choices__item--selectable"
-                                                                            data-item="" data-id="1" data-value=""
-                                                                            aria-selected="true" role="option"
-                                                                            data-placeholder="">Payment Method</div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="choices__list choices__list--dropdown"
-                                                                    aria-expanded="false"><input type="search"
-                                                                        class="choices__input choices__input--cloned"
-                                                                        autocomplete="off" autocapitalize="off"
-                                                                        spellcheck="false" role="textbox"
-                                                                        aria-autocomplete="list"
-                                                                        aria-label="Payment Method" placeholder="">
-                                                                    <div class="choices__list" role="listbox">
-                                                                        <div id="choices--payment-field-item-choice-1"
-                                                                            class="choices__item choices__item--choice is-selected choices__placeholder choices__item--selectable is-highlighted"
-                                                                            role="option" data-choice="" data-id="1"
-                                                                            data-value=""
-                                                                            data-select-text="Press to select"
-                                                                            data-choice-selectable=""
-                                                                            aria-selected="true">Payment Method</div>
-                                                                        <div id="choices--payment-field-item-choice-4"
-                                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                                            role="option" data-choice="" data-id="4"
-                                                                            data-value="COD"
-                                                                            data-select-text="Press to select"
-                                                                            data-choice-selectable="">COD</div>
-                                                                        <div id="choices--payment-field-item-choice-2"
-                                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                                            role="option" data-choice="" data-id="2"
-                                                                            data-value="Mastercard"
-                                                                            data-select-text="Press to select"
-                                                                            data-choice-selectable="">Mastercard</div>
-                                                                        <div id="choices--payment-field-item-choice-5"
-                                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                                            role="option" data-choice="" data-id="5"
-                                                                            data-value="Paypal"
-                                                                            data-select-text="Press to select"
-                                                                            data-choice-selectable="">Paypal</div>
-                                                                        <div id="choices--payment-field-item-choice-3"
-                                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                                            role="option" data-choice="" data-id="3"
-                                                                            data-value="Visa"
-                                                                            data-select-text="Press to select"
-                                                                            data-choice-selectable="">Visa</div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label for="delivered-status" class="form-label">Delivery
-                                                        Status</label>
-                                                    <div class="choices" data-type="select-one" tabindex="0"
-                                                        role="combobox" aria-autocomplete="list" aria-haspopup="true"
-                                                        aria-expanded="false">
-                                                        <div class="choices__inner"><select
-                                                                class="form-control choices__input" data-trigger=""
-                                                                name="delivered-status" required=""
-                                                                id="delivered-status" hidden="" tabindex="-1"
-                                                                data-choice="active">
-                                                                <option value="" selected="">Delivery Status</option>
-                                                                <option value="Pending">Pending</option>
-                                                                <option value="Inprogress">Inprogress</option>
-                                                                <option value="Cancelled">Cancelled</option>
-                                                                <option value="Pickups">Pickups</option>
-                                                                <option value="Delivered">Delivered</option>
-                                                                <option value="Returns">Returns</option>
-                                                            </select>
-                                                            <div class="choices__list choices__list--single"
-                                                                role="listbox">
-                                                                <div class="choices__item choices__placeholder choices__item--selectable"
-                                                                    data-item="" data-id="1" data-value=""
-                                                                    aria-selected="true" role="option"
-                                                                    data-placeholder="">Delivery Status</div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="choices__list choices__list--dropdown"
-                                                            aria-expanded="false"><input type="search"
-                                                                class="choices__input choices__input--cloned"
-                                                                autocomplete="off" autocapitalize="off"
-                                                                spellcheck="false" role="textbox"
-                                                                aria-autocomplete="list" aria-label="Delivery Status"
-                                                                placeholder="">
-                                                            <div class="choices__list" role="listbox">
-                                                                <div id="choices--delivered-status-item-choice-1"
-                                                                    class="choices__item choices__item--choice is-selected choices__placeholder choices__item--selectable is-highlighted"
-                                                                    role="option" data-choice="" data-id="1"
-                                                                    data-value="" data-select-text="Press to select"
-                                                                    data-choice-selectable="" aria-selected="true">
-                                                                    Delivery Status</div>
-                                                                <div id="choices--delivered-status-item-choice-4"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="4"
-                                                                    data-value="Cancelled"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Cancelled</div>
-                                                                <div id="choices--delivered-status-item-choice-6"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="6"
-                                                                    data-value="Delivered"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Delivered</div>
-                                                                <div id="choices--delivered-status-item-choice-3"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="3"
-                                                                    data-value="Inprogress"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Inprogress</div>
-                                                                <div id="choices--delivered-status-item-choice-2"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="2"
-                                                                    data-value="Pending"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Pending</div>
-                                                                <div id="choices--delivered-status-item-choice-5"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="5"
-                                                                    data-value="Pickups"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Pickups</div>
-                                                                <div id="choices--delivered-status-item-choice-7"
-                                                                    class="choices__item choices__item--choice choices__item--selectable"
-                                                                    role="option" data-choice="" data-id="7"
-                                                                    data-value="Returns"
-                                                                    data-select-text="Press to select"
-                                                                    data-choice-selectable="">Returns</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
                                             <div class="modal-footer">
                                                 <div class="hstack gap-2 justify-content-end">
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-success" id="add-btn">Add
-                                                        Order</button>
+                                                    <button type="submit" class="btn btn-success" id="add-btn">Update Event</button>
                                                     <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
                                             </div>
@@ -1069,7 +475,6 @@
                                 </div>
                             </div>
 
-                            <!-- Modal -->
                             <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
@@ -1078,9 +483,9 @@
                                                 colors="primary:#405189,secondary:#f06548"
                                                 style="width:90px;height:90px"></lord-icon>
                                             <div class="mt-4 text-center">
-                                                <h4>You are about to delete a order ?</h4>
-                                                <p class="text-muted fs-15 mb-4">Deleting your order will remove all of
-                                                    your information from our database.</p>
+                                                <h4>You are about to delete a event ?</h4>
+                                                <p class="text-muted fs-15 mb-4">Deleting your event will remove all of
+                                                    it's information from our database.</p>
                                                 <div class="hstack gap-2 justify-content-center remove">
                                                     <button
                                                         class="btn btn-link link-success fw-medium text-decoration-none"
@@ -1094,7 +499,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <!--end modal -->
                         </div>
                     </div>
 
@@ -1113,17 +517,56 @@
 {% endblock content %}
 {% block javascript %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-    flatpickr("#demo-datepicker", {
+document.addEventListener('DOMContentLoaded', function () {
+    const eventDateInput = document.getElementById('eventDate');
+    const flatpickrInstance = flatpickr(eventDateInput, {
         dateFormat: "d M, Y",
-        mode: "range",
+    });
+
+    document.querySelectorAll('.edit-item-btn').forEach(function (editButton) {
+        editButton.addEventListener('click', function (event) {
+            const dataId = event.target.closest('a').getAttribute('data-id');
+            const [eventId, eventCost, eventName, eventOrganizer, eventLocation, eventDate, eventDate2] =
+                dataId.split(',').map(value => value.trim());
+            const fullEventDate = `${eventDate} ${eventDate2}`; 
+            
+            console.log('Full Event Date:', fullEventDate);
+            const parsedDate = new Date(fullEventDate);
+            if (isNaN(parsedDate.getTime())) {
+                console.error("Data nu este validă:", fullEventDate);
+                return;
+            }
+
+            const formattedDate = parsedDate.toLocaleDateString('en-GB', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+            }); 
+
+            console.log('Formatted Date:', formattedDate);
+
+            if (flatpickrInstance) {
+                flatpickrInstance.setDate(formattedDate, true);
+            } else {
+                console.error("Flatpickr nu este inițializat corect.");
+            }
+            document.getElementById('orderId').value = eventId;
+            document.getElementById('orderCost').value = eventOrganizer;
+            document.getElementById('eventName').value = eventName;
+            document.getElementById('eventOrganizer').value = eventOrganizer;
+            document.getElementById('eventLocation').value = eventLocation;
+        });
     });
 });
+
+</script>
+
+<script>
+
 document.addEventListener('DOMContentLoaded', function () {
   const statusElement = document.getElementById('idStatus');
   const paymentElement = document.getElementById('idPayment');
 
-  // Funcție pentru a reseta complet Choices.js
   function resetChoices(element) {
     if (element.choicesInstance) {
       element.choicesInstance.destroy(); // Distruge instanța existentă

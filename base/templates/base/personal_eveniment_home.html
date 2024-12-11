@@ -1,0 +1,56 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    .live_event_section{
+        display: block;
+        margin: 20px 0 20px 5%;
+        overflow: hidden;
+        width:80%;
+    }
+    .live_text{
+        width: 100%;
+        margin-left: 2rem;
+        overflow: hidden;
+        padding: 0 15px 0 15px;
+
+    }
+    .live_title{
+        font-size: 2rem;
+        color:coral;
+    }
+    .live_underline{
+        height: 10px;
+        background-color: coral;
+    }
+</style>
+
+<div class="live_event_section">
+    <div class="live_text">
+        <span class="live_title">Upcoming events!!!</span>
+    </div>
+    <div class="live_underline"></div>
+
+			
+    <div class="row row-cols-1 mt-2">
+        <div class="col-4">
+            <a href="{% url 'personal_vizualizare_eveniment' %}">
+                <div class="card text-bg-dark">
+                    
+                        <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_vXROP1r.jpg" class="card-img" alt="Nu se incarca poza">
+
+                <div class="card-img-overlay">
+                    <h5 class="card-title">Nunta Ana si Florea</h5>
+                    <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+                    <p class="card-text"><small>14.05.2025</small></p>
+                </div>
+            </div></a>
+        </div>
+    </div>
+</div>
+<div class="live_event_section">
+    <div class="live_text">
+        <span class="live_title">Future events</span>
+    </div>
+    <div class="live_underline"></div></div>
+{% endblock %}

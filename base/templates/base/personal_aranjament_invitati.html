@@ -1,0 +1,307 @@
+{% extends 'main.html' %}
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+        <div class="col-auto siderbar col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <a href="{% url 'personal_eveniment_home' %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+                    </a>
+                <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="{% url 'personal_eveniment_home' %}" class="nav-link align-middle px-0 text-white">
+                            <i class="fs-4 bi-house"></i> 
+                            <span class="ms-1 d-none d-sm-inline">Inapoi</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="#" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-people"></i>
+                            <span class="ms-1 d-none d-sm-inline">Validare invitati</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="{% url 'personal_aranjament_invitati' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-calendar-event"></i>
+                            <span class="ms-1 d-none d-sm-inline">Planul salii</span>
+                        </a>
+                    </li>
+                    <!-- <li>
+                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-bar-chart-line me-2"></i> 
+                            <span class="ms-1 d-none d-sm-inline">Charts</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-geo-alt"></i>
+                            <span class="ms-1 d-none d-sm-inline">Locations</span>
+                        </a>
+                    </li> -->
+                </ul>
+                
+                <hr>
+                <div class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                            class="rounded-circle">
+                        <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col py-3">
+            <div class="container-xxl flex-grow-1 container-p-y">
+               <div class="row g-4">
+                    <div class="col-sm-8 mb-6 order-0">
+                        <div class="card h-100">
+                              <div class="card-body">
+                                 <h5 class="card-title text-primary mb-3">{{ event_list.location }}🎉</h5>
+                                 <p class="mb-6">Acest evenimnet este in desfasurare<br></p>
+                              </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 mb-6 order-0">
+                        <div class="card h-100">
+                               <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_NMuX45m.jpg"  class="" alt="View Badge User">
+                                 <div class="card-img-overlay">
+                                    <h5 class="card-title text-primary mb-3"></h5>
+                                    <p class="mb-6"><br></p>
+                                 </div>
+                       </div>
+                  </div>
+                  <div class="col-lg-4 col-md-4">
+                     <div class="row">
+                        <div class="col-lg-6 col-md-12 col-6 mb-6">
+                           <div class="card h-100">
+                              <div class="card-body">
+                                 <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                                    <div class="avatar flex-shrink-0">
+                                       <img src="" alt="Guests number" class="rounded">
+                                    </div>
+                                 </div>
+                                 <p class="mb-1">Numarul de invitati in timp live:</p>
+                                 <h4 class="card-title mb-3">123</h4>
+                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>78% din total</small>
+                              </div>
+                           </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12 col-6 mb-6">
+                           <div class="card h-100">
+                              <div class="card-body">
+                                 <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                                    <div class="avatar flex-shrink-0">
+                                       <img src="" alt="" class="rounded">
+                                    </div>
+                                 </div>
+                                 <p class="mb-1">Ora curenta:</p>
+                                 <h4 class="card-title mb-3">22:45</h4>
+                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="col-lg-8 col-md-8">
+                    <div data-mdb-input-init class="form-outline mb-4">                        
+                        <input type="text" class="form-control" id="datatable-search-input" placeholder="Search" />
+                        <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">Nr.</th>
+                                <th scope="col">Nume</th>
+                                <th scope="col">Prenume</th>
+                                <th scope="col">Prezent la evenimnet</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <th scope="row">1</th>
+                                <td>Pop</td>
+                                <td>Andrei</td>
+                                <td>yes</td>
+                                <td></td>
+                              </tr>
+                              <tr>
+                                <th scope="row">2</th>
+                                <td>Mihalca</td>
+                                <td>Alex</td>
+                                <td>no</td>
+                              </tr>
+                              <tr>
+                                <th scope="row">3</th>
+                                <td>Petric</td>
+                                <td>Darius</td>
+                                <td>yes</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                      </div>
+                      <div id="datatable">
+                      </div>
+                  </div></div>
+                   <div class="col-lg-4 col-md-4">
+                     <div class="row">
+                        <div class="col-lg-6 col-md-12 col-6 mb-6">
+                           <div class="card h-100">
+                            <a href="">
+                              <div class="card-body">
+                                 <h4 class="card-title mb-3">Validarea invitatiilor</h4>
+                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>Valideaza prezenta invitatiilor prin realziarea detectiei faciale la intrarea in sala.</small>
+                              </div>
+                              </a>
+                           </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12 col-6 mb-6">
+                           <div class="card h-100">
+                            <a href="{% url 'personal_aranjament_invitati' %}">
+                              <div class="card-body">
+                                 <!-- <div class="card-title d-flex align-items-start justify-content-between mb-4">
+                                    <div class="avatar flex-shrink-0">
+                                       <img src="" alt="wallet info" class="rounded">
+                                    </div>
+                                 </div> 
+                                 <h4 class="card-title mb-3">Vizualizarea asezarii invitatiilor</h4>
+                                 <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> Vizualizarea invitatiilor in spatiu real</small>
+                              </div></a>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+            
+        </div>
+        </div> -->
+    <script src="https://cdn.jsdelivr.net/npm/konva@8.4.2/konva.min.js"></script>
+    <style>
+        #container {
+            border: 1px solid #ccc;
+            width: 800px;
+            height: 600px;
+            margin: 20px auto;
+        }
+    </style>
+    <h1 style="text-align: center;">Diagramă Sală Eveniment</h1>
+    <div id="container"></div>
+    <button id="save-btn" style="display: block; margin: 20px auto;">Salvează Pozițiile</button>
+
+    <script>
+        // Dimensiuni canvas
+        const width = 800;
+        const height = 600;
+
+        // Mock pentru structura sălii
+        const sala = {
+            mese: [
+                { id: 1, numar: 1, x: 100, y: 150, tip: 'rotunda' },
+                { id: 2, numar: 2, x: 300, y: 200, tip: 'dreptunghiulara' },
+                { id: 3, numar: 3, x: 500, y: 400, tip: 'rotunda' },
+            ],
+            elemente: [
+                { tip: 'scena', x: 50, y: 50, lungime: 200, latime: 50 },
+            ],
+        };
+
+        // Crearea scenei Konva
+        const stage = new Konva.Stage({
+            container: 'container',
+            width: width,
+            height: height,
+        });
+
+        // Layer principal
+        const layer = new Konva.Layer();
+
+        // Desenează elementele sălii
+        sala.elemente.forEach(element => {
+            const rect = new Konva.Rect({
+                x: element.x,
+                y: element.y,
+                width: element.lungime,
+                height: element.latime,
+                fill: element.tip === 'scena' ? 'green' : 'gray',
+                stroke: 'black',
+                strokeWidth: 1,
+            });
+            layer.add(rect);
+        });
+
+        // Desenează mesele
+        sala.mese.forEach(masa => {
+            const shape = masa.tip === 'rotunda'
+                ? new Konva.Circle({
+                      x: masa.x,
+                      y: masa.y,
+                      radius: 30,
+                      fill: 'blue',
+                      stroke: 'black',
+                      strokeWidth: 2,
+                      draggable: true,
+                  })
+                : new Konva.Rect({
+                      x: masa.x - 30,
+                      y: masa.y - 20,
+                      width: 60,
+                      height: 40,
+                      fill: 'blue',
+                      stroke: 'black',
+                      strokeWidth: 2,
+                      draggable: true,
+                  });
+
+            // Etichetează mesele
+            const text = new Konva.Text({
+                x: masa.x - 10,
+                y: masa.y - 10,
+                text: masa.numar.toString(),
+                fontSize: 16,
+                fill: 'white',
+            });
+
+            // Actualizează poziția textului la drag-and-drop
+            shape.on('dragmove', function () {
+                text.x(shape.x() - 10);
+                text.y(shape.y() - 10);
+            });
+
+            layer.add(shape);
+            layer.add(text);
+        });
+
+        // Adaugă layer-ul la scenă
+        stage.add(layer);
+
+        // Buton pentru salvare
+        document.getElementById('save-btn').addEventListener('click', () => {
+            const newPositions = sala.mese.map((masa, index) => {
+                const shape = layer.children[index * 2]; // Obține forma mesei
+                return {
+                    id: masa.id,
+                    x: shape.x(),
+                    y: shape.y(),
+                };
+            });
+
+            // Mock salvare (înlocuiește cu un request real API)
+            console.log('Poziții noi salvate:', newPositions);
+            alert('Pozițiile meselor au fost salvate!');
+        });
+    </script>
+    </div>
+</div>    
+{% endblock %}

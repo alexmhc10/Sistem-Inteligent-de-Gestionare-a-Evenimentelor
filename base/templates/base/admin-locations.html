@@ -71,16 +71,20 @@
             </div>
         </div>
         <div class="col py-3 events">
-            <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
-                <h4 class="mb-sm-0">Locations</h4>
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+                        <h4 class="mb-sm-0">Locations</h4>
 
-                <div class="page-title-right" style="margin-left:100% !important;">
-                    <ol class="breadcrumb m-0">
-                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
-                        <li class="breadcrumb-item active">Orders</li>
-                    </ol>
+                        <div class="page-title-right">
+                            <ol class="breadcrumb m-0">
+                                <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
+                                <li class="breadcrumb-item active">Locations</li>
+                            </ol>
+                        </div>
+
+                    </div>
                 </div>
-
             </div>
             <div class="row">
                 <div class="col-xl-3 col-lg-4">
@@ -449,7 +453,7 @@
                                                                         </div>
                                                                         <div class="flex-grow-1">
                                                                             <h5 class="fs-14 mb-1">
-                                                                                <a href="apps-ecommerce-product-details.html"
+                                                                                <a href="{% url 'admin-view-location' item.name %}"
                                                                                     class="text-body">{{ item.name }}</a>
                                                                             </h5>
                                                                             <p class="text-muted mb-0">Category :

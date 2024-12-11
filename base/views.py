@@ -288,6 +288,8 @@ def admin_events(request):
         guest_count = event.guests.count()  
         event_types = [type.name for type in event.types.all()] 
         detailed_events.append({
+            'id':event.id,
+            'cost':event.cost,
             'name': event.event_name,
             'location': event.location,
             'event_date': event.event_date,
@@ -315,6 +317,52 @@ def admin_events(request):
         'users': users
     }
     return render(request, 'base/admin-events.html', context)
+
+
+
+@login_required(login_url='login')
+def admin_view_events(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context = {
+
+    }
+    return render(request, 'base/admin-view-event.html', context)
+
+
+
+@login_required(login_url='login')
+def admin_view_locations(request, name):
+    location = Location.objects.get(name=name)
+    profile = Profile.objects.get(username=location.owner)
+    events = Event.objects.filter(location=location)
+    detailed_events = []
+    for event in events:
+        detailed_events.append({
+            'organizer':event.organized_by,
+            'name':event.event_name,
+            'guests':event.guests.count(),
+            'location':event.location,
+            'date':event.event_date,
+            'time':event.event_time,
+            'description':event.event_description,
+            'created_at':event.created_at,
+            'completed':event.completed,
+            'type':event.types,
+            'cost':event.cost
+        })
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    events_count = events.count()
+    context = {
+        'events_count':events_count,
+        'detailed_events':detailed_events,
+        'events':events,
+        'profile':profile,
+        'location':location
+    }
+    return render(request, 'base/admin-view-location.html', context)
+
 
 
 @login_required(login_url='login')
@@ -663,6 +711,31 @@ def deleteUser(request, pk):
         return redirect('admin-home')
     return render(request, 'base/delete.html', {
         'obj': user})
+
+def invite_form(request):
+    guests = Guests.objects.all()
+    context = {
+        'guests_list' : guests
+    }
+    return render(request, 'base/invite_form.html', context)
+
+def personal_eveniment_home(request):
+    return render(request, 'base/personal_eveniment_home.html')
+
+def personal_vizualizare_eveniment(request):
+    events = Event.objects.first()
+    locations = Location.objects.all()
+    menus = Menu.objects.all()
+    context = {
+        'event_list': events,
+        'locations': locations,
+        'menus': menus
+    }
+    return render(request, 'base/personal_vizualizare_eveniment.html', context)
+
+def personal_aranjament_invitati(request):
+    return render(request, 'base/personal_aranjament_invitati.html')
+
 
 # @login_required(login_url='/login')
 # def chat(request):
