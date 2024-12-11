@@ -6,7 +6,7 @@
     overflow-y: auto; 
     max-width: 100%; 
 }
-.col.py-3.events.view{
+.col.py-3.events{
     overflow:hidden;
 }
 .nav-link{
