@@ -324,8 +324,15 @@ def admin_events(request):
 def admin_view_events(request, pk):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
+    event = Event.objects.get(event_name=pk)
+    guests_count = event.guests.count()
+    location = Location.objects.get(event=event)
+    next_day = event.event_date + timedelta(days=1)
     context = {
-
+        'next_day':next_day,
+        'location':location,
+        'event':event,
+        'guests_count':guests_count
     }
     return render(request, 'base/admin-view-event.html', context)
 
@@ -354,7 +361,12 @@ def admin_view_locations(request, name):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     events_count = events.count()
+    reviews = Review.objects.filter(location=location)
+    reviews_count = reviews.count()
+    print("Reviews",reviews)
     context = {
+        'reviews':reviews,
+        'reviews_count':reviews_count,
         'events_count':events_count,
         'detailed_events':detailed_events,
         'events':events,
@@ -663,7 +675,10 @@ def updateUserAdmin(request, pk):
         if form.is_valid():
             form.save()
             return redirect('users')
+    last_login = user.last_login
     context = {
+        'last_login':last_login,
+        'user':user,
         'form':form
     }
     return render(request, 'base/admin-update-user.html', context)

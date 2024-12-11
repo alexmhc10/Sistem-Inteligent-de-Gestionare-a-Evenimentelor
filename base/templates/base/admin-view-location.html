@@ -77,8 +77,8 @@
 
                             <div class="page-title-right">
                                 <ol class="breadcrumb m-0">
-                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
-                                    <li class="breadcrumb-item active">Order Details</li>
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
+                                    <li class="breadcrumb-item active">Location Details</li>
                                 </ol>
                             </div>
 
@@ -149,7 +149,7 @@
                                                     <h4> {{location.name}} </h4>
                                                     <div class="hstack gap-3 flex-wrap">
                                                         <div>
-                                                            <a href="#" class="text-primary d-block">
+                                                            <a style="color:#D4AF37 !important" href="#" class="text-primary d-block">
                                                                 {% if location.seats_numbers >= 300 %}
                                                                     Big Location
                                                                 {% elif location.seats_numbers >= 200 %}
@@ -180,7 +180,7 @@
                                                     <span class="mdi mdi-star text-warning"></span>
                                                     <span class="mdi mdi-star text-warning"></span>
                                                 </div>
-                                                <div class="text-muted">( 5.50k Customer Review )</div>
+                                                <div class="text-muted"> {% if reviews_count %}( {{ reviews_count }} {% if reviews_count == 1 %} Guest {% else %} Guests {% endif %} Review ) {% else %} No reviews yet {% endif %} </div>
                                             </div>
 
                                             <div class="row mt-4">
@@ -280,7 +280,7 @@
 
 
                                             <div class="product-content mt-5">
-                                                <h5 class="fs-14 mb-3">Product Description :</h5>
+                                                <h5 class="fs-14 mb-3">Location Description :</h5>
                                                 <nav>
                                                     <ul class="nav nav-tabs nav-tabs-custom nav-success" id="nav-tab" role="tablist">
                                                         <li class="nav-item" role="presentation">
@@ -298,23 +298,22 @@
                                                                 <tbody>
                                                                     <tr>
                                                                         <th scope="row" style="width: 200px;">Category</th>
-                                                                        <td>T-Shirt</td>
+                                                                        <td>{% if location.seats_numbers >= 300 %}
+                                                                            Big Location
+                                                                        {% elif location.seats_numbers >= 200 %}
+                                                                            Medium Location
+                                                                        {% else %}
+                                                                            Small Location
+                                                                        {% endif %}</td>
                                                                     </tr>
                                                                     <tr>
-                                                                        <th scope="row">Brand</th>
-                                                                        <td>Tommy Hilfiger</td>
+                                                                        <th scope="row">Organizer</th>
+                                                                        <td> {{ location.owner }} </td>
                                                                     </tr>
+                            
                                                                     <tr>
-                                                                        <th scope="row">Color</th>
-                                                                        <td>Blue</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <th scope="row">Material</th>
-                                                                        <td>Cotton</td>
-                                                                    </tr>
-                                                                    <tr>
-                                                                        <th scope="row">Weight</th>
-                                                                        <td>140 Gram</td>
+                                                                        <th scope="row">Guests</th>
+                                                                        <td> {{ location.seats_numbers }} </td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
@@ -322,14 +321,9 @@
                                                     </div>
                                                     <div class="tab-pane fade" id="nav-detail" role="tabpanel" aria-labelledby="nav-detail-tab">
                                                         <div>
-                                                            <h5 class="font-size-16 mb-3">Tommy Hilfiger Sweatshirt for Men (Pink)</h5>
-                                                            <p>Tommy Hilfiger men striped pink sweatshirt. Crafted with cotton. Material composition is 100% organic cotton. This is one of the world’s leading designer lifestyle brands and is internationally recognized for celebrating the essence of classic American cool style, featuring preppy with a twist designs.</p>
-                                                            <div>
-                                                                <p class="mb-2"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> Machine Wash</p>
-                                                                <p class="mb-2"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> Fit Type: Regular</p>
-                                                                <p class="mb-2"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> 100% Cotton</p>
-                                                                <p class="mb-0"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> Long sleeve</p>
-                                                            </div>
+                                                            <h5 class="font-size-16 mb-3"> {{ location.name }} </h5>
+                                                            <p> {{ location.description }} </p>
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -348,11 +342,12 @@
                                                                     <div class="d-flex align-items-center">
                                                                         <div class="flex-grow-1">
                                                                             <div class="fs-16 align-middle text-warning">
-                                                                                <i class="ri-star-fill"></i>
-                                                                                <i class="ri-star-fill"></i>
-                                                                                <i class="ri-star-fill"></i>
-                                                                                <i class="ri-star-fill"></i>
-                                                                                <i class="ri-star-half-fill"></i>
+                                                                                <span class="star filled">★</span>
+                                                                                <span class="star filled">★</span>
+                                                                                <span class="star filled">★</span>
+                                                                                <span class="star filled">★</span>
+                                                                                <span class="star half">★</span>
+
                                                                             </div>
                                                                         </div>
                                                                         <div class="flex-shrink-0">
@@ -361,7 +356,7 @@
                                                                     </div>
                                                                 </div>
                                                                 <div class="text-center">
-                                                                    <div class="text-muted">Total <span class="fw-medium">5.50k</span> reviews
+                                                                    <div class="text-muted">Total <span class="fw-medium"> {{ reviews_count }} </span> reviews
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -479,16 +474,18 @@
 
                                                             <div class="me-lg-n3 pe-lg-4 simplebar-scrollable-y" data-simplebar="init" style="max-height: 225px;"><div class="simplebar-wrapper" style="margin: 0px;"><div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div><div class="simplebar-mask"><div class="simplebar-offset" style="right: 0px; bottom: 0px;"><div class="simplebar-content-wrapper" tabindex="0" role="region" aria-label="scrollable content" style="height: auto; overflow: hidden scroll;"><div class="simplebar-content" style="padding: 0px;">
                                                                 <ul class="list-unstyled mb-0" style="max-height: 225px;">
+                                                                    {% if reviews %}
+                                                                    {% for review in reviews %}
                                                                     <li class="py-2">
                                                                         <div class="border border-dashed rounded p-3">
                                                                             <div class="d-flex align-items-start mb-3">
                                                                                 <div class="hstack gap-3">
                                                                                     <div class="badge rounded-pill bg-success mb-0">
-                                                                                        <i class="mdi mdi-star"></i> 4.2
+                                                                                        <i class="mdi mdi-star"></i> {{ review.stars }}
                                                                                     </div>
                                                                                     <div class="vr"></div>
                                                                                     <div class="flex-grow-1">
-                                                                                        <p class="text-muted mb-0"> Superb sweatshirt. I loved it. It is for winter.</p>
+                                                                                        <p class="text-muted mb-0">  {{ review.comment }} </p>
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
@@ -507,7 +504,7 @@
 
                                                                             <div class="d-flex align-items-end">
                                                                                 <div class="flex-grow-1">
-                                                                                    <h5 class="fs-14 mb-0">Henry</h5>
+                                                                                    <h5 class="fs-14 mb-0">{{ review.user }}</h5>
                                                                                 </div>
 
                                                                                 <div class="flex-shrink-0">
@@ -516,81 +513,12 @@
                                                                             </div>
                                                                         </div>
                                                                     </li>
-                                                                    <li class="py-2">
-                                                                        <div class="border border-dashed rounded p-3">
-                                                                            <div class="d-flex align-items-start mb-3">
-                                                                                <div class="hstack gap-3">
-                                                                                    <div class="badge rounded-pill bg-success mb-0">
-                                                                                        <i class="mdi mdi-star"></i> 4.0
-                                                                                    </div>
-                                                                                    <div class="vr"></div>
-                                                                                    <div class="flex-grow-1">
-                                                                                        <p class="text-muted mb-0"> Great at this price, Product quality and look is awesome.</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="d-flex align-items-end">
-                                                                                <div class="flex-grow-1">
-                                                                                    <h5 class="fs-14 mb-0">Nancy</h5>
-                                                                                </div>
+                                                                    
 
-                                                                                <div class="flex-shrink-0">
-                                                                                    <p class="text-muted fs-13 mb-0">06 Jul, 21</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-
-                                                                    <li class="py-2">
-                                                                        <div class="border border-dashed rounded p-3">
-                                                                            <div class="d-flex align-items-start mb-3">
-                                                                                <div class="hstack gap-3">
-                                                                                    <div class="badge rounded-pill bg-success mb-0">
-                                                                                        <i class="mdi mdi-star"></i> 4.2
-                                                                                    </div>
-                                                                                    <div class="vr"></div>
-                                                                                    <div class="flex-grow-1">
-                                                                                        <p class="text-muted mb-0">Good product. I am so happy.</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="d-flex align-items-end">
-                                                                                <div class="flex-grow-1">
-                                                                                    <h5 class="fs-14 mb-0">Joseph</h5>
-                                                                                </div>
-
-                                                                                <div class="flex-shrink-0">
-                                                                                    <p class="text-muted fs-13 mb-0">06 Jul, 21</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-
-                                                                    <li class="py-2">
-                                                                        <div class="border border-dashed rounded p-3">
-                                                                            <div class="d-flex align-items-start mb-3">
-                                                                                <div class="hstack gap-3">
-                                                                                    <div class="badge rounded-pill bg-success mb-0">
-                                                                                        <i class="mdi mdi-star"></i> 4.1
-                                                                                    </div>
-                                                                                    <div class="vr"></div>
-                                                                                    <div class="flex-grow-1">
-                                                                                        <p class="text-muted mb-0">Nice Product, Good Quality.</p>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <div class="d-flex align-items-end">
-                                                                                <div class="flex-grow-1">
-                                                                                    <h5 class="fs-14 mb-0">Jimmy</h5>
-                                                                                </div>
-
-                                                                                <div class="flex-shrink-0">
-                                                                                    <p class="text-muted fs-13 mb-0">24 Jun, 21</p>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                    </li>
-
+                                                                    {% endfor %}
+                                                                    {% else %}
+                                                                    <h1>No reviews yet</h1>
+                                                                    {% endif %}
                                                                 </ul>
                                                             </div></div></div></div><div class="simplebar-placeholder" style="width: 666px; height: 484px;"></div></div><div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div><div class="simplebar-track simplebar-vertical" style="visibility: visible;"><div class="simplebar-scrollbar" style="height: 104px; transform: translate3d(0px, 0px, 0px); display: block;"></div></div></div>
                                                         </div>
@@ -641,5 +569,19 @@
 });
 
 </script>
+<style>
+    .star{
+        font-size:25px;
+    }
+    .star.half {
+    font-size: 25px;
+    background: linear-gradient(to right, gold 50%, lightgray 50%);
+    -webkit-background-clip: text; 
+    -moz-background-clip: text; 
+    background-clip: text; 
+    color: transparent;
+    display: inline-block;
+}
+</style>
 {% endblock content %}
 
