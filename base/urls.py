@@ -63,4 +63,7 @@ urlpatterns = [
     path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
 
 
+    ##organizator
+    path('organizer-locations', views.organizer_locations, name='organizer_locations'),
+    path('organizer-events', views.organizer_events, name='organizer_events')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

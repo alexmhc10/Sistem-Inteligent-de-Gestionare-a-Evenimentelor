@@ -439,6 +439,49 @@ def homeAdmin(request):
     return render(request, 'base/home-admin.html', context)
 
 
+#pagina proba
+@login_required(login_url='login')
+def organizer_locations(request):
+    locations = Location.objects.all()
+    detailed_locations = []
+    for location in locations:
+        events = Event.objects.filter(location=location)
+        
+        detailed_locations.append({
+            'name': location.name,
+            'added_by': location.owner,
+            'photo': location.gallery,
+            'located': location.location,
+            'seats': location.seats_numbers,
+            'added_at': location.created_at,
+            'cost': location.cost,
+            'events': [
+                {
+                    'event_name': event.event_name,
+                    'event_date': event.event_date,
+                    'event_time': event.event_time,
+                    'event_description': event.event_description,
+                    'event_cost': event.cost,
+                }
+                for event in events
+            ]
+        })
+    context = {
+        'detailed_locations':detailed_locations,
+        'locations':locations
+    }
+    return render(request, 'base/organizator-locatii.html', context)
+
+
+##evenimente proba
+@login_required(login_url='login')
+def organizer_events(request):
+    events = Event.objects.filter(organized_by=request.user)
+    context = {
+        'events': events
+    }
+    return render(request, 'base/organizator-home.html', context)
+
 
 @login_required(login_url='login')
 def new_users(request):
