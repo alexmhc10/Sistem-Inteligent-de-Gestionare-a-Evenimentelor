@@ -6,7 +6,7 @@
 
 <div class="container-fluid">
     <div class="row flex-nowrap">
-<div class="col-auto siderbar col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
+<div class="col-auto siderbar forevents col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
                 <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
                     <a href="{% url 'home-admin' %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
                         <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
@@ -67,653 +67,637 @@
                 </div>
             </div>
         </div>
-        <div class="col py-3">
+        <div class="col py-3 events">
          <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
-<div class="container" >
-    <div class="view-account" >
-        <section class="module">
-            <div class="module-inner">
-                <div class="side-bar">
-                    <div class="user-info">
-                        <img class="img-profile img-circle img-responsive center-block" src="{{ user.profile.photo.url }}" alt="">
-                        <ul class="meta list list-unstyled">
-                            <li class="name">{{ user.first_name }} {{user.last_name}}
-                            </li>
-                            <li class="email"><a href="#">{{ user.email }}</a></li>
-                            <li class="activity">Last logged in: {{ last_login }}</li>
-                        </ul>
-                    </div>
-            		
-                </div>
-                <div class="content-panel">
-                  <form class="form-horizontal" action="" method="POST" enctype="multipart/form-data">
-                     {% csrf_token %}
-                     <fieldset class="fieldset">
-                         <h3 class="fieldset-title">Personal Info</h3>
-                         <div class="form-group">
-                             <label class="col-md-2 col-sm-3 col-xs-12 control-label" for="username">User Name</label>
-                             <div class="col-md-10 col-sm-9 col-xs-12">
-                                 <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" value="{{ form.username.value }}">
+         <div class="container-fluid">
+            <div class="row">
+               <div class="col-xxl-3">
+                  <div class="card mt-n5">
+                     <div class="card-body p-4">
+                        <div class="text-center">
+                            <div class="avatar-xs p-0 rounded-circle profile-photo-edit">
+                                <img style="height:150px; width: 150px;" src="{{ user.profile.photo.url }}" class="rounded-circle img-thumbnail user-profile-image material-shadow custom-avatar" alt="user-profile-image"><br>
+                                <input id="profile-img-file-input" type="file" class="profile-img-file-input d-none">
+                                <label for="profile-img-file-input" class="profile-photo-edit avatar-xs">
+                                   <span class="avatar-title rounded-circle bg-light text-body material-shadow">
+                                      <i class="bi bi-camera2"></i>
+                                   </span>
+                                </label>
                              </div>
-                         </div>
-                         <div class="form-group">
-                             <label class="col-md-2 col-sm-3 col-xs-12 control-label" for="first_name">First Name</label>
-                             <div class="col-md-10 col-sm-9 col-xs-12">
-                                 <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter first name" value="{{ form.first_name.value }}">
-                             </div>
-                         </div>
-                         <div class="form-group">
-                             <label class="col-md-2 col-sm-3 col-xs-12 control-label" for="last_name">Last Name</label>
-                             <div class="col-md-10 col-sm-9 col-xs-12">
-                                 <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter last name" value="{{ form.last_name.value }}">
-                             </div>
-                         </div>
-                     </fieldset>
-                     <fieldset class="fieldset">
-                         <h3 class="fieldset-title">Contact Info</h3>
-                         <div class="form-group">
-                             <label class="col-md-2 col-sm-3 col-xs-12 control-label" for="email">Email</label>
-                             <div class="col-md-10 col-sm-9 col-xs-12">
-                                 <input type="email" class="form-control" id="email" name="email" placeholder="Enter email" value="{{ form.email.value }}">
-                             </div>
-                         </div>
-                     </fieldset>
-                     <hr>
-                     <div class="form-group">
-                         <div class="col-md-10 col-sm-9 col-xs-12 col-md-push-2 col-sm-push-3 col-xs-push-0">
-                             <input class="btn btn-primary" type="submit" value="Update Profile">
-                         </div>
+                             
+                           <h5 class="fs-16 mb-1"> {{ user.username }} </h5>
+                           <p class="text-muted mb-0">Organizer</p>
+                        </div>
                      </div>
-                 </form>
-                </div>
+                  </div>
+                  <!--end card-->
+                  
+                  <div class="card">
+                     <div class="card-body">
+                        <div class="d-flex align-items-center mb-4">
+                           <div class="flex-grow-1">
+                              <h5 class="card-title mb-0">Portfolio</h5>
+                           </div>
+                           <div class="flex-shrink-0">
+                              <a href="javascript:void(0);" class="badge bg-light text-primary fs-12"><i class="ri-add-fill align-bottom me-1"></i> Add</a>
+                           </div>
+                        </div>
+                        <div class="mb-3 d-flex">
+                           <div class="avatar-xs d-block flex-shrink-0 me-3">
+                              <span class="avatar-title rounded-circle fs-16 bg-body text-body material-shadow">
+                              <i class="ri-github-fill"></i>
+                              </span>
+                           </div>
+                           <input type="email" class="form-control" id="gitUsername" placeholder="Username" value="@daveadame">
+                        </div>
+                        <div class="mb-3 d-flex">
+                           <div class="avatar-xs d-block flex-shrink-0 me-3">
+                              <span class="avatar-title rounded-circle fs-16 bg-primary material-shadow">
+                              <i class="ri-global-fill"></i>
+                              </span>
+                           </div>
+                           <input type="text" class="form-control" id="websiteInput" placeholder="www.example.com" value="www.velzon.com">
+                        </div>
+                        <div class="mb-3 d-flex">
+                           <div class="avatar-xs d-block flex-shrink-0 me-3">
+                              <span class="avatar-title rounded-circle fs-16 bg-success material-shadow">
+                              <i class="ri-dribbble-fill"></i>
+                              </span>
+                           </div>
+                           <input type="text" class="form-control" id="dribbleName" placeholder="Username" value="@dave_adame">
+                        </div>
+                        <div class="d-flex">
+                           <div class="avatar-xs d-block flex-shrink-0 me-3">
+                              <span class="avatar-title rounded-circle fs-16 bg-danger material-shadow">
+                              <i class="ri-pinterest-fill"></i>
+                              </span>
+                           </div>
+                           <input type="text" class="form-control" id="pinterestName" placeholder="Username" value="Advance Dave">
+                        </div>
+                     </div>
+                  </div>
+                  <!--end card-->
+               </div>
+               <!--end col-->
+               <div class="col-xxl-9">
+                  <div class="card mt-xxl-n5">
+                     <div class="card-header">
+                        <ul class="nav nav-tabs-custom rounded card-header-tabs border-bottom-0" role="tablist">
+                           <li class="nav-item" role="presentation">
+                              <a class="nav-link active" data-bs-toggle="tab" href="#personalDetails" role="tab" aria-selected="true">
+                              <i class="fas fa-home"></i> Personal Details
+                              </a>
+                           </li>
+                           <li class="nav-item" role="presentation">
+                              <a class="nav-link" data-bs-toggle="tab" href="#changePassword" role="tab" aria-selected="false" tabindex="-1">
+                              <i class="far fa-user"></i> Change Password
+                              </a>
+                           </li>
+                           <li class="nav-item" role="presentation">
+                              <a class="nav-link" data-bs-toggle="tab" href="#experience" role="tab" aria-selected="false" tabindex="-1">
+                              <i class="far fa-envelope"></i> Experience
+                              </a>
+                           </li>
+                           <li class="nav-item" role="presentation">
+                              <a class="nav-link" data-bs-toggle="tab" href="#privacy" role="tab" aria-selected="false" tabindex="-1">
+                              <i class="far fa-envelope"></i> Privacy Policy
+                              </a>
+                           </li>
+                        </ul>
+                     </div>
+                     <div class="card-body p-4">
+                        <div class="tab-content">
+                           <div class="tab-pane active show" id="personalDetails" role="tabpanel">
+                              <form action="javascript:void(0);">
+                                 <div class="row">
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="firstnameInput" class="form-label">First Name</label>
+                                          <input type="text" class="form-control" id="firstnameInput" placeholder="Enter your firstname" value="{{ user.first_name }}">
+                                        </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="lastnameInput" class="form-label">Last Name</label>
+                                          <input type="text" class="form-control" id="lastnameInput" placeholder="Enter your lastname" value="Adame">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="phonenumberInput" class="form-label">Phone Number</label>
+                                          <input type="text" class="form-control" id="phonenumberInput" placeholder="Enter your phone number" value="+(1) 987 6543">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="emailInput" class="form-label">Email Address</label>
+                                          <input type="email" class="form-control" id="emailInput" placeholder="Enter your email" value="daveadame@velzon.com">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="mb-3">
+                                          <label for="JoiningdatInput" class="form-label">Joining Date</label>
+                                          <input type="text" class="form-control flatpickr-input" data-provider="flatpickr" id="JoiningdatInput" data-date-format="d M, Y" data-deafult-date="24 Nov, 2021" placeholder="Select date" readonly="readonly">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="mb-3">
+                                          <label for="skillsInput" class="form-label">Skills</label>
+                                          <div class="choices" data-type="select-multiple" role="combobox" aria-autocomplete="list" aria-haspopup="true" aria-expanded="false">
+                                             <div class="choices__inner">
+                                                <select class="form-control choices__input" name="skillsInput" data-choices="" data-choices-text-unique-true="" multiple="" id="skillsInput" hidden="" tabindex="-1" data-choice="active">
+                                                   <option value="illustrator">Illustrator</option>
+                                                   <option value="photoshop">Photoshop</option>
+                                                   <option value="css">CSS</option>
+                                                   <option value="html">HTML</option>
+                                                   <option value="javascript" selected="">Javascript</option>
+                                                   <option value="python">Python</option>
+                                                   <option value="php">PHP</option>
+                                                </select>
+                                                <div class="choices__list choices__list--multiple" role="listbox">
+                                                   <div class="choices__item choices__item--selectable" data-item="" data-id="5" data-value="javascript" aria-selected="true" role="option">Javascript</div>
+                                                </div>
+                                                <input type="search" class="choices__input choices__input--cloned" autocomplete="off" autocapitalize="off" spellcheck="false" role="textbox" aria-autocomplete="list" aria-label="Skills" style="min-width: 1ch; width: 1ch;">
+                                             </div>
+                                             <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                                <div class="choices__list" aria-multiselectable="true" role="listbox">
+                                                   <div id="choices--skillsInput-item-choice-3" class="choices__item choices__item--choice choices__item--selectable is-highlighted" role="option" data-choice="" data-id="3" data-value="css" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">CSS</div>
+                                                   <div id="choices--skillsInput-item-choice-4" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="4" data-value="html" data-select-text="Press to select" data-choice-selectable="">HTML</div>
+                                                   <div id="choices--skillsInput-item-choice-1" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="1" data-value="illustrator" data-select-text="Press to select" data-choice-selectable="">Illustrator</div>
+                                                   <div id="choices--skillsInput-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="photoshop" data-select-text="Press to select" data-choice-selectable="">Photoshop</div>
+                                                   <div id="choices--skillsInput-item-choice-7" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="7" data-value="php" data-select-text="Press to select" data-choice-selectable="">PHP</div>
+                                                   <div id="choices--skillsInput-item-choice-6" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="6" data-value="python" data-select-text="Press to select" data-choice-selectable="">Python</div>
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="designationInput" class="form-label">Designation</label>
+                                          <input type="text" class="form-control" id="designationInput" placeholder="Designation" value="Lead Designer / Developer">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-6">
+                                       <div class="mb-3">
+                                          <label for="websiteInput1" class="form-label">Website</label>
+                                          <input type="text" class="form-control" id="websiteInput1" placeholder="www.example.com" value="www.velzon.com">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-4">
+                                       <div class="mb-3">
+                                          <label for="cityInput" class="form-label">City</label>
+                                          <input type="text" class="form-control" id="cityInput" placeholder="City" value="California">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-4">
+                                       <div class="mb-3">
+                                          <label for="countryInput" class="form-label">Country</label>
+                                          <input type="text" class="form-control" id="countryInput" placeholder="Country" value="United States">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-4">
+                                       <div class="mb-3">
+                                          <label for="zipcodeInput" class="form-label">Zip Code</label>
+                                          <input type="text" class="form-control" minlength="5" maxlength="6" id="zipcodeInput" placeholder="Enter zipcode" value="90011">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="mb-3 pb-2">
+                                          <label for="exampleFormControlTextarea" class="form-label">Description</label>
+                                          <textarea class="form-control" id="exampleFormControlTextarea" placeholder="Enter your description" rows="3">Hi I'm Anna Adame,It will be as simple as Occidental; in fact, it will be Occidental. To an English person, it will seem like simplified English, as a skeptical Cambridge friend of mine told me what Occidental is European languages are members of the same family.</textarea>
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="hstack gap-2 justify-content-end">
+                                          <button type="submit" class="btn btn-primary">Updates</button>
+                                          <button type="button" class="btn btn-soft-success">Cancel</button>
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                 </div>
+                                 <!--end row-->
+                              </form>
+                           </div>
+                           <!--end tab-pane-->
+                           <div class="tab-pane" id="changePassword" role="tabpanel">
+                              <form action="javascript:void(0);">
+                                 <div class="row g-2">
+                                    <div class="col-lg-4">
+                                       <div>
+                                          <label for="oldpasswordInput" class="form-label">Old Password*</label>
+                                          <input type="password" class="form-control" id="oldpasswordInput" placeholder="Enter current password">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-4">
+                                       <div>
+                                          <label for="newpasswordInput" class="form-label">New Password*</label>
+                                          <input type="password" class="form-control" id="newpasswordInput" placeholder="Enter new password">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-4">
+                                       <div>
+                                          <label for="confirmpasswordInput" class="form-label">Confirm Password*</label>
+                                          <input type="password" class="form-control" id="confirmpasswordInput" placeholder="Confirm password">
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="mb-3">
+                                          <a href="javascript:void(0);" class="link-primary text-decoration-underline">Forgot Password ?</a>
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                    <div class="col-lg-12">
+                                       <div class="text-end">
+                                          <button type="submit" class="btn btn-success">Change Password</button>
+                                       </div>
+                                    </div>
+                                    <!--end col-->
+                                 </div>
+                                 <!--end row-->
+                              </form>
+                              <div class="mt-4 mb-3 border-bottom pb-2">
+                                 <div class="float-end">
+                                    <a href="javascript:void(0);" class="link-primary">All Logout</a>
+                                 </div>
+                                 <h5 class="card-title">Login History</h5>
+                              </div>
+                              <div class="d-flex align-items-center mb-3">
+                                 <div class="flex-shrink-0 avatar-sm">
+                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18 material-shadow">
+                                       <i class="ri-smartphone-line"></i>
+                                    </div>
+                                 </div>
+                                 <div class="flex-grow-1 ms-3">
+                                    <h6>iPhone 12 Pro</h6>
+                                    <p class="text-muted mb-0">Los Angeles, United States - March 16 at 2:47PM</p>
+                                 </div>
+                                 <div>
+                                    <a href="javascript:void(0);">Logout</a>
+                                 </div>
+                              </div>
+                              <div class="d-flex align-items-center mb-3">
+                                 <div class="flex-shrink-0 avatar-sm">
+                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18 material-shadow">
+                                       <i class="ri-tablet-line"></i>
+                                    </div>
+                                 </div>
+                                 <div class="flex-grow-1 ms-3">
+                                    <h6>Apple iPad Pro</h6>
+                                    <p class="text-muted mb-0">Washington, United States - November 06 at 10:43AM</p>
+                                 </div>
+                                 <div>
+                                    <a href="javascript:void(0);">Logout</a>
+                                 </div>
+                              </div>
+                              <div class="d-flex align-items-center mb-3">
+                                 <div class="flex-shrink-0 avatar-sm">
+                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18 material-shadow">
+                                       <i class="ri-smartphone-line"></i>
+                                    </div>
+                                 </div>
+                                 <div class="flex-grow-1 ms-3">
+                                    <h6>Galaxy S21 Ultra 5G</h6>
+                                    <p class="text-muted mb-0">Conneticut, United States - June 12 at 3:24PM</p>
+                                 </div>
+                                 <div>
+                                    <a href="javascript:void(0);">Logout</a>
+                                 </div>
+                              </div>
+                              <div class="d-flex align-items-center">
+                                 <div class="flex-shrink-0 avatar-sm">
+                                    <div class="avatar-title bg-light text-primary rounded-3 fs-18 material-shadow">
+                                       <i class="ri-macbook-line"></i>
+                                    </div>
+                                 </div>
+                                 <div class="flex-grow-1 ms-3">
+                                    <h6>Dell Inspiron 14</h6>
+                                    <p class="text-muted mb-0">Phoenix, United States - July 26 at 8:10AM</p>
+                                 </div>
+                                 <div>
+                                    <a href="javascript:void(0);">Logout</a>
+                                 </div>
+                              </div>
+                           </div>
+                           <!--end tab-pane-->
+                           <div class="tab-pane" id="experience" role="tabpanel">
+                              <form>
+                                 <div id="newlink">
+                                    <div id="1">
+                                       <div class="row">
+                                          <div class="col-lg-12">
+                                             <div class="mb-3">
+                                                <label for="jobTitle" class="form-label">Job Title</label>
+                                                <input type="text" class="form-control" id="jobTitle" placeholder="Job title" value="Lead Designer / Developer">
+                                             </div>
+                                          </div>
+                                          <!--end col-->
+                                          <div class="col-lg-6">
+                                             <div class="mb-3">
+                                                <label for="companyName" class="form-label">Company Name</label>
+                                                <input type="text" class="form-control" id="companyName" placeholder="Company name" value="Themesbrand">
+                                             </div>
+                                          </div>
+                                          <!--end col-->
+                                          <div class="col-lg-6">
+                                             <div class="mb-3">
+                                                <label for="experienceYear" class="form-label">Experience Years</label>
+                                                <div class="row">
+                                                   <div class="col-lg-5">
+                                                      <div class="choices" data-type="select-one" tabindex="0" role="listbox" aria-label="Experience Years" aria-haspopup="true" aria-expanded="false">
+                                                         <div class="choices__inner">
+                                                            <select class="form-control choices__input" data-choices="" data-choices-search-false="" name="experienceYear" id="experienceYear" hidden="" tabindex="-1" data-choice="active">
+                                                               <option value="">Select years</option>
+                                                               <option value="Choice 1">2001</option>
+                                                               <option value="Choice 2">2002</option>
+                                                               <option value="Choice 3">2003</option>
+                                                               <option value="Choice 4">2004</option>
+                                                               <option value="Choice 5">2005</option>
+                                                               <option value="Choice 6">2006</option>
+                                                               <option value="Choice 7">2007</option>
+                                                               <option value="Choice 8">2008</option>
+                                                               <option value="Choice 9">2009</option>
+                                                               <option value="Choice 10">2010</option>
+                                                               <option value="Choice 11">2011</option>
+                                                               <option value="Choice 12">2012</option>
+                                                               <option value="Choice 13">2013</option>
+                                                               <option value="Choice 14">2014</option>
+                                                               <option value="Choice 15">2015</option>
+                                                               <option value="Choice 16">2016</option>
+                                                               <option value="Choice 17" selected="">2017</option>
+                                                               <option value="Choice 18">2018</option>
+                                                               <option value="Choice 19">2019</option>
+                                                               <option value="Choice 20">2020</option>
+                                                               <option value="Choice 21">2021</option>
+                                                               <option value="Choice 22">2022</option>
+                                                            </select>
+                                                            <div class="choices__list choices__list--single">
+                                                               <div class="choices__item choices__item--selectable" data-item="" data-id="18" data-value="Choice 17" aria-selected="true" role="option">2017</div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                                            <div class="choices__list" role="listbox">
+                                                               <div id="choices--experienceYear-item-choice-1" class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Select years</div>
+                                                               <div id="choices--experienceYear-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Choice 1" data-select-text="Press to select" data-choice-selectable="">2001</div>
+                                                               <div id="choices--experienceYear-item-choice-3" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="3" data-value="Choice 2" data-select-text="Press to select" data-choice-selectable="">2002</div>
+                                                               <div id="choices--experienceYear-item-choice-4" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="4" data-value="Choice 3" data-select-text="Press to select" data-choice-selectable="">2003</div>
+                                                               <div id="choices--experienceYear-item-choice-5" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="5" data-value="Choice 4" data-select-text="Press to select" data-choice-selectable="">2004</div>
+                                                               <div id="choices--experienceYear-item-choice-6" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="6" data-value="Choice 5" data-select-text="Press to select" data-choice-selectable="">2005</div>
+                                                               <div id="choices--experienceYear-item-choice-7" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="7" data-value="Choice 6" data-select-text="Press to select" data-choice-selectable="">2006</div>
+                                                               <div id="choices--experienceYear-item-choice-8" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="8" data-value="Choice 7" data-select-text="Press to select" data-choice-selectable="">2007</div>
+                                                               <div id="choices--experienceYear-item-choice-9" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="9" data-value="Choice 8" data-select-text="Press to select" data-choice-selectable="">2008</div>
+                                                               <div id="choices--experienceYear-item-choice-10" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="10" data-value="Choice 9" data-select-text="Press to select" data-choice-selectable="">2009</div>
+                                                               <div id="choices--experienceYear-item-choice-11" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="11" data-value="Choice 10" data-select-text="Press to select" data-choice-selectable="">2010</div>
+                                                               <div id="choices--experienceYear-item-choice-12" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="12" data-value="Choice 11" data-select-text="Press to select" data-choice-selectable="">2011</div>
+                                                               <div id="choices--experienceYear-item-choice-13" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="13" data-value="Choice 12" data-select-text="Press to select" data-choice-selectable="">2012</div>
+                                                               <div id="choices--experienceYear-item-choice-14" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="14" data-value="Choice 13" data-select-text="Press to select" data-choice-selectable="">2013</div>
+                                                               <div id="choices--experienceYear-item-choice-15" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="15" data-value="Choice 14" data-select-text="Press to select" data-choice-selectable="">2014</div>
+                                                               <div id="choices--experienceYear-item-choice-16" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="16" data-value="Choice 15" data-select-text="Press to select" data-choice-selectable="">2015</div>
+                                                               <div id="choices--experienceYear-item-choice-17" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="17" data-value="Choice 16" data-select-text="Press to select" data-choice-selectable="">2016</div>
+                                                               <div id="choices--experienceYear-item-choice-18" class="choices__item choices__item--choice is-selected choices__item--selectable" role="option" data-choice="" data-id="18" data-value="Choice 17" data-select-text="Press to select" data-choice-selectable="">2017</div>
+                                                               <div id="choices--experienceYear-item-choice-19" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="19" data-value="Choice 18" data-select-text="Press to select" data-choice-selectable="">2018</div>
+                                                               <div id="choices--experienceYear-item-choice-20" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="20" data-value="Choice 19" data-select-text="Press to select" data-choice-selectable="">2019</div>
+                                                               <div id="choices--experienceYear-item-choice-21" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="21" data-value="Choice 20" data-select-text="Press to select" data-choice-selectable="">2020</div>
+                                                               <div id="choices--experienceYear-item-choice-22" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="22" data-value="Choice 21" data-select-text="Press to select" data-choice-selectable="">2021</div>
+                                                               <div id="choices--experienceYear-item-choice-23" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="23" data-value="Choice 22" data-select-text="Press to select" data-choice-selectable="">2022</div>
+                                                            </div>
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                   <!--end col-->
+                                                   <div class="col-auto align-self-center">
+                                                      to
+                                                   </div>
+                                                   <!--end col-->
+                                                   <div class="col-lg-5">
+                                                      <div class="choices" data-type="select-one" tabindex="0" role="listbox" aria-haspopup="true" aria-expanded="false">
+                                                         <div class="choices__inner">
+                                                            <select class="form-control choices__input" data-choices="" data-choices-search-false="" name="choices-single-default2" hidden="" tabindex="-1" data-choice="active">
+                                                               <option value="">Select years</option>
+                                                               <option value="Choice 1">2001</option>
+                                                               <option value="Choice 2">2002</option>
+                                                               <option value="Choice 3">2003</option>
+                                                               <option value="Choice 4">2004</option>
+                                                               <option value="Choice 5">2005</option>
+                                                               <option value="Choice 6">2006</option>
+                                                               <option value="Choice 7">2007</option>
+                                                               <option value="Choice 8">2008</option>
+                                                               <option value="Choice 9">2009</option>
+                                                               <option value="Choice 10">2010</option>
+                                                               <option value="Choice 11">2011</option>
+                                                               <option value="Choice 12">2012</option>
+                                                               <option value="Choice 13">2013</option>
+                                                               <option value="Choice 14">2014</option>
+                                                               <option value="Choice 15">2015</option>
+                                                               <option value="Choice 16">2016</option>
+                                                               <option value="Choice 17">2017</option>
+                                                               <option value="Choice 18">2018</option>
+                                                               <option value="Choice 19">2019</option>
+                                                               <option value="Choice 20" selected="">2020</option>
+                                                               <option value="Choice 21">2021</option>
+                                                               <option value="Choice 22">2022</option>
+                                                            </select>
+                                                            <div class="choices__list choices__list--single">
+                                                               <div class="choices__item choices__item--selectable" data-item="" data-id="21" data-value="Choice 20" aria-selected="true" role="option">2020</div>
+                                                            </div>
+                                                         </div>
+                                                         <div class="choices__list choices__list--dropdown" aria-expanded="false">
+                                                            <div class="choices__list" role="listbox">
+                                                               <div id="choices--choices-single-default2-jb-item-choice-1" class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted" role="option" data-choice="" data-id="1" data-value="" data-select-text="Press to select" data-choice-selectable="" aria-selected="true">Select years</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-2" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="2" data-value="Choice 1" data-select-text="Press to select" data-choice-selectable="">2001</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-3" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="3" data-value="Choice 2" data-select-text="Press to select" data-choice-selectable="">2002</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-4" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="4" data-value="Choice 3" data-select-text="Press to select" data-choice-selectable="">2003</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-5" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="5" data-value="Choice 4" data-select-text="Press to select" data-choice-selectable="">2004</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-6" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="6" data-value="Choice 5" data-select-text="Press to select" data-choice-selectable="">2005</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-7" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="7" data-value="Choice 6" data-select-text="Press to select" data-choice-selectable="">2006</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-8" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="8" data-value="Choice 7" data-select-text="Press to select" data-choice-selectable="">2007</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-9" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="9" data-value="Choice 8" data-select-text="Press to select" data-choice-selectable="">2008</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-10" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="10" data-value="Choice 9" data-select-text="Press to select" data-choice-selectable="">2009</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-11" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="11" data-value="Choice 10" data-select-text="Press to select" data-choice-selectable="">2010</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-12" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="12" data-value="Choice 11" data-select-text="Press to select" data-choice-selectable="">2011</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-13" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="13" data-value="Choice 12" data-select-text="Press to select" data-choice-selectable="">2012</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-14" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="14" data-value="Choice 13" data-select-text="Press to select" data-choice-selectable="">2013</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-15" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="15" data-value="Choice 14" data-select-text="Press to select" data-choice-selectable="">2014</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-16" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="16" data-value="Choice 15" data-select-text="Press to select" data-choice-selectable="">2015</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-17" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="17" data-value="Choice 16" data-select-text="Press to select" data-choice-selectable="">2016</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-18" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="18" data-value="Choice 17" data-select-text="Press to select" data-choice-selectable="">2017</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-19" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="19" data-value="Choice 18" data-select-text="Press to select" data-choice-selectable="">2018</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-20" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="20" data-value="Choice 19" data-select-text="Press to select" data-choice-selectable="">2019</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-21" class="choices__item choices__item--choice is-selected choices__item--selectable" role="option" data-choice="" data-id="21" data-value="Choice 20" data-select-text="Press to select" data-choice-selectable="">2020</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-22" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="22" data-value="Choice 21" data-select-text="Press to select" data-choice-selectable="">2021</div>
+                                                               <div id="choices--choices-single-default2-jb-item-choice-23" class="choices__item choices__item--choice choices__item--selectable" role="option" data-choice="" data-id="23" data-value="Choice 22" data-select-text="Press to select" data-choice-selectable="">2022</div>
+                                                            </div>
+                                                         </div>
+                                                      </div>
+                                                   </div>
+                                                   <!--end col-->
+                                                </div>
+                                                <!--end row-->
+                                             </div>
+                                          </div>
+                                          <!--end col-->
+                                          <div class="col-lg-12">
+                                             <div class="mb-3">
+                                                <label for="jobDescription" class="form-label">Job Description</label>
+                                                <textarea class="form-control" id="jobDescription" rows="3" placeholder="Enter description">You always want to make sure that your fonts work well together and try to limit the number of fonts you use to three or less. Experiment and play around with the fonts that you already have in the software you're working with reputable font websites. </textarea>
+                                             </div>
+                                          </div>
+                                          <!--end col-->
+                                          <div class="hstack gap-2 justify-content-end">
+                                             <a class="btn btn-success" href="javascript:deleteEl(1)">Delete</a>
+                                          </div>
+                                       </div>
+                                       <!--end row-->
+                                    </div>
+                                 </div>
+                                 <div id="newForm" style="display: none;">
+                                 </div>
+                                 <div class="col-lg-12">
+                                    <div class="hstack gap-2">
+                                       <button type="submit" class="btn btn-success">Update</button>
+                                       <a href="javascript:new_link()" class="btn btn-primary">Add New</a>
+                                    </div>
+                                 </div>
+                                 <!--end col-->
+                              </form>
+                           </div>
+                           <!--end tab-pane-->
+                           <div class="tab-pane" id="privacy" role="tabpanel">
+                              <div class="mb-4 pb-2">
+                                 <h5 class="card-title text-decoration-underline mb-3">Security:</h5>
+                                 <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0">
+                                    <div class="flex-grow-1">
+                                       <h6 class="fs-14 mb-1">Two-factor Authentication</h6>
+                                       <p class="text-muted">Two-factor authentication is an enhanced security meansur. Once enabled, you'll be required to give two types of identification when you log into Google Authentication and SMS are Supported.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                       <a href="javascript:void(0);" class="btn btn-sm btn-primary">Enable Two-facor Authentication</a>
+                                    </div>
+                                 </div>
+                                 <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
+                                    <div class="flex-grow-1">
+                                       <h6 class="fs-14 mb-1">Secondary Verification</h6>
+                                       <p class="text-muted">The first factor is a password and the second commonly includes a text with a code sent to your smartphone, or biometrics using your fingerprint, face, or retina.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                       <a href="javascript:void(0);" class="btn btn-sm btn-primary">Set up secondary method</a>
+                                    </div>
+                                 </div>
+                                 <div class="d-flex flex-column flex-sm-row mb-4 mb-sm-0 mt-2">
+                                    <div class="flex-grow-1">
+                                       <h6 class="fs-14 mb-1">Backup Codes</h6>
+                                       <p class="text-muted mb-sm-0">A backup code is automatically generated for you when you turn on two-factor authentication through your iOS or Android Twitter app. You can also generate a backup code on twitter.com.</p>
+                                    </div>
+                                    <div class="flex-shrink-0 ms-sm-3">
+                                       <a href="javascript:void(0);" class="btn btn-sm btn-primary">Generate backup codes</a>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="mb-3">
+                                 <h5 class="card-title text-decoration-underline mb-3">Application Notifications:</h5>
+                                 <ul class="list-unstyled mb-0">
+                                    <li class="d-flex">
+                                       <div class="flex-grow-1">
+                                          <label for="directMessage" class="form-check-label fs-14">Direct messages</label>
+                                          <p class="text-muted">Messages from people you follow</p>
+                                       </div>
+                                       <div class="flex-shrink-0">
+                                          <div class="form-check form-switch">
+                                             <input class="form-check-input" type="checkbox" role="switch" id="directMessage" checked="">
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                       <div class="flex-grow-1">
+                                          <label class="form-check-label fs-14" for="desktopNotification">
+                                          Show desktop notifications
+                                          </label>
+                                          <p class="text-muted">Choose the option you want as your default setting. Block a site: Next to "Not allowed to send notifications," click Add.</p>
+                                       </div>
+                                       <div class="flex-shrink-0">
+                                          <div class="form-check form-switch">
+                                             <input class="form-check-input" type="checkbox" role="switch" id="desktopNotification" checked="">
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                       <div class="flex-grow-1">
+                                          <label class="form-check-label fs-14" for="emailNotification">
+                                          Show email notifications
+                                          </label>
+                                          <p class="text-muted"> Under Settings, choose Notifications. Under Select an account, choose the account to enable notifications for. </p>
+                                       </div>
+                                       <div class="flex-shrink-0">
+                                          <div class="form-check form-switch">
+                                             <input class="form-check-input" type="checkbox" role="switch" id="emailNotification">
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                       <div class="flex-grow-1">
+                                          <label class="form-check-label fs-14" for="chatNotification">
+                                          Show chat notifications
+                                          </label>
+                                          <p class="text-muted">To prevent duplicate mobile notifications from the Gmail and Chat apps, in settings, turn off Chat notifications.</p>
+                                       </div>
+                                       <div class="flex-shrink-0">
+                                          <div class="form-check form-switch">
+                                             <input class="form-check-input" type="checkbox" role="switch" id="chatNotification">
+                                          </div>
+                                       </div>
+                                    </li>
+                                    <li class="d-flex mt-2">
+                                       <div class="flex-grow-1">
+                                          <label class="form-check-label fs-14" for="purchaesNotification">
+                                          Show purchase notifications
+                                          </label>
+                                          <p class="text-muted">Get real-time purchase alerts to protect yourself from fraudulent charges.</p>
+                                       </div>
+                                       <div class="flex-shrink-0">
+                                          <div class="form-check form-switch">
+                                             <input class="form-check-input" type="checkbox" role="switch" id="purchaesNotification">
+                                          </div>
+                                       </div>
+                                    </li>
+                                 </ul>
+                              </div>
+                              <div>
+                                 <h5 class="card-title text-decoration-underline mb-3">Delete This Account:</h5>
+                                 <p class="text-muted">Go to the Data &amp; Privacy section of your profile Account. Scroll to "Your data &amp; privacy options." Delete your Profile Account. Follow the instructions to delete your account :</p>
+                                 <div>
+                                    <input type="password" class="form-control" id="passwordInput" placeholder="Enter your password" value="make@321654987" style="max-width: 265px;">
+                                 </div>
+                                 <div class="hstack gap-2 mt-3">
+                                    <a href="javascript:void(0);" class="btn btn-soft-danger">Close &amp; Delete This Account</a>
+                                    <a href="javascript:void(0);" class="btn btn-light">Cancel</a>
+                                 </div>
+                              </div>
+                           </div>
+                           <!--end tab-pane-->
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <!--end col-->
             </div>
-        </section>
+            <!--end row-->
+         </div>
     </div>
 </div>
-    </div>
-</div>
-<style>
-   .view-account{
-background:#FFFFFF; 
-margin-top:20px;
-}
-.view-account .pro-label {
-font-size: 13px;
-padding: 4px 5px;
-position: relative;
-top: -5px;
-margin-left: 10px;
-display: inline-block
-}
 
-.view-account .side-bar {
-padding-bottom: 30px;
-}
-
-.view-account .side-bar .user-info {
-text-align: center;
-margin-bottom: 15px;
-padding: 5px !important; 
-color: #616670;
-border-bottom: 1px solid #f3f3f3;
-}
-
-.view-account .side-bar .user-info .img-profile {
-width: 120px;
-height: 120px;
-margin-bottom: 15px
-}
-
-.view-account .side-bar .user-info .meta li {
-margin-bottom: 10px
-}
-
-.view-account .side-bar .user-info .meta li span {
-display: inline-block;
-width: 100px;
-margin-right: 5px;
-text-align: right
-}
-
-.view-account .side-bar .user-info .meta li a {
-color: #616670
-}
-
-.view-account .side-bar .user-info .meta li.activity {
-color: #a2a6af
-}
-
-.view-account .side-bar .side-menu {
-text-align: center
-}
-
-.view-account .side-bar .side-menu .nav {
-display: inline-block;
-margin: 0 auto
-}
-
-.view-account .side-bar .side-menu .nav>li {
-font-size: 14px;
-margin-bottom: 0;
-border-bottom: none;
-display: inline-block;
-margin-right: 15px;
-margin-bottom: 15px
-}
-
-.view-account .side-bar .side-menu .nav>li:last-child {
-margin-right: 0
-}
-
-.view-account .side-bar .side-menu .nav>li>a {
-display: inline-block;
-color: #9499a3;
-padding: 5px;
-border-bottom: 2px solid transparent
-}
-
-.view-account .side-bar .side-menu .nav>li>a:hover {
-color: #616670;
-background: none
-}
-
-.view-account .side-bar .side-menu .nav>li.active a {
-color: #40babd;
-border-bottom: 2px solid #40babd;
-background: none;
-border-right: none
-}
-
-.theme-2 .view-account .side-bar .side-menu .nav>li.active a {
-color: #6dbd63;
-border-bottom-color: #6dbd63
-}
-
-.theme-3 .view-account .side-bar .side-menu .nav>li.active a {
-color: #497cb1;
-border-bottom-color: #497cb1
-}
-
-.theme-4 .view-account .side-bar .side-menu .nav>li.active a {
-color: #ec6952;
-border-bottom-color: #ec6952
-}
-
-.view-account .side-bar .side-menu .nav>li .icon {
-display: block;
-font-size: 24px;
-margin-bottom: 5px
-}
-
-.view-account .content-panel {
-padding: 30px
-}
-
-.view-account .content-panel .title {
-margin-bottom: 15px;
-margin-top: 0;
-font-size: 18px
-}
-
-.view-account .content-panel .fieldset-title {
-padding-bottom: 15px;
-border-bottom: 1px solid #eaeaf1;
-margin-bottom: 30px;
-color: #616670;
-font-size: 16px
-}
-.form-group
-{
-   margin-bottom:1vw;
-}
-.view-account .content-panel .avatar .figure img {
-float: right;
-width: 64px
-}
-
-.view-account .content-panel .content-header-wrapper {
-position: relative;
-margin-bottom: 30px
-}
-
-.view-account .content-panel .content-header-wrapper .actions {
-position: absolute;
-right: 0;
-top: 0
-}
-
-.view-account .content-panel .content-utilities {
-position: relative;
-margin-bottom: 30px
-}
-
-.view-account .content-panel .content-utilities .btn-group {
-margin-right: 5px;
-margin-bottom: 15px
-}
-
-.view-account .content-panel .content-utilities .fa {
-font-size: 16px;
-margin-right: 0
-}
-
-.view-account .content-panel .content-utilities .page-nav {
-position: absolute;
-right: 0;
-top: 0
-}
-
-.view-account .content-panel .content-utilities .page-nav .btn-group {
-margin-bottom: 0
-}
-
-.view-account .content-panel .content-utilities .page-nav .indicator {
-color: #a2a6af;
-margin-right: 5px;
-display: inline-block
-}
-
-.view-account .content-panel .mails-wrapper .mail-item {
-position: relative;
-padding: 10px;
-border-bottom: 1px solid #f3f3f3;
-color: #616670;
-overflow: hidden
-}
-
-.view-account .content-panel .mails-wrapper .mail-item>div {
-float: left
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .icheck {
-background-color: #fff
-}
-
-.view-account .content-panel .mails-wrapper .mail-item:hover {
-background: #f9f9fb
-}
-
-.view-account .content-panel .mails-wrapper .mail-item:nth-child(even) {
-background: #fcfcfd
-}
-
-.view-account .content-panel .mails-wrapper .mail-item:nth-child(even):hover {
-background: #f9f9fb
-}
-
-.view-account .content-panel .mails-wrapper .mail-item a {
-color: #616670
-}
-
-.view-account .content-panel .mails-wrapper .mail-item a:hover {
-color: #494d55;
-text-decoration: none
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .checkbox-container,
-.view-account .content-panel .mails-wrapper .mail-item .star-container {
-display: inline-block;
-margin-right: 5px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .star-container .fa {
-color: #a2a6af;
-font-size: 16px;
-vertical-align: middle
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .star-container .fa.fa-star {
-color: #f2b542
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .star-container .fa:hover {
-color: #868c97
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-to {
-display: inline-block;
-margin-right: 5px;
-min-width: 120px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject {
-display: inline-block;
-margin-right: 5px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label {
-margin-right: 5px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label:last-child {
-margin-right: 10px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label a,
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label a:hover {
-color: #fff
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label-color-1 {
-background: #f77b6b
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label-color-2 {
-background: #58bbee
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label-color-3 {
-background: #f8a13f
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label-color-4 {
-background: #ea5395
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .mail-subject .label-color-5 {
-background: #8a40a7
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .time-container {
-display: inline-block;
-position: absolute;
-right: 10px;
-top: 10px;
-color: #a2a6af;
-text-align: left
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .time-container .attachment-container {
-display: inline-block;
-color: #a2a6af;
-margin-right: 5px
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .time-container .time {
-display: inline-block;
-text-align: right
-}
-
-.view-account .content-panel .mails-wrapper .mail-item .time-container .time.today {
-font-weight: 700;
-color: #494d55
-}
-
-.drive-wrapper {
-padding: 15px;
-background: #f5f5f5;
-overflow: hidden
-}
-
-.drive-wrapper .drive-item {
-width: 130px;
-margin-right: 15px;
-display: inline-block;
-float: left;
-}
-
-.drive-wrapper .drive-item:hover {
-box-shadow: 0 1px 5px rgba(0, 0, 0, .1);
-z-index: 1
-}
-
-.drive-wrapper .drive-item-inner {
-padding: 15px
-}
-
-.drive-wrapper .drive-item-title {
-margin-bottom: 15px;
-max-width: 100px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis
-}
-
-.drive-wrapper .drive-item-title a {
-color: #494d55
-}
-
-.drive-wrapper .drive-item-title a:hover {
-color: #40babd
-}
-
-.theme-2 .drive-wrapper .drive-item-title a:hover {
-color: #6dbd63
-}
-
-.theme-3 .drive-wrapper .drive-item-title a:hover {
-color: #497cb1
-}
-
-.theme-4 .drive-wrapper .drive-item-title a:hover {
-color: #ec6952
-}
-
-.drive-wrapper .drive-item-thumb {
-width: 100px;
-height: 80px;
-margin: 0 auto;
-color: #616670
-}
-
-.drive-wrapper .drive-item-thumb a {
--webkit-opacity: .8;
--moz-opacity: .8;
-opacity: .8
-}
-
-.drive-wrapper .drive-item-thumb a:hover {
--webkit-opacity: 1;
--moz-opacity: 1;
-opacity: 1
-}
-
-.drive-wrapper .drive-item-thumb .fa {
-display: inline-block;
-font-size: 36px;
-margin: 0 auto;
-margin-top: 20px
-}
-
-.drive-wrapper .drive-item-footer .utilities {
-margin-bottom: 0
-}
-
-.drive-wrapper .drive-item-footer .utilities li:last-child {
-padding-right: 0
-}
-
-.drive-list-view .name {
-width: 60%
-}
-
-.drive-list-view .name.truncate {
-max-width: 100px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis
-}
-
-.drive-list-view .type {
-width: 15px
-}
-
-.drive-list-view .date,
-.drive-list-view .size {
-max-width: 60px;
-white-space: nowrap;
-overflow: hidden;
-text-overflow: ellipsis
-}
-
-.drive-list-view a {
-color: #494d55
-}
-
-.drive-list-view a:hover {
-color: #40babd
-}
-
-.theme-2 .drive-list-view a:hover {
-color: #6dbd63
-}
-
-.theme-3 .drive-list-view a:hover {
-color: #497cb1
-}
-
-.theme-4 .drive-list-view a:hover {
-color: #ec6952
-}
-
-.drive-list-view td.date,
-.drive-list-view td.size {
-color: #a2a6af
-}
-
-@media (max-width:767px) {
-.view-account .content-panel .title {
-    text-align: center
-}
-.view-account .side-bar .user-info {
-    padding: 0
-}
-.view-account .side-bar .user-info .img-profile {
-    width: 60px;
-    height: 60px
-}
-.view-account .side-bar .user-info .meta li {
-    margin-bottom: 5px
-}
-.view-account .content-panel .content-header-wrapper .actions {
-    position: static;
-    margin-bottom: 30px
-}
-.view-account .content-panel {
-    padding: 0
-}
-.view-account .content-panel .content-utilities .page-nav {
-    position: static;
-    margin-bottom: 15px
-}
-.drive-wrapper .drive-item {
-    width: 100px;
-    margin-right: 5px;
-    float: none
-}
-.drive-wrapper .drive-item-thumb {
-    width: auto;
-    height: 54px
-}
-.drive-wrapper .drive-item-thumb .fa {
-    font-size: 24px;
-    padding-top: 0
-}
-.view-account .content-panel .avatar .figure img {
-    float: none;
-    margin-bottom: 15px
-}
-.view-account .file-uploader {
-    margin-bottom: 15px
-}
-.view-account .mail-subject {
-    max-width: 100px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis
-}
-.view-account .content-panel .mails-wrapper .mail-item .time-container {
-    position: static
-}
-.view-account .content-panel .mails-wrapper .mail-item .time-container .time {
-    width: auto;
-    text-align: left
-}
-}
-
-@media (min-width:768px) {
-.view-account .side-bar .user-info {
-    padding: 0;
-    padding-bottom: 15px
-}
-.view-account .mail-subject .subject {
-    max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis
-}
-}
-
-@media (min-width:992px) {
-.view-account .content-panel {
-    min-height: 800px;
-    border-left: 1px solid #f3f3f7;
-    margin-left: 200px
-}
-.view-account .mail-subject .subject {
-    max-width: 280px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis
-}
-.view-account .side-bar {
-    position: absolute;
-    width: 200px;
-    min-height: 600px;
-}
-.view-account .side-bar .user-info {
-    margin-bottom: 0;
-    border-bottom: none;
-    padding: 15px;
-}
-.view-account .side-bar .user-info .img-profile {
-    width: 120px;
-    height: 120px
-}
-.view-account .side-bar .side-menu {
-    text-align: left
-}
-.view-account .side-bar .side-menu .nav {
-    display: block
-}
-.view-account .side-bar .side-menu .nav>li {
-    display: block;
-    float: none;
-    font-size: 14px;
-    border-bottom: 1px solid #f3f3f7;
-    margin-right: 0;
-    margin-bottom: 0
-}
-.view-account .side-bar .side-menu .nav>li>a {
-    display: block;
-    color: #9499a3;
-    padding: 10px 15px;
-    padding-left: 30px
-}
-.view-account .side-bar .side-menu .nav>li>a:hover {
-    background: #f9f9fb
-}
-.view-account .side-bar .side-menu .nav>li.active a {
-    background: #f9f9fb;
-    border-right: 4px solid #40babd;
-    border-bottom: none
-}
-.theme-2 .view-account .side-bar .side-menu .nav>li.active a {
-    border-right-color: #6dbd63
-}
-.theme-3 .view-account .side-bar .side-menu .nav>li.active a {
-    border-right-color: #497cb1
-}
-.theme-4 .view-account .side-bar .side-menu .nav>li.active a {
-    border-right-color: #ec6952
-}
-.view-account .side-bar .side-menu .nav>li .icon {
-    font-size: 24px;
-    vertical-align: middle;
-    text-align: center;
-    width: 40px;
-    display: inline-block
-}
-}
-</style>
 {% endblock content %}
