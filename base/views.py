@@ -131,6 +131,8 @@ def carousel_view(request):
 
 
 def loginPage(request):
+    if request.user.is_authenticated:
+        logout(request)
     page = 'login'
     if request.method == 'POST':
         username = request.POST.get('username')

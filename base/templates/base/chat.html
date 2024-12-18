@@ -255,9 +255,10 @@ function scrollToBottom() {
     if (container) {
         container.scrollTop = container.scrollHeight;
     } else {
-        console.error("Container '.message-area' not found!");
+        console.error("Container 'chat-area' not found!");
     }
 }
 document.addEventListener('DOMContentLoaded', scrollToBottom);
 </script>
 {% endblock %}
+
