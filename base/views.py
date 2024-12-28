@@ -66,11 +66,12 @@ def my_events(request):
         'events': events,
     }
     return render(request, 'base/my_events.html', context)
+
 @login_required(login_url='/login')
 def delete_task(request, task_id):
     task = get_object_or_404(Task, id=task_id, user=request.user)
     task.delete()
-    return redirect('home')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='/login')
 def my_events(request):
@@ -422,6 +423,8 @@ def homeAdmin(request):
             return render(request, 'base/partials/chat_message_p.html', context)
     tasks = Task.objects.all()
     users = User.objects.all()
+    events = Event.objects.all()
+    event_locations = [event.location.location for event in events]
     context= {
         'users':users,
         'tasks':tasks,
@@ -429,7 +432,8 @@ def homeAdmin(request):
         'profiles': profiles,
         'messages': messages,
         'form': form,
-        'hx_post_url': reverse('home-admin')
+        'hx_post_url': reverse('home-admin'),
+        'event_locations': event_locations
     }
     if request.method == 'POST':
         form = TaskForm(request.POST)
