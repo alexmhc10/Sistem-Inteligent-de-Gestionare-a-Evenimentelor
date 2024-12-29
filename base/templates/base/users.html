@@ -124,7 +124,7 @@
                             <td>{{ user.username }}</td>
                             <td> {{ user.email }} </td>
                             <td> <a href="{% url 'delete_user_admin' user.username %}">Delete User</a> / <a
-                                    href="{% url 'update_user_admin' user.username %}">Update User</a></td>
+                                    href="{% url 'view_user_admin' user.username %}">View User</a></td>
                         </tr>
                         {% endif %}
                         {% endfor %}

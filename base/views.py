@@ -714,7 +714,7 @@ def updateLocation(request, pk):
 
 
 @login_required(login_url='/login')
-def updateUserAdmin(request, pk):
+def viewUserAdmin(request, pk):
     if not request.user.is_superuser:
             return HttpResponse("Only superusers can approve users.")
     user = User.objects.get(username=pk)
@@ -724,13 +724,23 @@ def updateUserAdmin(request, pk):
         if form.is_valid():
             form.save()
             return redirect('users')
+    events = Event.objects.filter(organized_by=user)
+    locations = Location.objects.filter(owner=user)
+    count_events = 0 
+    count_locations = 0
+    for event in events:
+        count_events += 1
+    for location in locations:
+        count_locations += 1
     last_login = user.last_login
     context = {
+        'count_events':count_events,
+        'count_locations':count_locations,
         'last_login':last_login,
         'user':user,
         'form':form
     }
-    return render(request, 'base/admin-update-user.html', context)
+    return render(request, 'base/admin-view-user.html', context)
 
 @login_required(login_url='/login')
 def deleteUserAdmin(request, pk):

@@ -41,7 +41,7 @@ class Profile(models.Model):
     photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
-
+    age = models.IntegerField(default=20)
     def __str__(self):
         return self.user.username
 

@@ -19,7 +19,7 @@ urlpatterns = [
     path('approve_user/<int:pk>/', views.approve_user, name='approve_user'),
     path('delete_user/<str:pk>/', views.deleteUser, name="delete_user"),
     path('delete_user_admin/<str:pk>/', views.deleteUserAdmin, name="delete_user_admin"),
-    path('update_user_admin/<str:pk>/', views.updateUserAdmin, name="update_user_admin"),
+    path('view_user_admin/<str:pk>/', views.viewUserAdmin, name="view_user_admin"),
 
     # Evenimente
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
