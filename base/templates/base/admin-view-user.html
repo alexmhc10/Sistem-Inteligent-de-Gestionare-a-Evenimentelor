@@ -100,9 +100,12 @@
                         </li>
             
                         <li class="nav-item">
-                           <a class="nav-link " href="{% url 'view_user_events' user.username %}">Projects <span class="badge bg-soft-dark text-dark rounded-circle ms-1">{{ count_events }}</span></a>
+                           <a class="nav-link " href="{% url 'view_user_events' user.username %}">Events <span class="badge bg-soft-dark text-dark rounded-circle ms-1">{{ count_events }}</span></a>
                         </li>
                      
+                        <li class="nav-item">
+                           <a class="nav-link " href="{% url 'view_user_locations' user.username %}">Locations <span class="badge bg-soft-dark text-dark rounded-circle ms-1">{{ count_locations }}</span></a>
+                        </li>
                         
                      </ul>
                   </div>
@@ -359,7 +362,7 @@
                               </div>
                               <!-- End Table -->
                               <!-- Footer -->
-                              <a class="card-footer text-center" href="./projects.html">
+                              <a class="card-footer text-center" href="{% url 'view_user_events' user.username %}">
                               View all events <i class="bi-chevron-right"></i>
                               </a>
                               <!-- End Footer -->
