@@ -18,6 +18,9 @@ from django.http import HttpResponseRedirect
 from .models import Event
 import random
 from datetime import datetime,timedelta
+from collections import defaultdict
+from django.utils.timezone import localtime
+from django.utils import timezone
 
 @login_required(login_url='/login')
 def event_builder(request):
@@ -716,14 +719,14 @@ def updateLocation(request, pk):
 @login_required(login_url='/login')
 def viewUserAdmin(request, pk):
     if not request.user.is_superuser:
-            return HttpResponse("Only superusers can approve users.")
+            return HttpResponse("Only admin can access this page.")
     user = User.objects.get(username=pk)
-    form = CustomUserChangeForm(instance=user)  
-    if request.method == 'POST':
-        form = CustomUserChangeForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            return redirect('users')
+    # form = CustomUserChangeForm(instance=user)  
+    # if request.method == 'POST':
+    #     form = CustomUserChangeForm(request.POST, instance=user)
+    #     if form.is_valid():
+    #         form.save()
+    #         return redirect('users')
     events = Event.objects.filter(organized_by=user)
     locations = Location.objects.filter(owner=user)
     count_events = 0 
@@ -733,16 +736,52 @@ def viewUserAdmin(request, pk):
     for location in locations:
         count_locations += 1
     last_login = user.last_login
+    location_counts = defaultdict(int)
+
+    for event in events:
+        location_counts[event.location.name] += 1
+
+    detailed_locations = [{'location_name': loc.name, 'ev_count': location_counts[loc.name]} for loc in locations] 
+    print("Locatii cu evenimente:", detailed_locations)
     context = {
+        'detailed_locations':detailed_locations,
         'locations':locations,
         'count_events':count_events,
         'count_locations':count_locations,
         'last_login':last_login,
         'user':user,
         'events':events,
-        'form':form
+        # 'form':form
     }
     return render(request, 'base/admin-view-user.html', context)
+
+
+@login_required(login_url='/login')
+def viewUserEvents(request, pk):
+    if not request.user.is_superuser:
+            return HttpResponse("Only admin can access this page.")
+    user = User.objects.get(username=pk)
+    ev_count = 0
+    events = Event.objects.filter(organized_by=user).order_by('-updated_at')
+    for event in events:
+        ev_count += 1
+    time_left = {}
+    for event in events:
+        now = timezone.now()
+        time_diff = event.event_date - now.date()  
+        time_left[event.event_name] = time_diff.days
+    now = timezone.now().date()
+    print(time_left)
+    print(now)
+    context = {
+        'now':now,
+        'ev_count':ev_count,
+        'user':user,
+        'events':events,
+        'time_left': time_left,
+    }
+    return render(request, 'base/admin-user-events.html', context)
+
 
 @login_required(login_url='/login')
 def deleteUserAdmin(request, pk):

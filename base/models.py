@@ -107,6 +107,7 @@ class Event(models.Model):
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
     cost = models.IntegerField(default= 3000)
+    updated_at = models.DateTimeField(auto_now=True)
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 

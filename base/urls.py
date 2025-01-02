@@ -20,6 +20,7 @@ urlpatterns = [
     path('delete_user/<str:pk>/', views.deleteUser, name="delete_user"),
     path('delete_user_admin/<str:pk>/', views.deleteUserAdmin, name="delete_user_admin"),
     path('view_user_admin/<str:pk>/', views.viewUserAdmin, name="view_user_admin"),
+    path('view_user_events/<str:pk>/', views.viewUserEvents, name="view_user_events"),
 
     # Evenimente
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
