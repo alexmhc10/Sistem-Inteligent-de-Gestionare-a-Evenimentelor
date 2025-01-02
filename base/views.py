@@ -734,10 +734,12 @@ def viewUserAdmin(request, pk):
         count_locations += 1
     last_login = user.last_login
     context = {
+        'locations':locations,
         'count_events':count_events,
         'count_locations':count_locations,
         'last_login':last_login,
         'user':user,
+        'events':events,
         'form':form
     }
     return render(request, 'base/admin-view-user.html', context)
