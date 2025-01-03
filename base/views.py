@@ -428,7 +428,20 @@ def homeAdmin(request):
     users = User.objects.all()
     events = Event.objects.all()
     event_locations = [event.location.location for event in events]
+    ev_loc = [event.location for event in events]
+    locations = Location.objects.all()
+    events_count = []
+    for location in locations:
+        events_count.append({
+            'name':location.name,
+            'ev_c':location.event_set.count()
+            })
+    print(events_count)
+    for event in events:
+        print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'ev_loc':ev_loc,
+        'events':events,
         'users':users,
         'tasks':tasks,
         'form1':form1,
@@ -436,7 +449,8 @@ def homeAdmin(request):
         'messages': messages,
         'form': form,
         'hx_post_url': reverse('home-admin'),
-        'event_locations': event_locations
+        'event_locations': event_locations,
+        'events_count':events_count
     }
     if request.method == 'POST':
         form = TaskForm(request.POST)
@@ -740,7 +754,6 @@ def viewUserAdmin(request, pk):
 
     for event in events:
         location_counts[event.location.name] += 1
-
     detailed_locations = [{'location_name': loc.name, 'ev_count': location_counts[loc.name]} for loc in locations] 
     print("Locatii cu evenimente:", detailed_locations)
     context = {
@@ -771,9 +784,12 @@ def viewUserEvents(request, pk):
         time_diff = event.event_date - now.date()  
         time_left[event.event_name] = time_diff.days
     now = timezone.now().date()
+    locations = Location.objects.filter(owner=user)
+    loc_count = locations.count()
     print(time_left)
     print(now)
     context = {
+        'loc_count':loc_count,
         'now':now,
         'ev_count':ev_count,
         'user':user,
@@ -782,6 +798,24 @@ def viewUserEvents(request, pk):
     }
     return render(request, 'base/admin-user-events.html', context)
 
+
+@login_required(login_url='/login')
+def viewUserLocations(request, pk):
+    if not request.user.is_superuser:
+            return HttpResponse("Only admin can access this page.")
+    user = User.objects.get(username=pk)
+    locations = Location.objects.filter(owner=user)
+    loc_count = locations.count()
+    events = Event.objects.filter(organized_by=user)
+    ev_count = events.count()
+    print("Count:",loc_count)
+    context = {
+    'locations':locations,
+    'user':user,
+    'ev_count':ev_count,
+    'loc_count':loc_count
+    }
+    return render(request, 'base/admin-user-locations.html', context)
 
 @login_required(login_url='/login')
 def deleteUserAdmin(request, pk):

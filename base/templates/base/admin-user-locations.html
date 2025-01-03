@@ -1,0 +1,295 @@
+{% extends 'main.html' %}
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <div class="row flex-nowrap">
+<div class="col-auto siderbar col-md-2 forevents px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
+                <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+                    <a href="{% url 'home-admin' %}" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                        <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+                    </a>
+                <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <a href="{% url 'home-admin' %}" class="nav-link align-middle px-0 text-white">
+                            <i class="fs-4 bi-house"></i> 
+                            <span class="ms-1 d-none d-sm-inline">Home</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="{% url 'users' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-people"></i>
+                            <span class="ms-1 d-none d-sm-inline">Users</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="{% url 'admin-events' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-calendar-event"></i>
+                            <span class="ms-1 d-none d-sm-inline">Events</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-bar-chart-line me-2"></i> 
+                            <span class="ms-1 d-none d-sm-inline">Charts</span>
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
+                            <i class="fs-4 bi-geo-alt"></i>
+                            <span class="ms-1 d-none d-sm-inline">Locations</span>
+                        </a>
+                    </li>
+                </ul>
+                
+                <hr>
+                <div class="dropdown pb-4">
+                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                            class="rounded-circle">
+                        <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-light text-small shadow">
+                        <li><a class="dropdown-item" href="#">New project...</a></li>
+                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col py-3 events view">
+            <div class="content container-fluid">
+                <div class="row justify-content-lg-center">
+                   <div class="col-lg-10">
+                      <!-- Profile Cover -->
+                      <div class="profile-cover" style="position: relative;">
+                        <div class="profile-cover-img-wrapper">
+                            <img style="width: 100%; height: 300px; object-fit:cover;" class="logo" src="{{ MEDIA_URL }}logos/Login Picture.jpg" alt="EventEase Logo">
+                        </div>
+                    </div>
+                    
+                    <!-- Profile Header -->
+                    <div class="text-center mb-5" style="position: relative;">
+                        <!-- Avatar -->
+                        <div class="avatar avatar-xxl avatar-circle profile-cover-avatar" 
+                             style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%);">
+                            <img class="avatar-img" 
+                                 style="width: 100px; height: 100px; border-radius: 50%;" 
+                                 src="{{ user.profile.photo.url }}" 
+                                 alt="Image Description">
+                            <span class="avatar-status avatar-status-success"></span>
+                        </div>
+                    </div>
+                      <!-- End Profile Header -->
+                      <!-- Nav -->
+                      <div class="js-nav-scroller hs-nav-scroller-horizontal mb-5">
+                         <span class="hs-nav-scroller-arrow-prev" style="display: none;">
+                         <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                         <i class="bi-chevron-left"></i>
+                         </a>
+                         </span>
+                         <span class="hs-nav-scroller-arrow-next" style="display: none;">
+                         <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                         <i class="bi-chevron-right"></i>
+                         </a>
+                         </span>
+                         <ul class="nav nav-tabs align-items-center">
+                            <li class="nav-item">
+                                <a class="nav-link " href="{% url 'view_user_admin' user.username %}">Profile</a>
+                             </li>
+                             <li class="nav-item">
+                                <a class="nav-link " href="{% url 'view_user_events' user.username %}">Events <span class="badge bg-soft-dark text-dark rounded-circle ms-1">{{ev_count}}</span></a>
+                             </li>
+                            <li class="nav-item">
+                               <a class="nav-link active" href="">Locations <span class="badge bg-soft-dark text-dark rounded-circle ms-1">{{ loc_count }}</span></a>
+                            </li>
+                            
+                         </ul>
+                      </div>
+                      <!-- End Nav -->
+                      <div class="row align-items-center mb-5">
+                         <div class="col">
+                            <h3 class="mb-0">{{ loc_count }} Locations</h3>
+                         </div>
+                         <!-- End Col -->
+                         <div class="col-auto">
+                            <!-- Nav -->
+                            <ul class="nav nav-segment" id="profileTeamsTab" role="tablist">
+                               <li class="nav-item" role="presentation">
+                                  <a class="nav-link active" id="grid-tab" data-bs-toggle="tab" href="#grid" role="tab" aria-controls="grid" aria-selected="true" title="Column view">
+                                  <i class="bi-grid"></i>
+                                  </a>
+                               </li>
+                               <li class="nav-item" role="presentation">
+                                  <a class="nav-link" id="list-tab" data-bs-toggle="tab" href="#list" role="tab" aria-controls="list" aria-selected="false" title="List view" tabindex="-1">
+                                  <i class="bi-view-list"></i>
+                                  </a>
+                               </li>
+                            </ul>
+                            <!-- End Nav -->
+                         </div>
+                         <!-- End Col -->
+                      </div>
+                      <!-- End Row -->
+                      <!-- Tab Content -->
+                      <div class="tab-content" id="profileTeamsTabContent">
+                         <div class="tab-pane fade active show" id="grid" role="tabpanel" aria-labelledby="grid-tab">
+                            <!-- Teams -->
+                            <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3">
+                               {% for location in locations %}
+<div class="col mb-3 mb-lg-5">
+                                  <!-- Card -->
+                                  <div class="card h-100">
+                                     <!-- Body -->
+                                     <div class="card-body pb-0">
+                                        <div class="row align-items-center mb-2">
+                                           <div class="col-9">
+                                              <h4 class="mb-1">
+                                                 <a href="{% url 'admin-view-location' location.name %}"> {{ location.name }} </a>
+                                              </h4>
+                                           </div>
+                                           <!-- End Col -->
+                                           
+                                        </div>
+                                        <!-- End Row -->
+                                        <p>{{ location.description }}</p>
+                                     </div>
+                                     <!-- End Body -->
+                                     <!-- Footer -->
+                                     <div class="card-footer border-0 pt-0">
+                                        <div class="list-group list-group-flush list-group-no-gutters">
+                                           <!-- List Item -->
+                                           <div class="list-group-item">
+                                              <div class="row align-items-center">
+                                                 <div class="col">
+                                                    <span class="card-subtitle">Located at:</span>
+                                                 </div>
+                                                 <!-- End Col -->
+                                                 <div class="col-auto">
+                                                    <a class="badge bg-soft-primary text-primary p-2" href="#">{{ location.location }}</a>
+                                                 </div>
+                                                 <!-- End Col -->
+                                              </div>
+                                           </div>
+                                           <!-- End List Item -->
+                                           <!-- List Item -->
+                                           <div class="list-group-item">
+                                              <div class="row align-items-center">
+                                                 <div class="col">
+                                                    <span class="card-subtitle">Rated:</span>
+                                                 </div>
+                                                 <!-- End Col -->
+                                                 <div class="col-auto">
+                                                    <!-- Stars -->
+                                                    <div class="d-flex gap-1">
+                                                      <span class="text-muted">
+                                                         <span class="star filled">★</span>
+                                                         <span class="star filled">★</span>
+                                                         <span class="star filled">★</span>
+                                                         <span class="star filled">★</span>
+                                                         <span class="star empty">★</span>
+                                                     </span>
+                                                    </div>
+                                                    <!-- End Stars -->
+                                                 </div>
+                                                 <!-- End Col -->
+                                              </div>
+                                           </div>
+                                           <!-- End List Item -->
+                                           <!-- List Item -->
+                                           <div class="list-group-item">
+                                              <div class="row align-items-center">
+                                                 <div class="col">
+                                                    <span class="card-subtitle">Types:</span>
+                                                 </div>
+                                                 <!-- End Col -->
+                                                 <div class="col-auto">
+                                                    <!-- Avatar Group -->
+                                                    <div class="avatar-group avatar-group-xs avatar-circle">
+                                                       {% for type in location.types.all %}
+                                                       <p>{{ type }}</p>
+                                                       {% endfor %}
+                                                    </div>
+                                                    <!-- End Avatar Group -->
+                                                 </div>
+                                                 <!-- End Col -->
+                                              </div>
+                                           </div>
+                                           <!-- End List Item -->
+                                        </div>
+                                     </div>
+                                     <!-- End Footer -->
+                                  </div>
+                                  <!-- End Card -->
+                               </div>
+                               
+                               {% endfor %}
+                            </div>
+                            <!-- End Teams -->
+                         </div>
+                         <div class="tab-pane fade" id="list" role="tabpanel" aria-labelledby="list-tab">
+                            <div class="row row-cols-1">
+                              {% for location in locations %} 
+                              <div class="col mb-3">
+                                  <!-- Card -->
+                                  <div class="card card-body">
+                                     <div class="row align-items-md-center">
+                                        <div class="col-9 col-md-4 col-lg-3 mb-2 mb-md-0">
+                                           <h4><a href="#"> {{ location.name }} </a></h4>
+                                           <a class="badge bg-soft-primary text-primary p-2" href="#">{{ location.location }}</a>
+                                        </div>
+                                     
+                                        <div class="col-sm mb-2 mb-sm-0">
+                                           <p>{{ location.description }}</p>
+                                        </div>
+                                        <!-- End Col -->
+                                        <div class="col-sm-auto">
+                                           <!-- Stars -->
+                                           <div class="d-flex gap-1 mb-2">
+                                             <span class="text-muted">
+                                                <span class="star filled">★</span>
+                                                <span class="star filled">★</span>
+                                                <span class="star filled">★</span>
+                                                <span class="star filled">★</span>
+                                                <span class="star empty">★</span>
+                                            </span>                                           </div>
+                                           <!-- End Stars -->
+                                           <!-- Avatar Group -->
+                                           <div class="avatar-group avatar-group-xs avatar-circle">
+                                             {% for type in location.types.all %}
+                                                       <p>{{ type }}</p>
+                                                       {% endfor %}
+                                           </div>
+                                           <!-- End Avatar Group -->
+                                        </div>
+                                        <!-- End Col -->
+                                     </div>
+                                     <!-- End Row -->
+                                  </div>
+                                  <!-- End Card -->
+                               </div>
+                              {% endfor %}
+                            </div>
+                            <!-- End Row -->
+                         </div>
+                      </div>
+                      <!-- End Tab Content -->
+                   </div>
+                   <!-- End Col -->
+                </div>
+                <!-- End Row -->
+             </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
