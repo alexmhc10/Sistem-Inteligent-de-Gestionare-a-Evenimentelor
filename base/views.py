@@ -870,7 +870,11 @@ def invite_form(request):
 
 def personal_eveniment_home(request):
     events = Event.objects.all()
-    context = {'events': events}
+    locations = Location.objects.all()
+    context = {
+        'events': events,
+        'locations': locations
+        }
 
     return render(request, 'base/personal_eveniment_home.html', context)
 
