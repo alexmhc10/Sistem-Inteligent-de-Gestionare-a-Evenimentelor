@@ -869,7 +869,14 @@ def invite_form(request):
     return render(request, 'base/invite_form.html', context)
 
 def personal_eveniment_home(request):
-    return render(request, 'base/personal_eveniment_home.html')
+    events = Event.objects.all()
+    locations = Location.objects.all()
+    context = {
+        'events': events,
+        'locations': locations
+        }
+
+    return render(request, 'base/personal_eveniment_home.html', context)
 
 def personal_vizualizare_eveniment(request):
     events = Event.objects.first()
