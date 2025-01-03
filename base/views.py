@@ -428,7 +428,20 @@ def homeAdmin(request):
     users = User.objects.all()
     events = Event.objects.all()
     event_locations = [event.location.location for event in events]
+    ev_loc = [event.location for event in events]
+    locations = Location.objects.all()
+    events_count = []
+    for location in locations:
+        events_count.append({
+            'name':location.name,
+            'ev_c':location.event_set.count()
+            })
+    print(events_count)
+    for event in events:
+        print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'ev_loc':ev_loc,
+        'events':events,
         'users':users,
         'tasks':tasks,
         'form1':form1,
@@ -436,7 +449,8 @@ def homeAdmin(request):
         'messages': messages,
         'form': form,
         'hx_post_url': reverse('home-admin'),
-        'event_locations': event_locations
+        'event_locations': event_locations,
+        'events_count':events_count
     }
     if request.method == 'POST':
         form = TaskForm(request.POST)
