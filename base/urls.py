@@ -35,7 +35,7 @@ urlpatterns = [
 
     # Locații
     path('admin-view-location/<str:name>/', views.admin_view_locations, name="admin-view-location"),
-    path('location/<str:pk>/', views.location, name="location"),
+    path('location/<str:pk>/', views.location, name="location"), 
     path('add_location/', views.addLocation, name="add_location"),
     path('update_location/<str:pk>/', views.updateLocation, name="update_location"),
     path('delete_location/<str:pk>/', views.deleteLocation, name="delete_location"),
@@ -61,7 +61,7 @@ urlpatterns = [
 
     #Personal
     path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveniment_home'),
-    path('personal_vizualizare_eveniment/', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
+    path('personal_vizualizare_eveniment/<int:pk>', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
     path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
 
 

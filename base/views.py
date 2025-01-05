@@ -869,23 +869,23 @@ def invite_form(request):
     return render(request, 'base/invite_form.html', context)
 
 def personal_eveniment_home(request):
-    events = Event.objects.all()
+    current_date = datetime.today()
+    past_events = Event.objects.filter(event_date__lt = current_date)
+    future_events = Event.objects.filter(event_date__gte = current_date)
     locations = Location.objects.all()
     context = {
-        'events': events,
+        'future_events': future_events,
+        'past_events': past_events,
         'locations': locations
         }
 
     return render(request, 'base/personal_eveniment_home.html', context)
 
-def personal_vizualizare_eveniment(request):
-    events = Event.objects.first()
-    locations = Location.objects.all()
-    menus = Menu.objects.all()
+def personal_vizualizare_eveniment(request, pk):
+    event = Event.objects.get(id=pk)
     context = {
-        'event_list': events,
-        'locations': locations,
-        'menus': menus
+        'event': event
+
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 

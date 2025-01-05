@@ -32,6 +32,13 @@ class Location(models.Model):
         return self.name
 
 
+class PersonalLocation(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True)
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=150)
+    email = models.EmailField()
+
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  
     username = models.CharField(max_length=150, unique=True)
