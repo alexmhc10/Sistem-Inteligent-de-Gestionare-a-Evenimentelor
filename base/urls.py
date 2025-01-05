@@ -66,6 +66,7 @@ urlpatterns = [
 
 
     ##organizator
+    path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
     path('organizer-events', views.organizer_events, name='organizer_events')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

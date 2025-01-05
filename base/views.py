@@ -22,6 +22,25 @@ from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
 
+@login_required(login_url='login')
+def organizer_dashboard(request):
+
+    events = Event.objects.filter(organized_by=request.user)
+    locations = Location.objects.filter(owner=request.user)
+    
+  
+    context = {
+        'events_count': 12,  # Example data
+        'confirmed_guests': 240,
+        'estimated_profit': 15000,
+        'notifications': [
+            "Invitatul 'Ion Popescu' a confirmat prezența.",
+            "Evenimentul 'Nuntă Maria' este în 3 zile.",
+            "Un nou feedback a fost adăugat de un participant."
+        ]
+    }
+    return render(request, 'base/organizator-dashboard.html', context)
+
 @login_required(login_url='/login')
 def event_builder(request):
     if request.method == 'POST':
