@@ -441,10 +441,24 @@ def homeAdmin(request):
             'name':location.name,
             'ev_c':location.event_set.count()
             })
-    print(events_count)
+    ev_nr = events.count()
+    print(ev_nr)
+    high_ev = []
+    for location in locations:
+        event_count = location.event_set.count() 
+        if event_count > 0:
+            percentage = int((event_count / ev_nr) * 100)  
+            high_ev.append({
+                'location': location.location,
+                'percentage':percentage
+            })
+    loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'loc_nr':loc_nr,
+        'ev_nr':ev_nr,
+        'high_ev':high_ev,
         'greeting':greeting,
         'ev_loc':ev_loc,
         'events':events,
