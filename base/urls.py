@@ -10,7 +10,6 @@ urlpatterns = [
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
     path('admin-home', views.homeAdmin, name="home-admin"),
-    path('admin-charts', views.admin_charts, name="admin-charts"),
 
     # Gestionare utilizatori
     path('profile/<str:username>/', views.profilePage, name='profile'),

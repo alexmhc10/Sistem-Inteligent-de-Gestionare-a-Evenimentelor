@@ -32,12 +32,7 @@
                             <span class="ms-1 d-none d-sm-inline">Events</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-bar-chart-line me-2"></i> 
-                            <span class="ms-1 d-none d-sm-inline">Charts</span>
-                        </a>
-                    </li>
+                    
                 
                     <li>
                         <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
@@ -46,7 +41,6 @@
                         </a>
                     </li>
                 </ul>
-                
                 <hr>
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
@@ -68,7 +62,6 @@
             </div>
         </div>
         <div class="col py-3 events" >
-
          <div class="row">
             <div class="col">
                <div class="h-100">
@@ -79,16 +72,11 @@
                               <h4 class="fs-16 mb-1">{{ greeting }}, {{ request.user.username}}!</h4>
                               <p class="text-muted mb-0">Here's what's happening with your platform today.</p>
                            </div>
-                           
                         </div>
-                        <!-- end card header -->
                      </div>
-                     <!--end col-->
                   </div>
-                  <!--end row-->
                   <div class="row">
                      <div class="col-xl-3 col-md-6 mb-4">
-                        <!-- card -->
                         <div class="card card-animate">
                            <div class="card-body">
                               <div class="d-flex align-items-center">
@@ -112,13 +100,9 @@
                                  </div>
                               </div>
                            </div>
-                           <!-- end card body -->
                         </div>
-                        <!-- end card -->
                      </div>
-                     <!-- end col -->
                      <div class="col-xl-3 col-md-6">
-                        <!-- card -->
                         <div class="card card-animate">
                            <div class="card-body">
                               <div class="d-flex align-items-center">
@@ -142,13 +126,9 @@
                                  </div>
                               </div>
                            </div>
-                           <!-- end card body -->
                         </div>
-                        <!-- end card -->
                      </div>
-                     <!-- end col -->
                      <div class="col-xl-3 col-md-6">
-                        <!-- card -->
                         <div class="card card-animate">
                            <div class="card-body">
                               <div class="d-flex align-items-center">
@@ -172,13 +152,9 @@
                                  </div>
                               </div>
                            </div>
-                           <!-- end card body -->
                         </div>
-                        <!-- end card -->
                      </div>
-                     <!-- end col -->
                      <div class="col-xl-3 col-md-6">
-                        <!-- card -->
                         <div class="card card-animate">
                            <div class="card-body">
                               <div class="d-flex align-items-center">
@@ -202,34 +178,21 @@
                                  </div>
                               </div>
                            </div>
-                           <!-- end card body -->
                         </div>
-                        <!-- end card -->
                      </div>
-                     <!-- end col -->
                   </div>
-                  <!-- end row-->
                   <div class="row mb-4">
                      <div class="col-xl-7">
                         <div class="card">
                            <div class="card-header border-0 align-items-center d-flex">
-                              <h4 class="card-title mb-0 flex-grow-1">Revenue</h4>
+                              <h4 class="card-title mb-0 flex-grow-1">Statistics</h4>
                               <div>
-                                 <button type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">
-                                 ALL
-                                 </button>
-                                 <button type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">
-                                 1M
-                                 </button>
-                                 <button type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">
-                                 6M
-                                 </button>
-                                 <button type="button" class="btn btn-soft-primary material-shadow-none btn-sm">
-                                 1Y
-                                 </button>
-                              </div>
+                                 <button id="btn-all" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">ALL</button>
+                                 <button id="btn-1m" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">1M</button>
+                                 <button id="btn-6m" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">6M</button>
+                                 <button id="btn-1y" type="button" class="btn btn-soft-primary material-shadow-none btn-sm">1Y</button>
+                             </div>
                            </div>
-                           <!-- end card header -->
                            <div class="card-header p-0 border-0 bg-light-subtle">
                               <div class="row g-0 text-center justify-content-center">
                                  <div class="col-6 col-sm-3">
@@ -238,26 +201,15 @@
                                        <p class="text-muted mb-0">Orders</p>
                                     </div>
                                  </div>
-                                 <!--end col-->
                                  <div class="col-6 col-sm-3">
                                     <div class="p-3 border border-dashed border-start-0">
                                        <h5 class="mb-1">$<span class="counter-value" data-target="22.89">22.89</span>k</h5>
                                        <p class="text-muted mb-0">Earnings</p>
                                     </div>
                                  </div>
-                                 <!--end col-->
-                                 <div class="col-6 col-sm-3">
-                                    <div class="p-3 border border-dashed border-start-0">
-                                       <h5 class="mb-1"><span class="counter-value" data-target="367">367</span></h5>
-                                       <p class="text-muted mb-0">Refunds</p>
-                                    </div>
-                                 </div>
-                                 <!--end col-->
-                                 
-                                 <!--end col-->
+                                
                               </div>
                            </div>
-                           <!-- end card header -->
                            <div class="card-body p-0 pb-2">
                               <div class="w-100">
                                  <div id="customer_impression_charts" data-colors="[&quot;--vz-primary&quot;, &quot;--vz-success&quot;, &quot;--vz-danger&quot;]" data-colors-minimal="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-info&quot;]" data-colors-saas="[&quot;--vz-success&quot;, &quot;--vz-info&quot;, &quot;--vz-danger&quot;]" data-colors-modern="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-success&quot;]" data-colors-interactive="[&quot;--vz-info&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-creative="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-corporate="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-galaxy="[&quot;--vz-secondary&quot;, &quot;--vz-primary&quot;, &quot;--vz-primary-rgb, 0.50&quot;]" data-colors-classic="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-vintage="[&quot;--vz-success&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" class="apex-charts" dir="ltr" style="min-height: 385px;">
@@ -266,20 +218,13 @@
                                  </div>
                               </div>
                            </div>
-                           <!-- end card body -->
                         </div>
-                        <!-- end card -->
                      </div>
-                     <!-- end col -->
                      <div class="col-xl-4">
-                        <!-- card -->
                         <div class="card card-height-100" style="width: 35vw;">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Events by Locations</h4>
-                              
                            </div>
-                           <!-- end card header -->
-                           <!-- card body -->
                            <div class="card-body">
                               <div id="sales-by-locations" data-colors="[&quot;--vz-light&quot;, &quot;--vz-success&quot;, &quot;--vz-primary&quot;]" data-colors-interactive="[&quot;--vz-light&quot;, &quot;--vz-info&quot;, &quot;--vz-primary&quot;]" style="height: 469px; background-color: transparent;" dir="ltr" class="jvm-container">
                                 <svg
@@ -1003,8 +948,12 @@
         chart: {
             type: 'line',
             height: 550,
-            background: '#f9f9f9',
+            width:800,
+            background: 'white',
             foreColor: '#333',
+            toolbar:{
+               show:false,
+            }
          },
         series: [{
             name: 'Profit',
@@ -1017,7 +966,7 @@
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             labels: {
                 style: {
-                    colors: '#007bff', 
+                    colors: '#333', 
                     fontSize: '12px',
                     fontFamily: 'Arial, sans-serif',
                 }
@@ -1031,7 +980,7 @@
                 }
             },
         },
-        colors: ['#28a745', '#17a2b8'], 
+        colors: ['#D4AF37', '#2A4D9E'], 
         stroke: {
             curve: 'smooth',
             width: 4, 
@@ -1039,7 +988,7 @@
         markers: {
             size: 6, 
             colors: ['#ffffff'], 
-            strokeColors: ['#28a745', '#17a2b8'], 
+            strokeColors: ['#D4AF37', '#2A4D9E'], 
             strokeWidth: 2,
             hover: {
                 size: 8,
@@ -1053,16 +1002,75 @@
             },
         },
         grid: {
-            borderColor: '#e0e0e0', 
-            strokeDashArray: 4, 
+            show:false,
         },
     };
 
     var chart = new ApexCharts(document.querySelector("#apexchartsh9w7k66o"), options);
     chart.render();
+    const updateChart = (profitData, eventsData, categories) => {
+    chart.updateOptions({
+        series: [
+            {
+                name: 'Profit',
+                data: profitData
+            },
+            {
+                name: 'Events',
+                data: eventsData
+            }
+        ],
+        xaxis: {
+            categories: categories
+        }
+    });
+};
+
+document.querySelector("#btn-all").addEventListener("click", function () {
+    updateChart(
+        [31, 40, 28, 51, 42, 109, 100, 50, 39, 120, 100, 90],
+        [10, 20, 15, 30, 40, 55, 70, 55, 70, 55, 70, 50],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    );
 });
 
+document.querySelector("#btn-1m").addEventListener("click", function () {
+    updateChart(
+        [90, 100],
+        [50, 55],
+        ['Nov', 'Dec']
+    );
+});
+
+document.querySelector("#btn-6m").addEventListener("click", function () {
+    updateChart(
+        [28, 51, 42, 109, 100, 90],
+        [15, 30, 40, 55, 70, 50],
+        ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov']
+    );
+});
+
+document.querySelector("#btn-1y").addEventListener("click", function () {
+    updateChart(
+        [31, 40, 28, 51, 42, 109, 100, 50, 39, 120, 100, 90],
+        [10, 20, 15, 30, 40, 55, 70, 55, 70, 55, 70, 50],
+        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    );
+});
+   });
 </script>
+<style>
+   #apexchartsh9w7k66o {
+    border:1px solid #ede6e6;
+    margin: 20px auto;
+    padding: 10px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+</style>
 {% endblock content %}
 
 

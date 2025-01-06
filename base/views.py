@@ -229,27 +229,6 @@ def approve_user(request, pk):
 
 
 @login_required(login_url='login')
-def admin_charts(request):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("You do not have permission to access this page.")
-    locations_data = []
-    locations = Location.objects.all()
-    
-    for location in locations:
-        event_count = location.event_set.count() 
-        locations_data.append({
-            'name': location.name,
-            'event_count': event_count,
-        })
-    
-    context = {
-        'locations_data': json.dumps(locations_data),
-    }
-    return render(request, 'base/admin-charts.html', context)
-
-
-
-@login_required(login_url='login')
 def admin_locations(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
