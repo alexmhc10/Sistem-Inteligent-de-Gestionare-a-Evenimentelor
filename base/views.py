@@ -443,6 +443,13 @@ def homeAdmin(request):
                 'profiles': profiles,
             }
             return render(request, 'base/partials/chat_message_p.html', context)
+    current_hour = datetime.now().hour
+    if 5 <= current_hour < 12:
+        greeting = "Good Morning"
+    elif 12 <= current_hour < 18:
+        greeting = "Good Afternoon"
+    else:
+        greeting = "Good Evening"
     tasks = Task.objects.all()
     users = User.objects.all()
     events = Event.objects.all()
@@ -459,6 +466,7 @@ def homeAdmin(request):
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'greeting':greeting,
         'ev_loc':ev_loc,
         'events':events,
         'users':users,
