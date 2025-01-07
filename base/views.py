@@ -43,6 +43,7 @@ def organizer_dashboard(request):
 
 @login_required(login_url='/login')
 def event_builder(request):
+    locations = Location.objects.all()  # Obține toate locațiile
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
@@ -54,7 +55,8 @@ def event_builder(request):
     else:
         form = EventForm()
 
-    return render(request, 'base/event_builder.html', {'form2': form})
+    return render(request, 'base/event_builder.html', {'form2': form, 'locations': locations})
+
 
 @login_required(login_url='/login')
 def feedback_event(request):

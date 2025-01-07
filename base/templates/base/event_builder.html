@@ -29,9 +29,11 @@
                 <select id="location" name="location" required>
                     {% for location in locations %}
                         <option value="{{ location.id }}">{{ location.name }}</option>
+                    {% empty %}
+                        <option value="">Nu sunt disponibile locații</option>
                     {% endfor %}
                 </select>
-
+                
                 <label for="event_type">Tip Eveniment</label>
                 <select id="event_type" name="event_type" required>
                     <option value="Nunta">Nuntă</option>
