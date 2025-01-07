@@ -81,7 +81,7 @@ class Profile(models.Model):
     age = models.IntegerField(default=20)
     def __str__(self):
         return self.user.username
-    
+
 
 
 class Review(models.Model):
