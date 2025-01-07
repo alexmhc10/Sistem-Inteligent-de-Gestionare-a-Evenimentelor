@@ -136,38 +136,38 @@ def carousel_view(request):
 
 def loginPage(request):
     if request.user.is_authenticated:
+        print(f"User {request.user.username} is already authenticated, logging out.")
         logout(request)
+
     page = 'login'
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            messages.warning(request, "User does not exist!")
-            return render(request, 'base/login_register.html', {'page': page})
+        print(f"Attempting login with username: {username}")
+
+        # Încearcă autentificarea
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            print(f"Authentication successful for user: {user.username}")
             login(request, user)
-            print(f"User is authenticated: {user.username}")
-            print(f"Is superuser: {user.is_superuser}")
-
-            if user.is_superuser:
+            if hasattr(user, 'is_superuser') and user.is_superuser:  # Utilizator standard
+                print(f"Redirecting superuser {user.username} to admin home.")
                 return redirect('home-admin')
+            elif isinstance(user, PersonalLocation):  # PersonalLocation
+                print(f"Redirecting user {user.username} from PersonalLocation to personal home.")
+                return redirect('personal_eveniment_home')
             else:
+                print(f"Redirecting standard user {user.username} to home.")
                 return redirect('home')
         else:
-            messages.error(request, "Error. Wrong credentials")
+            print(f"Authentication failed for username: {username}")
+            messages.error(request, "Invalid credentials")
             return render(request, 'base/login_register.html', {'page': page})
-    if request.user.is_authenticated:
-        print(f"User is authenticated: {request.user.username}")
-        print(f"Is superuser: {request.user.is_superuser}")
-        if request.user.is_superuser:
-            return redirect('menu-items')
-        else:
-            return redirect('home')
+
+    print("Rendering login page.")
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
+
 
 
 
