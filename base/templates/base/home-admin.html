@@ -940,13 +940,24 @@
     var options = {
         chart: {
             type: 'line',
-            height: 550,
-            width:800,
+            height: 600,
+            width:850,
             background: 'white',
             foreColor: '#333',
             toolbar:{
                show:false,
             }
+         },
+         legend: {
+            labels: {
+               colors: '#D4AF37',
+               useSeriesColors: true,
+            },
+            fontSize: '12px',
+            fontFamily: 'Arial, sans-serif',
+            itemMargin: {
+            horizontal: 50,
+         }
          },
         series: [{
             name: 'Profit',
@@ -959,7 +970,7 @@
             categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             labels: {
                 style: {
-                    colors: '#333', 
+                    colors: '#a29f9e', 
                     fontSize: '12px',
                     fontFamily: 'Arial, sans-serif',
                 }
@@ -968,7 +979,7 @@
         yaxis: {
             labels: {
                 style: {
-                    colors: '#333', 
+                    colors: '#a29f9e', 
                     fontSize: '12px',
                 }
             },

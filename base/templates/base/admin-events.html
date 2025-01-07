@@ -564,23 +564,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function resetChoices(element) {
     if (element.choicesInstance) {
-      element.choicesInstance.destroy(); // Distruge instanța existentă
+      element.choicesInstance.destroy(); 
       element.choicesInstance = null;
     }
-    // Restaurează elementul select la forma inițială
-    element.removeAttribute('hidden'); // Asigură-te că este vizibil
-    const clonedElement = element.cloneNode(true); // Clonează structura originală
-    element.replaceWith(clonedElement); // Înlocuiește vechiul element
-    return clonedElement; // Returnează elementul resetat
+    element.removeAttribute('hidden'); 
+    const clonedElement = element.cloneNode(true);
+    element.replaceWith(clonedElement); 
+    return clonedElement; 
   }
 
-  // Resetează elementele
   const resetStatusElement = resetChoices(statusElement);
   const resetPaymentElement = resetChoices(paymentElement);
 
   console.log('Element before reinitialization:', resetStatusElement);
 
-  // Inițializează Choices.js
   resetStatusElement.choicesInstance = new Choices(resetStatusElement, {
     searchEnabled: false,
     itemSelectText: '',
