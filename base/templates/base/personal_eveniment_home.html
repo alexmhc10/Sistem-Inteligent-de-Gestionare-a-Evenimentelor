@@ -102,10 +102,179 @@ data-sidebar-position="fixed" data-header-position="fixed">
   <!--  Header End -->
    
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-12">
-        
-      </div>
+
+    <div class="col-lg-12">
+      <div class="card-body border border-dashed border-end-0 border-start-0">
+        <form>
+            <div class="row g-3">
+                <div class="col-xxl-5 col-sm-6">
+                    <div class="search-box">
+                        <form action="" >
+                            <select name="countries" id="countries" multiple>Search for an Eveniment
+                                {% for event in events %}
+                                <option value="{{ forloop.counter0 }}"> {{ event.event_name }} </option>
+                                {% endfor %}
+                            </select>
+                            </form>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-6">
+                    <div>
+                        <input type="text" class="form-control flatpickr-input"
+                            data-provider="flatpickr" data-date-format="d M, Y"
+                            data-range-date="true" id="demo-datepicker" placeholder="Select date"
+                            readonly="readonly">
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4">
+                    <div>
+                        <div class="choices" data-type="select-one" tabindex="0" role="listbox"
+                            aria-haspopup="true" aria-expanded="false">
+                            <div class="choices__inner"><select class="form-control choices_input choices-single"
+                                    data-choices="" data-choices-search-false=""
+                                    name="choices-single-default" id="idStatus" hidden=""
+                                    tabindex="-1" data-choice="active">
+                                    <option value="">Status</option>
+                                    <option value="all" selected="">All</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Inprogress">Inprogress</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="Pickups">Pickups</option>
+                                    <option value="Returns">Returns</option>
+                                    <option value="Delivered">Delivered</option>
+                                </select>
+                                
+                            </div>
+                            <div class="choices__list choices__list--dropdown"
+                                aria-expanded="false">
+                                <div class="choices__list" role="listbox">
+                                    <div id="choices--idStatus-item-choice-1"
+                                        class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
+                                        role="option" data-choice="" data-id="1" data-value=""
+                                        data-select-text="Press to select" data-choice-selectable=""
+                                        aria-selected="true">Status</div>
+                                    <div id="choices--idStatus-item-choice-2"
+                                        class="choices__item choices__item--choice is-selected choices__item--selectable"
+                                        role="option" data-choice="" data-id="2" data-value="all"
+                                        data-select-text="Press to select"
+                                        data-choice-selectable="">All</div>
+                                    <div id="choices--idStatus-item-choice-5"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="5"
+                                        data-value="Cancelled" data-select-text="Press to select"
+                                        data-choice-selectable="">Cancelled</div>
+                                    <div id="choices--idStatus-item-choice-8"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="8"
+                                        data-value="Delivered" data-select-text="Press to select"
+                                        data-choice-selectable="">Delivered</div>
+                                    <div id="choices--idStatus-item-choice-4"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="4"
+                                        data-value="Inprogress" data-select-text="Press to select"
+                                        data-choice-selectable="">Inprogress</div>
+                                    <div id="choices--idStatus-item-choice-3"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="3"
+                                        data-value="Pending" data-select-text="Press to select"
+                                        data-choice-selectable="">Pending</div>
+                                    <div id="choices--idStatus-item-choice-6"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="6"
+                                        data-value="Pickups" data-select-text="Press to select"
+                                        data-choice-selectable="">Pickups</div>
+                                    <div id="choices--idStatus-item-choice-7"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="7"
+                                        data-value="Returns" data-select-text="Press to select"
+                                        data-choice-selectable="">Returns</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!--end col-->
+                <div class="col-xxl-2 col-sm-4">
+                    <div>
+                        <div class="choices" data-type="select-one" tabindex="0" role="listbox"
+                            aria-haspopup="true" aria-expanded="false">
+                            <div class="choices__inner"><select class="form-control choices_input choices-single"
+                                    data-choices="" data-choices-search-false=""
+                                    name="choices-single-default" id="idPayment" hidden=""
+                                    tabindex="-1" data-choice="active">
+                                    <option value="">Status</option>
+                                    <option value="all" selected="">All</option>
+                                    <option value="Future">Future events</option>
+                                    <option value="Past">Past events</option>
+                                </select>
+                                
+                            </div>
+                            <div class="choices__list choices__list--dropdown"
+                                aria-expanded="false">
+                                <div class="choices__list" role="listbox">
+                                    <div id="choices--idStatus-item-choice-1"
+                                        class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
+                                        role="option" data-choice="" data-id="1" data-value=""
+                                        data-select-text="Press to select" data-choice-selectable=""
+                                        aria-selected="true">Status</div>
+                                    <div id="choices--idStatus-item-choice-2"
+                                        class="choices__item choices__item--choice is-selected choices__item--selectable"
+                                        role="option" data-choice="" data-id="2" data-value="all"
+                                        data-select-text="Press to select"
+                                        data-choice-selectable="">All</div>
+                                    <div id="choices--idStatus-item-choice-5"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="5"
+                                        data-value="Cancelled" data-select-text="Press to select"
+                                        data-choice-selectable="">Cancelled</div>
+                                    <div id="choices--idStatus-item-choice-8"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="8"
+                                        data-value="Delivered" data-select-text="Press to select"
+                                        data-choice-selectable="">Delivered</div>
+                                    <div id="choices--idStatus-item-choice-4"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="4"
+                                        data-value="Inprogress" data-select-text="Press to select"
+                                        data-choice-selectable="">Inprogress</div>
+                                    <div id="choices--idStatus-item-choice-3"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="3"
+                                        data-value="Pending" data-select-text="Press to select"
+                                        data-choice-selectable="">Pending</div>
+                                    <div id="choices--idStatus-item-choice-6"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="6"
+                                        data-value="Pickups" data-select-text="Press to select"
+                                        data-choice-selectable="">Pickups</div>
+                                    <div id="choices--idStatus-item-choice-7"
+                                        class="choices__item choices__item--choice choices__item--selectable"
+                                        role="option" data-choice="" data-id="7"
+                                        data-value="Returns" data-select-text="Press to select"
+                                        data-choice-selectable="">Returns</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!--end col-->
+                <div class="col-xxl-1 col-sm-4">
+                    <div>
+                        <button type="button" class="btn btn-primary w-100" onclick="SearchData();">
+                            <i class="ri-equalizer-fill me-1 align-bottom"></i>
+                            Filters
+                        </button>
+                    </div>
+                </div>
+                <!--end col-->
+            </div>
+            <!--end row-->
+        </form>
+    </div>
+    </div>
       <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">

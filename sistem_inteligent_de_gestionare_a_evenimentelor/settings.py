@@ -93,10 +93,6 @@ DATABASES = {
     }
 }
 
-AUTHENTICATION_BACKENDS = [
-    'django.contrib.auth.backends.ModelBackend',  # Backend implicit Django
-    'base.auth_backends.PersonalLocationBackend',  # Backend personalizat
-]
 
 
 # Password validation
