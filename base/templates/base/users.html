@@ -64,6 +64,41 @@
             </div>
         </div>
         <div class="col py-3 events view-">
+                       
+         <h2>Pending User Approvals</h2>
+         {% if waiting_count == 0 %}
+         <h4>No new Users</h4>
+         {% endif %}
+         {% for profile in awaiting_profiles %}
+         <!-- <div>
+             <p><strong>Username:</strong> {{ profile.username }}</p>
+             <p><strong>Email:</strong> {{ profile.email }}</p>
+             <p><strong>Description:</strong> {{ profile.description }}</p>
+             <img src="{{ profile.photo.url }}" alt="Profile Photo" style="height:200px; width:auto;">
+             <form method="POST" action="{% url 'approve_user' profile.id %}">
+                 {% csrf_token %}
+                 <button type="submit" name="approve">Approve</button>
+                 <button type="submit" name="reject">Reject</button>
+             </form>
+         </div> -->
+         <div class="card" style="width: 23rem;">
+             <div class="card-body">
+                 <div class="primary-info">
+                     <div class="titles">
+                         <h5 class="card-title"><strong> Username: <br> </strong> {{ profile.username }}</h5>
+                         <h6 class="card-subtitle mb-2 text-muted"><strong>Email:</strong> {{ profile.email }}</h6>
+                     </div>
+                     <img src="{{ profile.photo.url }}" alt="Profile Photo">
+                 </div>
+                 <p class="card-text"><strong>Description:</strong> {{ profile.description }}</p>
+                 <form method="POST" action="{% url 'approve_user' profile.id %}">
+                     {% csrf_token %}
+                     <button class="card-link" type="submit" name="approve">Approve</button>
+                     <button class="card-link" type="submit" name="reject">Reject</button>
+                 </form>
+             </div>
+         </div>
+         {% endfor %}
             <div class="content container-fluid">
                <div class="row">
                   <div class="col-12">
