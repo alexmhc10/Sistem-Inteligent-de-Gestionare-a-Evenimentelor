@@ -1,8 +1,6 @@
 {% extends 'main.html' %}
 
 {% block content %}
-
-
 <div class="container my-4">
     <h2 class="text-center">Evenimentele Mele</h2>
     {% if events %}
@@ -19,8 +17,13 @@
                     <p><strong>Invitați:</strong> {{ event.guests.all|join:", " }}</p>
 
                     <!-- Butoane pentru acțiuni -->
-                    <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view" class="btn btn-view">Vizualizare Eveniment</a>
-                    <a href="" class="btn btn-delete">Șterge Eveniment</a>
+                    <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view">Vizualizare Eveniment</a>
+                    
+                    <!-- Formular pentru ștergerea evenimentului -->
+                    <form action="{% url 'delete_event' event.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-delete">Șterge Eveniment</button>
+                    </form>
                 </div>
             </div>
         </div>

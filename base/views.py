@@ -40,6 +40,15 @@ def organizer_dashboard(request):
         ]
     }
     return render(request, 'base/organizator-dashboard.html', context)
+#stergere eveniment
+@login_required(login_url='/login')
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == 'POST':
+        event.delete()
+        messages.success(request, "Evenimentul a fost șters cu succes.")
+        return redirect('my_events')
+    return HttpResponseForbidden("Metodă nepermisă.")
 
 @login_required(login_url='/login')
 def event_builder(request):
