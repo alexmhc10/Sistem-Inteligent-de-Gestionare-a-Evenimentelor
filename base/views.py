@@ -47,8 +47,9 @@ def delete_event(request, event_id):
     if request.method == 'POST':
         event.delete()
         messages.success(request, "Evenimentul a fost șters cu succes.")
-        return redirect('my_events')
+        return redirect('my_events')  # Asigură-te că redirecționezi către 'my_events'
     return HttpResponseForbidden("Metodă nepermisă.")
+
 
 @login_required(login_url='/login')
 def event_builder(request):
