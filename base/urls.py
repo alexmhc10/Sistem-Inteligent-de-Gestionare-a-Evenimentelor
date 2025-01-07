@@ -10,7 +10,6 @@ urlpatterns = [
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
     path('admin-home', views.homeAdmin, name="home-admin"),
-    path('admin-charts', views.admin_charts, name="admin-charts"),
 
     # Gestionare utilizatori
     path('profile/<str:username>/', views.profilePage, name='profile'),
@@ -66,6 +65,7 @@ urlpatterns = [
 
 
     ##organizator
+    path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
     path('organizer-events', views.organizer_events, name='organizer_events')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

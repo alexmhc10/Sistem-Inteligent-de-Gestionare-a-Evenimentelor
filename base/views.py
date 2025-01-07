@@ -22,6 +22,25 @@ from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
 
+@login_required(login_url='login')
+def organizer_dashboard(request):
+
+    events = Event.objects.filter(organized_by=request.user)
+    locations = Location.objects.filter(owner=request.user)
+    
+  
+    context = {
+        'events_count': 12,  # Example data
+        'confirmed_guests': 240,
+        'estimated_profit': 15000,
+        'notifications': [
+            "Invitatul 'Ion Popescu' a confirmat prezența.",
+            "Evenimentul 'Nuntă Maria' este în 3 zile.",
+            "Un nou feedback a fost adăugat de un participant."
+        ]
+    }
+    return render(request, 'base/organizator-dashboard.html', context)
+
 @login_required(login_url='/login')
 def event_builder(request):
     if request.method == 'POST':
@@ -207,27 +226,6 @@ def approve_user(request, pk):
             messages.warning(request, f"User {profile.username} has been rejected.")
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'base/approve_user.html', {'profile': profile})
-
-
-@login_required(login_url='login')
-def admin_charts(request):
-    if not request.user.is_superuser:
-        return HttpResponseForbidden("You do not have permission to access this page.")
-    locations_data = []
-    locations = Location.objects.all()
-    
-    for location in locations:
-        event_count = location.event_set.count() 
-        locations_data.append({
-            'name': location.name,
-            'event_count': event_count,
-        })
-    
-    context = {
-        'locations_data': json.dumps(locations_data),
-    }
-    return render(request, 'base/admin-charts.html', context)
-
 
 
 @login_required(login_url='login')
@@ -424,6 +422,13 @@ def homeAdmin(request):
                 'profiles': profiles,
             }
             return render(request, 'base/partials/chat_message_p.html', context)
+    current_hour = datetime.now().hour
+    if 5 <= current_hour < 12:
+        greeting = "Good Morning"
+    elif 12 <= current_hour < 18:
+        greeting = "Good Afternoon"
+    else:
+        greeting = "Good Evening"
     tasks = Task.objects.all()
     users = User.objects.all()
     events = Event.objects.all()
@@ -436,10 +441,25 @@ def homeAdmin(request):
             'name':location.name,
             'ev_c':location.event_set.count()
             })
-    print(events_count)
+    ev_nr = events.count()
+    print(ev_nr)
+    high_ev = []
+    for location in locations:
+        event_count = location.event_set.count() 
+        if event_count > 0:
+            percentage = int((event_count / ev_nr) * 100)  
+            high_ev.append({
+                'location': location.location,
+                'percentage':percentage
+            })
+    loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'loc_nr':loc_nr,
+        'ev_nr':ev_nr,
+        'high_ev':high_ev,
+        'greeting':greeting,
         'ev_loc':ev_loc,
         'events':events,
         'users':users,

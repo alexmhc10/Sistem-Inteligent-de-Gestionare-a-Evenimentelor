@@ -34,12 +34,7 @@
                             <span class="ms-1 d-none d-sm-inline">Events</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{% url 'admin-charts' %}" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-bar-chart-line me-2"></i>
-                            <span class="ms-1 d-none d-sm-inline">Charts</span>
-                        </a>
-                    </li>
+                   
 
                     <li>
                         <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
@@ -569,23 +564,20 @@ document.addEventListener('DOMContentLoaded', function () {
 
   function resetChoices(element) {
     if (element.choicesInstance) {
-      element.choicesInstance.destroy(); // Distruge instanța existentă
+      element.choicesInstance.destroy(); 
       element.choicesInstance = null;
     }
-    // Restaurează elementul select la forma inițială
-    element.removeAttribute('hidden'); // Asigură-te că este vizibil
-    const clonedElement = element.cloneNode(true); // Clonează structura originală
-    element.replaceWith(clonedElement); // Înlocuiește vechiul element
-    return clonedElement; // Returnează elementul resetat
+    element.removeAttribute('hidden'); 
+    const clonedElement = element.cloneNode(true);
+    element.replaceWith(clonedElement); 
+    return clonedElement; 
   }
 
-  // Resetează elementele
   const resetStatusElement = resetChoices(statusElement);
   const resetPaymentElement = resetChoices(paymentElement);
 
   console.log('Element before reinitialization:', resetStatusElement);
 
-  // Inițializează Choices.js
   resetStatusElement.choicesInstance = new Choices(resetStatusElement, {
     searchEnabled: false,
     itemSelectText: '',

@@ -1,4 +1,24 @@
 /* styles.css */
+
+
+.custom-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.custom-card-header {
+    background-color: #D4AF37; /* Auriu */
+    color: white;
+    font-weight: bold;
+}
+
+.custom-footer {
+    background-color: #ECECEC; /* Gri deschis */
+    padding: 10px;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
 /* Stiluri pentru butoanele din event_builder */
 .event_builder {
     max-width: 800px; 
