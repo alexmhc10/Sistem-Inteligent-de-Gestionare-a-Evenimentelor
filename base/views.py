@@ -46,9 +46,9 @@ def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
         event.delete()
-        messages.success(request, "Evenimentul a fost șters cu succes.")
+        messages.success(request, "Event deleted succesfully.")
         return redirect('my_events')  # Asigură-te că redirecționezi către 'my_events'
-    return HttpResponseForbidden("Metodă nepermisă.")
+    return HttpResponseForbidden("unauthorized method.")
 
 
 @login_required(login_url='/login')

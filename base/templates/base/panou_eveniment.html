@@ -3,18 +3,18 @@
 {% block content %}
 <div class="container my-4">
     <h2 class="text-center">{{ event.event_name }}</h2>
-    <p><strong>Data:</strong> {{ event.event_date }}</p>
-    <p><strong>Ora:</strong> {{ event.event_time }}</p>
-    <p><strong>Descriere:</strong> {{ event.event_description }}</p>
-    <p><strong>Locație:</strong> {{ event.location }}</p>
-    <p><strong>Invitați:</strong> {{ event.guests.all|join:", " }}</p>
+    <p><strong>Date:</strong> {{ event.event_date }}</p>
+    <p><strong>Time:</strong> {{ event.event_time }}</p>
+    <p><strong>Description:</strong> {{ event.event_description }}</p>
+    <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Guests:</strong> {{ event.guests.all|join:", " }}</p>
 
-    <p><strong>Stare:</strong> In lucru</p>
+    <p><strong>Status:</strong> In progress</p>
 
     <div class="btn-group" role="group" aria-label="Event Actions">
-   
-        <a href="{% url 'guest_list' %}" class="btn btn-success">Lista de invitati</a>
-      
-    </div>{% include 'back_button.html' %}
+        <a href="{% url 'guest_list' %}" class="btn btn-success">Guest List</a>
+    </div>
+
+    {% include 'back_button.html' %}
 </div>
 {% endblock %}
