@@ -442,7 +442,7 @@ def homeAdmin(request):
     else:
         greeting = "Good Evening"
     tasks = Task.objects.all()
-    users = User.objects.all()
+    users = User.objects.filter(is_superuser=False)
     events = Event.objects.all()
     event_locations = [event.location.location for event in events]
     ev_loc = [event.location for event in events]
@@ -454,7 +454,14 @@ def homeAdmin(request):
             'ev_c':location.event_set.count()
             })
     ev_nr = events.count()
-    print(ev_nr)
+    org_ev = []
+    organizer_event_count = Counter(event.organized_by for event in events)
+    print(organizer_event_count)
+    for organizer, count in organizer_event_count.items():
+        org_ev.append({
+            'organizer': organizer,
+            'event_count': count
+        })
     high_ev = []
     for location in locations:
         event_count = location.event_set.count() 
@@ -468,6 +475,7 @@ def homeAdmin(request):
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'org_ev':org_ev,
         'loc_nr':loc_nr,
         'ev_nr':ev_nr,
         'high_ev':high_ev,
