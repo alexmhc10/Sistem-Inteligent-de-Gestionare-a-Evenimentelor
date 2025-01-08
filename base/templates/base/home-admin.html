@@ -719,11 +719,11 @@
                                           <td>
                                              <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-1.png" alt="" class="avatar-sm p-2">
+                                                   <img src="{{ item.organizer.profile.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
                                                 </div>
                                                 <div>
                                                    <h5 class="fs-14 my-1 fw-medium">
-                                                      <a href="apps-ecommerce-seller-details.html" class="text-reset">{{ item.organizer.username }}</a>
+                                                      <a href="{% url 'view_user_admin' item.organizer.username %}" class="text-reset">{{ item.organizer.username }}</a>
                                                    </h5>
                                                    <span class="text-muted">{{ item.organizer.date_joined.date }}</span>
                                                 </div>

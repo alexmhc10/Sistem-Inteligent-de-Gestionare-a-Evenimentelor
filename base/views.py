@@ -822,7 +822,7 @@ def viewUserEvents(request, pk):
     for event in events:
         now = timezone.now()
         time_diff = event.event_date - now.date()  
-        time_left[event.event_name] = time_diff.days
+        time_left[event.event_name] = abs(time_diff.days)
     now = timezone.now().date()
     locations = Location.objects.filter(owner=user)
     loc_count = locations.count()
