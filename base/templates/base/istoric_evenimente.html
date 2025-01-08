@@ -1,27 +1,80 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+    .container {
+        margin-top: 30px;
+    }
+
+    .event-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 20px; 
+    }
+
+    .event-card {
+        border: 1px solid #ddd;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background-color: #fff;
+        transition: transform 0.3s ease;
+    }
+
+    .event-card:hover {
+        transform: scale(1.05);
+    }
+
+    .event-title {
+        font-size: 1.5rem;
+        color: #002B5B;
+    }
+
+    .event-actions {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .event-actions a,
+    .event-actions button {
+        text-decoration: none;
+        background-color: #2E8B57;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .event-actions a:hover,
+    .event-actions button:hover {
+        background-color: #246F45;
+    }
+</style>
 
 <h1 style="text-align: center; color: #002B5B;">Event History</h1>
 
 <div class="container">
-    {% for event in events %}
-    <div class="event-card">
-        <img src="" alt="Event Image">
-        <div class="event-details">
-            <div class="event-title">{{ event.event_name }}</div>
-            <div class="event-date">{{ event.event_date }}</div>
-            <div class="event-description">{{ event.event_description }}</div>
+    <div class="event-grid">
+        {% for event in events %}
+        <div class="event-card">
+            <img src="{{ event.image_url }}" alt="Event Image">
+            <div class="event-details">
+                <div class="event-title">{{ event.event_name }}</div>
+                <div class="event-date">{{ event.event_date }}</div>
+                <div class="event-description">{{ event.event_description }}</div>
+            </div>
+            <div class="event-actions">
+                <a href="">Feedback</a>
+                <button>Gallery</button>
+                <button>Details</button>
+            </div>
         </div>
-        <div class="event-actions">
-            <a href="">Feedback</a>
-            <button>Gallery</button>
-            <button>Details</button>
-        </div>
+        {% empty %}
+        <p>No events found.</p>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p>No events found.</p>
-    {% endfor %}
 </div>
 
 {% endblock %}
+
+
