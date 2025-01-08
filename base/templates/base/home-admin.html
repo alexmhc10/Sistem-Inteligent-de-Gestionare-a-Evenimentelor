@@ -182,7 +182,7 @@
                      </div>
                   </div>
                   <div class="row mb-4">
-                     <div class="col-xl-7">
+                     <div class="col-xl-6 me-5">
                         <div class="card">
                            <div class="card-header border-0 align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Statistics</h4>
@@ -212,30 +212,34 @@
                            </div>
                            <div class="card-body p-0 pb-2">
                               <div class="w-100">
-                                 <div id="customer_impression_charts" data-colors="[&quot;--vz-primary&quot;, &quot;--vz-success&quot;, &quot;--vz-danger&quot;]" data-colors-minimal="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-info&quot;]" data-colors-saas="[&quot;--vz-success&quot;, &quot;--vz-info&quot;, &quot;--vz-danger&quot;]" data-colors-modern="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-success&quot;]" data-colors-interactive="[&quot;--vz-info&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-creative="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-corporate="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-galaxy="[&quot;--vz-secondary&quot;, &quot;--vz-primary&quot;, &quot;--vz-primary-rgb, 0.50&quot;]" data-colors-classic="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-vintage="[&quot;--vz-success&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" class="apex-charts" dir="ltr" style="min-height: 385px;">
-                                    <div id="apexchartsh9w7k66o" class="apexcharts-canvas apexchartsh9w7k66o apexcharts-theme-" style="width: 895px; height: 370px;">
+                                 <div id="customer_impression_charts" 
+                                 data-colors="[&quot;--vz-primary&quot;, &quot;--vz-success&quot;, &quot;--vz-danger&quot;]" 
+                                 class="apex-charts" 
+                                 dir="ltr" 
+                                 style="min-height: 385px;">                                    
+                                 <div id="apexchartsh9w7k66o" class="apexcharts-canvas apexchartsh9w7k66o apexcharts-theme-">
                                     </div>
                                  </div>
                               </div>
                            </div>
                         </div>
                      </div>
-                     <div class="col-xl-4">
-                        <div class="card card-height-100" style="width: 35vw;">
+                     <div class="col-xl-4 ms-5">
+                        <div class="card card-height-100">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Events by Locations</h4>
                            </div>
                            <div class="card-body">
                               <div id="sales-by-locations" data-colors="[&quot;--vz-light&quot;, &quot;--vz-success&quot;, &quot;--vz-primary&quot;]" data-colors-interactive="[&quot;--vz-light&quot;, &quot;--vz-info&quot;, &quot;--vz-primary&quot;]" style="height: 469px; background-color: transparent;" dir="ltr" class="jvm-container">
-                                <svg
-   xmlns:mapsvg="http://mapsvg.com"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   mapsvg:geoViewBox="20.262217 48.2623309 29.713041 43.617249"
-   width="612.36395"
-   height="432.29416">
+                                 <svg
+                                 xmlns:mapsvg="http://mapsvg.com"
+                                 xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                                 xmlns:svg="http://www.w3.org/2000/svg"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 mapsvg:geoViewBox="20.262217 48.2623309 29.713041 43.617249"
+                                 viewBox="0 0 612.36395 432.29416"
+                                 preserveAspectRatio="xMidYMid meet">
  
   <path
   fill="{% if 'Alba' in event_locations %}#D4AF37"
@@ -629,7 +633,7 @@
                      </div>
                   </div>
                   <div class="row mb-4">
-                     <div class="col-xl-6">
+                     <div class="col-xl-6 me-5">
                         <div class="card">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Best Locations</h4>
@@ -699,7 +703,7 @@
                            </div>
                         </div>
                      </div>
-                     <div class="col-xl-6">
+                     <div class="col-xl-4 ms-5">
                         <div class="card card-height-100">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Top Organizers</h4>
@@ -827,16 +831,15 @@
 <script>
    document.addEventListener("DOMContentLoaded", function () {
     var options = {
-        chart: {
-            type: 'line',
-            height: 600,
-            width:850,
-            background: 'white',
-            foreColor: '#333',
-            toolbar:{
-               show:false,
-            }
-         },
+      chart: {
+        type: 'line',
+        height: '100%', 
+        width: '100%',
+        parentHeightOffset: 0, 
+        toolbar: {
+            show: false,
+        },
+    },
          legend: {
             labels: {
                colors: '#D4AF37',
@@ -960,6 +963,37 @@ document.querySelector("#btn-1y").addEventListener("click", function () {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+#sales-by-locations svg {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+   }
+   #customer_impression_charts {
+    display: block;
+    width: 100%; 
+    height: auto;
+    max-height: 50vh; 
+    position: relative; 
+}
+.card.card-height-100 {
+    width: 35vw; 
+    min-width: 300px;
+}
+
+@media (max-width: 768px) {
+    .card.card-height-100 {
+        width: 90%; 
+    }
+}
+
+@media (max-width: 480px) {
+    .card.card-height-100 {
+        width: 95%; 
+        min-width: unset; 
+    }
 }
 
 
