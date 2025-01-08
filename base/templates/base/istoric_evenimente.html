@@ -5,13 +5,13 @@
 <h1 style="text-align: center; color: #002B5B;">Event History</h1>
 
 <div class="container">
-    <!-- Event 1 -->
+    {% for event in events %}
     <div class="event-card">
         <img src="" alt="Event Image">
         <div class="event-details">
-            <div class="event-title">Event 1</div>
-            <div class="event-date">November 12, 2024</div>
-            <div class="event-description">An elegant event held at location X.</div>
+            <div class="event-title">{{ event.event_name }}</div>
+            <div class="event-date">{{ event.event_date }}</div>
+            <div class="event-description">{{ event.event_description }}</div>
         </div>
         <div class="event-actions">
             <a href="">Feedback</a>
@@ -19,24 +19,9 @@
             <button>Details</button>
         </div>
     </div>
-
-    <!-- Repeat for other events -->
-    <!-- Event 2 -->
-    <div class="event-card">
-        <img src="" alt="Event Image">
-        <div class="event-details">
-            <div class="event-title">Event 2</div>
-            <div class="event-date">November 15, 2024</div>
-            <div class="event-description">A corporate event at location Y.</div>
-        </div>
-        <div class="event-actions">
-            <a href="">Feedback</a>
-            <button>Gallery</button>
-            <button>Details</button>
-        </div>
-    </div>
-
-    <!-- Add more event cards as needed -->
+    {% empty %}
+    <p>No events found.</p>
+    {% endfor %}
 </div>
 
 {% endblock %}

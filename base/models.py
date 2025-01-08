@@ -3,6 +3,27 @@ from django.contrib.auth.models import User
 from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
+from django.utils import timezone
+
+#model pentru noua baza de date
+class EventHistory(models.Model):
+    event_name = models.CharField(max_length=255)
+    event_date = models.DateTimeField()
+    event_time = models.TimeField()
+    location = models.CharField(max_length=255)
+    description = models.TextField()
+    cost = models.DecimalField(max_digits=10, decimal_places=2)
+    organized_by = models.CharField(max_length=255, null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    deleted_at = models.DateTimeField(null=True, blank=True)  # Marcare pentru evenimente șterse
+
+    def __str__(self):
+        return f"{self.event_name} on {self.event_date}"
+
+    class Meta:
+        verbose_name = 'Event History'
+        verbose_name_plural = 'Event Histories'
 
 
 class Task(models.Model):

@@ -21,6 +21,8 @@ from datetime import datetime,timedelta
 from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
+from .models import Event, EventHistory
+
 
 @login_required(login_url='login')
 def organizer_dashboard(request):
@@ -44,11 +46,25 @@ def organizer_dashboard(request):
 @login_required(login_url='/login')
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    if request.method == 'POST':
-        event.delete()
-        messages.success(request, "Event deleted succesfully.")
-        return redirect('my_events')  # Asigură-te că redirecționezi către 'my_events'
-    return HttpResponseForbidden("unauthorized method.")
+
+    EventHistory.objects.create(
+        event_name=event.event_name,
+        event_date=event.event_date,
+        event_time=event.event_time,
+        location=event.location,
+        description=event.event_description,
+        cost=event.cost,
+        organized_by=event.organized_by,
+        created_at=event.created_at,
+        updated_at=event.updated_at,
+        deleted_at=timezone.now(),  
+    )
+
+   
+    event.delete()
+
+    messages.success(request, 'Event has been successfully deleted and archived.')
+    return redirect('my_events') 
 
 
 @login_required(login_url='/login')
@@ -73,7 +89,7 @@ def feedback_event(request):
     return render(request, 'base/feedback_eveniment.html')
 @login_required(login_url='/login')
 def event_history(request):
-    events = Event.objects.all()
+    events = EventHistory.objects.all() 
     return render(request, 'base/istoric_evenimente.html', {'events': events})
 
 @login_required(login_url='/login')
