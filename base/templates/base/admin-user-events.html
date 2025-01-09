@@ -211,10 +211,16 @@
                                           <span class="h4">{% if event.completed == False %}
                                             {{ time_left|get_item:event.event_name }}
                                             {% else %}
-                                            0
+                                            Completed {{ time_left|get_item:event.event_name }}
                                             {% endif %}
                                           </span>
-                                          <span class="d-block fs-5">Days left</span>
+                                          <span class="d-block fs-5">
+                                             {% if event.completed == False %}
+                                             Days left
+                                             {% else %}
+                                             Days ago
+                                             {% endif %}
+                                          </span>
                                        </div>
                                     </div>
                                  </div>

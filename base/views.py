@@ -21,6 +21,8 @@ from datetime import datetime,timedelta
 from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
+from .models import Event, EventHistory
+
 
 @login_required(login_url='login')
 def organizer_dashboard(request):
@@ -40,9 +42,34 @@ def organizer_dashboard(request):
         ]
     }
     return render(request, 'base/organizator-dashboard.html', context)
+#stergere eveniment
+@login_required(login_url='/login')
+def delete_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    EventHistory.objects.create(
+        event_name=event.event_name,
+        event_date=event.event_date,
+        event_time=event.event_time,
+        location=event.location,
+        description=event.event_description,
+        cost=event.cost,
+        organized_by=event.organized_by,
+        created_at=event.created_at,
+        updated_at=event.updated_at,
+        deleted_at=timezone.now(),  
+    )
+
+   
+    event.delete()
+
+    messages.success(request, 'Event has been successfully deleted and archived.')
+    return redirect('my_events') 
+
 
 @login_required(login_url='/login')
 def event_builder(request):
+    locations = Location.objects.all()  # Obține toate locațiile
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
@@ -54,14 +81,15 @@ def event_builder(request):
     else:
         form = EventForm()
 
-    return render(request, 'base/event_builder.html', {'form2': form})
+    return render(request, 'base/event_builder.html', {'form2': form, 'locations': locations})
+
 
 @login_required(login_url='/login')
 def feedback_event(request):
     return render(request, 'base/feedback_eveniment.html')
 @login_required(login_url='/login')
 def event_history(request):
-    events = Event.objects.all()
+    events = EventHistory.objects.all() 
     return render(request, 'base/istoric_evenimente.html', {'events': events})
 
 @login_required(login_url='/login')
@@ -430,7 +458,7 @@ def homeAdmin(request):
     else:
         greeting = "Good Evening"
     tasks = Task.objects.all()
-    users = User.objects.all()
+    users = User.objects.filter(is_superuser=False)
     events = Event.objects.all()
     event_locations = [event.location.location for event in events]
     ev_loc = [event.location for event in events]
@@ -442,7 +470,14 @@ def homeAdmin(request):
             'ev_c':location.event_set.count()
             })
     ev_nr = events.count()
-    print(ev_nr)
+    org_ev = []
+    organizer_event_count = Counter(event.organized_by for event in events)
+    print(organizer_event_count)
+    for organizer, count in organizer_event_count.items():
+        org_ev.append({
+            'organizer': organizer,
+            'event_count': count
+        })
     high_ev = []
     for location in locations:
         event_count = location.event_set.count() 
@@ -456,6 +491,7 @@ def homeAdmin(request):
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
     context= {
+        'org_ev':org_ev,
         'loc_nr':loc_nr,
         'ev_nr':ev_nr,
         'high_ev':high_ev,
@@ -802,7 +838,7 @@ def viewUserEvents(request, pk):
     for event in events:
         now = timezone.now()
         time_diff = event.event_date - now.date()  
-        time_left[event.event_name] = time_diff.days
+        time_left[event.event_name] = abs(time_diff.days)
     now = timezone.now().date()
     locations = Location.objects.filter(owner=user)
     loc_count = locations.count()

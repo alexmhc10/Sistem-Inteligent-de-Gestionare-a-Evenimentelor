@@ -36,31 +36,28 @@
 </style>
 
 <div class="form-container">
-    <h2>Formular de orientare</h2>
+    <h2>Event Form</h2>
     <form method="POST">
         {% csrf_token %}
         
-        <label for="event_name">Numele evenimentului</label>
+        <label for="event_name">Event Name</label>
         {{ form2.event_name }}
     
-        <label for="event_date">Data evenimentului</label>
+        <label for="event_date">Event Date</label>
         {{ form2.event_date }}
     
-        <label for="event_time">Ora evenimentului</label>
+        <label for="event_time">Event Time</label>
         {{ form2.event_time }}
     
-        <label for="event_description">Descriere eveniment</label>
+        <label for="event_description">Event Description</label>
         {{ form2.event_description }}
     
-        <label for="location">Locație</label>
+        <label for="location">Location</label>
         {{ form2.location }}
     
-        <label for="guests">Invitați</label>
+        <label for="guests">Guests</label>
         {{ form2.guests }}
     
-        <button type="submit">Creează Eveniment</button>
+        <button type="submit">Create Event</button>
     </form>
-    
-    
 </div>
-

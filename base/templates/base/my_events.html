@@ -2,9 +2,60 @@
 
 {% block content %}
 
+<style>
+    .card {
+        border: none;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+        transform: scale(1.02);
+    }
+
+    .btn-view {
+        background-color: #2E8B57; /* Emerald green */
+        color: white;
+        margin-right: 10px;
+    }
+
+    .btn-view:hover {
+        background-color: #246F45; /* Darker emerald green */
+    }
+
+    .btn-delete {
+        background-color: #D9534F; /* Bootstrap danger color */
+        color: white;
+    }
+
+    .btn-delete:hover {
+        background-color: #C9302C; /* Darker danger color */
+    }
+
+    .alert {
+        background-color: #FAF9F6; /* Pearl white */
+        border-left: 5px solid #D4AF37; /* Gold accent */
+        padding: 10px;
+        font-size: 0.95rem;
+    }
+
+    .text-center {
+        color: #002B5B; /* Navy blue */
+        margin-bottom: 30px;
+    }
+</style>
 
 <div class="container my-4">
-    <h2 class="text-center">Evenimentele Mele</h2>
+    <h2 class="text-center">My Events</h2>
+
+    {% if messages %}
+        <div class="alert alert-success">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     {% if events %}
     <div class="row">
         {% for event in events %}
@@ -12,23 +63,29 @@
             <div class="card shadow-sm border-0">
                 <div class="card-body">
                     <h3 class="card-title">{{ event.event_name }}</h3>
-                    <p><strong>Data:</strong> {{ event.event_date }}</p>
-                    <p><strong>Ora:</strong> {{ event.event_time }}</p>
-                    <p><strong>Descriere:</strong> {{ event.event_description }}</p>
-                    <p><strong>Locație:</strong> {{ event.location }}</p>
-                    <p><strong>Invitați:</strong> {{ event.guests.all|join:", " }}</p>
+                    <p><strong>Date:</strong> {{ event.event_date }}</p>
+                    <p><strong>Time:</strong> {{ event.event_time }}</p>
+                    <p><strong>Description:</strong> {{ event.event_description }}</p>
+                    <p><strong>Location:</strong> {{ event.location }}</p>
+                    <p><strong>Guests:</strong> {{ event.guests.all|join:", " }}</p>
 
-                    <!-- Butoane pentru acțiuni -->
-                    <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view" class="btn btn-view">Vizualizare Eveniment</a>
-                    <a href="" class="btn btn-delete">Șterge Eveniment</a>
+                    <!-- Action buttons -->
+                    <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view">View Event</a>
+                    
+                    <!-- Delete event form -->
+                    <form action="{% url 'delete_event' event.id %}" method="POST" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-delete">Delete Event</button>
+                    </form>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
     {% else %}
-    <p class="text-center">Nu ai creat niciun eveniment.</p>
+    <p class="text-center">You have not created any events yet.</p>
     {% endif %}
 </div>
+
 {% include 'back_button.html' %}
 {% endblock %}

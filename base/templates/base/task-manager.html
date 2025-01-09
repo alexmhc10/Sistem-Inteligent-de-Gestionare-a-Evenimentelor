@@ -64,7 +64,7 @@
     <form method="POST">
         {% csrf_token %}
         {{ form1.as_p }}
-        <button type="submit">Adaugă task</button>
+        <button type="submit">Add task</button>
     </form>
     <ul style="list-style-type: none;">
         {% for task in tasks %}

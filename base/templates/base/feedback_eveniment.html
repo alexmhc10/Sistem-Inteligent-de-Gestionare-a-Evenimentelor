@@ -1,8 +1,5 @@
 {% extends 'main.html' %}
-{% load static %} <!-- Load static files -->
-<!-- Nu ChatGPT, nu "loadam" staticul in toate fisierele, ele extind main, care contine css-ul
- nu dai load unde deja exista css -->
-{% block content %}
+{% load static %} 
 <style>
     .feedback-list-container {
         max-width: 800px;
@@ -60,7 +57,7 @@
     <!-- Event Image -->
     <img src="{{ MEDIA_URL }}images/perla.jpg" alt="Event Image" class="event-image">
 
-    <h2>Recenzii Eveniment</h2>
+    <h2>Event reviews</h2>
     
     <!-- Fictitious Review 1 -->
     <div class="feedback-item">

@@ -1,10 +1,11 @@
 from django.contrib import admin
-
+from .models import EventHistory
 # Register your models here.
 
 
 from .models import *
 
+admin.site.register(EventHistory)
 admin.site.register(Location)
 admin.site.register(Task)
 admin.site.register(Profile)

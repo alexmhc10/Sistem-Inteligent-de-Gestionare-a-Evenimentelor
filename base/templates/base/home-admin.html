@@ -182,7 +182,7 @@
                      </div>
                   </div>
                   <div class="row mb-4">
-                     <div class="col-xl-7">
+                     <div class="col-xl-6 me-5">
                         <div class="card">
                            <div class="card-header border-0 align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Statistics</h4>
@@ -212,30 +212,34 @@
                            </div>
                            <div class="card-body p-0 pb-2">
                               <div class="w-100">
-                                 <div id="customer_impression_charts" data-colors="[&quot;--vz-primary&quot;, &quot;--vz-success&quot;, &quot;--vz-danger&quot;]" data-colors-minimal="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-info&quot;]" data-colors-saas="[&quot;--vz-success&quot;, &quot;--vz-info&quot;, &quot;--vz-danger&quot;]" data-colors-modern="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-success&quot;]" data-colors-interactive="[&quot;--vz-info&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-creative="[&quot;--vz-warning&quot;, &quot;--vz-primary&quot;, &quot;--vz-danger&quot;]" data-colors-corporate="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-galaxy="[&quot;--vz-secondary&quot;, &quot;--vz-primary&quot;, &quot;--vz-primary-rgb, 0.50&quot;]" data-colors-classic="[&quot;--vz-light&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" data-colors-vintage="[&quot;--vz-success&quot;, &quot;--vz-primary&quot;, &quot;--vz-secondary&quot;]" class="apex-charts" dir="ltr" style="min-height: 385px;">
-                                    <div id="apexchartsh9w7k66o" class="apexcharts-canvas apexchartsh9w7k66o apexcharts-theme-" style="width: 895px; height: 370px;">
+                                 <div id="customer_impression_charts" 
+                                 data-colors="[&quot;--vz-primary&quot;, &quot;--vz-success&quot;, &quot;--vz-danger&quot;]" 
+                                 class="apex-charts" 
+                                 dir="ltr" 
+                                 style="min-height: 385px;">                                    
+                                 <div id="apexchartsh9w7k66o" class="apexcharts-canvas apexchartsh9w7k66o apexcharts-theme-">
                                     </div>
                                  </div>
                               </div>
                            </div>
                         </div>
                      </div>
-                     <div class="col-xl-4">
-                        <div class="card card-height-100" style="width: 35vw;">
+                     <div class="col-xl-4 ms-5">
+                        <div class="card card-height-100">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Events by Locations</h4>
                            </div>
                            <div class="card-body">
                               <div id="sales-by-locations" data-colors="[&quot;--vz-light&quot;, &quot;--vz-success&quot;, &quot;--vz-primary&quot;]" data-colors-interactive="[&quot;--vz-light&quot;, &quot;--vz-info&quot;, &quot;--vz-primary&quot;]" style="height: 469px; background-color: transparent;" dir="ltr" class="jvm-container">
-                                <svg
-   xmlns:mapsvg="http://mapsvg.com"
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   mapsvg:geoViewBox="20.262217 48.2623309 29.713041 43.617249"
-   width="612.36395"
-   height="432.29416">
+                                 <svg
+                                 xmlns:mapsvg="http://mapsvg.com"
+                                 xmlns:dc="http://purl.org/dc/elements/1.1/"
+                                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                                 xmlns:svg="http://www.w3.org/2000/svg"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 mapsvg:geoViewBox="20.262217 48.2623309 29.713041 43.617249"
+                                 viewBox="0 0 612.36395 432.29416"
+                                 preserveAspectRatio="xMidYMid meet">
  
   <path
   fill="{% if 'Alba' in event_locations %}#D4AF37"
@@ -629,7 +633,7 @@
                      </div>
                   </div>
                   <div class="row mb-4">
-                     <div class="col-xl-6">
+                     <div class="col-xl-6 me-5">
                         <div class="card">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Best Locations</h4>
@@ -699,7 +703,7 @@
                            </div>
                         </div>
                      </div>
-                     <div class="col-xl-6">
+                     <div class="col-xl-4 ms-5">
                         <div class="card card-height-100">
                            <div class="card-header align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Top Organizers</h4>
@@ -710,145 +714,34 @@
                               <div class="table-responsive table-card">
                                  <table class="table table-centered table-hover align-middle table-nowrap mb-0">
                                     <tbody>
+                                       {% for item in org_ev %}
                                        <tr>
                                           <td>
                                              <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-1.png" alt="" class="avatar-sm p-2">
+                                                   <img src="{{ item.organizer.profile.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
                                                 </div>
                                                 <div>
                                                    <h5 class="fs-14 my-1 fw-medium">
-                                                      <a href="apps-ecommerce-seller-details.html" class="text-reset">iTest Factory</a>
+                                                      <a href="{% url 'view_user_admin' item.organizer.username %}" class="text-reset">{{ item.organizer.username }}</a>
                                                    </h5>
-                                                   <span class="text-muted">Oliver Tyler</span>
+                                                   <span class="text-muted">{{ item.organizer.date_joined.date }}</span>
                                                 </div>
                                              </div>
                                           </td>
                                           <td>
-                                             <span class="text-muted">Bags and Wallets</span>
+                                             <span class="text-muted">{{ item.organizer.email }}</span>
                                           </td>
                                           <td>
-                                             <p class="mb-0">8547</p>
-                                             <span class="text-muted">Stock</span>
+                                             <p class="mb-0">{{ item.event_count }}</p>
+                                             <span class="text-muted">Events</span>
                                           </td>
                                           <td>
                                              <span class="text-muted">$541200</span>
                                           </td>
-                                          <td>
-                                             <h5 class="fs-14 mb-0">32%<i class="ri-bar-chart-fill text-success fs-16 align-middle ms-2"></i></h5>
-                                          </td>
+                                         
                                        </tr>
-                                       <!-- end -->
-                                       <tr>
-                                          <td>
-                                             <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-2.png" alt="" class="avatar-sm p-2">
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                   <h5 class="fs-14 my-1 fw-medium"><a href="apps-ecommerce-seller-details.html" class="text-reset">Digitech Galaxy</a></h5>
-                                                   <span class="text-muted">John Roberts</span>
-                                                </div>
-                                             </div>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">Watches</span>
-                                          </td>
-                                          <td>
-                                             <p class="mb-0">895</p>
-                                             <span class="text-muted">Stock</span>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">$75030</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 mb-0">79%<i class="ri-bar-chart-fill text-success fs-16 align-middle ms-2"></i></h5>
-                                          </td>
-                                       </tr>
-                                       <!-- end -->
-                                       <tr>
-                                          <td>
-                                             <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-3.png" alt="" class="avatar-sm p-2">
-                                                </div>
-                                                <div class="flex-gow-1">
-                                                   <h5 class="fs-14 my-1 fw-medium"><a href="apps-ecommerce-seller-details.html" class="text-reset">Nesta Technologies</a></h5>
-                                                   <span class="text-muted">Harley Fuller</span>
-                                                </div>
-                                             </div>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">Bike Accessories</span>
-                                          </td>
-                                          <td>
-                                             <p class="mb-0">3470</p>
-                                             <span class="text-muted">Stock</span>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">$45600</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 mb-0">90%<i class="ri-bar-chart-fill text-success fs-16 align-middle ms-2"></i></h5>
-                                          </td>
-                                       </tr>
-                                       <!-- end -->
-                                       <tr>
-                                          <td>
-                                             <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-8.png" alt="" class="avatar-sm p-2">
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                   <h5 class="fs-14 my-1 fw-medium"><a href="apps-ecommerce-seller-details.html" class="text-reset">Zoetic Fashion</a></h5>
-                                                   <span class="text-muted">James Bowen</span>
-                                                </div>
-                                             </div>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">Clothes</span>
-                                          </td>
-                                          <td>
-                                             <p class="mb-0">5488</p>
-                                             <span class="text-muted">Stock</span>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">$29456</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 mb-0">40%<i class="ri-bar-chart-fill text-success fs-16 align-middle ms-2"></i></h5>
-                                          </td>
-                                       </tr>
-                                       <!-- end -->
-                                       <tr>
-                                          <td>
-                                             <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-2">
-                                                   <img src="assets/images/companies/img-5.png" alt="" class="avatar-sm p-2">
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                   <h5 class="fs-14 my-1 fw-medium">
-                                                      <a href="apps-ecommerce-seller-details.html" class="text-reset">Meta4Systems</a>
-                                                   </h5>
-                                                   <span class="text-muted">Zoe Dennis</span>
-                                                </div>
-                                             </div>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">Furniture</span>
-                                          </td>
-                                          <td>
-                                             <p class="mb-0">4100</p>
-                                             <span class="text-muted">Stock</span>
-                                          </td>
-                                          <td>
-                                             <span class="text-muted">$11260</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 mb-0">57%<i class="ri-bar-chart-fill text-success fs-16 align-middle ms-2"></i></h5>
-                                          </td>
-                                       </tr>
-                                       <!-- end -->
+                                       {% endfor %}
                                     </tbody>
                                  </table>
                                  <!-- end table -->
@@ -938,16 +831,15 @@
 <script>
    document.addEventListener("DOMContentLoaded", function () {
     var options = {
-        chart: {
-            type: 'line',
-            height: 600,
-            width:850,
-            background: 'white',
-            foreColor: '#333',
-            toolbar:{
-               show:false,
-            }
-         },
+      chart: {
+        type: 'line',
+        height: '100%', 
+        width: '100%',
+        parentHeightOffset: 0, 
+        toolbar: {
+            show: false,
+        },
+    },
          legend: {
             labels: {
                colors: '#D4AF37',
@@ -1071,6 +963,37 @@ document.querySelector("#btn-1y").addEventListener("click", function () {
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+#sales-by-locations svg {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 100%;
+      overflow: hidden;
+   }
+   #customer_impression_charts {
+    display: block;
+    width: 100%; 
+    height: auto;
+    max-height: 50vh; 
+    position: relative; 
+}
+.card.card-height-100 {
+    width: 35vw; 
+    min-width: 300px;
+}
+
+@media (max-width: 768px) {
+    .card.card-height-100 {
+        width: 90%; 
+    }
+}
+
+@media (max-width: 480px) {
+    .card.card-height-100 {
+        width: 95%; 
+        min-width: unset; 
+    }
 }
 
 
