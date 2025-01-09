@@ -1,7 +1,7 @@
 {% extends 'main.html' %}
 {% block navbar %}
 {% endblock %}
-
+{% load static %}
 {% block content %}
 <meta name="description" content="A seating chart editor for assigning places at tables." />
 <meta itemprop="description" content="A seating chart editor for assigning places at tables." />
@@ -222,11 +222,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
           <div class="w-full max-w-screen-xl mx-auto">
             <!-- * * * * * * * * * * * * * -->
             <!-- Start of GoJS sample code -->
-            <script src="D:\Scoala\Licenta\Sistem-Inteligent-de-Gestionare-a-Evenimentelor\static\js\go.js"></script>
+            <script src="{% static 'js/go.js' %}"></script>
     
             
-              <link rel="stylesheet" href="D:\Scoala\Licenta\Sistem-Inteligent-de-Gestionare-a-Evenimentelor\static\css\prism.css"/>
-              <script src="D:\Scoala\Licenta\Sistem-Inteligent-de-Gestionare-a-Evenimentelor\static\js\prism.js"></script>
+              <link rel="stylesheet" href="{% static 'css/prism.css' %}"/>
+              <script src="{% static 'js/prism.js' %}"></script>
             
     
             <div id="allSampleContent" class="p-4 w-full">
@@ -525,10 +525,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
         myDiagram.model = new go.GraphLinksModel({
           copiesKey: true,
           nodeDataArray: [
-            { key: 1, category: 'TableR3', name: 'Head 1', guests: {}, loc: '143.5 58' },
+            { key: 1, category: 'TableR8', name: 'Bride table', guests: {}, loc: '143.5 58' },
             { key: 2, category: 'TableR3', name: 'Head 2', guests: {}, loc: '324.5 58' },
             { key: 3, category: 'TableR8', name: '3', guests: {}, loc: '121.5 203.5' },
-            { key: 4, category: 'TableC8', name: '4', guests: {}, loc: '364.5 223.5' }
+            { key: 4, category: 'TableC8', name: '4', guests: {}, loc: '364.5 223.5' },
+            { key: 5, category: 'TableC8', name: '5', guests: {}, loc: '464.5 223.5' },
+            { key: 6, category: 'TableC8', name: '6', guests: {}, loc: '564.5 223.5' }
           ]
         }); // this sample does not make use of any links
     

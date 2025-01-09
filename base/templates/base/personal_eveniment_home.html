@@ -103,7 +103,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
    
   <div class="container-fluid">
 
-    <div class="col-lg-12">
+    <div class="col-lg-12 mb-4">
       <h2 class="mb-4">Filter Events</h2>
       <form id="filtersForm" class="row gy-3 gx-3 align-items-center">
           <div class="col-md-4">
@@ -149,7 +149,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img">
                 </a>
                 <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40; height: 40;" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
+                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
               </div>
               <div class="card-body p-4">
                 <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
@@ -190,7 +190,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <div class="card overflow-hidden hover-img">
               <div class="position-relative">
                 <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50);">
+                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50); max-height: 300px; object-fit: cover;">
                 </a>
                 <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
                 <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">

@@ -1012,11 +1012,20 @@ def personal_vizualizare_eveniment(request, pk):
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 
+
 def personal_aranjament_invitati(request, pk=None):
+    events = Event.objects.first()
+    context_default = {
+        'event': events
+    }
+    location = Location.objects.first()
+    context_event = {
+        'location': location
+    }
     if pk:
-        return render(request, 'base/personal_aranjament_invitati.html')
+        return render(request, 'base/personal_aranjament_invitati.html', context_event)
     else:
-        return render(request, 'base/personal_aranjament_invitati.html')
+        return render(request, 'base/personal_aranjament_invitati.html', context_default)
 
 
 # @login_required(login_url='/login')
