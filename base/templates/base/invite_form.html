@@ -2,16 +2,7 @@
 {% block navbar %}
 {% endblock %}
 {% block content %}
-<style>
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
+<!-- <style>
 
 .container {
     width: 80%;
@@ -50,6 +41,7 @@ body {
 form {
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 form label {
@@ -84,7 +76,7 @@ form button:hover {
 }
 
 #form-1 {
-    display: block;
+    display: flex;
 }
 
 #form-1 .button-container{
@@ -99,14 +91,14 @@ form button:hover {
     margin-right: 0;
 }
 
-/* .logo_img{
+.logo_img{
     height:10%;
     width: 10%;
-} */
+}
 
-</style>
+</style> -->
 
-<div class="container">
+<!-- <div class="container">
         <div class="steps">
             
             <div class="step" id="step-1">
@@ -123,15 +115,15 @@ form button:hover {
             </div>
         </div>
 
-        <div id="form-1" class="form-container">
-            <h2>Vrei să participi la eveniment?</h2>
-            <div class = button-container>
+        <div id="form-1" class="form-container flex-column align-items-center justify-content-center">
+            <h2 class="text-center">Vrei să participi la eveniment?</h2>
+            <div class = "button-container">
                 <button class="btn" id="accept-btn">Da</button>
                 <button class="btn" id="decline-btn">Nu</button>
             </div>
         </div>
 
-        <div id="form-2" class="form-container">
+        <div id="form-2" class="form-container flex-column">
             <h2>Introducerea datelor tale personale</h2>
             <form action="" method="post">
                 <label for="nume">Nume:</label>
@@ -152,7 +144,7 @@ form button:hover {
         </div>
 
 
-        <div id="form-3" class="form-container">
+        <div id="form-3" class="form-container flex-column">
             <h2>Detalii Eveniment</h2>
             <label for="zona">Zona la masă:</label>
             <select id="zona" class="form-select" name="zona">
@@ -198,21 +190,94 @@ form button:hover {
         </form>
         </div> 
 
-        <div id="final-page" class="form-container">
+        <div id="final-page" class="form-container flex-column">
             <h2>Multumim pentu ca ai ales sa participi la eveniment</h2>
             <h3>Te asteptam cu nerabdare!!</h3>
             <button type="button" id="exit-button">Vezi detaliile evenimentului!</button>
             <button id="back-3">Back</button>
 
         </div>
+    </div> -->
+
+    <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+        <!-- Sidebar Start -->
+        <aside class="left-sidebar">
+        <!-- Sidebar scroll-->
+        <div>
+            <div class="brand-logo d-flex align-items-center justify-content-between">
+            <a href="{% url 'personal_eveniment_home' %}" class="text-nowrap logo-img">
+                <img src="{{ STATICFILES_DIRS }}images/image.png " class="mt-3" style="max-width: 100%; max-height: 100%;" alt="NU MERGGEEEEEEEEEEEE">
+            </a>
+            <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
+                <i class="ti ti-x fs-8"></i>
+            </div>
+            </div>
+            <!-- Sidebar navigation-->
+            <!-- End Sidebar navigation -->
+        </div>
+        <!-- End Sidebar scroll-->
+        </aside>
+        <!--  Sidebar End -->
+        <!--  Main wrapper -->
+        <div class="body-wrapper">
+        <!--  Header Start -->
+        <header class="app-header">
+            <nav class="navbar navbar-expand-lg navbar-light">
+            <ul class="navbar-nav">
+                <li class="nav-item d-block d-xl-none">
+                <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
+                    <i class="ti ti-menu-2"></i>
+                </a>
+                </li>
+            </ul>
+            <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+                <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+                <li class="nav-item dropdown">
+                    <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
+                    <div class="message-body">
+                        <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                        <i class="ti ti-user fs-6"></i>
+                        <p class="mb-0 fs-3">My Profile</p>
+                        </a>
+                        <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                        <i class="ti ti-mail fs-6"></i>
+                        <p class="mb-0 fs-3">My Account</p>
+                        </a>
+                        <a href="{% url 'logout' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                    </div>
+                    </div>
+                </li>
+                </ul>
+            </div>
+            </nav>
+        </header>
+        <!--  Header End -->
+        <div class="container-fluid d-flex justify-content-center">
+            <div class="card mb-3" style="max-width: 600px;">
+        <img src="{{MEDIA_URL}}/images/Amour_de_levenement_EDAlYLZ.jpg" class="card-img-top img-fluid" style="object-fit: cover; height: 100%; width: 100%;" alt="...">
+        <div class="card-body d-flex align-items-center justify-content-center flex-column">
+          <h5 class="card-title text-center">You are invited to a new event: {{event.event_name}}!</h5>
+          <div class="flex-row mb-2"> 
+            <a href="#" class="btn btn-outline-primary text-center fs-5">YES <i class="bi bi-emoji-smile"></i></a>
+            <a href="#" class="btn btn-outline-danger text-center ms-auto fs-5">No <i class="bi bi-emoji-frown"></i></a>
+        </div>
+          
+          <p class="card-text"><small class="text-body-secondary">If you choose to participate at this event an user account will be automatically created!</small></p>
+        </div>
     </div>
+        </div>
+        </div>
+    </div> 
 
-
-
-<script>
+<!-- <script>
         document.getElementById('accept-btn').addEventListener('click', function() {
     document.getElementById('form-1').style.display = 'none';
-    document.getElementById('form-2').style.display = 'block';
+    document.getElementById('form-2').style.display = 'flex';
     document.getElementById('step-1').querySelector('.circle').style.backgroundColor = 'green';
 });
 
@@ -223,7 +288,7 @@ document.getElementById('decline-btn').addEventListener('click', function() {
 document.getElementById('continue-1').addEventListener('click', function(e) {
     e.preventDefault();
     document.getElementById('form-2').style.display = 'none';
-    document.getElementById('form-3').style.display = 'block';
+    document.getElementById('form-3').style.display = 'flex';
     document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
 });
 
@@ -231,23 +296,23 @@ document.getElementById('submit').addEventListener('click', function(e) {
     e.preventDefault();
     document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
     document.getElementById('form-3').style.display = 'none';
-    document.getElementById('final-page').style.display = 'block';
+    document.getElementById('final-page').style.display = 'flex';
 });
 document.getElementById('back-1').addEventListener('click', function () {
     document.getElementById('form-2').style.display = 'none';
-    document.getElementById('form-1').style.display = 'block';
+    document.getElementById('form-1').style.display = 'flex';
     document.getElementById('step-1').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
 });
 document.getElementById('back-2').addEventListener('click', function () {
     document.getElementById('form-3').style.display = 'none';
-    document.getElementById('form-2').style.display = 'block';
+    document.getElementById('form-2').style.display = 'flex';
     document.getElementById('step-2').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
 });
 document.getElementById('back-3').addEventListener('click', function () {
     document.getElementById('final-page').style.display = 'none';
-    document.getElementById('form-3').style.display = 'block';
+    document.getElementById('form-3').style.display = 'flex';
     document.getElementById('step-3').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
 });
 
-    </script>
+    </script> -->
 {% endblock content %}

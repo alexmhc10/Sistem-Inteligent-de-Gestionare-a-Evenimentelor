@@ -56,12 +56,14 @@ urlpatterns = [
     path('carousel/', views.carousel_view, name='carousel'),
 
     #Formular invitati
-    path('invite_form/', views.invite_form, name='invite_form'),
+    path('invite_form/<int:event_id>/<int:guest_id>', views.invite_form, name='invite_form'),
 
     #Personal
     path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveniment_home'),
     path('personal_vizualizare_eveniment/<int:pk>', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
     path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
+    path('personal_aranjament_invitati/<int:pk>', views.personal_aranjament_invitati, name='personal_aranjament_invitati_event'),
+    path('filter_events', views.filter_events, name='filter_events'),
 
 
     ##organizator

@@ -135,6 +135,7 @@ class Menu(models.Model):
         return self.item_name    
     
 
+
 class Event(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     event_name = models.CharField(max_length=100)

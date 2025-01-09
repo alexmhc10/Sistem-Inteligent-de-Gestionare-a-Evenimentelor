@@ -75,7 +75,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           <li class="nav-item dropdown">
             <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
               aria-expanded="false">
-              <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+              <img src="" alt="" width="35" height="35" class="rounded-circle">
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
               <div class="message-body">
@@ -91,7 +91,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   <i class="ti ti-list-check fs-6"></i>
                   <p class="mb-0 fs-3">My Task</p>
                 </a>
-                <a href="./authentication-login.html" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
               </div>
             </div>
           </li>
@@ -104,178 +104,34 @@ data-sidebar-position="fixed" data-header-position="fixed">
   <div class="container-fluid">
 
     <div class="col-lg-12">
-      <div class="card-body border border-dashed border-end-0 border-start-0">
-        <form>
-            <div class="row g-3">
-                <div class="col-xxl-5 col-sm-6">
-                    <div class="search-box">
-                        <form action="" >
-                            <select name="countries" id="countries" multiple>Search for an Eveniment
-                                {% for event in events %}
-                                <option value="{{ forloop.counter0 }}"> {{ event.event_name }} </option>
-                                {% endfor %}
-                            </select>
-                            </form>
-                    </div>
-                </div>
-                <!--end col-->
-                <div class="col-xxl-2 col-sm-6">
-                    <div>
-                        <input type="text" class="form-control flatpickr-input"
-                            data-provider="flatpickr" data-date-format="d M, Y"
-                            data-range-date="true" id="demo-datepicker" placeholder="Select date"
-                            readonly="readonly">
-                    </div>
-                </div>
-                <!--end col-->
-                <div class="col-xxl-2 col-sm-4">
-                    <div>
-                        <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                            aria-haspopup="true" aria-expanded="false">
-                            <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                    data-choices="" data-choices-search-false=""
-                                    name="choices-single-default" id="idStatus" hidden=""
-                                    tabindex="-1" data-choice="active">
-                                    <option value="">Status</option>
-                                    <option value="all" selected="">All</option>
-                                    <option value="Pending">Pending</option>
-                                    <option value="Inprogress">Inprogress</option>
-                                    <option value="Cancelled">Cancelled</option>
-                                    <option value="Pickups">Pickups</option>
-                                    <option value="Returns">Returns</option>
-                                    <option value="Delivered">Delivered</option>
-                                </select>
-                                
-                            </div>
-                            <div class="choices__list choices__list--dropdown"
-                                aria-expanded="false">
-                                <div class="choices__list" role="listbox">
-                                    <div id="choices--idStatus-item-choice-1"
-                                        class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
-                                        role="option" data-choice="" data-id="1" data-value=""
-                                        data-select-text="Press to select" data-choice-selectable=""
-                                        aria-selected="true">Status</div>
-                                    <div id="choices--idStatus-item-choice-2"
-                                        class="choices__item choices__item--choice is-selected choices__item--selectable"
-                                        role="option" data-choice="" data-id="2" data-value="all"
-                                        data-select-text="Press to select"
-                                        data-choice-selectable="">All</div>
-                                    <div id="choices--idStatus-item-choice-5"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="5"
-                                        data-value="Cancelled" data-select-text="Press to select"
-                                        data-choice-selectable="">Cancelled</div>
-                                    <div id="choices--idStatus-item-choice-8"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="8"
-                                        data-value="Delivered" data-select-text="Press to select"
-                                        data-choice-selectable="">Delivered</div>
-                                    <div id="choices--idStatus-item-choice-4"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="4"
-                                        data-value="Inprogress" data-select-text="Press to select"
-                                        data-choice-selectable="">Inprogress</div>
-                                    <div id="choices--idStatus-item-choice-3"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="3"
-                                        data-value="Pending" data-select-text="Press to select"
-                                        data-choice-selectable="">Pending</div>
-                                    <div id="choices--idStatus-item-choice-6"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="6"
-                                        data-value="Pickups" data-select-text="Press to select"
-                                        data-choice-selectable="">Pickups</div>
-                                    <div id="choices--idStatus-item-choice-7"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="7"
-                                        data-value="Returns" data-select-text="Press to select"
-                                        data-choice-selectable="">Returns</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                </div>
-                <!--end col-->
-                <div class="col-xxl-2 col-sm-4">
-                    <div>
-                        <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                            aria-haspopup="true" aria-expanded="false">
-                            <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                    data-choices="" data-choices-search-false=""
-                                    name="choices-single-default" id="idPayment" hidden=""
-                                    tabindex="-1" data-choice="active">
-                                    <option value="">Status</option>
-                                    <option value="all" selected="">All</option>
-                                    <option value="Future">Future events</option>
-                                    <option value="Past">Past events</option>
-                                </select>
-                                
-                            </div>
-                            <div class="choices__list choices__list--dropdown"
-                                aria-expanded="false">
-                                <div class="choices__list" role="listbox">
-                                    <div id="choices--idStatus-item-choice-1"
-                                        class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
-                                        role="option" data-choice="" data-id="1" data-value=""
-                                        data-select-text="Press to select" data-choice-selectable=""
-                                        aria-selected="true">Status</div>
-                                    <div id="choices--idStatus-item-choice-2"
-                                        class="choices__item choices__item--choice is-selected choices__item--selectable"
-                                        role="option" data-choice="" data-id="2" data-value="all"
-                                        data-select-text="Press to select"
-                                        data-choice-selectable="">All</div>
-                                    <div id="choices--idStatus-item-choice-5"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="5"
-                                        data-value="Cancelled" data-select-text="Press to select"
-                                        data-choice-selectable="">Cancelled</div>
-                                    <div id="choices--idStatus-item-choice-8"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="8"
-                                        data-value="Delivered" data-select-text="Press to select"
-                                        data-choice-selectable="">Delivered</div>
-                                    <div id="choices--idStatus-item-choice-4"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="4"
-                                        data-value="Inprogress" data-select-text="Press to select"
-                                        data-choice-selectable="">Inprogress</div>
-                                    <div id="choices--idStatus-item-choice-3"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="3"
-                                        data-value="Pending" data-select-text="Press to select"
-                                        data-choice-selectable="">Pending</div>
-                                    <div id="choices--idStatus-item-choice-6"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="6"
-                                        data-value="Pickups" data-select-text="Press to select"
-                                        data-choice-selectable="">Pickups</div>
-                                    <div id="choices--idStatus-item-choice-7"
-                                        class="choices__item choices__item--choice choices__item--selectable"
-                                        role="option" data-choice="" data-id="7"
-                                        data-value="Returns" data-select-text="Press to select"
-                                        data-choice-selectable="">Returns</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!--end col-->
-                <div class="col-xxl-1 col-sm-4">
-                    <div>
-                        <button type="button" class="btn btn-primary w-100" onclick="SearchData();">
-                            <i class="ri-equalizer-fill me-1 align-bottom"></i>
-                            Filters
-                        </button>
-                    </div>
-                </div>
-                <!--end col-->
-            </div>
-            <!--end row-->
-        </form>
+      <h2 class="mb-4">Filter Events</h2>
+      <form id="filtersForm" class="row gy-3 gx-3 align-items-center">
+          <div class="col-md-4">
+              <label for="search" class="form-label">Search</label>
+              <input type="text" class="form-control" id="search" placeholder="Search events...">
+          </div>
+          <div class="col-md-4">
+              <label for="eventType" class="form-label">Event Type</label>
+              <select class="form-select" id="eventType">
+                  <option value="">All Events</option>
+                  <option value="future">Future Events</option>
+                  <option value="past">Past Events</option>
+              </select>
+          </div>
+          <div class="col-md-4">
+              <label for="filterDate" class="form-label">Filter by Date</label>
+              <input type="date" class="form-control" id="filterDate">
+          </div>
+          <div class="col-12 text-end">
+              <button type="button" id="applyFilters" class="btn btn-primary">Apply Filters</button>
+              <button type="reset" id="resetFilters" class="btn btn-secondary">Reset</button>
+          </div>
+      </form>
     </div>
-    </div>
-      <div class="col-lg-12">
+      
+
+      <div id="futureEventsSection">
+        <div class="col-lg-12">
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title d-flex align-items-center gap-2">
@@ -283,76 +139,82 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       </h1>
                 </div>
             </div>
+        </div>
+        <div id="futureEventsContainer">
+        {% for event in future_events %}
+          <div class="col-lg-4">
+            <div class="card overflow-hidden hover-img">
+              <div class="position-relative">
+                <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
+                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img">
+                </a>
+                <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
+                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40; height: 40;" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
+              </div>
+              <div class="card-body p-4">
+                <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
+                <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
+                <div class="d-flex align-items-center gap-4">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
+                  </div>
+                  <div class="d-flex align-items-center fs-2 ms-auto">
+                    <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
       </div>
 
-      {% for event in future_events %}
-        <div class="col-lg-4">
-          <div class="card overflow-hidden hover-img">
-            <div class="position-relative">
-              <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img">
-              </a>
-              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-              <img src="{{ MEDIA_URL }}{{event.organized_by.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-            </div>
-            <div class="card-body p-4">
-              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-              <div class="d-flex align-items-center gap-4">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                </div>
-                <div class="d-flex align-items-center fs-2 ms-auto">
-                  <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+      
+
+      <div id="pastEventsSection">
+        <div class="col-lg-12">
+          <div class="card">
+              <div class="card-body">
+                  <h1 class="card-title d-flex align-items-center gap-2">
+                      Past events!
+                    </h1>
+              </div>
+          </div>
+        </div>
+        <div id="pastEventsContainer">
+        {% for event in past_events %}
+          <div class="col-lg-4">
+            <div class="card overflow-hidden hover-img">
+              <div class="position-relative">
+                <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
+                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50);">
+                </a>
+                <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
+                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
+              </div>
+              <div class="card-body p-4">
+                <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
+                <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
+                <div class="d-flex align-items-center gap-4">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
+                  </div>
+                  <div class="d-flex align-items-center fs-2 ms-auto">
+                    <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        {% endfor %}
         </div>
-      {% endfor %}
-
-      <div class="col-lg-12">
-        <div class="card">
-            <div class="card-body">
-                <h1 class="card-title d-flex align-items-center gap-2">
-                    Past events!
-                  </h1>
-            </div>
-        </div>
-    </div>
-
-      {% for event in past_events %}
-        <div class="col-lg-4">
-          <div class="card overflow-hidden hover-img">
-            <div class="position-relative">
-              <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50);">
-              </a>
-              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-              <img src="{{ MEDIA_URL }}{{event.organized_by.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-            </div>
-            <div class="card-body p-4">
-              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-              <div class="d-flex align-items-center gap-4">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                </div>
-                <div class="d-flex align-items-center fs-2 ms-auto">
-                  <i class="ti ti-point text-dark"></i>{{ event.event_date }}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-
+      </div>
 
     
     <!--<div class="col-lg-8">
@@ -495,4 +357,67 @@ data-sidebar-position="fixed" data-header-position="fixed">
 </div>
 </div>
 </div>
+<script>
+document.getElementById("applyFilters").addEventListener("click", function () {
+    const search = document.getElementById("search").value;
+    const eventType = document.getElementById("eventType").value;
+    const filterDate = document.getElementById("filterDate").value;
+
+    fetch(`/filter_events?search=${search}&event_type=${eventType}&filter_date=${filterDate}`)
+        .then(response => response.json())
+        .then(data => {
+            const futureEventsContainer = document.getElementById("futureEventsContainer");
+            const pastEventsContainer = document.getElementById("pastEventsContainer");
+            const futureEventsSection = document.getElementById("futureEventsSection");
+            const pastEventsSection = document.getElementById("pastEventsSection");
+
+            // Clear existing content
+            futureEventsContainer.innerHTML = "";
+            pastEventsContainer.innerHTML = "";
+
+            // Populate future events
+            if (data.future_events.length > 0) {
+                futureEventsSection.style.display = "block";
+                data.future_events.forEach(event => {
+                    const card = `
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${event.event_name}</h5>
+                                    <p class="card-text">${event.event_description}</p>
+                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    futureEventsContainer.innerHTML += card;
+                });
+            } else {
+                futureEventsSection.style.display = "none";
+            }
+
+            // Populate past events
+            if (data.past_events.length > 0) {
+                pastEventsSection.style.display = "block";
+                data.past_events.forEach(event => {
+                    const card = `
+                        <div class="col">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">${event.event_name}</h5>
+                                    <p class="card-text">${event.event_description}</p>
+                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    pastEventsContainer.innerHTML += card;
+                });
+            } else {
+                pastEventsSection.style.display = "none";
+            }
+        });
+});
+
+</script>
 {% endblock %}
