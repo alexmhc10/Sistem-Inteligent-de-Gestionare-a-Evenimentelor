@@ -146,6 +146,7 @@ class Guests(models.Model):
     def __str__(self):
         return f"{self.firstname} {self.lastname}"
     
+    
 class Menu(models.Model):
     item_name = models.CharField(max_length=80)
     item_cuisine = models.CharField(max_length=20)
@@ -154,7 +155,6 @@ class Menu(models.Model):
     item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
     def __str__(self):
         return self.item_name    
-    
 
 
 class Event(models.Model):
