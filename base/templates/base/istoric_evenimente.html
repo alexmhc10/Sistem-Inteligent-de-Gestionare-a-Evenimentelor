@@ -29,8 +29,12 @@
         color: #002B5B;
     }
 
-    .event-actions {
+    .event-details {
         margin-top: 10px;
+    }
+
+    .event-actions {
+        margin-top: 15px;
         display: flex;
         justify-content: space-between;
     }
@@ -57,24 +61,25 @@
     <div class="event-grid">
         {% for event in events %}
         <div class="event-card">
-            <img src="{{ event.image_url }}" alt="Event Image">
+            {% if event.image_url %}
+            <img src="" alt="Event Image" style="width:100%; height:auto; margin-bottom: 15px;">
+            {% endif %}
             <div class="event-details">
                 <div class="event-title">{{ event.event_name }}</div>
-                <div class="event-date">{{ event.event_date }}</div>
-                <div class="event-description">{{ event.event_description }}</div>
+                <div class="event-date"><strong>Date:</strong> {{ event.event_date }}</div>
+                <div class="event-description"><strong>Description:</strong> {{ event.event_description }}</div>
+                <div class="event-location"><strong>Location:</strong> {{ event.location }}</div>
             </div>
             <div class="event-actions">
                 <a href="">Feedback</a>
-                <button>Gallery</button>
-                <button>Details</button>
+                <a href="">Gallery</a>
+                <a href="">Details</a>
             </div>
         </div>
         {% empty %}
-        <p>No events found.</p>
+        <p style="text-align: center; font-size: 1.2rem;">No canceled events found.</p>
         {% endfor %}
     </div>
 </div>
 
 {% endblock %}
-
-

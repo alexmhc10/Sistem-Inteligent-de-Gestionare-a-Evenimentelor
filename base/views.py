@@ -23,6 +23,19 @@ from django.utils.timezone import localtime
 from django.utils import timezone
 from .models import Event, EventHistory
 
+@login_required(login_url='login')
+def cancel_event(request, event_id):
+    if request.method == "POST":
+        event = get_object_or_404(Event, id=event_id)
+        
+        event.is_canceled = True
+        event.save()
+        
+        messages.success(request, f'Event "{event.event_name}" has been canceled successfully.')
+        
+        return redirect('my_events') 
+       
+        return redirect('my_events')
 
 @login_required(login_url='login')
 def organizer_dashboard(request):
@@ -89,7 +102,7 @@ def feedback_event(request):
     return render(request, 'base/feedback_eveniment.html')
 @login_required(login_url='/login')
 def event_history(request):
-    events = EventHistory.objects.all() 
+    events = Event.objects.filter(is_canceled=True)  # Doar evenimentele anulate
     return render(request, 'base/istoric_evenimente.html', {'events': events})
 
 @login_required(login_url='/login')
@@ -126,7 +139,7 @@ def delete_task(request, task_id):
 @login_required(login_url='/login')
 def my_events(request):
    
-    events = Event.objects.all()
+    events = Event.objects.filter(is_canceled=False)  
     context = {
         'events': events,
     }

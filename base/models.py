@@ -169,6 +169,7 @@ class Event(models.Model):
     types = models.ManyToManyField(Type, blank=True)
     cost = models.IntegerField(default= 3000)
     updated_at = models.DateTimeField(auto_now=True)
+    is_canceled = models.BooleanField(default=False)  # Adăugat
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 

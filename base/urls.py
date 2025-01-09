@@ -32,6 +32,8 @@ urlpatterns = [
     path('my_events/', views.my_events, name='my_events'),
     path('event_builder/', views.event_builder, name='event_builder'),
     path('delete_event/<int:event_id>/', views.delete_event, name='delete_event'),
+    path('cancel_event/<int:event_id>/', views.cancel_event, name='cancel_event'),
+
 
     # Locații
     path('admin-view-location/<str:name>/', views.admin_view_locations, name="admin-view-location"),
