@@ -195,7 +195,6 @@
                    <!-- Table -->
                    <div class="table-responsive datatable-custom position-relative">
                       <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
-                         <div class="dt-buttons">          <button class="dt-button buttons-copy buttons-html5 d-none" tabindex="0" aria-controls="datatable" type="button"><span>Copy</span></button> <button class="dt-button buttons-excel buttons-html5 d-none" tabindex="0" aria-controls="datatable" type="button"><span>Excel</span></button> <button class="dt-button buttons-csv buttons-html5 d-none" tabindex="0" aria-controls="datatable" type="button"><span>CSV</span></button> <button class="dt-button buttons-pdf buttons-html5 d-none" tabindex="0" aria-controls="datatable" type="button"><span>PDF</span></button> <button class="dt-button buttons-print d-none" tabindex="0" aria-controls="datatable" type="button"><span>Print</span></button> </div>
                          <table id="datatable" class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table dataTable no-footer" data-hs-datatables-options="{
                             &quot;columnDefs&quot;: [{
                             &quot;targets&quot;: [0, 7],
@@ -216,7 +215,6 @@
                                <tr role="row">
                                   <th class="table-column-pe-0 sorting_disabled" rowspan="1" colspan="1" aria-label="
                                      " style="width: 44.8281px;">
-                                    
                                   </th>
                                   <th class="table-column-ps-0 sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending" style="width: 279.578px;">Name</th>
                                   <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 198.656px;">Position</th>
@@ -463,6 +461,7 @@
         </div>
     </div>
 </div>
+
 <script type="text/javascript">
     google.charts.load('current', { 'packages': ['corechart'] });
     google.charts.setOnLoadCallback(drawChart);
@@ -513,6 +512,16 @@ $('#editUserModal').on('show.bs.modal', function (event) {
 
 
 </script>
+<style>
+   .dataTables_length{
+      margin-left:85%;
+      margin-top:1vw;
+   }
+   .dataTables_filter{
+      margin-right:80%;
+      margin-top:-2vw ;
+   }
+</style>
 <script>
     $(document).ready(function () {
     $('#datatable').DataTable();
