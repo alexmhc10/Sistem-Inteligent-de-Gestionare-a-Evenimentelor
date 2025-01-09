@@ -33,6 +33,7 @@ urlpatterns = [
     path('event_builder/', views.event_builder, name='event_builder'),
     path('delete_event/<int:event_id>/', views.delete_event, name='delete_event'),
     path('cancel_event/<int:event_id>/', views.cancel_event, name='cancel_event'),
+    path('resume_event/<int:event_id>/', views.resume_event, name='resume_event'),
 
 
     # Locații

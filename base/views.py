@@ -23,6 +23,14 @@ from django.utils.timezone import localtime
 from django.utils import timezone
 from .models import Event, EventHistory
 
+def resume_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    if request.method == 'POST':
+        # Modifică câmpul `is_canceled` pentru a marca evenimentul ca activ
+        event.is_canceled = False  # Evenimentul nu mai este anulat
+        event.save()
+        messages.success(request, 'Event has been resumed and moved to "My Events".')
+    return redirect('event_history')  # Redirecționează înapoi la istoricul evenimentelor
 @login_required(login_url='login')
 def cancel_event(request, event_id):
     if request.method == "POST":
@@ -102,8 +110,9 @@ def feedback_event(request):
     return render(request, 'base/feedback_eveniment.html')
 @login_required(login_url='/login')
 def event_history(request):
-    events = Event.objects.filter(is_canceled=True)  # Doar evenimentele anulate
+    events = Event.objects.filter(is_canceled=True)
     return render(request, 'base/istoric_evenimente.html', {'events': events})
+
 
 @login_required(login_url='/login')
 def guest_list(request):
@@ -121,14 +130,6 @@ def vizualizare_eveniment(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'base/panou_eveniment.html', {'event': event})
 
-@login_required(login_url='/login')
-def my_events(request):
-   
-    events = Event.objects.all()
-    context = {
-        'events': events,
-    }
-    return render(request, 'base/my_events.html', context)
 
 @login_required(login_url='/login')
 def delete_task(request, task_id):
@@ -138,12 +139,8 @@ def delete_task(request, task_id):
 
 @login_required(login_url='/login')
 def my_events(request):
-   
-    events = Event.objects.filter(is_canceled=False)  
-    context = {
-        'events': events,
-    }
-    return render(request, 'base/my_events.html', context)
+    events = Event.objects.filter(is_canceled=False)
+    return render(request, 'base/my_events.html', {'events': events})
 
 # def task_manager_view(request):
 #     if request.method == 'POST':

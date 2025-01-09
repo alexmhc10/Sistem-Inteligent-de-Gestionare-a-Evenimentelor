@@ -71,9 +71,10 @@
                 <div class="event-location"><strong>Location:</strong> {{ event.location }}</div>
             </div>
             <div class="event-actions">
-                <a href="">Feedback</a>
-                <a href="">Gallery</a>
-                <a href="">Details</a>
+                <form action="{% url 'resume_event' event.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">Resume</button>
+                </form>
             </div>
         </div>
         {% empty %}
