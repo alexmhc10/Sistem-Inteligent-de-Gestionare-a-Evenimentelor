@@ -528,6 +528,18 @@ def homeAdmin(request):
     return render(request, 'base/home-admin.html', context)
 
 
+
+@login_required(login_url='login')
+def admin_settings(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    context = {
+
+    }  
+    return render(request, 'base/admin-account-settings.html', context)
+
+
+
 #pagina proba
 @login_required(login_url='login')
 def organizer_locations(request):
