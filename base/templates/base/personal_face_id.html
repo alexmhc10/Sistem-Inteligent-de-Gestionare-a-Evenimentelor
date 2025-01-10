@@ -50,7 +50,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">Managing tools</span>
             </li>
             <li class="sidebar-item">
-            <a class="sidebar-link" href="{% url 'personal_aranjament_invitati_event' event.id %}" aria-expanded="false">
+            <a class="sidebar-link" href="#" aria-expanded="false">
                 <span>
                 <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
                 </span>
@@ -58,7 +58,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </a>
             </li>
             <li class="sidebar-item">
-                <a class="sidebar-link" href="{% url 'personal_face_id' %}" aria-expanded="false">
+                <a class="sidebar-link" href="#" aria-expanded="false">
                 <span>
                     <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
                 </span>
@@ -158,7 +158,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <div class="col-lg-4">
                     <div class="card h-100 overflow-hidden">
                             <img src="{{ MEDIA_URL }}images/SeatingPlan.png" class="card-img" style="object-fit: cover; height: 100%; width: 100%; filter: brightness(50%);" alt="matdash-img">
-                        <a href="{% url 'personal_aranjament_invitati_event' event.id %}">
+                        <a href="#">
                             <div class="card-img-overlay d-flex justify-content-center align-items-center p-4 fs-5 glow-text">
                                 <h1 class="mb-auto mt-auto fw-semibold text-center" style="color: white;">Acces the seating plan for this event here</h1>
                                 <div class="d-flex align-items-center position-absolute bottom-0 mb-4 gap-4">
@@ -176,7 +176,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <div class="col-lg-4">
                 <div class="card h-100 overflow-hidden">
                     <img src="{{ MEDIA_URL }}images/FaceRecognition2.jpg" class="card-img" style="object-fit: cover; height: 100%; width: 100%;" alt="matdash-img">
-                <a href="{% url 'personal_face_id' %}">
+                <a href="#">
                 <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text p-4 fs-5">
                     <h1 class="mb-auto mt-auto fw-semibold text-center" style="color: white;">Acces the guest face recognition for their acces to the event</h1>
                     <div class="d-flex align-items-center position-absolute bottom-0 mb-4 gap-4">
@@ -227,6 +227,37 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
     </div>
+    <video id="video" autoplay></video>
+<button id="capture">Scan Face</button>
+<canvas id="canvas" style="display:none;"></canvas>
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const captureButton = document.getElementById('capture');
+
+    // Pornirea camerei
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => video.srcObject = stream)
+        .catch(err => console.error('Camera error: ', err));
+
+    // Capturarea imaginii
+    captureButton.addEventListener('click', () => {
+        const context = canvas.getContext('2d');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        // Trimiterea imaginii la server
+        const imageData = canvas.toDataURL('image/png');
+        fetch('/validate-face/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: imageData })
+        }).then(response => response.json())
+          .then(data => alert(data.message));
+    });
+</script>
+
         
         <!--<div class="col-lg-8">
         <div class="card">
@@ -371,13 +402,4 @@ data-sidebar-position="fixed" data-header-position="fixed">
 {% endblock content %}
 
 {% block javascript %}
-<script>
-    scrollToBottom();
-
-    const instance = new mdb.Datatable(document.getElementById('datatable'), data)
-
-document.getElementById('datatable-search-input').addEventListener('input', (e) => {
-  instance.search(e.target.value);
-});
-</script>
 {% endblock javascript %}

@@ -1028,6 +1028,9 @@ def personal_aranjament_invitati(request, pk=None):
         return render(request, 'base/personal_aranjament_invitati.html', context_default)
 
 
+def personal_face_id(request):
+    return render(request, 'base/personal_face_id.html')
+
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")
