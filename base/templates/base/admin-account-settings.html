@@ -93,7 +93,7 @@
                       <div class="col-lg-3">
                          <div class="navbar-expand-lg navbar-vertical mb-3 mb-lg-5">
                             <div id="navbarVerticalNavMenu" class="collapse navbar-collapse" style="">
-                               <ul id="navbarSettings" class="js-sticky-block js-scrollspy card card-navbar-nav nav nav-tabs nav-lg nav-vertical" data-hs-sticky-block-options="{
+                               <ul id="navbarSettings" class="js-sticky-block js-spy card card-navbar-nav nav nav-tabs nav-lg nav-vertical" data-hs-sticky-block-options="{
                                   &quot;parentSelector&quot;: &quot;#navbarVerticalNavMenu&quot;,
                                   &quot;targetSelector&quot;: &quot;#header&quot;,
                                   &quot;breakpoint&quot;: &quot;lg&quot;,
@@ -293,6 +293,7 @@
                                </div>
                             </div>
                            <form action="" method="POST">
+                              {% csrf_token %}
                               <input type="hidden" name="form_type" value="form_2">
                               <div id="emailSection" class="card">
                                  <div class="card-header">
@@ -353,7 +354,7 @@
                                  </div>
                               </div>
                            </form>
-                            <div id="recentDevicesSection" class="card">
+                            <div id="recentDevicesSection" class="card" style="height: auto;">
                                <div class="card-header">
                                   <h4 class="card-title">Recent devices</h4>
                                </div>
@@ -376,8 +377,15 @@
                                               <img style="width: 50px; height: 50px;"  class="avatar avatar-xss me-2" src="{{ MEDIA_URL}}logos/chrome.jpg" alt="Image Description"> Chrome on Windows
                                            </td>
                                            <td><i class="bi-laptop fs-3 me-2"></i> DESKTOP-EGKKMQC {% if device_name == "Windows PC" %} <span class="badge bg-soft-success text-success ms-1">Current</span> {% else %} {% endif %} </td>
-                                           <td>Maramureș, Romania</td>
-                                           <td>Now</td>
+                                           <td>Romania</td>
+                                           <td>{% if device_name == "Windows PC" %} now {% else %} {% for item in devices %} 
+                                             {% if item.device_name == device_name %}
+                                             {{ item.last_access_time }}
+                                             {% else %}
+                                             {% endif %}
+                                             {% endfor %}
+                                             {% endif %}
+                                           </td>
                                         </tr>
                                         <tr>
                                            <td class="align-items-center">
@@ -390,8 +398,15 @@
                                              {% endif %}
                                           </td>
                                            <td><i class="bi-phone fs-3 me-2"></i> {% if device_name == "iPhone" %} Iphone {% elif device_name == "Android Phone" %} Android  {% else %} Iphone {% endif %} {% if device_name == "iPhone" %} <span class="badge bg-soft-success text-success ms-1">Current</span> {% else %} {% endif %}</td>
-                                           <td>Maramureș, Romania</td>
-                                           <td>15, August 2020 15:08</td>
+                                           <td>Romania</td>
+                                           <td>{% if device_name == "iPhone" %} now {% else %} {% for item in devices %} 
+                                             {% if item.device_name == device_name %}
+                                             {{ item.last_access_time }}
+                                             {% else %}
+                                             {% endif %}
+                                             {% endfor %}
+                                             {% endif %}
+                                          </td>
                                         </tr>
                                      </tbody>
                                   </table>
@@ -399,47 +414,34 @@
                             </div>
                             <form action="" method="POST">
                               <input type="hidden" name="form_type" value="form_4">
-                              <div id="socialAccountsSection" class="card">
+                              {% csrf_token %}
+                              <div id="socialAccountsSection" class="card mt-5">
                                  <div class="card-header">
                                     <h4 class="card-title">Social accounts</h4>
                                  </div>
                                  <div class="card-body">
-                                       <div class="list-group list-group-lg list-group-flush list-group-no-gutters">
                                           <div class="list-group-item">
                                              <div class="d-flex">
                                                 <div class="flex-shrink-0">
                                                    <i class="bi-facebook list-group-icon"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                   <div class="row align-items-center">
+                                                   <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
-                                                         <h4 class="mb-0">Facebook</h4>
-                                                         <a class="fs-5" href="#">www.facebook.com/htmlstream</a>
-                                                      </div>
-                                                      <!-- End Col -->
-                                                      <div class="col-sm-auto">
-                                                         <a class="btn btn-white btn-sm" href="javascript:;">Disconnect</a>
-                                                      </div>
-                                                      <!-- End Col -->
-                                                   </div>
-                                                   <!-- End Row -->
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="list-group-item">
-                                             <div class="d-flex">
-                                                <div class="flex-shrink-0">
-                                                   <i class="bi-slack list-group-icon"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                   <div class="row align-items-center">
-                                                      <div class="col-sm mb-2 mb-sm-0">
-                                                         <h4 class="mb-0">Slack</h4>
-                                                         <p class="fs-5 text-body mb-0">Not connected</p>
+                                                         <h4 class="mb-0 ms-2">Facebook</h4>
+                                                         {% if request.user.profile.facebook == "" or request.user.profile.facebook is None %}
+                                                         <input id="add_link" name="facebook" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
-                                                         <a class="btn btn-white btn-sm" href="javascript:;">Connect</a>
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_facebook" >Connect</button>
                                                       </div>
+                                                      {% else %}
+                                                      <a class="fs-5" href="{{ request.user.profile.facebook }}">{{ request.user.profile.facebook }}</a>
+                                                      </div>
+                                                      <div class="col-sm-auto">
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_facebook" >Disconnect</button>
+                                                      </div>
+                                                      {% endif %}
                                                    </div>
                                                 </div>
                                              </div>
@@ -450,32 +452,47 @@
                                                    <i class="bi-linkedin list-group-icon"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                   <div class="row align-items-center">
+                                                   <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
-                                                         <h4 class="mb-0">Linkedin</h4>
-                                                         <a class="fs-5" href="#">www.linkedin.com/htmlstream</a>
+                                                         <h4 class="mb-0 ms-2">Linkedin</h4>
+                                                         {% if request.user.profile.work_link is None or request.user.profile.work_link == "" %}
+                                                         <input id="add_link" name="linkedin" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
-                                                         <a class="btn btn-white btn-sm" href="javascript:;">Disconnect</a>
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_linkedin" >Connect</button>
                                                       </div>
+                                                      {% else %}
+                                                      <a class="fs-5" href="{{ request.user.profile.work_link }}">{{ request.user.profile.work_link }}</a>
+                                                      </div>
+                                                      <div class="col-sm-auto">
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_linkedin" >Disconnect</button>
+                                                      </div>
+                                                      {% endif %}
                                                    </div>
                                                 </div>
                                              </div>
-                                          </div>
                                           <div class="list-group-item">
                                              <div class="d-flex">
                                                 <div class="flex-shrink-0">
                                                    <i class="bi-google list-group-icon"></i>
                                                 </div>
                                                 <div class="flex-grow-1">
-                                                   <div class="row align-items-center">
+                                                   <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
-                                                         <h4 class="mb-0">Google</h4>
-                                                         <p class="fs-5 text-body mb-0">Not connected</p>
+                                                         <h4 class="mb-0 ms-2">Google</h4>
+                                                         {% if request.user.profile.google_link is None or request.user.profile.google_link == "" %}
+                                                         <input id="add_link" name="google" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
-                                                         <a class="btn btn-white btn-sm" href="javascript:;">Connect</a>
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_google" >Connect</button>
                                                       </div>
+                                                      {% else %}
+                                                      <a class="fs-5" href="{{ request.user.profile.google_link }}">{{ request.user.profile.google_link }}</a>
+                                                      </div>
+                                                      <div class="col-sm-auto">
+                                                         <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_google">Disconnect</button>
+                                                      </div>
+                                                      {% endif %}
                                                    </div>
                                                 </div>
                                              </div>
@@ -485,8 +502,9 @@
                               </div>
                             </form>
                             <form action="" method="POST">
+                              {% csrf_token %}
                               <input type="hidden" name="form_type" value="form_5">
-                              <div id="deleteAccountSection" class="card">
+                              <div id="deleteAccountSection" class="card mt-5">
                                  <div class="card-header">
                                     <h4 class="card-title">Delete your account</h4>
                                  </div>
@@ -517,6 +535,9 @@
     </div>
 </div>
 <style>
+   #add_link:focus{
+      border:1px solid rgb(41, 50, 122);
+   }
     #navbarVerticalNavMenu{
         top:50px;
         padding:20px;
@@ -555,7 +576,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const sectionTop = section.offsetTop;
       const sectionHeight = section.offsetHeight;
 
-      if (window.scrollY >= sectionTop - sectionHeight / 3) {
+      if (window.scrollY >= sectionTop - sectionHeight / 2) {
         currentSection = section.getAttribute("id");
       }
     });

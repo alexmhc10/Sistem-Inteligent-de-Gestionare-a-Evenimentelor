@@ -105,9 +105,21 @@ class Profile(models.Model):
     location = models.CharField(null=True, blank=True,max_length=60)
     street = models.CharField(null=True, blank=True,max_length=100)
     zip_code = models.CharField(null=True, blank=True,max_length=10)
+    facebook = models.CharField(null=True, blank=True,max_length=100)
+    work_link = models.CharField(null=True, blank=True,max_length=100)
+    google_link = models.CharField(null=True, blank=True,max_length=100)
     def __str__(self):
         return self.user.username
 
+
+class DeviceAccess(models.Model):
+    device_name = models.CharField(max_length=255)
+    os_name = models.CharField(max_length=255)
+    last_access_time = models.DateTimeField(auto_now=True)
+    user_agent = models.CharField(max_length=512)
+
+    def __str__(self):
+        return f"{self.device_name} running {self.os_name} at {self.last_access_time}"
 
 
 class Review(models.Model):

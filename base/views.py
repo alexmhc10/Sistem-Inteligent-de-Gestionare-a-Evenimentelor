@@ -552,7 +552,11 @@ def admin_settings(request):
     elif "Windows" in user_agent_string:
         device_name = "Windows PC"
         os_name = "Windows"
-
+    device_access, created = DeviceAccess.objects.update_or_create(
+        device_name=device_name,
+        os_name=os_name,
+        defaults={'last_access_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S'), 'user_agent': user_agent_string},
+    )
     ip_address = request.META.get('REMOTE_ADDR', '')
     print("Date: ",request.POST,"\n")
     user = request.user
@@ -578,16 +582,46 @@ def admin_settings(request):
             user.profile.email = email
             user.username = username
             user.profile.username = username
-            user.profile.phone = phone
+            user.profile.number = phone
             user.profile.location = location
             user.profile.street = address
             user.profile.zip_code = zipcode
             user.save()
             user.profile.save()
             return redirect('admin_account_settings')
-
-
-
+        elif form_type == 'form_2':
+            email = request.POST.get('newEmail')
+            user.email = email
+            user.profile.email = email
+            user.save()
+            user.profile.save()
+            return redirect('admin_account_settings')
+        elif form_type == 'form_4':
+            action = request.POST.get('action')
+            linkedin = request.POST.get('linkedin')
+            facebook = request.POST.get('facebook')
+            google = request.POST.get('google')
+            if action == "connect_linkedin":
+                user.profile.work_link = linkedin
+            if action == "disconnect_linkedin":
+                user.profile.work_link = ""
+            if action == "connect_google":
+                user.profile.google_link = google
+            if action == "disconnect_google":
+                user.profile.google_link = ""
+            if action == "connect_facebook":
+                user.profile.facebook = facebook
+            if action == "disconnect_facebook":
+                user.profile.facebook = ""
+            user.profile.save()
+            return redirect('admin_account_settings')
+        elif form_type == 'form_5':
+            request.user.delete()
+            request.user.profile.delete()
+            return redirect('')
+    devices = DeviceAccess.objects.all()
+    for device in devices:
+        print("Dispozitiv: ", device.device_name, device.last_access_time)
     print(f"Accessed at {access_time} from IP {ip_address} with {device_name} running {os_name}")
     print(device_name)
     context = {
@@ -595,8 +629,8 @@ def admin_settings(request):
         'device_name': device_name,  
         'os_name': os_name,
         'ip_address': ip_address,
+        'devices':devices
     }
-
     return render(request, 'base/admin-account-settings.html', context)
 
 
