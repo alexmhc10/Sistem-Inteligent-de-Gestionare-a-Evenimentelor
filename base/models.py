@@ -100,6 +100,11 @@ class Profile(models.Model):
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
     age = models.IntegerField(default=20)
+    first_name = models.CharField(null=True, blank=True,max_length=15)
+    last_name = models.CharField(null=True, blank=True,max_length=15)
+    location = models.CharField(null=True, blank=True,max_length=60)
+    street = models.CharField(null=True, blank=True,max_length=100)
+    zip_code = models.CharField(null=True, blank=True,max_length=10)
     def __str__(self):
         return self.user.username
 

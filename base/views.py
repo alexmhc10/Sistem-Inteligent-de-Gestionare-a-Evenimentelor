@@ -22,6 +22,10 @@ from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
 from .models import Event, EventHistory
+import socket
+from user_agents import parse
+from device_detector import DeviceDetector
+
 
 def resume_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -533,9 +537,66 @@ def homeAdmin(request):
 def admin_settings(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    context = {
+    
+    access_time = datetime.now()
 
-    }  
+    user_agent_string = request.META.get('HTTP_USER_AGENT', '')
+    device_name = "Unknown"
+    os_name = "Unknown"
+    if "iPhone" in user_agent_string:
+        device_name = "iPhone"
+        os_name = "iOS"
+    elif "Android" in user_agent_string:
+        device_name = "Android Phone"
+        os_name = "Android"
+    elif "Windows" in user_agent_string:
+        device_name = "Windows PC"
+        os_name = "Windows"
+
+    ip_address = request.META.get('REMOTE_ADDR', '')
+    print("Date: ",request.POST,"\n")
+    user = request.user
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type', '')
+        if form_type == 'form_1':
+            profile_photo = request.FILES.get('profile_photo')
+            if profile_photo:
+                user.profile.photo = profile_photo
+            firstname = request.POST.get('firstName')
+            lastname = request.POST.get('lastName')
+            email = request.POST.get('email')
+            username = request.POST.get('username')
+            phone = request.POST.get('phone')
+            location = request.POST.get('location')
+            address = request.POST.get('address')
+            zipcode = request.POST.get('zipCode')
+            user.first_name = firstname
+            user.profile.first_name = firstname
+            user.last_name = lastname
+            user.profile.last_name = lastname
+            user.email = email
+            user.profile.email = email
+            user.username = username
+            user.profile.username = username
+            user.profile.phone = phone
+            user.profile.location = location
+            user.profile.street = address
+            user.profile.zip_code = zipcode
+            user.save()
+            user.profile.save()
+            return redirect('admin_account_settings')
+
+
+
+    print(f"Accessed at {access_time} from IP {ip_address} with {device_name} running {os_name}")
+    print(device_name)
+    context = {
+        'access_time': access_time,
+        'device_name': device_name,  
+        'os_name': os_name,
+        'ip_address': ip_address,
+    }
+
     return render(request, 'base/admin-account-settings.html', context)
 
 
