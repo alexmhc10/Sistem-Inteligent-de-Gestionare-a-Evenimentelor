@@ -16896,8 +16896,8 @@ ul {
 }
 
 .card-hover {
-  -webkit-transition: 0.2s ease-in;
-  transition: 0.2s ease-in;
+  -webkit-transition: 0 0 0.2 0.2s ease-in;
+  transition: 1s ease-in;
 }
 .card-hover:hover {
   -webkit-transform: translate3d(0px, -5px, 0px);

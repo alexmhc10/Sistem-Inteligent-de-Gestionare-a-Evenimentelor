@@ -77,7 +77,7 @@ class Profile(models.Model):
     google_link = models.CharField(null=True, blank=True,max_length=100)
     USER_TYPE_CHOICES = (
         ('admin', 'Admin'),
-        ('oraganizer', 'Organizer'),
+        ('organizer', 'Organizer'),
         ('guest', 'Guest'),
         ('staff', 'Staff')
     )
