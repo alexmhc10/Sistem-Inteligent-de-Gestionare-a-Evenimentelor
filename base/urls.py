@@ -71,6 +71,9 @@ urlpatterns = [
     path('filter_events', views.filter_events, name='filter_events'),
     path('personal_face_id/', views.personal_face_id, name='personal_face_id'),
 
+    #Guest
+    path('guest_home', views.guest_home, name='guest_home'),
+
     ##organizator
     path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),

@@ -25,6 +25,7 @@ from .models import Event, EventHistory
 import socket
 from user_agents import parse
 from device_detector import DeviceDetector
+from .decorators import user_is_organizer, user_is_staff, user_is_guest
 
 
 def resume_event(request, event_id):
@@ -35,6 +36,8 @@ def resume_event(request, event_id):
         event.save()
         messages.success(request, 'Event has been resumed and moved to "My Events".')
     return redirect('event_history')  # Redirecționează înapoi la istoricul evenimentelor
+
+
 @login_required(login_url='login')
 def cancel_event(request, event_id):
     if request.method == "POST":
@@ -47,9 +50,9 @@ def cancel_event(request, event_id):
         
         return redirect('my_events') 
        
-        return redirect('my_events')
 
 @login_required(login_url='login')
+@user_is_organizer
 def organizer_dashboard(request):
 
     events = Event.objects.filter(organized_by=request.user)
@@ -67,7 +70,8 @@ def organizer_dashboard(request):
         ]
     }
     return render(request, 'base/organizator-dashboard.html', context)
-#stergere eveniment
+
+
 @login_required(login_url='/login')
 def delete_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -206,17 +210,19 @@ def loginPage(request):
         password = request.POST.get('password')
         print(f"Attempting login with username: {username}")
 
-        # Încearcă autentificarea
         user = authenticate(request, username=username, password=password)
         if user is not None:
             print(f"Authentication successful for user: {user.username}")
             login(request, user)
-            if hasattr(user, 'is_superuser') and user.is_superuser:  # Utilizator standard
+            if hasattr(user, 'is_superuser') and user.is_superuser:
                 print(f"Redirecting superuser {user.username} to admin home.")
                 return redirect('home-admin')
-            elif isinstance(user, PersonalLocation):  # PersonalLocation
-                print(f"Redirecting user {user.username} from PersonalLocation to personal home.")
+            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'staff':  
+                print(f"Redirecting user {user.username} to personal home.")
                 return redirect('personal_eveniment_home')
+            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'guest':
+                print(f"Redirecting user {user.username} to guest home.")
+                return redirect('guest_home')
             else:
                 print(f"Redirecting standard user {user.username} to home.")
                 return redirect('home')
@@ -1023,6 +1029,7 @@ def deleteReview(request, pk):
         return redirect('location', pk=location_name)
     return render(request, 'base/delete.html', {'obj': review})
 
+
 @login_required(login_url='/login')
 def deleteUser(request, pk):
     if not request.user.is_superuser:
@@ -1034,27 +1041,22 @@ def deleteUser(request, pk):
     return render(request, 'base/delete.html', {
         'obj': user})
 
-def invite_form(request,event_id,guest_id):
-    event = Event.objects.get(id=event_id)
-    guest = Guests.objects.first()
-    context = {
-        'guest' : guest,
-        'event' : event
-    }
-    return render(request, 'base/invite_form.html', context)
 
-
+@login_required(login_url='/login')
+@user_is_staff
 def personal_eveniment_home(request):
     current_date = datetime.today()
     past_events = Event.objects.filter(event_date__lt = current_date)
     future_events = Event.objects.filter(event_date__gte = current_date)
     profiles = Profile.objects.all()
     locations = Location.objects.all()
+    user = request.user
     context = {
         'future_events': future_events,
         'past_events': past_events,
         'locations': locations,
-        'profiles': profiles
+        'profiles': profiles,
+        'logged_user': user
         }
 
     return render(request, 'base/personal_eveniment_home.html', context)
@@ -1111,7 +1113,8 @@ def filter_events(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
-
+@login_required(login_url='/login')
+@user_is_staff
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
     context = {
@@ -1119,7 +1122,8 @@ def personal_vizualizare_eveniment(request, pk):
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 
-
+@login_required(login_url='/login')
+@user_is_staff
 def personal_aranjament_invitati(request, pk=None):
     events = Event.objects.first()
     context_default = {
@@ -1135,9 +1139,28 @@ def personal_aranjament_invitati(request, pk=None):
         return render(request, 'base/personal_aranjament_invitati.html', context_default)
 
 
+@login_required(login_url='/login')
+@user_is_staff
 def personal_face_id(request):
     return render(request, 'base/personal_face_id.html')
 
+
+@login_required(login_url='/login')
+@user_is_guest
+def guest_home(request):
+    return render(request, 'base/guest_home.html')
+
+
+@login_required(login_url='/login')
+@user_is_guest
+def invite_form(request,event_id,guest_id):
+    event = Event.objects.get(id=event_id)
+    guest = Guests.objects.first()
+    context = {
+        'guest' : guest,
+        'event' : event
+    }
+    return render(request, 'base/invite_form.html', context)
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")

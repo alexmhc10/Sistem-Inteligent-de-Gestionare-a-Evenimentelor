@@ -4,6 +4,8 @@ from django.utils.timezone import now
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
 
 #model pentru noua baza de date
 class EventHistory(models.Model):
@@ -55,41 +57,6 @@ class Location(models.Model):
         return self.name
 
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
-
-class PersonalLocationManager(BaseUserManager):
-    def create_user(self, username, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, username, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_staff', True)
-        extra_fields.setdefault('is_superuser', True)
-        return self.create_user(username, email, password, **extra_fields)
-
-class PersonalLocation(AbstractBaseUser):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(unique=True)
-    location = models.ForeignKey('Location', on_delete=models.CASCADE, null=True)
-
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
-
-    objects = PersonalLocationManager()
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
-
-    def __str__(self):
-        return self.username
-
-
-
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  
     username = models.CharField(max_length=150, unique=True)
@@ -108,6 +75,17 @@ class Profile(models.Model):
     facebook = models.CharField(null=True, blank=True,max_length=100)
     work_link = models.CharField(null=True, blank=True,max_length=100)
     google_link = models.CharField(null=True, blank=True,max_length=100)
+    USER_TYPE_CHOICES = (
+        ('admin', 'Admin'),
+        ('oraganizer', 'Organizer'),
+        ('guest', 'Guest'),
+        ('staff', 'Staff')
+    )
+    user_type = models.CharField(
+        max_length=20,
+        choices=USER_TYPE_CHOICES,
+        default='guest'
+    )
     def __str__(self):
         return self.user.username
 
@@ -150,18 +128,12 @@ class Guests(models.Model):
         ('M', 'Masculin'),
         ('F', 'Feminin')
         ]
-    firstname = models.CharField(max_length=20)
-    lastname = models.CharField(max_length=20)
-    email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
     vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)
-
-    def __str__(self):
-        return f"{self.firstname} {self.lastname}"
     
     
 class Menu(models.Model):
