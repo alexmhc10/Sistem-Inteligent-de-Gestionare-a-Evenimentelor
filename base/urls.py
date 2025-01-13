@@ -73,6 +73,7 @@ urlpatterns = [
 
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
+    path('guest_profile', views.guest_profile, name='guest_profile'),
 
     ##organizator
     path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),

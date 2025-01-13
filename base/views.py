@@ -1147,6 +1147,12 @@ def personal_face_id(request):
 
 @login_required(login_url='/login')
 @user_is_guest
+def guest_profile(request):
+    return render(request, 'base/guest_profile.html')
+
+
+@login_required(login_url='/login')
+@user_is_guest
 def guest_home(request):
     return render(request, 'base/guest_home.html')
 
