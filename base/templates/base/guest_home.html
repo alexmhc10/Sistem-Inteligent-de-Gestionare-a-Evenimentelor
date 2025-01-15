@@ -19,14 +19,14 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
       </div>
       <!-- Sidebar navigation-->
-      <!-- <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+      <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
         <ul id="sidebarnav">
           <li class="nav-small-cap">
             <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
             <span class="hide-menu">Home</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link active" href="{% url 'personal_eveniment_home' %}  " aria-expanded="false">
+            <a class="sidebar-link active" href="" aria-expanded="false">
               <span>
                 <iconify-icon icon="solar:home-smile-bold-duotone" class="fs-6"></iconify-icon>
               </span>
@@ -35,7 +35,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </li>
           <li class="nav-small-cap">
             <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
-            <span class="hide-menu">Managing tools</span>
+            <span class="hide-menu">About you</span>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link" href="{% url 'personal_aranjament_invitati' %}" aria-expanded="false">
@@ -46,7 +46,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </a>
           </li>
         </ul>
-      </nav> -->
+      </nav>
       <!-- End Sidebar navigation -->
     </div>
     <!-- End Sidebar scroll-->
@@ -79,13 +79,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                 <div class="message-body">
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                  <a href="{% url 'guest_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
                     <i class="ti ti-user fs-6"></i>
                     <p class="mb-0 fs-3">My Profile</p>
-                  </a>
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                    <i class="ti ti-mail fs-6"></i>
-                    <p class="mb-0 fs-3">My Account</p>
                   </a>
                   <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                     <i class="ti ti-list-check fs-6"></i>
@@ -105,7 +101,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
       <div class="title">
           <h1 class="h1">
-              Bine ai venit in contul tau {{ request.user.username }} !
+              Welcome to your account {{ request.user.username }} !
           </h1>
       </div>
       <hr>
