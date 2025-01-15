@@ -436,10 +436,46 @@ def users(request):
     
     awaiting_profiles = Profile.objects.filter(approved=False)
     waiting_count = Profile.objects.filter(approved=False).count()
-    profiles = Profile.objects.filter(approved=True).exclude(user__username="Darius")
-    users = User.objects.all()
+    users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    if request.method == 'POST':
+        nr_form = request.POST.get('nr_form')
+        if nr_form == "form_1":
+            id = request.POST.get('user_id')
+            try:
+                user = User.objects.get(id=id)
+            except User.DoesNotExist:
+                return HttpResponse("User not found.")
+            picture = request.FILES.get('profile_picture')
+            first_name = request.POST.get('editFirstNameModal')
+            last_name = request.POST.get('editLastNameModal')
+            email = request.POST.get('editEmailModal')
+            username = request.POST.get('editUsernameModal')
+            phone = request.POST.get('phone')
+
+            if user.profile:
+                if picture:
+                    user.profile.photo = picture
+                user.profile.first_name = first_name
+                user.profile.last_name = last_name
+                user.profile.email = email
+                user.profile.phone = phone
+                user.profile.save()
+
+            user.first_name = first_name
+            user.last_name = last_name
+            user.email = email
+            user.username = username
+            user.save()
+
+            return redirect('users')
+
+    profiles = Profile.objects.all()
+    print("Profile: ",profiles)
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
+    non_acc = Profile.objects.filter(approved=False)
     context = {
+        'non_acc':non_acc,
+        'user_data':user_data,
         'chartusers': json.dumps(user_data),
         'waiting_count':waiting_count,
         'users':users,

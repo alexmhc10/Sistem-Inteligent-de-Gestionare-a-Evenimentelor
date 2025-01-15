@@ -56,9 +56,11 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+def get_default_user():
+    return User.objects.get(username='defaultuser')
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
@@ -75,6 +77,8 @@ class Profile(models.Model):
     facebook = models.CharField(null=True, blank=True,max_length=100)
     work_link = models.CharField(null=True, blank=True,max_length=100)
     google_link = models.CharField(null=True, blank=True,max_length=100)
+    country = models.CharField(null=True, blank=True,max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
     USER_TYPE_CHOICES = (
         ('admin', 'Admin'),
         ('organizer', 'Organizer'),
