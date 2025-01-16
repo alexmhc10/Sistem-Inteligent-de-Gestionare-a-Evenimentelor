@@ -451,7 +451,6 @@ def users(request):
             email = request.POST.get('editEmailModal')
             username = request.POST.get('editUsernameModal')
             phone = request.POST.get('phone')
-
             if user.profile:
                 if picture:
                     user.profile.photo = picture
@@ -460,17 +459,29 @@ def users(request):
                 user.profile.email = email
                 user.profile.phone = phone
                 user.profile.save()
-
             user.first_name = first_name
             user.last_name = last_name
             user.email = email
             user.username = username
             user.save()
-
             return redirect('users')
-
+        if nr_form == "form_3":
+            id = request.POST.get('profile_id')
+            profile = Profile.objects.get(id=id)
+            if request.POST.get('action') == "accept":
+                user = User.objects.create_user(
+                    username=profile.username,
+                    password=profile.password,
+                    email=profile.email
+                )
+                profile.user = user 
+                profile.approved = True
+                profile.save()
+                return redirect('users')
+            if request.POST.get('action') == "reject":
+                profile.delete()
+                return redirect('users')
     profiles = Profile.objects.all()
-    print("Profile: ",profiles)
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
     context = {

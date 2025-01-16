@@ -172,58 +172,63 @@
                             </thead>
                             <tbody>
                               {% for profile in non_acc %}
-                              <tr role="row" class="{% if user.id|divisibleby:2 %} even {% else %} odd {% endif %}">
-                                <td class="table-column-pe-0">
-                                </td>
-                                <td class="table-column-ps-0">
-                                   <a class="d-flex align-items-center" href="{% url 'view_user_admin' profile.username %}">
-                                      <div class="avatar avatar-circle">
-                                         <img class="avatar-img" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50px;" src="{{ profile.photo.url }}" alt="Image Description">
-                                      </div>
-                                      <div class="ms-3">
-                                         <span class="d-block h5 text-inherit mb-0">{{ profile.first_name }} {{ profile.last_name }} <i class="bi-patch-check-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Top endorsed" data-bs-original-title="Top endorsed"></i></span>
-                                         <span class="d-block fs-5 text-body">{{ profile.email }}</span>
-                                      </div>
-                                   </a>
-                                </td>
-                                <td>{{ profile.country }}</td>
-                                <td>
-                                   <span class="legend-indicator bg-success"></span>
-                                   N/A
-                                </td>
-                                <td>
-                                   <div class="d-flex align-items-center">
-                                      <span class="fs-5 me-2">
-                                       N/A   
-                                    </span>
-                                   </div>
-                                </td>
-                                <td class="sorting_1">{{ profile.created_at.date }}</td>
-                                <td>
-                                 <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#viewUserModal"
-                                 data-id ="{{ profile.id }}"
-                                 data-username="{{ profile.username }}"
-                                 data-first-name="{{ profile.first_name }}"
-                                 data-last-name="{{ profile.last_name }}"
-                                 data-email="{{ profile.email }}"
-                                 data-number="{{ profile.number }}"
-                                 data-photo="{{ profile.photo.url }}"
-                                 data-description="{{ profile.description }}">
-                                 <i class="bi-pencil-fill me-1"></i> View
-                             </button>
-                             
-                                <button type="submit" class="btn btn-white btn-sm">
-                                 <i class="bi bi-check-circle"></i> Accept
+                              
+                                 <tr role="row" class="{% if user.id|divisibleby:2 %} even {% else %} odd {% endif %}">
+                                    <td class="table-column-pe-0">
+                                    </td>
+                                    <td class="table-column-ps-0">
+                                       <a class="d-flex align-items-center" href="{% url 'view_user_admin' profile.username %}">
+                                          <div class="avatar avatar-circle">
+                                             <img class="avatar-img" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50px;" src="{{ profile.photo.url }}" alt="Image Description">
+                                          </div>
+                                          <div class="ms-3">
+                                             <span class="d-block h5 text-inherit mb-0">{{ profile.first_name }} {{ profile.last_name }} <i class="bi-patch-check-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Top endorsed" data-bs-original-title="Top endorsed"></i></span>
+                                             <span class="d-block fs-5 text-body">{{ profile.email }}</span>
+                                          </div>
+                                       </a>
+                                    </td>
+                                    <td>{{ profile.country }}</td>
+                                    <td>
+                                       <span class="legend-indicator bg-success"></span>
+                                       N/A
+                                    </td>
+                                    <td>
+                                       <div class="d-flex align-items-center">
+                                          <span class="fs-5 me-2">
+                                           N/A   
+                                        </span>
+                                       </div>
+                                    </td>
+                                    <td class="sorting_1">{{ profile.created_at.date }}</td>
+                                    <td>
+                                       <form action="" method="POST">
+                                       <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                                       <input type="hidden" name="nr_form" value="form_3">
+                                       {% csrf_token %}
+                                     <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#viewUserModal"
+                                     data-id ="{{ profile.id }}"
+                                     data-username="{{ profile.username }}"
+                                     data-first-name="{{ profile.first_name }}"
+                                     data-last-name="{{ profile.last_name }}"
+                                     data-email="{{ profile.email }}"
+                                     data-number="{{ profile.number }}"
+                                     data-photo="{{ profile.photo.url }}"
+                                     data-description="{{ profile.description }}">
+                                     <i class="bi-pencil-fill me-1"></i> View
+                                 </button>
+                                 <button type="submit" name="action" value="accept" class="btn btn-white btn-sm">
+                                    <i class="bi bi-check-circle"></i> Accept
                                 </button>
-                              <button type="submit" class="btn btn-white btn-sm">
+                                <button type="submit" name="action" value="reject" class="btn btn-white btn-sm">
                                  <i class="bi bi-x-circle-fill"></i> Reject
-                              </button>
-                                </td>
-                                <td>
-                                   <span class="sorting_1"></span>
-                                   Not Accepted
-                                </td>
-                             </tr>
+                             </button>
+                                 </form>
+                                    </td>
+                                    <td>
+                                       <span class="sorting_1"></span>
+                                       Not Accepted
+                                    </td>
+                                 </tr>
                              {% endfor %}
                                {% for user in users %}
                                <tr role="row" class="{% if user.id|divisibleby:2 %} even {% else %} odd {% endif %}">
@@ -571,7 +576,7 @@
                                    </div>
                                 </div>
                                  <div class="row mb-4">
-                                    <label for="editPhoneLabel" class="col-sm-3 col-form-label form-label"></label>
+                                    <label for="editPhoneLabel" class="col-sm-3 col-form-label form-label">Phone:</label>
                                     <div class="col-sm-9">
                                        <div class="input-group input-group-sm-vertical">
                                           <input type="text" class="js-masked-input form-control" name="phone" id="editPhoneLabel" placeholder="+x(xxx)xxx-xx-xx" aria-label="+x(xxx)xxx-xx-xx"  data-hs-mask-options="{
@@ -579,6 +584,13 @@
                                              }">
                                        </div>
                                     </div>
+                                 </div>
+                                 <div class="row mb-4">
+                                    <label for="editDescriptionModal" class="col-sm-3 col-form-label form-label">Description:</label>
+                                    <div class="col-sm-9">
+                                        <textarea class="form-control" name="editDescriptionModal" id="editDescriptionModal" placeholder="Description" aria-label="Description"></textarea>
+                                    </div>
+                                    
                                  </div>
                                  <div class="d-flex justify-content-end">
                                     <div class="d-flex gap-3">
@@ -706,7 +718,7 @@ $('#editUserModal').on('show.bs.modal', function (event) {
 
 $('#viewUserModal').on('show.bs.modal', function (event) {
     const button = event.relatedTarget;
-
+    const description = button.dataset.description;
     const username = button.dataset.username;
     const id = button.dataset.id;
     const firstName = button.dataset.firstName;
@@ -722,7 +734,8 @@ $('#viewUserModal').on('show.bs.modal', function (event) {
         lastName: lastName,
         email: email,
         number: number,
-        photo: photo
+        photo: photo,
+        description:description
     });
 
     document.querySelector('#viewUserModal #user_id_1').value = id;
@@ -731,6 +744,7 @@ $('#viewUserModal').on('show.bs.modal', function (event) {
     document.querySelector('#viewUserModal #editFirstNameModalLabel').value = firstName;
     document.querySelector('#viewUserModal #editLastNameModalLabel').value = lastName;  
     document.querySelector('#viewUserModal #editUsernameModal').value =username;  
+    document.querySelector('#viewUserModal #editDescriptionModal').value =description;  
     document.querySelector('#viewUserModal #editEmailModalLabel').value = email;
     document.querySelector('#viewUserModal #editPhoneLabel').value = number;
 });
