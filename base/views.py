@@ -245,6 +245,7 @@ def registerPage(request):
         if form.is_valid():
             profile = form.save(commit=False)  
             profile.approved = False
+            profile.user_type = "Organizer"
             profile.save()
             messages.success(request, "Profile submitted for approval.")
             return redirect('login')
