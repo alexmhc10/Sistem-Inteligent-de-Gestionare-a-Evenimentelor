@@ -199,12 +199,11 @@ def carousel_view(request):
         form = EventForm()
     return render(request, 'base/carousel-imagini.html', {'form': form})
 
-
 def loginPage(request):
     if request.user.is_authenticated:
         print(f"User {request.user.username} is already authenticated, logging out.")
         logout(request)
-
+    next_url = request.GET.get('next', '/')
     page = 'login'
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -213,20 +212,25 @@ def loginPage(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            profile = user.profile_set.first()
+            print("Tip: ", profile.user_type)
+            print("Profil logat: ", profile)
             print(f"Authentication successful for user: {user.username}")
             login(request, user)
-            if hasattr(user, 'is_superuser') and user.is_superuser:
-                print(f"Redirecting superuser {user.username} to admin home.")
-                return redirect('home-admin')
-            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'staff':  
+            if user.is_superuser:
+                if next_url != "" and next_url != '/':
+                    return redirect(next_url)
+                else:
+                    return redirect('home-admin')
+            elif profile.user_type == 'staff':
                 print(f"Redirecting user {user.username} to personal home.")
-                return redirect('personal_eveniment_home')
-            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'guest':
-                print(f"Redirecting user {user.username} to guest home.")
-                return redirect('guest_home')
+                return HttpResponseRedirect(reverse('personal_eveniment_home'))  
+            elif profile.user_type == 'organizer':
+                print(f"Redirecting user {user.username} to organizer home.")
+                return HttpResponseRedirect(reverse('organizer_dashboard'))  
             else:
                 print(f"Redirecting standard user {user.username} to home.")
-                return redirect('home')
+                return HttpResponseRedirect(reverse('home'))  
         else:
             print(f"Authentication failed for username: {username}")
             messages.error(request, "Invalid credentials")
@@ -235,7 +239,6 @@ def loginPage(request):
     print("Rendering login page.")
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
-
 
 
 
@@ -463,6 +466,7 @@ def users(request):
                 profile.email = email
                 profile.phone = phone
                 profile.save()
+                updated = True
             user.first_name = first_name
             user.last_name = last_name
             user.email = email
