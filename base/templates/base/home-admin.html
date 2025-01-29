@@ -45,7 +45,7 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
@@ -718,7 +718,7 @@
                                           <td>
                                              <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                   <img src="{{ item.organizer.profile.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
+                                                   <img src="{{ item.organizer.profile_set.first.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
                                                 </div>
                                                 <div>
                                                    <h5 class="fs-14 my-1 fw-medium">

@@ -46,7 +46,7 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
@@ -79,7 +79,7 @@
                              style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%);">
                             <img class="avatar-img" 
                                  style="width: 100px; height: 100px; border-radius: 50%;" 
-                                 src="{{ user.profile.photo.url }}" 
+                                 src="{{ user.profile_set.first.photo.url }}" 
                                  alt="Image Description">
                             <span class="avatar-status avatar-status-success"></span>
                         </div>

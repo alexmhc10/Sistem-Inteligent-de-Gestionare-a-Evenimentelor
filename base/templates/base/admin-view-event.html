@@ -46,7 +46,7 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
@@ -265,7 +265,7 @@
                                     <li>
                                         <div class="d-flex align-items-center">
                                             <div class="flex-shrink-0">
-                                                <img style="width:3vw; height:3vw;" src="{{ event.organized_by.profile.photo.url }}" alt="" class="avatar-sm rounded material-shadow">
+                                                <img style="width:3vw; height:3vw;" src="{{ event.organized_by.profile_set.first.photo.url }}" alt="" class="avatar-sm rounded material-shadow">
                                             </div>
                                             <div class="flex-grow-1 ms-3">
                                                 <h6 class="fs-14 mb-1"> {{ event.organized_by }} </h6>
@@ -273,8 +273,8 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile.email }} </li>
-                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile.number }} </li>
+                                    <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile_set.first.email }} </li>
+                                    <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i> {{ event.organized_by.profile_set.first.number }} </li>
                                 </ul>
                             </div>
                         </div>

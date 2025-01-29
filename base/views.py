@@ -448,20 +448,21 @@ def users(request):
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
                 return HttpResponse("User not found.")
+            profile = user.profile_set.first() 
             picture = request.FILES.get('profile_picture')
             first_name = request.POST.get('editFirstNameModal')
             last_name = request.POST.get('editLastNameModal')
             email = request.POST.get('editEmailModal')
             username = request.POST.get('editUsernameModal')
             phone = request.POST.get('phone')
-            if user.profile:
+            if profile:
                 if picture:
-                    user.profile.photo = picture
-                user.profile.first_name = first_name
-                user.profile.last_name = last_name
-                user.profile.email = email
-                user.profile.phone = phone
-                user.profile.save()
+                    profile.photo = picture
+                profile.first_name = first_name
+                profile.last_name = last_name
+                profile.email = email
+                profile.phone = phone
+                profile.save()
             user.first_name = first_name
             user.last_name = last_name
             user.email = email
@@ -636,12 +637,13 @@ def admin_settings(request):
     error_pas = False
     ip_address = request.META.get('REMOTE_ADDR', '')
     user = request.user
+    profile = user.profile_set.first()
     if request.method == 'POST':
         form_type = request.POST.get('form_type', '')
         if form_type == 'form_1':
             profile_photo = request.FILES.get('profile_photo')
             if profile_photo:
-                user.profile.photo = profile_photo
+                profile.photo = profile_photo
             firstname = request.POST.get('firstName')
             lastname = request.POST.get('lastName')
             email = request.POST.get('email')
@@ -651,49 +653,69 @@ def admin_settings(request):
             address = request.POST.get('address')
             zipcode = request.POST.get('zipCode')
             user.first_name = firstname
-            user.profile.first_name = firstname
+            profile.first_name = firstname
             user.last_name = lastname
-            user.profile.last_name = lastname
+            profile.last_name = lastname
             user.email = email
-            user.profile.email = email
+            profile.email = email
             user.username = username
-            user.profile.username = username
-            user.profile.number = phone
-            user.profile.location = location
-            user.profile.street = address
-            user.profile.zip_code = zipcode
+            profile.username = username
+            profile.number = phone
+            profile.location = location
+            profile.street = address
+            profile.zip_code = zipcode
             user.save()
-            user.profile.save()
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_2':
             email = request.POST.get('newEmail')
             user.email = email
-            user.profile.email = email
+            profile.email = email
             user.save()
-            user.profile.save()
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_4':
             action = request.POST.get('action')
             linkedin = request.POST.get('linkedin')
             facebook = request.POST.get('facebook')
             google = request.POST.get('google')
+            profile = profile
             if action == "connect_linkedin":
-                user.profile.work_link = linkedin
+                profile.work_link = linkedin
+            elif action == "disconnect_linkedin":
+                profile.work_link = ""
+            elif action == "connect_google":
+                profile.google_link = google
+            elif action == "disconnect_google":
+                profile.google_link = ""
+            elif action == "connect_facebook":
+                profile.facebook = facebook
+            elif action == "disconnect_facebook":
+                profile.facebook = ""
+                profile.save()
+            return redirect('admin_account_settings')
+            print("Profil: ", request.profile)
+            action = request.POST.get('action')
+            linkedin = request.POST.get('linkedin')
+            facebook = request.POST.get('facebook')
+            google = request.POST.get('google')
+            if action == "connect_linkedin":
+                profile.work_link = linkedin
             if action == "disconnect_linkedin":
-                user.profile.work_link = ""
+                profile.work_link = ""
             if action == "connect_google":
-                user.profile.google_link = google
+                profile.google_link = google
             if action == "disconnect_google":
-                user.profile.google_link = ""
+                profile.google_link = ""
             if action == "connect_facebook":
-                user.profile.facebook = facebook
+                profile.facebook = facebook
             if action == "disconnect_facebook":
-                user.profile.facebook = ""
-            user.profile.save()
+                profile.facebook = ""
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_5':
             request.user.delete()
-            request.user.profile.delete()
+            request.profile.delete()
             return redirect('')
         elif form_type == 'form_3':
             print(request.POST)
