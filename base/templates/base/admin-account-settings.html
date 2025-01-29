@@ -313,12 +313,21 @@
                               </div>
                            </form>
                            <form action="" method="POST">
+                              {% csrf_token %}
                               <input type="hidden" name="form_type" value="form_3">
                               <div id="passwordSection" class="card">
                                  <div class="card-header">
                                     <h4 class="card-title">Change your password</h4>
                                  </div>
                                  <div class="card-body">
+                                    {% if error_pas == True %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                       <strong>Incorrect parameters! </strong> Please type the correct password or check for spelling.
+                                       <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                                       </button>
+                                     </div>
+                                     {% else %}
+                                     {% endif %}
                                        <div class="row mb-4">
                                           <label for="currentPasswordLabel" class="col-sm-3 col-form-label form-label">Current password</label>
                                           <div class="col-sm-9">
@@ -611,7 +620,11 @@ document.addEventListener("DOMContentLoaded", function () {
        new TomSelect('#test-select');
    });
 </script>
-    
+<script>
+   $(document).on('click', '.alert .close', function () {
+       $(this).closest('.alert').fadeOut();
+   });
+</script>
 {% endblock content %}
 
 

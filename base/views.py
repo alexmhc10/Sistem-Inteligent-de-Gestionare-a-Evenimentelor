@@ -26,6 +26,7 @@ import socket
 from user_agents import parse
 from device_detector import DeviceDetector
 from .decorators import user_is_organizer, user_is_staff, user_is_guest
+from django.contrib.auth.hashers import check_password
 
 
 def resume_event(request, event_id):
@@ -611,8 +612,8 @@ def admin_settings(request):
         os_name=os_name,
         defaults={'last_access_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S'), 'user_agent': user_agent_string},
     )
+    error_pas = False
     ip_address = request.META.get('REMOTE_ADDR', '')
-    print("Date: ",request.POST,"\n")
     user = request.user
     if request.method == 'POST':
         form_type = request.POST.get('form_type', '')
@@ -673,6 +674,24 @@ def admin_settings(request):
             request.user.delete()
             request.user.profile.delete()
             return redirect('')
+        elif form_type == 'form_3':
+            print(request.POST)
+            password = request.POST.get('currentPassword', '')
+            if check_password(password, request.user.password):
+                new_pass = request.POST.get('newPassword')
+                confirm_new_pas = request.POST.get('confirmNewPassword')
+                if new_pass != None and confirm_new_pas != None:
+                    if new_pass == confirm_new_pas:
+                        user.set_password(new_pass)
+                        user.save()
+                        return redirect('login')
+                    else:
+                        error_pas = True
+                else:
+                    error_pas = True
+            else:
+                error_pas = True
+
     devices = DeviceAccess.objects.all()
     for device in devices:
         print("Dispozitiv: ", device.device_name, device.last_access_time)
@@ -683,7 +702,8 @@ def admin_settings(request):
         'device_name': device_name,  
         'os_name': os_name,
         'ip_address': ip_address,
-        'devices':devices
+        'devices':devices,
+        'error_pas':error_pas
     }
     return render(request, 'base/admin-account-settings.html', context)
 
