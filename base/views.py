@@ -435,10 +435,11 @@ def admin_view_locations(request, name):
 def users(request):
     if not request.user.is_superuser:
         return HttpResponse("Only superusers can approve users.")
-    
     awaiting_profiles = Profile.objects.filter(approved=False)
     waiting_count = Profile.objects.filter(approved=False).count()
     users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    error_pas = False
+    updated = False
     if request.method == 'POST':
         nr_form = request.POST.get('nr_form')
         if nr_form == "form_1":
@@ -466,6 +467,7 @@ def users(request):
             user.email = email
             user.username = username
             user.save()
+            updated = True
             return redirect('users')
         if nr_form == "form_3":
             id = request.POST.get('profile_id')
@@ -483,10 +485,28 @@ def users(request):
             if request.POST.get('action') == "reject":
                 profile.delete()
                 return redirect('users')
+        if nr_form == "form_2":
+            id = request.POST.get('user_id')
+            user = User.objects.get(id=id)
+            password = request.POST.get('currentPassword', '')
+            if check_password(password, request.user.password):
+                new_pass = request.POST.get('editUserModalNewPassword')
+                confirm_new_pas = request.POST.get('confirmNewPassword')
+                if new_pass == confirm_new_pas:
+                    user.set_password(new_pass)
+                    user.save()
+                    updated = True
+                else:
+                    error_pas = True
+            else:
+                error_pas = True
+
     profiles = Profile.objects.all()
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
     context = {
+        'updated':updated,
+        'error_pas':error_pas,
         'non_acc':non_acc,
         'user_data':user_data,
         'chartusers': json.dumps(user_data),

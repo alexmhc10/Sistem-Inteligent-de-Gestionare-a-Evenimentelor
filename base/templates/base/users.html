@@ -136,6 +136,15 @@
                       </div>
                    </div>
                 </div>
+                {% if updated %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                  <h4 class="alert-heading">Well done!</h4>
+                  <p>You have succesfully updated the user's account.</p>
+                  <hr>
+                  <p class="mb-0">They will be able to see the new informations and use their accounts right away!</p>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+              {% endif %}
                 <div class="card">
                    <div class="table-responsive datatable-custom position-relative">
                       <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
@@ -411,30 +420,57 @@
                                </form>
                             </div>
                             <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
+                              {% if error_pas %}
+                              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                 <strong>Incorrect parameters! </strong> Please type the correct password or check for spelling.
+                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                              </div>
+                              {% endif %}
+                              
                               <form method="POST" action="">
                                  <input type="hidden" name="user_id" id="user_id_2">
                                  {% csrf_token %}
                                  <input type="hidden" name="nr_form" value="form_2">
                                  <div class="row mb-4">
-                                    <label for="editUserModalCurrentPasswordLabel" class="col-sm-3 col-form-label form-label">Current password</label>
+                                    <label for="editUserModalCurrentPasswordLabel" class="col-sm-3 col-form-label form-label">
+                                        Current password
+                                    </label>
                                     <div class="col-sm-9">
-                                       <div class="input-group input-group-merge">
-                                          <input type="password" class="js-toggle-password form-control" name="currentPassword" id="editUserModalCurrentPasswordLabel" placeholder="Enter current password" aria-label="Enter current password" data-hs-toggle-password-options="{
-                                             &quot;target&quot;: &quot;#editUserModalChangePassModalTarget&quot;,
-                                             &quot;defaultClass&quot;: &quot;bi-eye-slash&quot;,
-                                             &quot;showClass&quot;: &quot;bi-eye&quot;,
-                                             &quot;classChangeTarget&quot;: &quot;#editUserModalChangePassModalIcon&quot;
-                                             }">
-                                          <a id="editUserModalChangePassModalTarget" class="input-group-append input-group-text" href="javascript:;">
-                                          <i id="editUserModalChangePassModalIcon" class="bi-eye-slash"></i>
-                                          </a>
-                                       </div>
+                                        <div class="input-group input-group-merge">
+                                            <input required type="password" class="form-control" 
+                                                   name="currentPassword" id="editUserModalCurrentPasswordLabel"
+                                                   placeholder="Enter current password" 
+                                                   aria-label="Enter current password">
+                                            
+                                            <button type="button" class="input-group-text" 
+                                                    id="togglePassword">
+                                                <i id="togglePasswordIcon" class="bi bi-eye-slash"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                 </div>
+                                </div>
+                                
+                                <script>
+                                    document.getElementById("togglePassword").addEventListener("click", function() {
+                                        var passwordField = document.getElementById("editUserModalCurrentPasswordLabel");
+                                        var icon = document.getElementById("togglePasswordIcon");
+                                
+                                        if (passwordField.type === "password") {
+                                            passwordField.type = "text";
+                                            icon.classList.remove("bi-eye-slash");
+                                            icon.classList.add("bi-eye");
+                                        } else {
+                                            passwordField.type = "password";
+                                            icon.classList.remove("bi-eye");
+                                            icon.classList.add("bi-eye-slash");
+                                        }
+                                    });
+                                </script>
+                                
                                  <div class="row mb-4">
                                     <label for="editUserModalNewPassword" class="col-sm-3 col-form-label form-label">New password</label>
                                     <div class="col-sm-9">
-                                       <input type="password" class="js-toggle-password form-control" name="editUserModalNewPassword" id="editUserModalNewPassword" placeholder="Enter new password" aria-label="Enter new password" data-hs-toggle-password-options="{
+                                       <input required type="password" class="js-toggle-password form-control" name="editUserModalNewPassword" id="editUserModalNewPassword" placeholder="Enter new password" aria-label="Enter new password" data-hs-toggle-password-options="{
                                           &quot;target&quot;: &quot;#editUserModalChangePassModalCheckbox&quot;
                                           }">
                                     </div>
@@ -445,16 +481,6 @@
                                        <input type="password" class="js-toggle-password form-control" name="confirmNewPassword" id="editUserModalConfirmNewPasswordLabel" placeholder="Confirm your new password" aria-label="Confirm your new password" data-hs-toggle-password-options="{
                                           &quot;target&quot;: &quot;#editUserModalChangePassModalCheckbox&quot;
                                           }">
-                                    </div>
-                                 </div>
-                                 <div class="row mb-4">
-                                    <div class="col-sm-9 offset-sm-3">
-                                       <div class="form-check">
-                                          <input class="form-check-input null" type="checkbox" value="" id="editUserModalChangePassModalCheckbox">
-                                          <label class="form-check-label" for="editUserModalChangePassModalCheckbox">
-                                          Show password
-                                          </label>
-                                       </div>
                                     </div>
                                  </div>
                                  <div class="d-flex justify-content-end">
