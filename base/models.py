@@ -60,7 +60,7 @@ def get_default_user():
     return User.objects.get(username='defaultuser')
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
@@ -92,6 +92,26 @@ class Profile(models.Model):
     )
     def __str__(self):
         return self.user.username
+
+class Notification(models.Model):
+    ACTION_TYPES = [
+        ('created_event', 'Created Event'),
+        ('updated_event', 'Updated Event'),
+        ('deleted_event', 'Deleted Event'),
+        ('created_location', 'Created Location'),
+        ('updated_location', 'Updated Location'),
+        ('deleted_location', 'Deleted Location'),
+        ('updated_profile', 'Updated Profile'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action_type = models.CharField(max_length=50, choices=ACTION_TYPES)
+    target_object_id = models.PositiveIntegerField()
+    target_model = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_action_type_display()} at {self.timestamp}"
 
 
 class DeviceAccess(models.Model):

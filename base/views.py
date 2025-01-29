@@ -500,11 +500,12 @@ def users(request):
                     error_pas = True
             else:
                 error_pas = True
-
+    user_profiles = {user: user.profile_set.first() for user in users}
     profiles = Profile.objects.all()
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
     context = {
+        'user_profiles':user_profiles,
         'updated':updated,
         'error_pas':error_pas,
         'non_acc':non_acc,
