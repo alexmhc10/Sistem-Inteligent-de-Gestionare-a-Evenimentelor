@@ -509,7 +509,9 @@ def users(request):
     profiles = Profile.objects.all()
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
+    notifications = Notification.objects.all()
     context = {
+        'notifications':notifications,
         'user_profiles':user_profiles,
         'updated':updated,
         'error_pas':error_pas,
@@ -1015,6 +1017,13 @@ def updateLocation(request, pk):
         form = LocationForm(request.POST, instance=location)
         if form.is_valid():
             form.save()
+            Notification.objects.create(
+                user=request.user,
+                action_type='updated_location',
+                target_object_id=location.id,
+                target_object_name=location.name,
+                target_model='Location'
+            )
             return redirect('home')
     context = {
         'form': form,

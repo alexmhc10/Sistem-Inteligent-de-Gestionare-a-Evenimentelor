@@ -27,6 +27,7 @@
 }
 
 .dropdown-menu.show {
+    padding:10px;
     transform: translateY(0); 
     opacity: 1;
 }
