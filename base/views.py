@@ -295,7 +295,8 @@ def admin_locations(request):
             'located':location.location,
             'seats':location.seats_numbers,
             'added_at':location.created_at,
-            'cost': location.cost
+            'cost': location.cost,
+            'types':location.types
         })
     organizers = User.objects.filter(is_superuser = False)
     count_organizers = organizers.count()

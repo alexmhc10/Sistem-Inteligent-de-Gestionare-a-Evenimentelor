@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from datetime import datetime, timedelta
 
 
 #model pentru noua baza de date
@@ -51,7 +52,7 @@ class Location(models.Model):
     types = models.ManyToManyField(Type, blank=True)
     seats_numbers = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    cost = models.IntegerField(default=3000)
+    cost = models.DecimalField(max_digits=12, decimal_places=2,default=3000)
     number = models.CharField(max_length=20, default="+(40) 74 83 64 823")
     def __str__(self):
         return self.name
@@ -181,9 +182,9 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
-    cost = models.IntegerField(default= 3000)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default= 3000)
     updated_at = models.DateTimeField(auto_now=True)
-    is_canceled = models.BooleanField(default=False)  # Adăugat
+    is_canceled = models.BooleanField(default=False)
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 
@@ -225,4 +226,44 @@ class Message(models.Model):
     
     class Meta:
         ordering = ['-created']
+
+
+
+class Budget(models.Model):
+    profit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    initial_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    final_budget = models.DecimalField(max_digits=12, decimal_places=2, default=100000)
+    total_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_expenses = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    profit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    last_location_update = models.DateField(null=True, blank=True)
     
+    def update_budget_for_event(self, event_cost):
+        self.total_revenue += event_cost
+        self.final_budget += self.total_revenue
+        self.save()
+
+    def update_locations(self, locations):
+        current_month = now().date().replace(day=1)
+        if self.last_location_update != current_month:
+            self.initial_budget = self.total_budget
+            total_location_cost = sum(location.cost for location in locations)
+            self.total_expenses += total_location_cost
+            self.final_budget = self.total_revenue - self.total_expenses
+            self.last_location_update = current_month
+            self.save()
+    
+    def add_new_location(self, location_cost):
+        self.total_expenses += location_cost
+        self.final_budget = self.total_revenue - self.total_expenses
+        self.save()
+    
+    def calc_profit(self):
+        today = now().date()
+        next_day = today.replace(day=28) + timedelta(days=4)
+        if next_day.month != today.month:
+            self.total_budget = self.final_budget
+            self.profit = abs(self.initial_budget - self.final_budget) * 100
+        
