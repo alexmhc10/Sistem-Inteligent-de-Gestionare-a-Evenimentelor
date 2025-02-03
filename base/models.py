@@ -264,6 +264,6 @@ class Budget(models.Model):
         today = now().date()
         next_day = today.replace(day=28) + timedelta(days=4)
         if next_day.month != today.month:
+            self.profit = ((self.final_budget - self.initial_budget) / self.initial_budget) * 100
             self.total_budget = self.final_budget
-            self.profit = abs(self.initial_budget - self.final_budget) * 100
         
