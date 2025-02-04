@@ -228,6 +228,7 @@ class Message(models.Model):
         ordering = ['-created']
 
 
+from decimal import Decimal
 
 class Budget(models.Model):
     profit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
@@ -242,7 +243,7 @@ class Budget(models.Model):
     
     def update_budget_for_event(self, event_cost):
         self.total_revenue += event_cost
-        self.final_budget += self.total_revenue
+        self.final_budget += event_cost 
         self.save()
 
     def update_locations(self, locations):
@@ -266,4 +267,34 @@ class Budget(models.Model):
         if next_day.month != today.month:
             self.profit = ((self.final_budget - self.initial_budget) / self.initial_budget) * 100
             self.total_budget = self.final_budget
-        
+            self.initial_budget = 0
+            self.final_budget = 0
+
+
+class Salary(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  
+    base_salary = models.DecimalField(max_digits=10, decimal_places=2, default=1500)  
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
+    total_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    initial_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    final_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    last_month_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def calculate_total_salary(self):
+        self.total_salary = self.base_salary + self.bonus
+        self.final_salary = self.total_salary
+        self.last_month_salary = self.final_salary
+        self.save()
+
+    def update_bonus_for_event(self, event_cost):
+        bonus_percentage = Decimal("0.40") 
+        self.bonus += event_cost * bonus_percentage
+        self.calculate_total_salary()
+        self.save()
+
+    def __str__(self):
+        return f"Salary for {self.user.username}: {self.total_salary}"
+
+
+
