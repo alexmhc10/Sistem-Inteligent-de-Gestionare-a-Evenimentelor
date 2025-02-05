@@ -5,14 +5,14 @@
 {% block content %}
 <style>
     .glow-text {
-    color: white;
-    text-shadow: 
-        0 0 5px #fff,
-        0 0 10px #fff,
-        0 0 20px #59b1fe,
-        0 0 50px #ff007f;
-    font-weight: bold;
-    text-align: center;
+  color: white;
+  text-shadow: 
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 20px #deb6b6,
+      0 0 50px #b9e1db;
+  font-weight: bold;
+  text-align: center;
 }
 </style>
 
@@ -58,7 +58,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </a>
             </li>
             <li class="sidebar-item">
-                <a class="sidebar-link" href="{% url 'personal_face_id' %}" aria-expanded="false">
+                <a class="sidebar-link" href="{% url 'personal_face_id' event.id%}" aria-expanded="false">
                 <span>
                     <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
                 </span>
@@ -156,7 +156,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
         </div>
             <div class="col-lg-4">
-                    <div class="card h-100 overflow-hidden">
+                    <div class="card h-100 card-hover overflow-hidden">
                             <img src="{{ MEDIA_URL }}images/SeatingPlan.png" class="card-img" style="object-fit: cover; height: 100%; width: 100%; filter: brightness(50%);" alt="matdash-img">
                         <a href="{% url 'personal_aranjament_invitati_event' event.id %}">
                             <div class="card-img-overlay d-flex justify-content-center align-items-center p-4 fs-5 glow-text">
@@ -174,9 +174,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
             </div>
             <div class="col-lg-4">
-                <div class="card h-100 overflow-hidden">
+                <div class="card h-100 card-hover overflow-hidden">
                     <img src="{{ MEDIA_URL }}images/FaceRecognition2.jpg" class="card-img" style="object-fit: cover; height: 100%; width: 100%;" alt="matdash-img">
-                <a href="{% url 'personal_face_id' %}">
+                <a href="{% url 'personal_face_id' event.id %}">
                 <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text p-4 fs-5">
                     <h1 class="mb-auto mt-auto fw-semibold text-center" style="color: white;">Acces the guest face recognition for their acces to the event</h1>
                     <div class="d-flex align-items-center position-absolute bottom-0 mb-4 gap-4">
@@ -188,13 +188,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </a>    
                 </div>
         </div>
-        <div class="col-lg-2">
-            <div class="card"></div>
-        </div>
-        <div class="col-lg-2">
+        <div class="col-lg-4 h-100">
             <div class="row gap gap-4">
                 <div class="col-lg-12">
-                    <div class="card h-100">
+                    <div class="card card-hover h-100">
                             <div class="card-header">No. of guests arrived!</div>
                                 <div class="card-body d-flex align-items-center p-4 fs-5 gap-4">
                                         <div class="d-flex align-items-center me-auto">

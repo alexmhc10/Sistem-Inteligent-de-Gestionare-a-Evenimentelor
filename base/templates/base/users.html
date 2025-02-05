@@ -64,41 +64,6 @@
             </div>
         </div>
         <div class="col py-3 events view-">
-                       
-         <h2>Pending User Approvals</h2>
-         {% if waiting_count == 0 %}
-         <h4>No new Users</h4>
-         {% endif %}
-         {% for profile in awaiting_profiles %}
-         <!-- <div>
-             <p><strong>Username:</strong> {{ profile.username }}</p>
-             <p><strong>Email:</strong> {{ profile.email }}</p>
-             <p><strong>Description:</strong> {{ profile.description }}</p>
-             <img src="{{ profile.photo.url }}" alt="Profile Photo" style="height:200px; width:auto;">
-             <form method="POST" action="{% url 'approve_user' profile.id %}">
-                 {% csrf_token %}
-                 <button type="submit" name="approve">Approve</button>
-                 <button type="submit" name="reject">Reject</button>
-             </form>
-         </div> -->
-         <div class="card" style="width: 23rem;">
-             <div class="card-body">
-                 <div class="primary-info">
-                     <div class="titles">
-                         <h5 class="card-title"><strong> Username: <br> </strong> {{ profile.username }}</h5>
-                         <h6 class="card-subtitle mb-2 text-muted"><strong>Email:</strong> {{ profile.email }}</h6>
-                     </div>
-                     <img src="{{ profile.photo.url }}" alt="Profile Photo">
-                 </div>
-                 <p class="card-text"><strong>Description:</strong> {{ profile.description }}</p>
-                 <form method="POST" action="{% url 'approve_user' profile.id %}">
-                     {% csrf_token %}
-                     <button class="card-link" type="submit" name="approve">Approve</button>
-                     <button class="card-link" type="submit" name="reject">Reject</button>
-                 </form>
-             </div>
-         </div>
-         {% endfor %}
             <div class="content container-fluid">
                <div class="row">
                   <div class="col-12">
@@ -115,11 +80,8 @@
                       </div>
                   </div>
               </div>
-                <!-- End Page Header -->
-                <!-- Stats -->
                 <div class="row">
                    <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                      <!-- Card -->
                       <div class="card h-100">
                          <div class="card-body">
                             <h6 class="card-subtitle mb-2">Total users</h6>
@@ -128,21 +90,16 @@
                                   <span class="js-counter display-4 text-dark" data-value="24">24</span>
                                   <span class="text-body fs-5 ms-1">from 22</span>
                                </div>
-                               <!-- End Col -->
                                <div class="col-auto">
                                   <span class="badge bg-soft-success text-success p-1">
                                   <i class="bi-graph-up"></i> 5.0%
                                   </span>
                                </div>
-                               <!-- End Col -->
                             </div>
-                            <!-- End Row -->
                          </div>
                       </div>
-                      <!-- End Card -->
                    </div>
                    <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                      <!-- Card -->
                       <div class="card h-100">
                          <div class="card-body">
                             <h6 class="card-subtitle mb-2">Active members</h6>
@@ -157,13 +114,10 @@
                                   </span>
                                </div>
                             </div>
-                            <!-- End Row -->
                          </div>
                       </div>
-                      <!-- End Card -->
                    </div>
                    <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                      <!-- Card -->
                       <div class="card h-100">
                          <div class="card-body">
                             <h6 class="card-subtitle mb-2">New/returning</h6>
@@ -179,20 +133,11 @@
                                   </span>
                                </div>
                             </div>
-                            <!-- End Row -->
                          </div>
                       </div>
-                      <!-- End Card -->
                    </div>
-                  
                 </div>
-                <!-- End Stats -->
-                <!-- Card -->
                 <div class="card">
-                   <!-- Header -->
-                
-                   <!-- End Header -->
-                   <!-- Table -->
                    <div class="table-responsive datatable-custom position-relative">
                       <div id="datatable_wrapper" class="dataTables_wrapper no-footer">
                          <table id="datatable" class="table table-lg table-borderless table-thead-bordered table-nowrap table-align-middle card-table dataTable no-footer" data-hs-datatables-options="{
@@ -217,15 +162,69 @@
                                      " style="width: 44.8281px;">
                                   </th>
                                   <th class="table-column-ps-0 sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Name: activate to sort column ascending" style="width: 279.578px;">Name</th>
-                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 198.656px;">Position</th>
                                   <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Country: activate to sort column ascending" style="width: 174.969px;">Country</th>
-                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width: 151.062px;">Status</th>
-                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Portfolio: activate to sort column ascending" style="width: 202.469px;">Portfolio</th>
+                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Last_active: activate to sort column ascending" style="width: 151.062px;">Last active</th>
+                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 202.469px;">Salary</th>
                                   <th class="sorting_asc" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Role: activate to sort column descending" style="width: 114.078px;" aria-sort="ascending">Date Joined</th>
-                                  <th class="sorting_disabled" rowspan="1" colspan="1" aria-label="" style="width: 133.359px;"></th>
+                                  <th class="sorting" tabindex="0" aria-controls="datatable" rowspan="1" colspan="1" aria-label="Status: activate to sort column ascending" style="width:{% if non_acc %} 252.469px {% else %} 202.469px; {% endif %}">Action</th>
+                                  <th class="sorting" rowspan="1" colspan="1" aria-label="" style="width: 133.359px;">Status</th>
                                </tr>
                             </thead>
                             <tbody>
+                              {% for profile in non_acc %}
+                              <tr role="row" class="{% if user.id|divisibleby:2 %} even {% else %} odd {% endif %}">
+                                <td class="table-column-pe-0">
+                                </td>
+                                <td class="table-column-ps-0">
+                                   <a class="d-flex align-items-center" href="{% url 'view_user_admin' profile.username %}">
+                                      <div class="avatar avatar-circle">
+                                         <img class="avatar-img" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50px;" src="{{ profile.photo.url }}" alt="Image Description">
+                                      </div>
+                                      <div class="ms-3">
+                                         <span class="d-block h5 text-inherit mb-0">{{ profile.first_name }} {{ profile.last_name }} <i class="bi-patch-check-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Top endorsed" data-bs-original-title="Top endorsed"></i></span>
+                                         <span class="d-block fs-5 text-body">{{ profile.email }}</span>
+                                      </div>
+                                   </a>
+                                </td>
+                                <td>{{ profile.country }}</td>
+                                <td>
+                                   <span class="legend-indicator bg-success"></span>
+                                   N/A
+                                </td>
+                                <td>
+                                   <div class="d-flex align-items-center">
+                                      <span class="fs-5 me-2">
+                                       N/A   
+                                    </span>
+                                   </div>
+                                </td>
+                                <td class="sorting_1">{{ profile.created_at.date }}</td>
+                                <td>
+                                 <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#viewUserModal"
+                                 data-id ="{{ profile.id }}"
+                                 data-username="{{ profile.username }}"
+                                 data-first-name="{{ profile.first_name }}"
+                                 data-last-name="{{ profile.last_name }}"
+                                 data-email="{{ profile.email }}"
+                                 data-number="{{ profile.number }}"
+                                 data-photo="{{ profile.photo.url }}"
+                                 data-description="{{ profile.description }}">
+                                 <i class="bi-pencil-fill me-1"></i> View
+                             </button>
+                             
+                                <button type="submit" class="btn btn-white btn-sm">
+                                 <i class="bi bi-check-circle"></i> Accept
+                                </button>
+                              <button type="submit" class="btn btn-white btn-sm">
+                                 <i class="bi bi-x-circle-fill"></i> Reject
+                              </button>
+                                </td>
+                                <td>
+                                   <span class="sorting_1"></span>
+                                   Not Accepted
+                                </td>
+                             </tr>
+                             {% endfor %}
                                {% for user in users %}
                                <tr role="row" class="{% if user.id|divisibleby:2 %} even {% else %} odd {% endif %}">
                                  <td class="table-column-pe-0">
@@ -241,17 +240,18 @@
                                        </div>
                                     </a>
                                  </td>
+                                 <td>{{ user.profile.country }}</td>
                                  <td>
-                                    <span class="d-block h5 mb-0">Director</span>
-                                    <span class="d-block fs-5">Human resources</span>
-                                 </td>
-                                 <td>Country Field in Profile Model</td>
-                                 <td>
-                                    <span class="legend-indicator bg-success"></span>Active
+                                    <span class="legend-indicator bg-success"></span>
+                                    {{ user.last_login }}
                                  </td>
                                  <td>
                                     <div class="d-flex align-items-center">
-                                       <span class="fs-5 me-2">Salary</span>
+                                       <span class="fs-5 me-2">{% for item in user_data %}
+                                          {% if item.username == user.username %}
+                                                  {{ item.salary }} $
+                                          {% endif %}
+                                      {% endfor %}</span>
                                        <div class="progress table-progress">
                                           <div class="progress-bar" role="progressbar" style="width: 72%" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
                                        </div>
@@ -260,6 +260,7 @@
                                  <td class="sorting_1">{{ user.date_joined.date }}</td>
                                  <td>
                                     <button type="button" class="btn btn-white btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal"
+                                    data-id ="{{ user.id }}"
                                     data-username="{{ user.username }}"
                                     data-first-name="{{ user.first_name }}"
                                     data-last-name="{{ user.last_name }}"
@@ -268,7 +269,10 @@
                                     data-photo="{{ user.profile.photo.url }}">
                                     <i class="bi-pencil-fill me-1"></i> Edit
                                  </button>
-
+                                 </td>
+                                 <td>
+                                    <span class="sorting_1"></span>
+                                    Accepted
                                  </td>
                               </tr>
                               {% endfor %}
@@ -312,7 +316,10 @@
                          </div>
                          <div class="tab-content" id="editUserModalTabContent">
                             <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                               <form>
+                               <form method="POST" action="" enctype="multipart/form-data">
+                                 {% csrf_token %}
+                                 <input type="hidden" name="user_id" id="user_id_1">
+                                 <input type="hidden" value="form_1" name="nr_form">
                                   <div class="profile-cover">
                                      <div class="profile-cover-img-wrapper">
                                         <img id="editProfileCoverImgModal" class="img-fluid" style="height:320px; width: 100%;" src="{{ MEDIA_URL }}logos/Login Picture.jpg" alt="Image Description">
@@ -331,13 +338,18 @@
                                            border: 5px solid #fff;" 
                                            src="" alt="Image Description">
                                       
-                                      <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
-                                             data-hs-file-attach-options="{
-                                               &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
-                                               &quot;mode&quot;: &quot;image&quot;,
-                                               &quot;targetAttr&quot;: &quot;src&quot;,
-                                               &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
-                                             }">
+                                           <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
+                                           data-hs-file-attach-options="{
+                                             &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
+                                             &quot;mode&quot;: &quot;image&quot;,
+                                             &quot;targetAttr&quot;: &quot;src&quot;,
+                                             &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
+                                           }"
+                                           accept="image/png, image/jpeg"
+                                           onchange="updateImage(event)"
+                                           name="profile_picture"
+                                           >
+                                    
                                       <span class="avatar-uploader-trigger" 
                                             style="
                                               display: inline-flex; 
@@ -355,10 +367,6 @@
                                       </span>
                                     </label>
                                   </div>
-                                  
-                                  
-                                  <!-- End Avatar -->
-                                  <!-- Form -->
                                   <div class="row mb-4">
                                      <label for="editFirstNameModalLabel" class="col-sm-3 col-form-label form-label">Full name <i class="tio-help-outlined text-body ms-1" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Displayed on public forums, such as Front." data-bs-original-title="Displayed on public forums, such as Front."></i></label>
                                      <div class="col-sm-9">
@@ -368,8 +376,6 @@
                                         </div>
                                      </div>
                                   </div>
-                                  <!-- End Form -->
-                                  <!-- Form -->
                                   <div class="row mb-4">
                                      <label for="editEmailModalLabel" class="col-sm-3 col-form-label form-label">Email</label>
                                      <div class="col-sm-9">
@@ -383,7 +389,7 @@
                                     </div>
                                  </div>
                                   <div class="row mb-4">
-                                     <label for="editPhoneLabel" class="col-sm-3 col-form-label form-label">Phone <span class="form-label-secondary">(Optional)</span></label>
+                                     <label for="editPhoneLabel" class="col-sm-3 col-form-label form-label">Phone </label>
                                      <div class="col-sm-9">
                                         <div class="input-group input-group-sm-vertical">
                                            <input type="text" class="js-masked-input form-control" name="phone" id="editPhoneLabel" placeholder="+x(xxx)xxx-xx-xx" aria-label="+x(xxx)xxx-xx-xx"  data-hs-mask-options="{
@@ -401,7 +407,10 @@
                                </form>
                             </div>
                             <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
-                              <form>
+                              <form method="POST" action="">
+                                 <input type="hidden" name="user_id" id="user_id_2">
+                                 {% csrf_token %}
+                                 <input type="hidden" name="nr_form" value="form_2">
                                  <div class="row mb-4">
                                     <label for="editUserModalCurrentPasswordLabel" class="col-sm-3 col-form-label form-label">Current password</label>
                                     <div class="col-sm-9">
@@ -458,6 +467,186 @@
                    </div>
                 </div>
              </div>
+
+
+             <div class="modal fade" id="viewUserModal" tabindex="-1" aria-labelledby="viewUserModalLabel" style="display: none;" aria-hidden="true">
+               <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                     <div class="modal-header">
+                        <h5 class="modal-title" id="editUserModalLabel">View new user</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                     </div>
+                     <div class="modal-body">
+                        <div class="js-nav-scroller hs-nav-scroller-horizontal">
+                           <span class="hs-nav-scroller-arrow-prev" style="display: none;">
+                           <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                           <i class="bi-chevron-left"></i>
+                           </a>
+                           </span>
+                           <span class="hs-nav-scroller-arrow-next" style="display: none;">
+                           <a class="hs-nav-scroller-arrow-link" href="javascript:;">
+                           <i class="bi-chevron-right"></i>
+                           </a>
+                           </span>
+                           <ul class="js-tabs-to-dropdown nav nav-segment nav-fill mb-5" id="ViewUserModalTab" role="tablist">
+                              <li class="nav-item" role="presentation">
+                                 <a class="nav-link active" href="#profile" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" role="tab" aria-selected="true">
+                                 <i class="bi-person me-1"></i> Profile
+                                 </a>
+                              </li>
+                           </ul>
+                        </div>
+                        <div class="tab-content" id="editUserModalTabContent">
+                           <div class="tab-pane fade show active" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                              <form method="POST" action="" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="user_id" id="user_id_1">
+                                <input type="hidden" value="form_1" name="nr_form">
+                                 <div class="profile-cover">
+                                    <div class="profile-cover-img-wrapper">
+                                       <img id="editProfileCoverImgModal" class="img-fluid" style="height:320px; width: 100%;" src="{{ MEDIA_URL }}logos/Login Picture.jpg" alt="Image Description">
+                                    </div>
+                                 </div>
+                                 <div style="position: relative; height: 100px; text-align: center;">
+                                   <label class="avatar avatar-xxl avatar-circle avatar-uploader profile-cover-avatar" style="
+                                     position: absolute; 
+                                     top: 50%; 
+                                     left: 50%; 
+                                     transform: translate(-50%, -80%);
+                                     margin-top: -50px;" for="editAvatarUploaderModal">
+                                     <img id="editAvatarImgModalView" class="rounded-circle mx-auto d-block" 
+                                          style="width: 150px !important;
+                                          height:150px; 
+                                          border: 5px solid #fff;" 
+                                          src="" alt="Image Description">
+                                     
+                                          <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
+                                          data-hs-file-attach-options="{
+                                            &quot;textTarget&quot;: &quot;#editAvatarImgModalView&quot;,
+                                            &quot;mode&quot;: &quot;image&quot;,
+                                            &quot;targetAttr&quot;: &quot;src&quot;,
+                                            &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
+                                          }"
+                                          accept="image/png, image/jpeg"
+                                          onchange="updateImage(event)"
+                                          name="profile_picture"
+                                          >
+                                   
+                                     <span class="avatar-uploader-trigger" 
+                                           style="
+                                             display: inline-flex; 
+                                             justify-content: center; 
+                                             align-items: center; 
+                                             width: 40px; 
+                                             height: 40px; 
+                                             border-radius: 50%; 
+                                             background-color: #fff; 
+                                             position: absolute; 
+                                             bottom: -10px; 
+                                             top:90px;
+                                             right: 5px;">
+                                       <i class="bi-pencil-fill avatar-uploader-icon shadow-sm"></i>
+                                     </span>
+                                   </label>
+                                 </div>
+                                 <div class="row mb-4">
+                                    <label for="editFirstNameModalLabel" class="col-sm-3 col-form-label form-label">Full name <i class="tio-help-outlined text-body ms-1" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Displayed on public forums, such as Front." data-bs-original-title="Displayed on public forums, such as Front."></i></label>
+                                    <div class="col-sm-9">
+                                       <div class="input-group input-group-sm-vertical">
+                                          <input type="text" class="form-control" name="editFirstNameModal" id="editFirstNameModalLabel" placeholder="Your first name" aria-label="Your first name" value="">
+                                          <input type="text" class="form-control" name="editLastNameModal" id="editLastNameModalLabel" placeholder="Your last name" aria-label="Your last name" value="">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="row mb-4">
+                                    <label for="editEmailModalLabel" class="col-sm-3 col-form-label form-label">Email</label>
+                                    <div class="col-sm-9">
+                                       <input type="email" class="form-control" name="editEmailModal" id="editEmailModalLabel" placeholder="Email" aria-label="Email" >
+                                    </div>
+                                 </div>
+                                 <div class="row mb-4">
+                                   <label for="editUsernameModal" class="col-sm-3 col-form-label form-label">Username</label>
+                                   <div class="col-sm-9">
+                                      <input type="text" class="form-control" name="editUsernameModal" id="editUsernameModal" placeholder="Username" aria-label="Username">
+                                   </div>
+                                </div>
+                                 <div class="row mb-4">
+                                    <label for="editPhoneLabel" class="col-sm-3 col-form-label form-label"></label>
+                                    <div class="col-sm-9">
+                                       <div class="input-group input-group-sm-vertical">
+                                          <input type="text" class="js-masked-input form-control" name="phone" id="editPhoneLabel" placeholder="+x(xxx)xxx-xx-xx" aria-label="+x(xxx)xxx-xx-xx"  data-hs-mask-options="{
+                                             &quot;template&quot;: &quot;+0(000)000-00-00&quot;
+                                             }">
+                                       </div>
+                                    </div>
+                                 </div>
+                                 <div class="d-flex justify-content-end">
+                                    <div class="d-flex gap-3">
+                                       <button type="button" class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Exit</button>
+                                    </div>
+                                 </div>
+                              </form>
+                           </div>
+                           <div class="tab-pane fade" id="change-password" role="tabpanel" aria-labelledby="change-password-tab">
+                             <form method="POST" action="">
+                                <input type="hidden" name="user_id" id="user_id_2">
+                                {% csrf_token %}
+                                <input type="hidden" name="nr_form" value="form_2">
+                                <div class="row mb-4">
+                                   <label for="editUserModalCurrentPasswordLabel" class="col-sm-3 col-form-label form-label">Current password</label>
+                                   <div class="col-sm-9">
+                                      <div class="input-group input-group-merge">
+                                         <input type="password" class="js-toggle-password form-control" name="currentPassword" id="editUserModalCurrentPasswordLabel" placeholder="Enter current password" aria-label="Enter current password" data-hs-toggle-password-options="{
+                                            &quot;target&quot;: &quot;#editUserModalChangePassModalTarget&quot;,
+                                            &quot;defaultClass&quot;: &quot;bi-eye-slash&quot;,
+                                            &quot;showClass&quot;: &quot;bi-eye&quot;,
+                                            &quot;classChangeTarget&quot;: &quot;#editUserModalChangePassModalIcon&quot;
+                                            }">
+                                         <a id="editUserModalChangePassModalTarget" class="input-group-append input-group-text" href="javascript:;">
+                                         <i id="editUserModalChangePassModalIcon" class="bi-eye-slash"></i>
+                                         </a>
+                                      </div>
+                                   </div>
+                                </div>
+                                <div class="row mb-4">
+                                   <label for="editUserModalNewPassword" class="col-sm-3 col-form-label form-label">New password</label>
+                                   <div class="col-sm-9">
+                                      <input type="password" class="js-toggle-password form-control" name="editUserModalNewPassword" id="editUserModalNewPassword" placeholder="Enter new password" aria-label="Enter new password" data-hs-toggle-password-options="{
+                                         &quot;target&quot;: &quot;#editUserModalChangePassModalCheckbox&quot;
+                                         }">
+                                   </div>
+                                </div>
+                                <div class="row mb-4">
+                                   <label for="editUserModalConfirmNewPasswordLabel" class="col-sm-3 col-form-label form-label">Confirm new password</label>
+                                   <div class="col-sm-9">
+                                      <input type="password" class="js-toggle-password form-control" name="confirmNewPassword" id="editUserModalConfirmNewPasswordLabel" placeholder="Confirm your new password" aria-label="Confirm your new password" data-hs-toggle-password-options="{
+                                         &quot;target&quot;: &quot;#editUserModalChangePassModalCheckbox&quot;
+                                         }">
+                                   </div>
+                                </div>
+                                <div class="row mb-4">
+                                   <div class="col-sm-9 offset-sm-3">
+                                      <div class="form-check">
+                                         <input class="form-check-input null" type="checkbox" value="" id="editUserModalChangePassModalCheckbox">
+                                         <label class="form-check-label" for="editUserModalChangePassModalCheckbox">
+                                         Show password
+                                         </label>
+                                      </div>
+                                   </div>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                   <div class="d-flex gap-3">
+                                      <button type="button" class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                   </div>
+                                </div>
+                             </form>
+                          </div>
+                           
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
         </div>
     </div>
 </div>
@@ -487,6 +676,7 @@ $('#editUserModal').on('show.bs.modal', function (event) {
     const button = event.relatedTarget;
 
     const username = button.dataset.username;
+    const id = button.dataset.id;
     const firstName = button.dataset.firstName;
     const lastName = button.dataset.lastName;
     const email = button.dataset.email;
@@ -494,6 +684,7 @@ $('#editUserModal').on('show.bs.modal', function (event) {
     const photo = button.dataset.photo;
 
     console.log({
+        id:id,
         username: username,
         firstName: firstName,
         lastName: lastName,
@@ -502,6 +693,8 @@ $('#editUserModal').on('show.bs.modal', function (event) {
         photo: photo
     });
 
+    document.querySelector('#editUserModal #user_id_1').value = id;
+    document.querySelector('#editUserModal #user_id_2').value = id;
     document.querySelector('#editUserModal #editAvatarImgModal').src = photo;
     document.querySelector('#editUserModal #editFirstNameModalLabel').value = firstName;
     document.querySelector('#editUserModal #editLastNameModalLabel').value = lastName;  
@@ -510,6 +703,37 @@ $('#editUserModal').on('show.bs.modal', function (event) {
     document.querySelector('#editUserModal #editPhoneLabel').value = number;
 });
 
+
+$('#viewUserModal').on('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+
+    const username = button.dataset.username;
+    const id = button.dataset.id;
+    const firstName = button.dataset.firstName;
+    const lastName = button.dataset.lastName;
+    const email = button.dataset.email;
+    const number = button.dataset.number;
+    const photo = button.dataset.photo;
+
+    console.log({
+        id:id,
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        number: number,
+        photo: photo
+    });
+
+    document.querySelector('#viewUserModal #user_id_1').value = id;
+    document.querySelector('#viewUserModal #user_id_2').value = id;
+    document.querySelector('#viewUserModal #editAvatarImgModalView').src = photo;
+    document.querySelector('#viewUserModal #editFirstNameModalLabel').value = firstName;
+    document.querySelector('#viewUserModal #editLastNameModalLabel').value = lastName;  
+    document.querySelector('#viewUserModal #editUsernameModal').value =username;  
+    document.querySelector('#viewUserModal #editEmailModalLabel').value = email;
+    document.querySelector('#viewUserModal #editPhoneLabel').value = number;
+});
 
 </script>
 <style>
@@ -528,5 +752,19 @@ $('#editUserModal').on('show.bs.modal', function (event) {
 });
 
 </script>
+<script>
+   function updateImage(event) {
+       const file = event.target.files[0];
+       const reader = new FileReader();
 
+       reader.onload = function (e) {
+           document.getElementById('editAvatarImgModal').src = e.target.result;
+           document.getElementById('editAvatarImgModalView').src = e.target.result;
+       }
+
+       if (file) {
+           reader.readAsDataURL(file); 
+       }
+   }
+</script>
 {% endblock %}

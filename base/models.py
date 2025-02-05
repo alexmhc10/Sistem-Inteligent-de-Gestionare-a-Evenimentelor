@@ -56,9 +56,11 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+def get_default_user():
+    return User.objects.get(username='defaultuser')
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)  
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
@@ -75,6 +77,8 @@ class Profile(models.Model):
     facebook = models.CharField(null=True, blank=True,max_length=100)
     work_link = models.CharField(null=True, blank=True,max_length=100)
     google_link = models.CharField(null=True, blank=True,max_length=100)
+    country = models.CharField(null=True, blank=True,max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
     USER_TYPE_CHOICES = (
         ('admin', 'Admin'),
         ('organizer', 'Organizer'),
@@ -124,12 +128,13 @@ class Review(models.Model):
 #         return f"{self.firstname} {self.lastname}"
 
 class Guests(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='guest_profile', null=True)
     GENDER_CHOICES = [
         ('M', 'Masculin'),
         ('F', 'Feminin')
         ]
     age = models.IntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
     vegan = models.BooleanField(default=False)

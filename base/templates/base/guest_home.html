@@ -4,6 +4,39 @@
 
 
 {% block content %}
+<style>
+  .glow-text {
+  color: white;
+  text-shadow: 
+      0 0 5px #fff,
+      0 0 10px #fff,
+      0 0 20px #deb6b6,
+      0 0 50px #b9e1db;
+  font-weight: bold;
+  text-align: center;
+}
+.event-card {
+  width: 23%; /* Fiecare card va ocupa 23% din lățimea containerului */
+  margin: 0 10px; /* Spațiu între carduri */
+  text-align: center;
+}
+
+.event-card img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.event-card h5 {
+  margin-top: 10px;
+  font-size: 18px;
+}
+
+.event-card p {
+  color: #777;
+}
+
+</style>
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
 data-sidebar-position="fixed" data-header-position="fixed">
 <!-- Sidebar Start -->
@@ -38,11 +71,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">About you</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="{% url 'personal_aranjament_invitati' %}" aria-expanded="false">
+            <a class="sidebar-link" href="{% url 'guest_profile' %}" aria-expanded="false">
               <span>
                 <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
               </span>
-              <span class="hide-menu">Layout</span>
+              <span class="hide-menu">Profile</span>
             </a>
           </li>
         </ul>
@@ -357,88 +390,120 @@ data-sidebar-position="fixed" data-header-position="fixed">
       </div>-->
       <div class="row mt-4">
         <div class="col-lg-8">
-          <div class="card card-hover">
-            <img class="card-img" src="{{ MEDIA_URL }}images/EventGuests.jpg" style="object-fit: cover; max-height: 400px;">
-            <div class="card-img-overlay">
-              <h1 class="h1">Vizualizeaza evenimentele tale!</h1>
+          <div class="row flex-column">
+            <div class="col-lg-6">
+              <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+ 
+              </div>
+            </div>
+            <div class="col"> 
+              <div class="card mb-3" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                    <a href="">
+                      <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="img-fluid rounded-start" style="object-fit: cover;" alt="...">
+                    </a>
+                    </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">Nunta Ana si Florin</h5>
+                      <p class="card-text">Nunta mare de bogatani.</p>
+                      <p class="card-text"><small class="text-body-secondary">Date: 2025-01-25</small></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>   
+            <div class="card">
+
             </div>
           </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 mb-4">
           <a href="{% url 'guest_profile' %}">
             <div class="card card-hover">
-              <img class="card-img" src="{{ MEDIA_URL }}images/FaceRecognition2.jpg" style="object-fit: cover; min-height: 400px;">
-              <div class="card-img-overlay">
+              <img class="card-img" src="{{ MEDIA_URL }}poze_invitati/ProfilePicDefault.jpg">
+              <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text">
                 <h1>Acces your profile!</h1>
               </div>
             </div>
           </a>
         </div>
+        <div class="col-lg-12">
+          <div class="container my-5">
+            <h2 class="text-center">Here are some of the events created with our app</h2>
+            <div id="eventsCarousel" class="carousel slide" data-bs-ride="carousel">
+              <div class="carousel-inner">
+                <!-- Evenimente în prima secțiune -->
+                <div class="carousel-item active">
+                  <div class="d-flex justify-content-between">
+                    <!-- Carduri Eveniment -->
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="d-block w-100" alt="Eveniment 1">
+                      <h5>Nunta Ana</h5>
+                      <p>Data: 20 Ianuarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="d-block w-100" alt="Eveniment 2">
+                      <h5>Nunta Ana</h5>
+                      <p>Data: 25 Ianuarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="d-block w-100" alt="Eveniment 3">
+                      <h5>Nunta Ana</h5>
+                      <p>Data: 30 Ianuarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="d-block w-100" alt="Eveniment 4">
+                      <h5>Eveniment 4</h5>
+                      <p>Data: 5 Februarie</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Evenimente în a doua secțiune -->
+                <div class="carousel-item">
+                  <div class="d-flex justify-content-between">
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Crinul_Imperial_sby6qH7.jpg" class="d-block w-100" alt="Eveniment 5">
+                      <h5>Eveniment 5</h5>
+                      <p>Data: 10 Februarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Crinul_Imperial_sby6qH7.jpg" class="d-block w-100" alt="Eveniment 6">
+                      <h5>Eveniment 6</h5>
+                      <p>Data: 15 Februarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Crinul_Imperial_sby6qH7.jpg" class="d-block w-100" alt="Eveniment 7">
+                      <h5>Eveniment 7</h5>
+                      <p>Data: 20 Februarie</p>
+                    </div>
+                    <div class="event-card">
+                      <img src="{{ MEDIA_URL }}/images/Crinul_Imperial_sby6qH7.jpg" class="d-block w-100" alt="Eveniment 8">
+                      <h5>Eveniment 8</h5>
+                      <p>Data: 25 Februarie</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Poți adăuga mai multe secțiuni de evenimente -->
+              </div>
+              <!-- Săgețile pentru navigare -->
+              <button class="carousel-control-prev" type="button" data-bs-target="#eventsCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+              </button>
+              <button class="carousel-control-next" type="button" data-bs-target="#eventsCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+              </button>
+            </div>
+          </div>
+          
+        </div>
       </div>
     </div>
   </div>
 </div>
-<script>
-document.getElementById("applyFilters").addEventListener("click", function () {
-    const search = document.getElementById("search").value;
-    const eventType = document.getElementById("eventType").value;
-    const filterDate = document.getElementById("filterDate").value;
-
-    fetch(`/filter_events?search=${search}&event_type=${eventType}&filter_date=${filterDate}`)
-        .then(response => response.json())
-        .then(data => {
-            const futureEventsContainer = document.getElementById("futureEventsContainer");
-            const pastEventsContainer = document.getElementById("pastEventsContainer");
-            const futureEventsSection = document.getElementById("futureEventsSection");
-            const pastEventsSection = document.getElementById("pastEventsSection");
-
-            // Clear existing content
-            futureEventsContainer.innerHTML = "";
-            pastEventsContainer.innerHTML = "";
-
-            // Populate future events
-            if (data.future_events.length > 0) {
-                futureEventsSection.style.display = "block";
-                data.future_events.forEach(event => {
-                    const card = `
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${event.event_name}</h5>
-                                    <p class="card-text">${event.event_description}</p>
-                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    futureEventsContainer.innerHTML += card;
-                });
-            } else {
-                futureEventsSection.style.display = "none";
-            }
-
-            // Populate past events
-            if (data.past_events.length > 0) {
-                pastEventsSection.style.display = "block";
-                data.past_events.forEach(event => {
-                    const card = `
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${event.event_name}</h5>
-                                    <p class="card-text">${event.event_description}</p>
-                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    pastEventsContainer.innerHTML += card;
-                });
-            } else {
-                pastEventsSection.style.display = "none";
-            }
-        });
-});
-
-</script>
 {% endblock %}

@@ -79,7 +79,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </a>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link" href="{% url 'personal_face_id' %}" aria-expanded="false">
+          <a class="sidebar-link" href="{% url 'personal_face_id' '3' %}" aria-expanded="false">
           <span>
               <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
           </span>
@@ -125,10 +125,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   <p class="mb-0 fs-3">My Profile</p>
                 </a>
                 <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                  <i class="ti ti-mail fs-6"></i>
-                  <p class="mb-0 fs-3">My Account</p>
-                </a>
-                <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
                   <i class="ti ti-list-check fs-6"></i>
                   <p class="mb-0 fs-3">My Task</p>
                 </a>
@@ -146,8 +142,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
       <div class="col-lg-12">
             <div class="card">
-                <div class="card-body align-items-center">
-                    <h1 class="card-title d-flex align-items-center gap-2">
+                <div class="card-body align-items-center justify-content-center">
+                    <h1 class="card-title text-center gap-2">
                         Your event place seating layout
                     </h1>
                     <p>
@@ -157,7 +153,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
       </div>
     </div>
-    <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
+    <!-- <nav id="navTop" class=" w-full h-[var(--topnav-h)] z-30 bg-white border-b border-b-gray-200">
       <div class="max-w-screen-xl mx-auto flex flex-wrap items-start justify-between px-4">
         <a class="text-white bg-nwoods-primary font-bold !leading-[calc(var(--topnav-h)_-_1px)] my-0 px-2 text-4xl lg:text-5xl logo"
            href="../">
@@ -186,7 +182,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
         </div>
       </div>
-    </nav>
+    </nav> -->
     <script>
       window.addEventListener("DOMContentLoaded", function () {
         // topnav

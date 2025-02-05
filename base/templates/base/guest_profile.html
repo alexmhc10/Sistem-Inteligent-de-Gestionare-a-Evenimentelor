@@ -114,14 +114,14 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
       </div>
       <!-- Sidebar navigation-->
-      <!-- <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+      <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
         <ul id="sidebarnav">
           <li class="nav-small-cap">
             <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
             <span class="hide-menu">Home</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link active" href="{% url 'personal_eveniment_home' %}  " aria-expanded="false">
+            <a class="sidebar-link" href="{% url 'guest_home' %}" aria-expanded="false">
               <span>
                 <iconify-icon icon="solar:home-smile-bold-duotone" class="fs-6"></iconify-icon>
               </span>
@@ -130,18 +130,18 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </li>
           <li class="nav-small-cap">
             <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
-            <span class="hide-menu">Managing tools</span>
+            <span class="hide-menu">About you</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link" href="{% url 'personal_aranjament_invitati' %}" aria-expanded="false">
+            <a class="sidebar-link active" href="{% url 'guest_profile' %}" aria-expanded="false">
               <span>
                 <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
               </span>
-              <span class="hide-menu">Layout</span>
+              <span class="hide-menu">Profile</span>
             </a>
           </li>
         </ul>
-      </nav> -->
+      </nav>
       <!-- End Sidebar navigation -->
     </div>
     <!-- End Sidebar scroll-->
