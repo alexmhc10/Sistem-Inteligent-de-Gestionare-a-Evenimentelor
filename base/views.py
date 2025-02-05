@@ -27,6 +27,9 @@ from user_agents import parse
 from device_detector import DeviceDetector
 from .decorators import user_is_organizer, user_is_staff, user_is_guest
 from django.contrib.auth.hashers import check_password
+from django.utils.timezone import make_aware
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
 
 
 def resume_event(request, event_id):
@@ -588,7 +591,123 @@ def homeAdmin(request):
     loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
+    budget = Budget.objects.first()
+    today = datetime.today()
+    start_of_current_month = datetime(today.year, today.month, 1)
+    if today.month == 1:
+        start_of_previous_month = datetime(today.year - 1, 12, 1)
+    else:
+        start_of_previous_month = datetime(today.year, today.month - 1, 1)
+    events_this_month = Event.objects.filter(event_date__gte=start_of_current_month).count()
+    events_last_month = Event.objects.filter(
+        event_date__gte=start_of_previous_month,
+        event_date__lt=start_of_current_month
+    ).count()
+    if events_last_month > 0:
+        ev_percentage_change = ((events_this_month - events_last_month) / events_last_month) * 100
+    elif events_this_month > 0:
+        ev_percentage_change = events_this_month * 100
+    else:
+        ev_percentage_change = 0
+    locations_this_month = Location.objects.filter(created_at__gte=start_of_current_month).count()
+    locations_last_month = Location.objects.filter(
+        created_at__gte=start_of_previous_month,
+        created_at__lt=start_of_current_month
+    ).count()
+    if locations_last_month > 0:
+        loc_percentage_change = ((locations_this_month - locations_last_month) / locations_last_month) * 100
+    elif locations_this_month > 0:
+        loc_percentage_change = locations_this_month * 100
+    else:
+        loc_percentage_change = 0
+    locations_by_month = (
+    Location.objects
+    .annotate(month=TruncMonth('created_at'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+)
+    location_month_count = []
+    for entry in locations_by_month:
+        month_str = entry['month'].strftime('%m')
+        if month_str == "01":
+            month_str = "Jan"
+        elif month_str == "02":
+            month_str = "Feb"
+        elif month_str == "03":
+            month_str = "Mar"
+        elif month_str == "04":
+            month_str = "Apr"
+        elif month_str == "05":
+            month_str = "May"
+        elif month_str == "06":
+            month_str = "Jun"
+        elif month_str == "07":
+            month_str = "Jul"
+        elif month_str == "08":
+            month_str = "Aug"
+        elif month_str == "09":
+            month_str = "Sep"
+        elif month_str == "10":
+            month_str = "Oct"
+        elif month_str == "11":
+            month_str = "Nov"
+        elif month_str == "12":
+            month_str = "Dec"
+        location_month_count.append(
+            {
+                'month':month_str,
+                'count':entry['total']
+            }
+        )
+    events_by_month = (
+    Event.objects
+    .annotate(month=TruncMonth('event_date'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+)
+    event_month_count = []
+    for entry in events_by_month:
+        month_str = entry['month'].strftime('%m')
+        if month_str == "01":
+            month_str = "Jan"
+        elif month_str == "02":
+            month_str = "Feb"
+        elif month_str == "03":
+            month_str = "Mar"
+        elif month_str == "04":
+            month_str = "Apr"
+        elif month_str == "05":
+            month_str = "May"
+        elif month_str == "06":
+            month_str = "Jun"
+        elif month_str == "07":
+            month_str = "Jul"
+        elif month_str == "08":
+            month_str = "Aug"
+        elif month_str == "09":
+            month_str = "Sep"
+        elif month_str == "10":
+            month_str = "Oct"
+        elif month_str == "11":
+            month_str = "Nov"
+        elif month_str == "12":
+            month_str = "Dec"
+        event_month_count.append(
+            {
+                'month':month_str,
+                'count':entry['total']
+            }
+        )
+    print("Evenimente per luni: ", event_month_count)
     context= {
+        'event_month_count':json.dumps(event_month_count),
+        'location_month_count':json.dumps(location_month_count),
+        'loc_percentage_change':loc_percentage_change,
+        'ev_percentage_change':ev_percentage_change,
+        'events':events,
+        'budget':budget,
         'org_ev':org_ev,
         'loc_nr':loc_nr,
         'ev_nr':ev_nr,
