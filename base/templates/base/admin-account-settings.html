@@ -45,13 +45,12 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
-                        <li><a class="dropdown-item" href="#">New project...</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -159,7 +158,7 @@
                                          style="width: 150px !important;
                                                 height:150px; 
                                                 border: 5px solid #fff;" 
-                                         src="{{ request.user.profile.photo.url }}" alt="Image Description"
+                                         src="{{ request.user.profile_set.first.photo.url }}" alt="Image Description"
                                          >
                                     
                                     <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
@@ -219,7 +218,7 @@
                                      <div class="row mb-4">
                                         <label for="phoneLabel" class="col-sm-3 col-form-label form-label">Phone </label>
                                         <div class="col-sm-9">
-                                           <input type="text" class="js-input-mask form-control" name="phone" id="phoneLabel" placeholder="+x(xxx)xxx-xx-xx" aria-label="+x(xxx)xxx-xx-xx" value="{{ request.user.profile.number }}" data-hs-mask-options="{
+                                           <input type="text" class="js-input-mask form-control" name="phone" id="phoneLabel" placeholder="+x(xxx)xxx-xx-xx" aria-label="+x(xxx)xxx-xx-xx" value="{{ request.user.profile_set.first.number }}" data-hs-mask-options="{
                                               &quot;mask&quot;: &quot;+0(000)000-00-00&quot;
                                               }">
                                         </div>
@@ -274,14 +273,14 @@
                                      <div class="row mb-4">
                                         <label for="addressLine1Label" class="col-sm-3 col-form-label form-label">Address line</label>
                                         <div class="col-sm-9">
-                                           <input type="text" class="form-control" name="address" id="addressLine1Label" placeholder="Your address" value="{{ request.user.profile.street }}" aria-label="Your address" >
+                                           <input type="text" class="form-control" name="address" id="addressLine1Label" placeholder="Your address" value="{{ request.user.profile_set.first.street }}" aria-label="Your address" >
                                         </div>
                                      </div>
 
                                      <div class="row mb-4">
                                         <label for="zipCodeLabel" class="col-sm-3 col-form-label form-label">Zip code <i class="bi-question-circle text-body ms-1" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="You can find your code in a postal address." data-bs-original-title="You can find your code in a postal address."></i></label>
                                         <div class="col-sm-9">
-                                           <input type="text" class="js-input-mask form-control" name="zipCode" id="zipCodeLabel" placeholder="Your zip code" aria-label="Your zip code" value="{{ request.user.profile.zip_code }}" data-hs-mask-options="{
+                                           <input type="text" class="js-input-mask form-control" name="zipCode" id="zipCodeLabel" placeholder="Your zip code" aria-label="Your zip code" value="{{ request.user.profile_set.first.zip_code }}" data-hs-mask-options="{
                                               &quot;mask&quot;: &quot;AA0 0AA&quot;
                                               }">
                                         </div>
@@ -314,12 +313,21 @@
                               </div>
                            </form>
                            <form action="" method="POST">
+                              {% csrf_token %}
                               <input type="hidden" name="form_type" value="form_3">
                               <div id="passwordSection" class="card">
                                  <div class="card-header">
                                     <h4 class="card-title">Change your password</h4>
                                  </div>
                                  <div class="card-body">
+                                    {% if error_pas == True %}
+                                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                                       <strong>Incorrect parameters! </strong> Please type the correct password or check for spelling.
+                                       <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close">
+                                       </button>
+                                     </div>
+                                     {% else %}
+                                     {% endif %}
                                        <div class="row mb-4">
                                           <label for="currentPasswordLabel" class="col-sm-3 col-form-label form-label">Current password</label>
                                           <div class="col-sm-9">
@@ -429,14 +437,14 @@
                                                    <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
                                                          <h4 class="mb-0 ms-2">Facebook</h4>
-                                                         {% if request.user.profile.facebook == "" or request.user.profile.facebook is None %}
+                                                         {% if request.user.profile_set.first.facebook == "" or request.user.profile_set.first.facebook is None %}
                                                          <input id="add_link" name="facebook" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_facebook" >Connect</button>
                                                       </div>
                                                       {% else %}
-                                                      <a class="fs-5" href="{{ request.user.profile.facebook }}">{{ request.user.profile.facebook }}</a>
+                                                      <a class="fs-5" href="{{ request.user.profile_set.first.facebook }}">{{ request.user.profile_set.first.facebook }}</a>
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_facebook" >Disconnect</button>
@@ -455,14 +463,14 @@
                                                    <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
                                                          <h4 class="mb-0 ms-2">Linkedin</h4>
-                                                         {% if request.user.profile.work_link is None or request.user.profile.work_link == "" %}
+                                                         {% if request.user.profile_set.first.work_link is None or request.user.profile_set.first.work_link == "" %}
                                                          <input id="add_link" name="linkedin" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_linkedin" >Connect</button>
                                                       </div>
                                                       {% else %}
-                                                      <a class="fs-5" href="{{ request.user.profile.work_link }}">{{ request.user.profile.work_link }}</a>
+                                                      <a class="fs-5" href="{{ request.user.profile_set.first.work_link }}">{{ request.user.profile_set.first.work_link }}</a>
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_linkedin" >Disconnect</button>
@@ -480,14 +488,14 @@
                                                    <div class="row align-items-center mb-3">
                                                       <div class="col-sm mb-2 mb-sm-0">
                                                          <h4 class="mb-0 ms-2">Google</h4>
-                                                         {% if request.user.profile.google_link is None or request.user.profile.google_link == "" %}
+                                                         {% if request.user.profile_set.first.google_link is None or request.user.profile_set.first.google_link == "" %}
                                                          <input id="add_link" name="google" type="text" class="mt-2 form-control mb-3" style="width:70%;"  placeholder="Add link">
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="connect_google" >Connect</button>
                                                       </div>
                                                       {% else %}
-                                                      <a class="fs-5" href="{{ request.user.profile.google_link }}">{{ request.user.profile.google_link }}</a>
+                                                      <a class="fs-5" href="{{ request.user.profile_set.first.google_link }}">{{ request.user.profile_set.first.google_link }}</a>
                                                       </div>
                                                       <div class="col-sm-auto">
                                                          <button class="btn btn-white btn-sm" type="submit" name="action" value="disconnect_google">Disconnect</button>
@@ -612,7 +620,11 @@ document.addEventListener("DOMContentLoaded", function () {
        new TomSelect('#test-select');
    });
 </script>
-    
+<script>
+   $(document).on('click', '.alert .close', function () {
+       $(this).closest('.alert').fadeOut();
+   });
+</script>
 {% endblock content %}
 
 

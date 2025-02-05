@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from datetime import datetime, timedelta
 
 
 #model pentru noua baza de date
@@ -51,7 +52,7 @@ class Location(models.Model):
     types = models.ManyToManyField(Type, blank=True)
     seats_numbers = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    cost = models.IntegerField(default=3000)
+    cost = models.DecimalField(max_digits=12, decimal_places=2,default=3000)
     number = models.CharField(max_length=20, default="+(40) 74 83 64 823")
     def __str__(self):
         return self.name
@@ -60,7 +61,7 @@ def get_default_user():
     return User.objects.get(username='defaultuser')
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
@@ -92,6 +93,27 @@ class Profile(models.Model):
     )
     def __str__(self):
         return self.user.username
+
+class Notification(models.Model):
+    ACTION_TYPES = [
+        ('created_event', 'Created Event'),
+        ('updated_event', 'Updated Event'),
+        ('deleted_event', 'Deleted Event'),
+        ('created_location', 'Created Location'),
+        ('updated_location', 'Updated Location'),
+        ('deleted_location', 'Deleted Location'),
+        ('updated_profile', 'Updated Profile'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    action_type = models.CharField(max_length=50, choices=ACTION_TYPES)
+    target_object_id = models.PositiveIntegerField()
+    target_object_name = models.CharField(max_length=100, null=True, blank=True)
+    target_model = models.CharField(max_length=50)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_action_type_display()} at {self.timestamp}"
 
 
 class DeviceAccess(models.Model):
@@ -161,9 +183,9 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
-    cost = models.IntegerField(default= 3000)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default= 3000)
     updated_at = models.DateTimeField(auto_now=True)
-    is_canceled = models.BooleanField(default=False)  # Adăugat
+    is_canceled = models.BooleanField(default=False)
     organized_by = models.ForeignKey(
             User,
             on_delete=models.CASCADE, 
@@ -205,4 +227,82 @@ class Message(models.Model):
     
     class Meta:
         ordering = ['-created']
+
+
+from decimal import Decimal
+
+class Budget(models.Model):
+    profit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    initial_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    final_budget = models.DecimalField(max_digits=12, decimal_places=2, default=100000)
+    total_budget = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_revenue = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    total_expenses = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    last_location_update = models.DateField(null=True, blank=True)
     
+    def update_budget_for_event(self, event_cost):
+        self.total_revenue += event_cost
+        self.final_budget += event_cost 
+        self.save()
+
+    def update_locations(self, locations):
+        current_month = now().date().replace(day=1)
+        if self.last_location_update != current_month:
+            self.initial_budget = self.total_budget
+            total_location_cost = sum(location.cost for location in locations)
+            self.total_expenses += total_location_cost
+            self.final_budget = self.total_revenue - self.total_expenses
+            self.last_location_update = current_month
+            self.save()
+    
+    def add_new_location(self, location_cost):
+        self.total_expenses += location_cost
+        self.final_budget = self.total_revenue - self.total_expenses
+        self.save()
+    
+    def calc_profit(self):
+        today = now().date()
+        next_day = today.replace(day=28) + timedelta(days=4)
+        if next_day.month != today.month:
+            self.profit = ((self.final_budget - self.initial_budget) / self.initial_budget) * 100
+            self.total_budget = self.final_budget
+            self.initial_budget = 0
+            self.final_budget = 0
+            company_profit = CompanyProfit(profit=self.profit)
+            company_profit.save()
+
+
+class CompanyProfit(models.Model):
+    profit = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Profit of {self.profit} at {self.created_at}"
+
+class Salary(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)  
+    base_salary = models.DecimalField(max_digits=10, decimal_places=2, default=1500)  
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0)  
+    total_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    initial_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    final_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+    last_month_salary = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def calculate_total_salary(self):
+        self.total_salary = self.base_salary + self.bonus
+        self.final_salary = self.total_salary
+        self.last_month_salary = self.final_salary
+        self.save()
+
+    def update_bonus_for_event(self, event_cost):
+        bonus_percentage = Decimal("0.40") 
+        self.bonus += event_cost * bonus_percentage
+        self.calculate_total_salary()
+        self.save()
+
+    def __str__(self):
+        return f"Salary for {self.user.username}: {self.total_salary}"
+
+
+

@@ -26,6 +26,10 @@ import socket
 from user_agents import parse
 from device_detector import DeviceDetector
 from .decorators import user_is_organizer, user_is_staff, user_is_guest
+from django.contrib.auth.hashers import check_password
+from django.utils.timezone import make_aware
+from django.db.models.functions import TruncMonth
+from django.db.models import Count
 
 
 def resume_event(request, event_id):
@@ -198,12 +202,11 @@ def carousel_view(request):
         form = EventForm()
     return render(request, 'base/carousel-imagini.html', {'form': form})
 
-
 def loginPage(request):
     if request.user.is_authenticated:
         print(f"User {request.user.username} is already authenticated, logging out.")
         logout(request)
-
+    next_url = request.GET.get('next', '/')
     page = 'login'
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -212,20 +215,25 @@ def loginPage(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            profile = user.profile_set.first()
+            print("Tip: ", profile.user_type)
+            print("Profil logat: ", profile)
             print(f"Authentication successful for user: {user.username}")
             login(request, user)
-            if hasattr(user, 'is_superuser') and user.is_superuser:
-                print(f"Redirecting superuser {user.username} to admin home.")
-                return redirect('home-admin')
-            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'staff':  
+            if user.is_superuser:
+                if next_url != "" and next_url != '/':
+                    return redirect(next_url)
+                else:
+                    return redirect('home-admin')
+            elif profile.user_type == 'staff':
                 print(f"Redirecting user {user.username} to personal home.")
-                return redirect('personal_eveniment_home')
-            elif hasattr(request.user, 'profile') and request.user.profile.user_type == 'guest':
-                print(f"Redirecting user {user.username} to guest home.")
-                return redirect('guest_home')
+                return HttpResponseRedirect(reverse('personal_eveniment_home'))  
+            elif profile.user_type == 'organizer':
+                print(f"Redirecting user {user.username} to organizer home.")
+                return HttpResponseRedirect(reverse('organizer_dashboard'))  
             else:
                 print(f"Redirecting standard user {user.username} to home.")
-                return redirect('home')
+                return HttpResponseRedirect(reverse('home'))  
         else:
             print(f"Authentication failed for username: {username}")
             messages.error(request, "Invalid credentials")
@@ -237,7 +245,6 @@ def loginPage(request):
 
 
 
-
 def registerPage(request):
     form = ProfileForm()
     if request.method == 'POST':
@@ -245,6 +252,7 @@ def registerPage(request):
         if form.is_valid():
             profile = form.save(commit=False)  
             profile.approved = False
+            profile.user_type = "Organizer"
             profile.save()
             messages.success(request, "Profile submitted for approval.")
             return redirect('login')
@@ -290,7 +298,8 @@ def admin_locations(request):
             'located':location.location,
             'seats':location.seats_numbers,
             'added_at':location.created_at,
-            'cost': location.cost
+            'cost': location.cost,
+            'types':location.types
         })
     organizers = User.objects.filter(is_superuser = False)
     count_organizers = organizers.count()
@@ -433,10 +442,11 @@ def admin_view_locations(request, name):
 def users(request):
     if not request.user.is_superuser:
         return HttpResponse("Only superusers can approve users.")
-    
     awaiting_profiles = Profile.objects.filter(approved=False)
     waiting_count = Profile.objects.filter(approved=False).count()
     users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    error_pas = False
+    updated = False
     if request.method == 'POST':
         nr_form = request.POST.get('nr_form')
         if nr_form == "form_1":
@@ -445,35 +455,70 @@ def users(request):
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
                 return HttpResponse("User not found.")
+            profile = user.profile_set.first() 
             picture = request.FILES.get('profile_picture')
             first_name = request.POST.get('editFirstNameModal')
             last_name = request.POST.get('editLastNameModal')
             email = request.POST.get('editEmailModal')
             username = request.POST.get('editUsernameModal')
             phone = request.POST.get('phone')
-
-            if user.profile:
+            if profile:
                 if picture:
-                    user.profile.photo = picture
-                user.profile.first_name = first_name
-                user.profile.last_name = last_name
-                user.profile.email = email
-                user.profile.phone = phone
-                user.profile.save()
-
+                    profile.photo = picture
+                profile.first_name = first_name
+                profile.last_name = last_name
+                profile.email = email
+                profile.phone = phone
+                profile.save()
+                updated = True
             user.first_name = first_name
             user.last_name = last_name
             user.email = email
             user.username = username
             user.save()
-
+            updated = True
             return redirect('users')
-
+        if nr_form == "form_3":
+            id = request.POST.get('profile_id')
+            profile = Profile.objects.get(id=id)
+            if request.POST.get('action') == "accept":
+                user = User.objects.create_user(
+                    username=profile.username,
+                    password=profile.password,
+                    email=profile.email
+                )
+                profile.user = user 
+                profile.approved = True
+                profile.save()
+                return redirect('users')
+            if request.POST.get('action') == "reject":
+                profile.delete()
+                return redirect('users')
+        if nr_form == "form_2":
+            id = request.POST.get('user_id')
+            user = User.objects.get(id=id)
+            password = request.POST.get('currentPassword', '')
+            if check_password(password, request.user.password):
+                new_pass = request.POST.get('editUserModalNewPassword')
+                confirm_new_pas = request.POST.get('confirmNewPassword')
+                if new_pass == confirm_new_pas:
+                    user.set_password(new_pass)
+                    user.save()
+                    updated = True
+                else:
+                    error_pas = True
+            else:
+                error_pas = True
+    user_profiles = {user: user.profile_set.first() for user in users}
     profiles = Profile.objects.all()
-    print("Profile: ",profiles)
     user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
+    notifications = Notification.objects.all()
     context = {
+        'notifications':notifications,
+        'user_profiles':user_profiles,
+        'updated':updated,
+        'error_pas':error_pas,
         'non_acc':non_acc,
         'user_data':user_data,
         'chartusers': json.dumps(user_data),
@@ -546,7 +591,123 @@ def homeAdmin(request):
     loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
+    budget = Budget.objects.first()
+    today = datetime.today()
+    start_of_current_month = datetime(today.year, today.month, 1)
+    if today.month == 1:
+        start_of_previous_month = datetime(today.year - 1, 12, 1)
+    else:
+        start_of_previous_month = datetime(today.year, today.month - 1, 1)
+    events_this_month = Event.objects.filter(event_date__gte=start_of_current_month).count()
+    events_last_month = Event.objects.filter(
+        event_date__gte=start_of_previous_month,
+        event_date__lt=start_of_current_month
+    ).count()
+    if events_last_month > 0:
+        ev_percentage_change = ((events_this_month - events_last_month) / events_last_month) * 100
+    elif events_this_month > 0:
+        ev_percentage_change = events_this_month * 100
+    else:
+        ev_percentage_change = 0
+    locations_this_month = Location.objects.filter(created_at__gte=start_of_current_month).count()
+    locations_last_month = Location.objects.filter(
+        created_at__gte=start_of_previous_month,
+        created_at__lt=start_of_current_month
+    ).count()
+    if locations_last_month > 0:
+        loc_percentage_change = ((locations_this_month - locations_last_month) / locations_last_month) * 100
+    elif locations_this_month > 0:
+        loc_percentage_change = locations_this_month * 100
+    else:
+        loc_percentage_change = 0
+    locations_by_month = (
+    Location.objects
+    .annotate(month=TruncMonth('created_at'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+)
+    location_month_count = []
+    for entry in locations_by_month:
+        month_str = entry['month'].strftime('%m')
+        if month_str == "01":
+            month_str = "Jan"
+        elif month_str == "02":
+            month_str = "Feb"
+        elif month_str == "03":
+            month_str = "Mar"
+        elif month_str == "04":
+            month_str = "Apr"
+        elif month_str == "05":
+            month_str = "May"
+        elif month_str == "06":
+            month_str = "Jun"
+        elif month_str == "07":
+            month_str = "Jul"
+        elif month_str == "08":
+            month_str = "Aug"
+        elif month_str == "09":
+            month_str = "Sep"
+        elif month_str == "10":
+            month_str = "Oct"
+        elif month_str == "11":
+            month_str = "Nov"
+        elif month_str == "12":
+            month_str = "Dec"
+        location_month_count.append(
+            {
+                'month':month_str,
+                'count':entry['total']
+            }
+        )
+    events_by_month = (
+    Event.objects
+    .annotate(month=TruncMonth('event_date'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+)
+    event_month_count = []
+    for entry in events_by_month:
+        month_str = entry['month'].strftime('%m')
+        if month_str == "01":
+            month_str = "Jan"
+        elif month_str == "02":
+            month_str = "Feb"
+        elif month_str == "03":
+            month_str = "Mar"
+        elif month_str == "04":
+            month_str = "Apr"
+        elif month_str == "05":
+            month_str = "May"
+        elif month_str == "06":
+            month_str = "Jun"
+        elif month_str == "07":
+            month_str = "Jul"
+        elif month_str == "08":
+            month_str = "Aug"
+        elif month_str == "09":
+            month_str = "Sep"
+        elif month_str == "10":
+            month_str = "Oct"
+        elif month_str == "11":
+            month_str = "Nov"
+        elif month_str == "12":
+            month_str = "Dec"
+        event_month_count.append(
+            {
+                'month':month_str,
+                'count':entry['total']
+            }
+        )
+    print("Evenimente per luni: ", event_month_count)
     context= {
+        'event_month_count':json.dumps(event_month_count),
+        'location_month_count':json.dumps(location_month_count),
+        'loc_percentage_change':loc_percentage_change,
+        'ev_percentage_change':ev_percentage_change,
+        'events':events,
+        'budget':budget,
         'org_ev':org_ev,
         'loc_nr':loc_nr,
         'ev_nr':ev_nr,
@@ -599,15 +760,16 @@ def admin_settings(request):
         os_name=os_name,
         defaults={'last_access_time': timezone.now().strftime('%Y-%m-%d %H:%M:%S'), 'user_agent': user_agent_string},
     )
+    error_pas = False
     ip_address = request.META.get('REMOTE_ADDR', '')
-    print("Date: ",request.POST,"\n")
     user = request.user
+    profile = user.profile_set.first()
     if request.method == 'POST':
         form_type = request.POST.get('form_type', '')
         if form_type == 'form_1':
             profile_photo = request.FILES.get('profile_photo')
             if profile_photo:
-                user.profile.photo = profile_photo
+                profile.photo = profile_photo
             firstname = request.POST.get('firstName')
             lastname = request.POST.get('lastName')
             email = request.POST.get('email')
@@ -617,50 +779,88 @@ def admin_settings(request):
             address = request.POST.get('address')
             zipcode = request.POST.get('zipCode')
             user.first_name = firstname
-            user.profile.first_name = firstname
+            profile.first_name = firstname
             user.last_name = lastname
-            user.profile.last_name = lastname
+            profile.last_name = lastname
             user.email = email
-            user.profile.email = email
+            profile.email = email
             user.username = username
-            user.profile.username = username
-            user.profile.number = phone
-            user.profile.location = location
-            user.profile.street = address
-            user.profile.zip_code = zipcode
+            profile.username = username
+            profile.number = phone
+            profile.location = location
+            profile.street = address
+            profile.zip_code = zipcode
             user.save()
-            user.profile.save()
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_2':
             email = request.POST.get('newEmail')
             user.email = email
-            user.profile.email = email
+            profile.email = email
             user.save()
-            user.profile.save()
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_4':
             action = request.POST.get('action')
             linkedin = request.POST.get('linkedin')
             facebook = request.POST.get('facebook')
             google = request.POST.get('google')
+            profile = profile
             if action == "connect_linkedin":
-                user.profile.work_link = linkedin
+                profile.work_link = linkedin
+            elif action == "disconnect_linkedin":
+                profile.work_link = ""
+            elif action == "connect_google":
+                profile.google_link = google
+            elif action == "disconnect_google":
+                profile.google_link = ""
+            elif action == "connect_facebook":
+                profile.facebook = facebook
+            elif action == "disconnect_facebook":
+                profile.facebook = ""
+                profile.save()
+            return redirect('admin_account_settings')
+            print("Profil: ", request.profile)
+            action = request.POST.get('action')
+            linkedin = request.POST.get('linkedin')
+            facebook = request.POST.get('facebook')
+            google = request.POST.get('google')
+            if action == "connect_linkedin":
+                profile.work_link = linkedin
             if action == "disconnect_linkedin":
-                user.profile.work_link = ""
+                profile.work_link = ""
             if action == "connect_google":
-                user.profile.google_link = google
+                profile.google_link = google
             if action == "disconnect_google":
-                user.profile.google_link = ""
+                profile.google_link = ""
             if action == "connect_facebook":
-                user.profile.facebook = facebook
+                profile.facebook = facebook
             if action == "disconnect_facebook":
-                user.profile.facebook = ""
-            user.profile.save()
+                profile.facebook = ""
+            profile.save()
             return redirect('admin_account_settings')
         elif form_type == 'form_5':
             request.user.delete()
-            request.user.profile.delete()
+            request.profile.delete()
             return redirect('')
+        elif form_type == 'form_3':
+            print(request.POST)
+            password = request.POST.get('currentPassword', '')
+            if check_password(password, request.user.password):
+                new_pass = request.POST.get('newPassword')
+                confirm_new_pas = request.POST.get('confirmNewPassword')
+                if new_pass != None and confirm_new_pas != None:
+                    if new_pass == confirm_new_pas:
+                        user.set_password(new_pass)
+                        user.save()
+                        return redirect('login')
+                    else:
+                        error_pas = True
+                else:
+                    error_pas = True
+            else:
+                error_pas = True
+
     devices = DeviceAccess.objects.all()
     for device in devices:
         print("Dispozitiv: ", device.device_name, device.last_access_time)
@@ -671,7 +871,8 @@ def admin_settings(request):
         'device_name': device_name,  
         'os_name': os_name,
         'ip_address': ip_address,
-        'devices':devices
+        'devices':devices,
+        'error_pas':error_pas
     }
     return render(request, 'base/admin-account-settings.html', context)
 
@@ -936,6 +1137,13 @@ def updateLocation(request, pk):
         form = LocationForm(request.POST, instance=location)
         if form.is_valid():
             form.save()
+            Notification.objects.create(
+                user=request.user,
+                action_type='updated_location',
+                target_object_id=location.id,
+                target_object_name=location.name,
+                target_model='Location'
+            )
             return redirect('home')
     context = {
         'form': form,

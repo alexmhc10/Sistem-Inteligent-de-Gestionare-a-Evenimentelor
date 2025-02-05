@@ -49,13 +49,12 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
-                        <li><a class="dropdown-item" href="#">New project...</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -102,6 +101,14 @@
                                 <div>
                                     <p class="text-muted text-uppercase fs-12 fw-medium mb-2">Event Types</p>
                                     <ul class="list-unstyled mb-0 filter-list">
+                                        <a href="#" class="d-flex py-1 align-items-center">
+                                            <div class="flex-grow-1">
+                                                <h5 class="fs-13 mb-0 listname">All</h5>
+                                            </div>
+                                            <div class="flex-shrink-0 ms-2">
+                                                <span class="badge bg-light text-muted">{{ all_locations_count }}</span>
+                                            </div>
+                                        </a>
                                         {% for item in types_with_location_count %}
                                         <li>
                                             <a href="#" class="d-flex py-1 align-items-center">
@@ -317,7 +324,7 @@
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
                                                 <input type="text" class="form-control" id="searchProductList"
-                                                    placeholder="Search Events...">
+                                                    placeholder="Search Locations...">
                                                 <i class="ri-search-line search-icon"></i>
                                             </div>
                                         </div>
@@ -378,7 +385,7 @@
                                                 <div class="gridjs-wrapper" style="height: auto;">
                                                     <table role="grid" class="gridjs-table" style="height: auto;">
                                                         <thead class="gridjs-thead">
-                                                            <tr class="gridjs-tr">
+                                                            <tr>
                                                                 <th data-column-id="#"
                                                                 class="gridjs-th gridjs-th-sort text-muted"
                                                                 tabindex="0" style="width: 40px;">
@@ -424,7 +431,7 @@
                                                         </thead>
                                                        {% for item in detailed_locations %}
                                                        <tbody class="gridjs-tbody">
-                                                        <tr class="gridjs-tr">
+                                                        <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
                                                             <td data-column-id="#" class="gridjs-td">
                                                                 <span>
                                                                     <div class="form-check checkbox-product-list">
@@ -483,7 +490,7 @@
                                                                     </span>
                                                                 </span>
                                                             </td>
-                                                            <td data-column-id="action" class="gridjs-td">
+                                                            <td data-column-id="action" class="gridjs-td" >
                                                                 <span>
                                                                     <div class="dropdown">
                                                                         <button
@@ -527,25 +534,20 @@
                                                         
                                                     </tbody>
                                                        {% endfor %}
+                                                       
                                                     </table>
+                                                        <div class="py-4 text-center no-result-message"style="display: none;">
+                                                            <div style="width:1185px;"></div>
+                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                        </div>
                                                 </div>
-                                                <div class="gridjs-footer">
+                                                <div class="gridjs-footer" id="footer-1">
                                                     <div class="gridjs-pagination">
                                                         <div role="status" aria-live="polite" class="gridjs-summary"
-                                                            title="Page 1 of 2">Showing <b>1</b> to <b>10</b> of
-                                                            <b> {{ events_count }} </b> results
+                                                            title="Page 1 of 1">
                                                         </div>
                                                         <div class="gridjs-pages">
-                                                            <button tabindex="0" role="button" disabled=""
-                                                                title="Previous" aria-label="Previous"
-                                                                class="">Previous</button>
-                                                            <button tabindex="0" role="button"
-                                                                class="gridjs-currentPage" title="Page 1"
-                                                                aria-label="Page 1">1</button>
-                                                            <button tabindex="0" role="button" class="" title="Page 2"
-                                                                aria-label="Page 2">2</button>
-                                                            <button tabindex="0" role="button" title="Next"
-                                                                aria-label="Next" class="">Next</button>
+                                                            
                                                         </div>
                                                     </div>
                                                 </div>
@@ -561,7 +563,7 @@
                                                 <div class="gridjs-wrapper" style="height: auto;">
                                                     <table role="grid" class="gridjs-table" style="height: auto;">
                                                         <thead class="gridjs-thead">
-                                                            <tr class="gridjs-tr">
+                                                            <tr class="" >
                                                                 <th data-column-id="#"
                                                                 class="gridjs-th gridjs-th-sort text-muted"
                                                                 tabindex="0" style="width: 40px;">
@@ -608,8 +610,8 @@
                                                         <tbody class="gridjs-tbody">
                                                             {% for item in new_locations_detailed %}
                                                             <tbody class="gridjs-tbody">
-                                                             <tr class="gridjs-tr">
-                                                                 <td data-column-id="#" class="gridjs-td">
+                                                                <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                                    <td data-column-id="#" class="gridjs-td">
                                                                      <span>
                                                                          <div class="form-check checkbox-product-list">
                                                                              <input class="form-check-input"
@@ -658,6 +660,7 @@
                                                                      <span>{{ item.cost }}$</span>
                                                                  </td>
                                                                  <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
+
                                                                  <td data-column-id="rating" class="gridjs-td">
                                                                      <span>
                                                                          <span
@@ -713,19 +716,90 @@
                                                             {% endfor %}
                                                         </tbody>
                                                     </table>
+                                                        <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
+                                                            <div style="width:1185px;"></div>
+                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                        </div>
                                                 </div>
-                                                <div class="gridjs-footer">
+                                                <div class="gridjs-footer" id="footer-2">
+                                                    <div class="gridjs-pagination">
+                                                        <div role="status" aria-live="polite" class="gridjs-summary"
+                                                            title="Page 1 of 1"></div>
+                                                        <div class="gridjs-pages">
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div id="gridjs-temp" class="gridjs-temp"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="productnav-draft" role="tabpanel">
+                                        <div id="table-product-list-published" class="table-card gridjs-border-none">
+                                            <div role="complementary" class="gridjs gridjs-container"
+                                                style="width: 100%;">
+                                                <div class="gridjs-wrapper" style="height: auto;">
+                                                    <table role="grid" class="gridjs-table" style="height: auto;">
+                                                        <thead class="gridjs-thead">
+                                                            <tr class="" >
+                                                                <th data-column-id="#"
+                                                                class="gridjs-th gridjs-th-sort text-muted"
+                                                                tabindex="0" style="width: 40px;">
+                                                                <div class="gridjs-th-content">#</div>
+                                                                
+                                                            </th>
+                                                                <th data-column-id="event"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width: 360px;">
+                                                                    <div class="gridjs-th-content">Location</div>
+                                                                </th>
+                                                                <th data-column-id="organizer"
+                                                                class="gridjs-th gridjs-th-sort text-muted"
+                                                                tabindex="0" style="width: 200px;">
+                                                                <div class="gridjs-th-content">Added by</div>
+                                                            </th>
+                                                                <th data-column-id="guests"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width:120px;">
+                                                                    <div class="gridjs-th-content">Max Guests</div>
+                                                                </th>
+                                                                <th data-column-id="price"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width: 101px;">
+                                                                    <div class="gridjs-th-content">Price</div>
+                                                                </th>
+                                                                <th data-column-id="location"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width:184px;">
+                                                                    <div class="gridjs-th-content">Location</div>
+                                                                </th>
+                                                                <th data-column-id="rating"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width: 105px;">
+                                                                    <div class="gridjs-th-content">Rating</div>
+                                                                </th>
+                                                                <th data-column-id="action"
+                                                                    class="gridjs-th gridjs-th-sort text-muted"
+                                                                    tabindex="0" style="width: 80px;">
+                                                                    <div class="gridjs-th-content">Action</div>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="gridjs-tbody">
+                                                            
+                                                        </tbody>
+                                                    </table>
+                                                        <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
+                                                            <div style="width:1185px;"></div>
+                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                        </div>
+                                                </div>
+                                                <div class="gridjs-footer" id="footer-3">
                                                     <div class="gridjs-pagination">
                                                         <div role="status" aria-live="polite" class="gridjs-summary"
                                                             title="Page 1 of 1">Showing <b>1</b> to <b>5</b> of <b>5</b>
                                                             results</div>
-                                                        <div class="gridjs-pages"><button tabindex="0" role="button"
-                                                                disabled="" title="Previous" aria-label="Previous"
-                                                                class="">Previous</button><button tabindex="0"
-                                                                role="button" class="gridjs-currentPage" title="Page 1"
-                                                                aria-label="Page 1">1</button><button tabindex="0"
-                                                                role="button" disabled="" title="Next" aria-label="Next"
-                                                                class="">Next</button></div>
+                                                        <div class="gridjs-pages"></div>
                                                     </div>
                                                 </div>
                                                 <div id="gridjs-temp" class="gridjs-temp"></div>
@@ -733,14 +807,6 @@
                                         </div>
                                     </div>
 
-                                    <div class="tab-pane" id="productnav-draft" role="tabpanel">
-                                        <div class="py-4  text-center">
-                                            
-                                            <div style="width:1185px;"></div>
-                                            <h5 class="mt-4">Sorry! No Result Found</h5>
-                                        </div>
-                                    </div>
-                                </div>
 
                             </div>
                         </div>
@@ -773,6 +839,8 @@
         </div>
     </div>
 </div>
+
+    
 <script>
     var existingSlider = document.getElementById('product-price-range');
     
@@ -822,7 +890,123 @@
         }
     });
 </script>
+<script>
+    window.onload = function () {
+    let eventsCount = {{ all_locations_count }};  
+    let rowsPerPage = 5;  
+    let totalPages = Math.ceil(eventsCount / rowsPerPage);  
+    let currentPage = 1;
+    
+    let paginationContainer = document.querySelector(".gridjs-pages");
+    let rows = document.querySelectorAll(".gridjs-tr");
+    let summary = document.querySelector(".gridjs-summary");
+    let noResultMessages = document.querySelectorAll(".no-result-message");
+    let typeFilters = document.querySelectorAll(".filter-list .listname"); 
+    
+    function updatePagination() {
+        summary.innerHTML = `Showing <b>${(currentPage - 1) * rowsPerPage + 1}</b> to <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
+        createPaginationButtons();
+        filterRows();  
+    }
 
+    function createPaginationButtons() {
+        paginationContainer.innerHTML = "";
+        let prevButton = document.createElement("button");
+        prevButton.classList.add("pagination-button");
+        prevButton.textContent = "Previous";
+        prevButton.disabled = currentPage === 1;
+        prevButton.onclick = function () {
+            if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+            }
+        };
+        paginationContainer.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+            let pageButton = document.createElement("button");
+            pageButton.textContent = i;
+            pageButton.classList.add("pagination-button");
+            pageButton.classList.toggle("gridjs-currentPage", i === currentPage);
+            pageButton.onclick = function () {
+                currentPage = i;
+                updatePagination();
+            };
+            paginationContainer.appendChild(pageButton);
+        }
+
+        let nextButton = document.createElement("button");
+        nextButton.classList.add("pagination-button");
+        nextButton.textContent = "Next";
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.onclick = function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+            }
+        };
+        paginationContainer.appendChild(nextButton);
+    }
+
+    function filterRows() {
+        let visibleRows = 0;
+
+        rows.forEach(row => {
+            let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
+            let isVisible = eventTypes.includes(selectedType) || selectedType === "all";
+
+            let rowIndex = Array.from(rows).indexOf(row);
+            if (isVisible && rowIndex >= (currentPage - 1) * rowsPerPage && rowIndex < currentPage * rowsPerPage) {
+                row.style.display = "";
+                visibleRows++;
+            } else {
+                row.style.display = "none";
+            }
+        });
+
+        // Verifică dacă există rânduri vizibile și actualizează vizibilitatea mesajului
+        if (visibleRows === 0) {
+            noResultMessages.forEach(message => message.style.display = "block");
+        } else {
+            noResultMessages.forEach(message => message.style.display = "none");
+        }
+    }
+
+    typeFilters.forEach(filter => {
+        filter.addEventListener("click", function (event) {
+            event.preventDefault();
+            let selectedType = filter.innerText.trim().toLowerCase();
+            
+            console.log("Filter selected:", selectedType); 
+
+            let visibleRows = 0;  // Contorizează rândurile vizibile
+
+            rows.forEach(row => {
+                let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
+                console.log("Row types:", eventTypes);  
+
+                // Filtrarea rândurilor
+                if (eventTypes.includes(selectedType) || selectedType === "all") {
+                    row.style.display = "";
+                    visibleRows++;  // Crește contorul pentru rândurile vizibile
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            if (visibleRows === 0) {
+                noResultMessages.forEach(message => message.style.display = "block");  // Afișează toate mesajele
+            } else {
+                noResultMessages.forEach(message => message.style.display = "none");  // Ascunde toate mesajele
+            }
+        });
+    });
+
+    // Inițializează paginarea și filtrarea
+    updatePagination();
+};
+
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const openModal = document.querySelectorAll('.activate-modal');
@@ -852,5 +1036,36 @@
         });
     });
     </script>
-    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let searchInput = document.getElementById("searchProductList");
+        
+            searchInput.addEventListener("keyup", function () {
+                let filter = searchInput.value.toLowerCase();
+                let rows = document.querySelectorAll(".gridjs-tbody .gridjs-tr");
+        
+                rows.forEach(row => {
+                    let locationName = row.querySelector("td[data-column-id='product']").textContent.toLowerCase();
+                    if (locationName.includes(filter)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                });
+            });
+        });
+        </script>
+<style>
+    .pagination-button{
+        padding:5px;
+        margin:10px;
+        border:none;
+        background: white;
+        font-weight: 600;
+    }
+    .pagination-button.gridjs-currentPage{
+        padding-left:10px;
+        padding-right:10px;
+    }
+</style>
 {% endblock content %}

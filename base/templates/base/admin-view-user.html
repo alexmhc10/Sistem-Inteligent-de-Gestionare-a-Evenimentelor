@@ -46,13 +46,12 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
-                        <li><a class="dropdown-item" href="#">New project...</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
                         <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
@@ -73,21 +72,16 @@
                      </div>
                  </div>
                  
-                 <!-- Profile Header -->
                  <div class="text-center mb-5" style="position: relative;">
-                     <!-- Avatar -->
                      <div class="avatar avatar-xxl avatar-circle profile-cover-avatar" 
                           style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%);">
                          <img class="avatar-img" 
                               style="width: 100px; height: 100px; border-radius: 50%;" 
-                              src="{{ user.profile.photo.url }}" 
+                              src="{{ user.profile_set.first.photo.url }}" 
                               alt="Image Description">
                          <span class="avatar-status avatar-status-success"></span>
                      </div>
                  </div>
-                 
-                  <!-- End Profile Header -->
-                  <!-- Nav -->
                   <div class="js-nav-scroller hs-nav-scroller-horizontal mb-5">
                      <ul class="nav nav-tabs align-items-center">
                         <li class="nav-item">
@@ -127,11 +121,11 @@
                                  <ul class="list-unstyled list-py-2 text-dark mb-0">
                                     <li class="pb-0"><span class="card-subtitle">About</span></li>
                                     <li><i class="bi-person dropdown-item-icon"></i> {{ user.first_name }} {{ user.last_name }}</li>
-                                    <li><i class="bi bi-calendar"></i></i> {{ user.profile.age }} years old </li>
+                                    <li><i class="bi bi-calendar"></i></i> {{ user.profile_set.first.age }} years old </li>
                                     <li><i class="bi bi-briefcase"></i> Joined in  {{ user.date_joined }} </li>
                                     <li class="pt-4 pb-0"><span class="card-subtitle">Contacts</span></li>
                                     <li><i class="bi-at dropdown-item-icon"></i> {{ user.email }}</li>
-                                    <li><i class="bi-phone dropdown-item-icon"></i> {{ user.profile.number }}</li>
+                                    <li><i class="bi-phone dropdown-item-icon"></i> {{ user.profile_set.first.number }}</li>
                                     <li class="pt-4 pb-0"><span class="card-subtitle">Management</span></li>
                                     <li><i class="bi-people dropdown-item-icon"></i> Organizer of {{ count_events }} event/s</li>
                                     <li><i class="bi-stickies dropdown-item-icon"></i> Managing {{ count_locations }} locations</li>

@@ -45,14 +45,13 @@
                 <div class="dropdown pb-4">
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile.photo.url }}" alt="hugenerd" width="30" height="30"
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
                             class="rounded-circle">
                         <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
-                        <li><a class="dropdown-item" href="#">New project...</a></li>
-                        <li><a class="dropdown-item" href="#">Settings</a></li>
-                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Profile</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
+                        <li><a class="dropdown-item" href="">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -84,14 +83,26 @@
                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> Total Earnings</p>
                                  </div>
                                  <div class="flex-shrink-0">
-                                    <h5 class="text-success fs-14 mb-0">
-                                       <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +16.24 %
+                                    <h5 class="
+                                    {% if budget.profit > 0.00 %}
+                                    text-success
+                                    {% elif budget.profit == 0.00 %}
+                                    text-muted
+                                    {% elif budget.profit < 0.00 %}
+                                    text-danger
+                                    {% endif %}
+                                    fs-14 mb-0">
+                                       <i class="ri-arrow-right-up-line fs-13 align-middle"></i>
+                                       {% if budget.profit > 0 %}
+                                       +
+                                       {% endif %}
+                                       {{ budget.profit }} %
                                     </h5>
                                  </div>
                               </div>
                               <div class="d-flex align-items-end justify-content-between mt-4">
                                  <div>
-                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4">$<span class="counter-value" data-target="559.25">559.25</span>k </h4>
+                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4">$<span class="counter-value" data-target="{{ budget.total_budget }}">{{ budget.total_budget }}</span>k </h4>
                                  </div>
                                  <div class="avatar-sm flex-shrink-0">
                                     <span class="avatar-title bg-success-subtle rounded fs-3">
@@ -110,8 +121,18 @@
                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Events</p>
                                  </div>
                                  <div class="flex-shrink-0">
-                                    <h5 class="text-danger fs-14 mb-0">
-                                       <i class="ri-arrow-right-down-line fs-13 align-middle"></i> -3.57 %
+                                    <h5 class="{% if ev_percentage_change > 0.00 %}
+                                       text-success
+                                       {% elif ev_percentage_change == 0.00 %}
+                                       text-muted
+                                       {% elif ev_percentage_change < 0.00 %}
+                                       text-danger
+                                       {% endif %} fs-14 mb-0">
+                                       <i class="ri-arrow-right-down-line fs-13 align-middle"></i>
+                                       {% if ev_percentage_change > 0 %}
+                                       +
+                                       {% endif %}
+                                       {{ ev_percentage_change }} %
                                     </h5>
                                  </div>
                               </div>
@@ -137,7 +158,11 @@
                                  </div>
                                  <div class="flex-shrink-0">
                                     <h5 class="text-success fs-14 mb-0">
-                                       <i class="ri-arrow-right-up-line fs-13 align-middle"></i> +29.08 %
+                                       <i class="ri-arrow-right-up-line fs-13 align-middle"></i>
+                                       {% if loc_percentage_change > 0 %}
+                                       +
+                                       {% endif %}
+                                       {{loc_percentage_change}} %
                                     </h5>
                                  </div>
                               </div>
@@ -182,13 +207,12 @@
                      </div>
                   </div>
                   <div class="row mb-4">
-                     <div class="col-xl-6 me-5">
+                     <div class="col-xl-6 me-2" style="width: 55%;">
                         <div class="card">
                            <div class="card-header border-0 align-items-center d-flex">
                               <h4 class="card-title mb-0 flex-grow-1">Statistics</h4>
                               <div>
                                  <button id="btn-all" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">ALL</button>
-                                 <button id="btn-1m" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">1M</button>
                                  <button id="btn-6m" type="button" class="btn btn-soft-secondary material-shadow-none btn-sm">6M</button>
                                  <button id="btn-1y" type="button" class="btn btn-soft-primary material-shadow-none btn-sm">1Y</button>
                              </div>
@@ -197,14 +221,14 @@
                               <div class="row g-0 text-center justify-content-center">
                                  <div class="col-6 col-sm-3">
                                     <div class="p-3 border border-dashed ">
-                                       <h5 class="mb-1"><span class="counter-value" data-target="7585">7,585</span></h5>
-                                       <p class="text-muted mb-0">Orders</p>
+                                       <h5 class="mb-1"><span class="counter-value" data-target="7585"> {{ ev_nr }} </span></h5>
+                                       <p class="text-muted mb-0">Events</p>
                                     </div>
                                  </div>
                                  <div class="col-6 col-sm-3">
                                     <div class="p-3 border border-dashed border-start-0">
-                                       <h5 class="mb-1">$<span class="counter-value" data-target="22.89">22.89</span>k</h5>
-                                       <p class="text-muted mb-0">Earnings</p>
+                                       <h5 class="mb-1"><span class="counter-value" data-target="22.89"> {{ loc_nr }} </span></h5>
+                                       <p class="text-muted mb-0">Locations</p>
                                     </div>
                                  </div>
                                 
@@ -719,7 +743,7 @@
                                           <td>
                                              <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 me-2">
-                                                   <img src="{{ item.organizer.profile.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
+                                                   <img src="{{ item.organizer.profile_set.first.photo.url }}" style="width: 3vw; height: 3vw; border-radius: 50%;"  alt="" class="avatar-sm p-2">
                                                 </div>
                                                 <div>
                                                    <h5 class="fs-14 my-1 fw-medium">
@@ -760,9 +784,6 @@
                </div>
                <!-- end .h-100-->
             </div>
-            <!-- end col -->
-           
-            <!-- end col -->
          </div>
         </div>
     </div>
@@ -830,131 +851,180 @@
 </style>
 <script>
    document.addEventListener("DOMContentLoaded", function () {
-    var options = {
-      chart: {
-        type: 'line',
-        height: '100%', 
-        width: '100%',
-        parentHeightOffset: 0, 
-        toolbar: {
-            show: false,
-        },
-    },
-         legend: {
-            labels: {
-               colors: '#D4AF37',
-               useSeriesColors: true,
-            },
-            fontSize: '12px',
-            fontFamily: 'Arial, sans-serif',
-            itemMargin: {
-            horizontal: 50,
-         }
-         },
-        series: [{
-            name: 'Profit',
-            data: [31, 40, 28, 51, 42, 109, 100, 50, 39, 120, 100, 90]
-        }, {
-            name: 'Events',
-            data: [10, 20, 15, 30, 40, 55, 70, 55, 70, 55, 70, 50]
-        }],
-        xaxis: {
-            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-            labels: {
-                style: {
-                    colors: '#a29f9e', 
-                    fontSize: '12px',
-                    fontFamily: 'Arial, sans-serif',
-                }
-            },
-        },
-        yaxis: {
-            labels: {
-                style: {
-                    colors: '#a29f9e', 
-                    fontSize: '12px',
-                }
-            },
-        },
-        colors: ['#D4AF37', '#2A4D9E'], 
-        stroke: {
-            curve: 'smooth',
-            width: 4, 
-        },
-        markers: {
-            size: 6, 
-            colors: ['#ffffff'], 
-            strokeColors: ['#D4AF37', '#2A4D9E'], 
-            strokeWidth: 2,
-            hover: {
-                size: 8,
-            },
-        },
-        tooltip: {
-            theme: 'dark', 
-            style: {
-                fontSize: '14px',
-                fontFamily: 'Arial, sans-serif',
-            },
-        },
-        grid: {
-            show:false,
-        },
-    };
-
-    var chart = new ApexCharts(document.querySelector("#apexchartsh9w7k66o"), options);
-    chart.render();
-    const updateChart = (profitData, eventsData, categories) => {
-    chart.updateOptions({
-        series: [
-            {
-                name: 'Profit',
-                data: profitData
-            },
-            {
-                name: 'Events',
-                data: eventsData
-            }
-        ],
-        xaxis: {
-            categories: categories
-        }
-    });
-};
-
-document.querySelector("#btn-all").addEventListener("click", function () {
-    updateChart(
-        [31, 40, 28, 51, 42, 109, 100, 50, 39, 120, 100, 90],
-        [10, 20, 15, 30, 40, 55, 70, 55, 70, 55, 70, 50],
-        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    );
-});
-
-document.querySelector("#btn-1m").addEventListener("click", function () {
-    updateChart(
-        [90, 100],
-        [50, 55],
-        ['Nov', 'Dec']
-    );
-});
-
-document.querySelector("#btn-6m").addEventListener("click", function () {
-    updateChart(
-        [28, 51, 42, 109, 100, 90],
-        [15, 30, 40, 55, 70, 50],
-        ['Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov']
-    );
-});
-
-document.querySelector("#btn-1y").addEventListener("click", function () {
-    updateChart(
-        [31, 40, 28, 51, 42, 109, 100, 50, 39, 120, 100, 90],
-        [10, 20, 15, 30, 40, 55, 70, 55, 70, 55, 70, 50],
-        ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    );
-});
+      var options = {
+          chart: {
+              type: 'line',
+              height: '520px',
+              width: '100%',
+              parentHeightOffset: 0,
+              toolbar: {
+                  show: false,
+              },
+          },
+          legend: {
+              labels: {
+                  colors: '#D4AF37',
+                  useSeriesColors: true,
+              },
+              fontSize: '12px',
+              fontFamily: 'Arial, sans-serif',
+              itemMargin: {
+                  horizontal: 50,
+              }
+          },
+          series: [{
+              name: 'Profit',
+              data: [],
+          }, {
+              name: 'Events',
+              data: []
+          }, {
+              name: 'Functional Profit',
+              data: []
+          }],
+          xaxis: {
+              categories: [],
+              labels: {
+                  style: {
+                      colors: '#a29f9e',
+                      fontSize: '12px',
+                      fontFamily: 'Arial, sans-serif',
+                  }
+              },
+          },
+          yaxis: {
+              labels: {
+                  style: {
+                      colors: '#a29f9e',
+                      fontSize: '12px',
+                  }
+              },
+          },
+          colors: ['#D4AF37', '#2A4D9E', '#00FF00'],
+          stroke: {
+              curve: 'smooth',
+              width: 4,
+          },
+          markers: {
+              size: 6,
+              colors: ['#ffffff'],
+              strokeColors: ['#D4AF37', '#2A4D9E', '#00FF00'],
+              strokeWidth: 2,
+              hover: {
+                  size: 8,
+              },
+          },
+          tooltip: {
+              theme: 'dark',
+              style: {
+                  fontSize: '14px',
+                  fontFamily: 'Arial, sans-serif',
+              },
+          },
+          grid: {
+              show: false,
+          },
+      };
+   
+      var chart = new ApexCharts(document.querySelector("#apexchartsh9w7k66o"), options);
+      chart.render();
+   
+      const updateChart = (locationMonthCount, eventMonthCount, profitMonthCount, months) => {
+          const categories = months;
+          const locationsData = new Array(months.length).fill(0);
+          const eventsData = new Array(months.length).fill(0);
+          const functionalProfitData = new Array(months.length).fill(0); 
+          locationMonthCount.forEach(entry => {
+              const monthIndex = months.indexOf(entry['month']);
+              if (monthIndex !== -1) {
+               locationsData[monthIndex] = entry['count']; 
+              }
+          });
+   
+          eventMonthCount.forEach(entry => {
+              const monthIndex = months.indexOf(entry['month']);
+              if (monthIndex !== -1) {
+                  eventsData[monthIndex] = entry['count']; 
+              }
+          });
+   
+          profitMonthCount.forEach(entry => {
+              const monthIndex = months.indexOf(entry['month']);
+              if (monthIndex !== -1) {
+                  functionalProfitData[monthIndex] = entry['count'];
+              }
+          });
+   
+          chart.updateOptions({
+              series: [
+                  {
+                      name: 'Locations',
+                      data: locationsData
+                  },
+                  {
+                      name: 'Events',
+                      data: eventsData
+                  },
+                  {
+                      name: 'Functional Profit',
+                      data: functionalProfitData
+                  }
+              ],
+              xaxis: {
+                  categories: categories
+              }
+          });
+      };
+   
+      const locationMonthCountData = JSON.parse('{{ location_month_count|escapejs }}');
+      const eventMonthCountData = JSON.parse('{{ event_month_count|escapejs }}');
+      const profitMonthCountData = [
+    { month: 'Jan', count: 15 },
+    { month: 'Feb', count: 9 },
+    { month: 'Mar', count: -1 },
+    { month: 'Apr', count: 10 },
+    { month: 'May', count: 4 },
+    { month: 'Jun', count: 6 },
+    { month: 'Jul', count: 2 },
+    { month: 'Aug', count: 6 },
+    { month: 'Sep', count: 4 },
+    { month: 'Oct', count: 6 },
+    { month: 'Nov', count: -5 },
+    { month: 'Dec', count: 10 }
+];
+   
+      const filterDataByMonths = (months, data) => {
+          return data.filter(entry => months.includes(entry['month']));
+      };
+   
+      updateChart(locationMonthCountData, eventMonthCountData, profitMonthCountData, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+   
+      document.querySelector("#btn-all").addEventListener("click", function () {
+          updateChart(locationMonthCountData, eventMonthCountData, profitMonthCountData, ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']);
+      });
+   
+      document.querySelector("#btn-6m").addEventListener("click", function () {
+          const last6Months = ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          updateChart(
+              filterDataByMonths(last6Months, locationMonthCountData),
+              filterDataByMonths(last6Months, eventMonthCountData),
+              filterDataByMonths(last6Months, profitMonthCountData),
+              last6Months
+          );
+      });
+   
+      document.querySelector("#btn-1y").addEventListener("click", function () {
+          const last12Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+          updateChart(
+              filterDataByMonths(last12Months, locationMonthCountData),
+              filterDataByMonths(last12Months, eventMonthCountData),
+              filterDataByMonths(last12Months, profitMonthCountData),
+              last12Months
+          );
+      });
    });
-</script>
+   </script>
+   
 <style>
    #apexchartsh9w7k66o {
     border:1px solid #ede6e6;
