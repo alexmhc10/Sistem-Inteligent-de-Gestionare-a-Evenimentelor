@@ -830,132 +830,11 @@
         </div>
     </div>
 </div>
-
-<script>
-    var existingSlider = document.getElementById('location-price-range');
-    
-    if (existingSlider) {
-        existingSlider.innerHTML = '';
+<style>
+    .noUi-base:first-of-type{
+        display: none !important;
     }
-
-    noUiSlider.create(existingSlider, {
-        start: [0, 3500], 
-        connect: true,   
-        range: {
-            'min': 0,      
-            'max': 3500   
-        },
-        step: 10,         
-        tooltips: true,    
-        format: {
-            to: function(value) {
-                return "$" + value; 
-            },
-            from: function(value) {
-                return value.replace('$', ''); 
-            }
-        }
-    });
-
-    existingSlider.noUiSlider.on('update', function(values, handle) {
-        document.getElementById('minCost').value = values[0];
-        document.getElementById('maxCost').value = values[1];
-        console.log("Min input value after slider update:", values[0]);
-        console.log("Max input value after slider update:", values[1]);
-        filterTableByPrice();
-    });
-
-    document.getElementById('minCost').addEventListener('input', function() {
-        var minValue = document.getElementById('minCost').value.trim();
-        minValue = minValue.replace('$', '');  // Elimină simbolul dolarului
-        minValue = parseFloat(minValue);  // Convertim în număr
-
-        var maxValue = document.getElementById('maxCost').value.trim();
-        maxValue = maxValue.replace('$', '');  // Elimină simbolul dolarului
-        maxValue = parseFloat(maxValue);  // Convertim în număr
-
-        console.log("Min Cost raw value:", document.getElementById('minCost').value);
-        console.log("Max Cost raw value:", document.getElementById('maxCost').value);
-        console.log("Parsed minValue:", minValue);
-        console.log("Parsed maxValue:", maxValue);
-
-        // Verificare pentru NaN și validitate
-        if (!isNaN(minValue) && minValue >= 0 && minValue <= maxValue) {
-            existingSlider.noUiSlider.set([minValue, null]);
-            filterTableByPrice();  // Apelăm funcția de filtrare a tabelului
-        } else {
-            console.log("Invalid price values. Please check the inputs.");
-        }
-    });
-
-    document.getElementById('maxCost').addEventListener('input', function() {
-        var minValue = document.getElementById('minCost').value.trim();
-        minValue = minValue.replace('$', '');  // Elimină simbolul dolarului
-        minValue = parseFloat(minValue);  // Convertim în număr
-
-        var maxValue = document.getElementById('maxCost').value.trim();
-        maxValue = maxValue.replace('$', '');  // Elimină simbolul dolarului
-        maxValue = parseFloat(maxValue);  // Convertim în număr
-
-        console.log("Min Cost value (parsed):", minValue);
-        console.log("Max Cost raw value:", document.getElementById('maxCost').value);
-        console.log("Parsed maxValue:", maxValue);
-        
-        // Verificare pentru NaN și validitate
-        if (!isNaN(maxValue) && maxValue >= minValue && maxValue <= 3500) {
-            existingSlider.noUiSlider.set([null, maxValue]);
-            filterTableByPrice();  // Apelăm funcția de filtrare a tabelului
-        } else {
-            console.log("Invalid price values. Please check the inputs.");
-        }
-    });
-
-    // Funcția de filtrare
-    function filterTableByPrice() {
-        let minPrice = document.getElementById('minCost').value.trim();
-        minPrice = minPrice.replace('$', '');  // Elimină simbolul dolarului
-        minPrice = parseFloat(minPrice);  // Convertim în număr
-
-        let maxPrice = document.getElementById('maxCost').value.trim();
-        maxPrice = maxPrice.replace('$', '');  // Elimină simbolul dolarului
-        maxPrice = parseFloat(maxPrice);  // Convertim în număr
-
-        console.log("minPrice:", minPrice, "maxPrice:", maxPrice);
-        
-        // Verificăm dacă valorile min/max sunt valide
-        if (isNaN(minPrice) || isNaN(maxPrice)) {
-            console.log("Invalid price values. Please check the inputs.");
-            return; // Ieșim din funcție dacă valorile nu sunt valide
-        }
-
-        // Rotunjirea prețurilor la 2 zecimale
-        minPrice = Math.round(minPrice * 100) / 100;
-        maxPrice = Math.round(maxPrice * 100) / 100;
-
-        // Selectăm toate rândurile din tabel
-        let rows = document.querySelectorAll('tr');
-        rows.forEach(function(row) {
-            let priceCell = row.querySelector('.gridjs-td[data-column-id="price"]');
-            if (!priceCell) return;
-
-            let priceText = priceCell.innerText.replace('$', '').trim();
-            let price = parseFloat(priceText);
-
-            console.log("Row price:", price);
-
-            // Rotunjirea prețurilor rândurilor
-            price = Math.round(price * 100) / 100;
-
-            // Ascundem sau arătăm rândurile în funcție de preț
-            if (!isNaN(price) && price >= minPrice && price <= maxPrice) {
-                row.style.display = '';  // Arată rândul
-            } else {
-                row.style.display = 'none';  // Ascunde rândul
-            }
-        });
-    }
-</script>
-
+</style>
 <script>
     window.onload = function () {
     let rowsPerPage = 5;
@@ -963,53 +842,89 @@
     let selectedType = "all";
     let eventsCount = 0;
     let totalPages = 0;
-    function setActiveTab() {
-        let activeTab = document.querySelector(".tab-pane-active.show");
-        if (!activeTab) {
-            console.log("No active tab found. Setting the first tab as active.");
-            let firstTab = document.querySelector(".tab-pane");
-            if (firstTab) {
-                firstTab.classList.add("tab-pane-active", "show");
-            }
+
+    var slider = document.getElementById('location-price-range');
+
+noUiSlider.create(slider, {
+    start: [0, 3500], 
+    connect: true,    
+    range: {
+        'min': 0,       
+        'max': 3500   
+    },
+    step: 1,           
+    format: {
+        to: function (value) {
+            return parseFloat(value).toFixed(0); 
+        },
+        from: function (value) {
+            return value; 
         }
     }
+});
 
-    function getActiveRows() {
-        let activeTab = document.querySelector(".tab-pane-active.show");
-        if (!activeTab) {
-            console.log("No active tab found");
-            return [];
+slider.noUiSlider.on('update', function(values, handle) {
+    if (handle === 0) {
+        document.getElementById('minCost').value = values[0];
+    } else {
+        document.getElementById('maxCost').value = values[1];
+    }
+    currentPage = 1;
+    updatePagination();
+});
+
+document.getElementById('minCost').addEventListener('input', function() {
+    slider.noUiSlider.set([this.value, null]);
+    currentPage = 1;
+    updatePagination();
+});
+
+document.getElementById('maxCost').addEventListener('input', function() {
+    slider.noUiSlider.set([null, this.value]);
+    currentPage = 1;
+    updatePagination();
+});
+
+function setActiveTab() {
+    let activeTab = document.querySelector(".tab-pane-active.show");
+    if (!activeTab) {
+        let firstTab = document.querySelector(".tab-pane");
+        if (firstTab) {
+            firstTab.classList.add("tab-pane-active", "show");
         }
-        let rows = Array.from(activeTab.querySelectorAll(".gridjs-tr"));
-        console.log("Rows in active tab:", rows); 
-        return rows;
     }
+}
 
-    function getFilteredRows() {
-        let rows = getActiveRows();
-        let filtered = rows.filter(row => {
-            let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
-            return eventTypes.includes(selectedType) || selectedType === "all";
-        });
-        console.log("Filtered rows:", filtered);
-        return filtered;
-    }
+function getActiveRows() {
+    let activeTab = document.querySelector(".tab-pane-active.show");
+    if (!activeTab) return [];
+    return Array.from(activeTab.querySelectorAll(".gridjs-tr"));
+}
+
+function getFilteredRows() {
+    let rows = getActiveRows();
+    let filtered = rows.filter(row => {
+        let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
+        let priceCell = row.querySelector('.gridjs-td[data-column-id="price"]');
+        let price = priceCell ? parseFloat(priceCell.innerText.replace('$', '').trim()) : 0;
+        let minPrice = parseFloat(document.getElementById('minCost').value.replace('$', '') || 0);
+        let maxPrice = parseFloat(document.getElementById('maxCost').value.replace('$', '') || 3500);
+        return (eventTypes.includes(selectedType) || selectedType === "all") && price >= minPrice && price <= maxPrice;
+    });
+    return filtered;
+}
+
 function updatePagination() {
     let filteredRows = getFilteredRows();
     eventsCount = filteredRows.length;
     totalPages = Math.ceil(eventsCount / rowsPerPage);
 
-    console.log("Events count:", eventsCount); 
-    console.log("Total pages:", totalPages); 
-
     let activeTab = document.querySelector(".tab-pane-active.show");
     if (!activeTab) return;
 
-    let paginationContainerId = `#footer-${Array.from(document.querySelectorAll(".tab-pane")).indexOf(activeTab) + 1} .gridjs-pages`;
-    let paginationContainer = document.querySelector(paginationContainerId);
-    console.log("Pagination container:", paginationContainer);
+    let paginationContainer = activeTab.querySelector(".gridjs-pages");
     if (paginationContainer) {
-        paginationContainer.innerHTML = ""; 
+        paginationContainer.innerHTML = "";
         createPaginationButtons(filteredRows, paginationContainer);
     }
 
@@ -1018,11 +933,16 @@ function updatePagination() {
         summary.innerHTML = `Showing <b>${Math.min((currentPage - 1) * rowsPerPage + 1, eventsCount)}</b> to <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
     }
 
+    let noResultMessage = activeTab.querySelector(".no-result-message");
+    if (noResultMessage) {
+        noResultMessage.style.display = filteredRows.length === 0 ? "block" : "none";
+    }
+
     filterRows(filteredRows);
 }
+
     function createPaginationButtons(filteredRows, paginationContainer) {
         let prevButton = document.createElement("button");
-        prevButton.classList.add("pagination-button");
         prevButton.textContent = "Previous";
         prevButton.disabled = currentPage === 1;
         prevButton.onclick = function () {
@@ -1036,8 +956,6 @@ function updatePagination() {
         for (let i = 1; i <= totalPages; i++) {
             let pageButton = document.createElement("button");
             pageButton.textContent = i;
-            pageButton.classList.add("pagination-button");
-            pageButton.classList.toggle("gridjs-currentPage", i === currentPage);
             pageButton.onclick = function () {
                 currentPage = i;
                 updatePagination();
@@ -1046,7 +964,6 @@ function updatePagination() {
         }
 
         let nextButton = document.createElement("button");
-        nextButton.classList.add("pagination-button");
         nextButton.textContent = "Next";
         nextButton.disabled = currentPage === totalPages;
         nextButton.onclick = function () {
@@ -1071,38 +988,39 @@ function updatePagination() {
         filteredRows.slice(startIndex, endIndex).forEach(row => {
             row.style.display = "";
         });
-
-        let noResultMessage = activeTab.querySelector(".no-result-message");
-        if (noResultMessage) {
-            noResultMessage.style.display = filteredRows.length === 0 ? "block" : "none";
-        }
     }
+    
+    document.getElementById('minCost').addEventListener('input', function() {
+        currentPage = 1;
+        updatePagination();
+    });
+
+    document.getElementById('maxCost').addEventListener('input', function() {
+        currentPage = 1;
+        updatePagination();
+    });
 
     let typeFilters = document.querySelectorAll(".filter-list .listname");
     typeFilters.forEach(filter => {
         filter.addEventListener("click", function (event) {
             event.preventDefault();
             selectedType = filter.innerText.trim().toLowerCase();
-            console.log("Selected type:", selectedType);
             currentPage = 1;
             updatePagination();
         });
     });
+
     let tabLinks = document.querySelectorAll('.nav-link');
     tabLinks.forEach(tab => {
         tab.addEventListener('click', function () {
             let allTabs = document.querySelectorAll('.tab-pane');
-            allTabs.forEach(t => {
-                t.classList.remove("tab-pane-active", "show");
-            });
-            let tabId = tab.getAttribute("href").replace("#", "");
-            let activeTab = document.getElementById(tabId);
+            allTabs.forEach(t => t.classList.remove("tab-pane-active", "show"));
+            let activeTab = document.getElementById(tab.getAttribute("href").replace("#", ""));
             activeTab.classList.add("tab-pane-active", "show");
-            setTimeout(() => {
-                updatePagination();
-            }, 100);
+            setTimeout(updatePagination, 100);
         });
     });
+    
     setActiveTab();
     updatePagination();
 };
@@ -1157,16 +1075,13 @@ function updatePagination() {
         });
         </script>
 <style>
-    .pagination-button{
+    .gridjs-pages button{
         padding:5px;
         margin:10px;
         border:none;
         background: white;
         font-weight: 600;
     }
-    .pagination-button.gridjs-currentPage{
-        padding-left:10px;
-        padding-right:10px;
-    }
+   
 </style>
 {% endblock content %}
