@@ -121,7 +121,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">Home</span>
           </li>
           <li class="sidebar-item">
+            {% if not completed %}
             <a class="sidebar-link" href="{% url 'guest_home' %}" aria-expanded="false">
+            {% endif %}
+            {% if completed %}
+            <a class="sidebar-link btn disabled" href="{% url 'guest_home' %}" tabindex="-1" role="button" aria-disabled="true" aria-expanded="false">
+            {% endif %}
               <span>
                 <iconify-icon icon="solar:home-smile-bold-duotone" class="fs-6"></iconify-icon>
               </span>

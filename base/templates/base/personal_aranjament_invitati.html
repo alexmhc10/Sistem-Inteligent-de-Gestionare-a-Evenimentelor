@@ -835,32 +835,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
     
         <div id="myDiagramDiv" style="border: solid 1px black"></div>
       </div>
-      This sample demonstrates how a "Person" node can be dropped onto a "Table" node, causing the
-      person to be assigned a position at the closest empty seat at that table. When a person is dropped
-      into the background of the diagram, that person is no longer assigned a seat. People dragged
-      between diagrams are automatically removed from the diagram they came from.
-      <p>
-        "Table" nodes are defined by separate templates, to permit maximum customization of the shapes
-        and sizes and positions of the tables and chairs.
-      </p>
-    
-      <p>
-        "Person" nodes in the <code>myGuests</code> diagram can also represent a group of people, for
-        example a named person plus one whose name might not be known. When such a person is dropped
-        onto a table, additional nodes are created in <code>myDiagram</code>. Those people are seated at
-        the table if there is room.
-      </p>
-    
-      <p>
-        Tables can be moved or rotated. Moving or rotating a table automatically repositions the people
-        seated at that table.
-      </p>
-    
-      <p>
-        The <a>UndoManager</a> is shared between the two Diagrams, so that one can undo/redo in either
-        diagram and have it automatically handle drags between diagrams, as well as the usual changes
-        within the diagram.
-      </p>
+      
       <div>
         Diagram Model saved in JSON format, automatically updated after each transaction:
         <pre class="lang-js"><code id="savedModel"></code></pre>
@@ -875,47 +850,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
     
           <div id="allTagDescriptions" class="p-4 w-full max-w-screen-xl mx-auto">
             <hr/>
-            <h3 class="text-xl">GoJS Features in this sample</h3>
-            <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-              
-                <h4>Tools</h4>
-    <p>
-    <a href="../api/symbols/Tool.html" target="api">Tool</a>s handle all input events, such as mouse and keyboard interactions, in a Diagram.
-    There are many kinds of predefined Tool classes that implement all of the common operations that users do.
-    </p>
-    <p>
-    For flexibility and simplicity, all input events are canonicalized as <a href="../api/symbols/InputEvent.html" target="api">InputEvent</a>s and
-    redirected by the diagram to go to the <a href="../api/symbols/Diagram.html#currentTool" target="api">Diagram.currentTool</a>.
-    By default the Diagram.currentTool is an instance of <a href="../api/symbols/ToolManager.html" target="api">ToolManager</a> held as the <a href="../api/symbols/Diagram.html#toolManager" target="api">Diagram.toolManager</a>.
-    The ToolManager implements support for all mode-less tools.
-    The ToolManager is responsible for finding another tool that is ready to run and then making it the new current tool.
-    This causes the new tool to process all of the input events (mouse, keyboard, and touch) until the tool decides that it is finished,
-    at which time the diagram's current tool reverts back to the <a href="../api/symbols/Diagram.html#defaultTool" target="api">Diagram.defaultTool</a>, which is normally the ToolManager, again.
-    </p>
-    <p>
-    More information can be found in the <a href="../intro/tools.html">GoJS Intro</a>.
-    </p>
-                <p>
-                  <a href="../samples/index.html#tools">Related samples</a>
-                </p>
-                <hr>
-              
-            <!-- blacklist tags that do not correspond to a specific GoJS feature -->
-              
-                <h4>Palette</h4>
-    <p>
-    A <a href="../api/symbols/Palette.html" target="api">Palette</a> is a subclass of <a href="../api/symbols/Diagram.html" target="api">Diagram</a> that is used to display a number of <a href="../api/symbols/Part.html" target="api">Part</a>s that
-    can be dragged into the diagram that is being modified by the user.
-    The initialization of a <a href="../api/symbols/Palette.html" target="api">Palette</a> is just like the initialization of any <a href="../api/symbols/Diagram.html" target="api">Diagram</a>.
-    Like Diagrams, you can have more than one Palette on the page at the same time.
-    </p>
-    <p>
-    More information can be found in the <a href="../intro/palette.html">GoJS Intro</a>.
-    </p>
-                <p>
-                  <a href="../samples/index.html#palette">Related samples</a>
-                </p>
-                <hr>
               
             </div>
         </div>

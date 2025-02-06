@@ -12,16 +12,13 @@ from django.conf import settings
 from collections import Counter, defaultdict
 import json
 from .forms import EventForm
-from .models import Task
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
-from .models import Event
 import random
 from datetime import datetime,timedelta
 from collections import defaultdict
 from django.utils.timezone import localtime
 from django.utils import timezone
-from .models import Event, EventHistory
 import socket
 from user_agents import parse
 from device_detector import DeviceDetector
@@ -232,8 +229,8 @@ def loginPage(request):
                 print(f"Redirecting user {user.username} to organizer home.")
                 return HttpResponseRedirect(reverse('organizer_dashboard'))  
             else:
-                print(f"Redirecting standard user {user.username} to home.")
-                return HttpResponseRedirect(reverse('home'))  
+                print(f"Redirecting user {user.username} to guest home.")
+                return HttpResponseRedirect(reverse('guest_home'))  
         else:
             print(f"Authentication failed for username: {username}")
             messages.error(request, "Invalid credentials")
@@ -1289,16 +1286,19 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
+    locations = Location.objects.filter(owner=request.user)
+
+    events = Event.objects.filter(location__in=locations)
+
     current_date = datetime.today()
     past_events = Event.objects.filter(event_date__lt = current_date)
     future_events = Event.objects.filter(event_date__gte = current_date)
     profiles = Profile.objects.all()
-    locations = Location.objects.all()
     user = request.user
     context = {
+        'events': events,
         'future_events': future_events,
         'past_events': past_events,
-        'locations': locations,
         'profiles': profiles,
         'logged_user': user
         }
@@ -1357,6 +1357,7 @@ def filter_events(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 @login_required(login_url='/login')
 @user_is_staff
 def personal_vizualizare_eveniment(request, pk):
@@ -1365,6 +1366,7 @@ def personal_vizualizare_eveniment(request, pk):
         'event': event
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
+
 
 @login_required(login_url='/login')
 @user_is_staff
@@ -1402,7 +1404,14 @@ def guest_profile(request):
 @login_required(login_url='/login')
 @user_is_guest
 def guest_home(request):
-    return render(request, 'base/guest_home.html')
+    completed_profile = Guests.objects.filter(profile__user=request.user, state=False).exists()
+    context = {
+        "completed": completed_profile
+    }
+    if completed_profile:
+        return render(request, 'base/guest_profile.html', context)
+    else:
+        return render(request, 'base/guest_home.html')
 
 
 @login_required(login_url='/login')
@@ -1415,6 +1424,8 @@ def invite_form(request,event_id,guest_id):
         'event' : event
     }
     return render(request, 'base/invite_form.html', context)
+
+
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")

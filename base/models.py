@@ -57,6 +57,7 @@ class Location(models.Model):
     def __str__(self):
         return self.name
 
+
 def get_default_user():
     return User.objects.get(username='defaultuser')
 
@@ -161,6 +162,7 @@ class Guests(models.Model):
     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
     vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)
+    state = models.BooleanField(default=False)
     
     
 class Menu(models.Model):

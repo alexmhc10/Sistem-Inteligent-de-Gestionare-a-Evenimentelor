@@ -130,42 +130,43 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="card-body">
                     <h1 class="card-title d-flex align-items-center gap-2">
                         Upcoming events!
-                      </h1>
+                    </h1>
                 </div>
             </div>
         </div>
         <div id="futureEventsContainer">
-        {% for event in future_events %}
-          <div class="col-lg-4">
-            <div class="card overflow-hidden hover-img card-hover">
-              <div class="position-relative">
-                <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" style="max-height: 300px; object-fit: cover;" alt="matdash-img">
-                </a>
-                <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-              </div>
-              <div class="card-body p-4">
-                <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-                <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-                <div class="d-flex align-items-center gap-4">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
+          <div class="row">
+            {% for event in events %}
+              <div class="col-lg-4">
+                <div class="card overflow-hidden hover-img card-hover">
+                  <div class="position-relative">
+                    <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
+                      <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
+                    </a>
+                    <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
+                    <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
                   </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                  </div>
-                  <div class="d-flex align-items-center fs-2 ms-auto">
-                    <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+                  <div class="card-body p-4">
+                    <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
+                    <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
+                    <div class="d-flex align-items-center gap-4">
+                      <div class="d-flex align-items-center gap-2">
+                        <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
+                      </div>
+                      <div class="d-flex align-items-center gap-2">
+                        <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
+                      </div>
+                      <div class="d-flex align-items-center fs-2 ms-auto">
+                        <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            {% endfor %}
           </div>
-        {% endfor %}
         </div>
       </div>
-
       
 
       <div id="pastEventsSection">
@@ -180,32 +181,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
         <div id="pastEventsContainer">
         {% for event in past_events %}
-          <div class="col-lg-4">
-            <div class="card overflow-hidden hover-img card-hover">
-              <div class="position-relative">
-                <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50); max-height: 300px; object-fit: cover;">
-                </a>
-                <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-              </div>
-              <div class="card-body p-4">
-                <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-                <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-                <div class="d-flex align-items-center gap-4">
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                  </div>
-                  <div class="d-flex align-items-center gap-2">
-                    <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                  </div>
-                  <div class="d-flex align-items-center fs-2 ms-auto">
-                    <i class="ti ti-point text-dark"></i>{{ event.event_date }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          
         {% endfor %}
         </div>
       </div>
@@ -395,14 +371,31 @@ document.getElementById("applyFilters").addEventListener("click", function () {
                 pastEventsSection.style.display = "block";
                 data.past_events.forEach(event => {
                     const card = `
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${event.event_name}</h5>
-                                    <p class="card-text">${event.event_description}</p>
-                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
-                                </div>
+                        <div class="col-lg-4">
+                          <div class="card overflow-hidden hover-img card-hover">
+                            <div class="position-relative">
+                              <a href="#">
+                                <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50); max-height: 300px; object-fit: cover;">
+                              </a>
+                              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
+                              <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
                             </div>
+                            <div class="card-body p-4">
+                              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
+                              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
+                              <div class="d-flex align-items-center gap-4">
+                                <div class="d-flex align-items-center gap-2">
+                                  <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
+                                </div>
+                                <div class="d-flex align-items-center gap-2">
+                                  <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
+                                </div>
+                                <div class="d-flex align-items-center fs-2 ms-auto">
+                                  <i class="ti ti-point text-dark"></i>{{ event.event_date }}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                     `;
                     pastEventsContainer.innerHTML += card;
