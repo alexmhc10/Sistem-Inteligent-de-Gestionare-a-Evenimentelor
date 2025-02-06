@@ -299,6 +299,7 @@ def admin_locations(request):
             'seats':location.seats_numbers,
             'added_at':location.created_at,
             'cost': location.cost,
+            'id':location.id,
             'types':location.types
         })
     organizers = User.objects.filter(is_superuser = False)
@@ -734,7 +735,15 @@ def homeAdmin(request):
             return redirect('home-admin')
     return render(request, 'base/home-admin.html', context)
 
-
+@login_required(login_url='login')
+def admin_edit_location(request, pk):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("You do not have permission to access this page.")
+    location = Location.objects.get(id=pk)
+    context={
+        'location':location
+    }
+    return render(request, 'base/admin-edit-location.html',context)
 
 @login_required(login_url='login')
 def admin_settings(request):
