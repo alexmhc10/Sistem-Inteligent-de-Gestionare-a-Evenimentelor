@@ -128,7 +128,7 @@
                             <div class="card-body border-bottom">
                                 <p class="text-muted text-uppercase fs-12 fw-medium mb-4">Price</p>
                             
-                                <div id="product-price-range" class="noUi-target noUi-ltr noUi-horizontal noUi-txt-dir-ltr mt-5">
+                                <div id="location-price-range" class="noUi-target noUi-ltr noUi-horizontal noUi-txt-dir-ltr mt-5">
                                     
                                     <div class="noUi-base">
                                         <div class="noUi-connects">
@@ -154,7 +154,7 @@
                                 <div class="formCost d-flex gap-2 align-items-center mt-3">
                                     <input class="form-control form-control-sm" type="text" id="minCost" value="0">
                                     <span class="fw-semibold text-muted">to</span>
-                                    <input class="form-control form-control-sm" type="text" id="maxCost" value="2000">
+                                    <input class="form-control form-control-sm" type="text" id="maxCost" value="3500">
                                 </div>
                             </div>
                             
@@ -183,8 +183,8 @@
                                             {% for organizer in organizers %}
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="Boat"
-                                                    id="productBrandRadio5" checked="">
-                                                <label class="form-check-label" for="productBrandRadio5"> {{ organizer.username }} </label>
+                                                    id="locationBrandRadio5" checked="">
+                                                <label class="form-check-label" for="locationBrandRadio5"> {{ organizer.username }} </label>
                                             </div>
                                             {% endfor %}
 
@@ -204,34 +204,34 @@
                                     <div class="accordion-body text-body pt-1">
                                         <div class="d-flex flex-column gap-2 filter-check">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="50% or more" id="productdiscountRadio6">
-                                                <label class="form-check-label" for="productdiscountRadio6">50% or more</label>
+                                                <input class="form-check-input" type="checkbox" value="50% or more" id="locationdiscountRadio6">
+                                                <label class="form-check-label" for="locationdiscountRadio6">50% or more</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="40% or more" id="productdiscountRadio5">
-                                                <label class="form-check-label" for="productdiscountRadio5">40% or more</label>
+                                                <input class="form-check-input" type="checkbox" value="40% or more" id="locationdiscountRadio5">
+                                                <label class="form-check-label" for="locationdiscountRadio5">40% or more</label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="30% or more" id="productdiscountRadio4">
-                                                <label class="form-check-label" for="productdiscountRadio4">
+                                                <input class="form-check-input" type="checkbox" value="30% or more" id="locationdiscountRadio4">
+                                                <label class="form-check-label" for="locationdiscountRadio4">
                                                     30% or more
                                                 </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="20% or more" id="productdiscountRadio3" checked="">
-                                                <label class="form-check-label" for="productdiscountRadio3">
+                                                <input class="form-check-input" type="checkbox" value="20% or more" id="locationdiscountRadio3" checked="">
+                                                <label class="form-check-label" for="locationdiscountRadio3">
                                                     20% or more
                                                 </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="10% or more" id="productdiscountRadio2">
-                                                <label class="form-check-label" for="productdiscountRadio2">
+                                                <input class="form-check-input" type="checkbox" value="10% or more" id="locationdiscountRadio2">
+                                                <label class="form-check-label" for="locationdiscountRadio2">
                                                     10% or more
                                                 </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="Less than 10%" id="productdiscountRadio1">
-                                                <label class="form-check-label" for="productdiscountRadio1">
+                                                <input class="form-check-input" type="checkbox" value="Less than 10%" id="locationdiscountRadio1">
+                                                <label class="form-check-label" for="locationdiscountRadio1">
                                                     Less than 10%
                                                 </label>
                                             </div>
@@ -258,8 +258,8 @@
                                         <div class="d-flex flex-column gap-2 filter-check">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="4 &amp; Above Star" id="productratingRadio4" checked="">
-                                                <label class="form-check-label" for="productratingRadio4">
+                                                    value="4 &amp; Above Star" id="locationratingRadio4" checked="">
+                                                <label class="form-check-label" for="locationratingRadio4">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
                                                         <span class="star filled">★</span>
@@ -271,8 +271,8 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="3 &amp; Above Star" id="productratingRadio3">
-                                                <label class="form-check-label" for="productratingRadio3">
+                                                    value="3 &amp; Above Star" id="locationratingRadio3">
+                                                <label class="form-check-label" for="locationratingRadio3">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
                                                         <span class="star filled">★</span>
@@ -284,8 +284,8 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="2 &amp; Above Star" id="productratingRadio2">
-                                                <label class="form-check-label" for="productratingRadio2">
+                                                    value="2 &amp; Above Star" id="locationratingRadio2">
+                                                <label class="form-check-label" for="locationratingRadio2">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
                                                         <span class="star filled">★</span>
@@ -297,8 +297,8 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="1 Star"
-                                                    id="productratingRadio1">
-                                                <label class="form-check-label" for="productratingRadio1">
+                                                    id="locationratingRadio1">
+                                                <label class="form-check-label" for="locationratingRadio1">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
                                                         <span class="star empty">★</span>
@@ -323,7 +323,7 @@
                                     <div class="col-sm">
                                         <div class="d-flex justify-content-sm-end">
                                             <div class="search-box ms-2">
-                                                <input type="text" class="form-control" id="searchProductList"
+                                                <input type="text" class="form-control" id="searchlocationList"
                                                     placeholder="Search Locations...">
                                                 <i class="ri-search-line search-icon"></i>
                                             </div>
@@ -338,14 +338,14 @@
                                         <ul class="nav nav-tabs-custom card-header-tabs border-bottom-0" role="tablist">
                                             <li class="nav-item" role="presentation">
                                                 <a class="nav-link active fw-semibold" data-bs-toggle="tab"
-                                                    href="#productnav-all" role="tab" aria-selected="true">
+                                                    href="#locationnav-all" role="tab" aria-selected="true">
                                                     All <span
                                                         class="badge bg-danger-subtle text-danger align-middle rounded-pill ms-1"> {{ all_locations_count }} </span>
                                                 </a>
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <a class="nav-link fw-semibold" data-bs-toggle="tab"
-                                                    href="#productnav-published" role="tab" aria-selected="false"
+                                                    href="#locationnav-published" role="tab" aria-selected="false"
                                                     tabindex="-1">
                                                     New <span
                                                         class="badge bg-danger-subtle text-danger align-middle rounded-pill ms-1">{{ new_locations_count }}</span>
@@ -353,7 +353,7 @@
                                             </li>
                                             <li class="nav-item" role="presentation">
                                                 <a class="nav-link fw-semibold" data-bs-toggle="tab"
-                                                    href="#productnav-draft" role="tab" aria-selected="false"
+                                                    href="#locationnav-draft" role="tab" aria-selected="false"
                                                     tabindex="-1">
                                                     Draft
                                                 </a>
@@ -378,435 +378,426 @@
                             <div class="card-body">
 
                                 <div class="tab-content text-muted">
-                                    <div class="tab-pane active" id="productnav-all" role="tabpanel">
-                                        <div id="table-product-list-all" class="table-card gridjs-border-none">
-                                            <div role="complementary" class="gridjs gridjs-container"
-                                                style="width: 100%;">
-                                                <div class="gridjs-wrapper" style="height: auto;">
-                                                    <table role="grid" class="gridjs-table" style="height: auto;">
-                                                        <thead class="gridjs-thead">
-                                                            <tr>
-                                                                <th data-column-id="#"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 40px;">
-                                                                <div class="gridjs-th-content">#</div>
-                                                                
-                                                            </th>
-                                                                <th data-column-id="event"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 360px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="organizer"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 200px;">
-                                                                <div class="gridjs-th-content">Added by</div>
-                                                            </th>
-                                                                <th data-column-id="guests"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:120px;">
-                                                                    <div class="gridjs-th-content">Max Guests</div>
-                                                                </th>
-                                                                <th data-column-id="price"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 101px;">
-                                                                    <div class="gridjs-th-content">Price</div>
-                                                                </th>
-                                                                <th data-column-id="location"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:184px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="rating"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 105px;">
-                                                                    <div class="gridjs-th-content">Rating</div>
-                                                                </th>
-                                                                <th data-column-id="action"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 80px;">
-                                                                    <div class="gridjs-th-content">Action</div>
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                       {% for item in detailed_locations %}
-                                                       <tbody class="gridjs-tbody">
-                                                        <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
-                                                            <td data-column-id="#" class="gridjs-td">
-                                                                <span>
-                                                                    <div class="form-check checkbox-product-list">
-                                                                        <input class="form-check-input"
-                                                                            type="checkbox" value="1"
-                                                                            id="checkbox-1">
-                                                                        <label class="form-check-label"
-                                                                            for="checkbox-1"></label>
-                                                                    </div>
-                                                                </span>
-                                                            </td>
-                                                            <td data-column-id="product" class="gridjs-td">
-                                                                <span>
-                                                                    <div class="d-flex align-items-center">
-                                                                        <div class="flex-shrink-0 me-3">
-                                                                            <div
-                                                                                class="avatar-sm bg-light rounded p-1">
-                                                                                <img src="{{ item.photo.url }}"
-                                                                                    alt=""
-                                                                                    class="img-fluid d-block"
-                                                                                    style="height: 50px;width:80px; object-fit: cover;">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="flex-grow-1">
-                                                                            <h5 class="fs-14 mb-1">
-                                                                                <a href="{% url 'admin-view-location' item.name %}"
-                                                                                    class="text-body">{{ item.name }}</a>
-                                                                            </h5>
-                                                                            <p class="text-muted mb-0">Category :
-                                                                                <span class="fw-medium">
-                                                                                    {% if item.seats >= 300 %}
-                                                                                        Big Location
-                                                                                    {% elif item.seats >= 100 %}
-                                                                                        Medium Location
-                                                                                    {% else %}
-                                                                                        Small Location
-                                                                                    {% endif %}
-                                                                                </span>
-                                                                                </p>
-                                                                        </div>
-                                                                    </div>
-                                                                </span>
-                                                            </td>
-                                                            <td data-column-id="orders" class="gridjs-td"> {{ item.added_by }} </td>
-                                                            <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
-                                                            <td data-column-id="price" class="gridjs-td">
-                                                                <span> {{ item.cost }}$ </span>
-                                                            </td>
-                                                            <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
-                                                            <td data-column-id="rating" class="gridjs-td">
-                                                                <span>
-                                                                    <span
-                                                                        class="badge bg-light text-body fs-12 fw-medium">
-                                                                        <span class="star filled">★</span>
-                                                                        4.2
-                                                                    </span>
-                                                                </span>
-                                                            </td>
-                                                            <td data-column-id="action" class="gridjs-td" >
-                                                                <span>
-                                                                    <div class="dropdown">
-                                                                        <button
-                                                                            class="btn btn-soft-secondary btn-sm dropdown"
-                                                                            type="button" data-bs-toggle="dropdown"
-                                                                            aria-expanded="false">
-                                                                            <i class="bi bi-three-dots"></i>
-                                                                        </button>
-                                                                        <ul class="dropdown-menu dropdown-menu-end" ">
-                                                                            <li>
-                                                                                <a class="dropdown-item"
-                                                                                    href="{% url 'admin-view-location' item.name %}">
-                                                                                    <i
-                                                                                        class="bi bi-eye align-bottom me-2 text-muted"></i>
-                                                                                    View </a>
-                                                                            </li>
-                                                                            <li>
-                                                                                <a class="dropdown-item edit-list"
-                                                                                    data-edit-id="1"
-                                                                                    href="apps-ecommerce-add-product.html">
-                                                                                    <i
-                                                                                        class="bi bi-pencil-fill align-bottom me-2 text-muted"></i>
-                                                                                    Edit </a>
-                                                                            </li>
-                                                                            <hr>
-                                                                            <li>
-                                                                                <a class="dropdown-item remove-list activate-modal"
-                                                                                    href="#" data-id="1"
-                                                                                    data-bs-toggle="modal"
-                                                                                    id = "activate-modal"
-                                                                                    data-bs-target="#removeItemModal">
-                                                                                    <i
-                                                                                        class="bi bi-trash3 align-bottom me-2 text-muted"></i>
-                                                                                    Delete </a>
-                                                                            </li>
-                                                                        </ul>
-                                                                    </div>
-                                                                </span>
-                                                            </td>
-                                                        </tr>
-                                                        
-                                                    </tbody>
-                                                       {% endfor %}
-                                                       
-                                                    </table>
-                                                        <div class="py-4 text-center no-result-message"style="display: none;">
-                                                            <div style="width:1185px;"></div>
-                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
-                                                        </div>
-                                                </div>
-                                                <div class="gridjs-footer" id="footer-1">
-                                                    <div class="gridjs-pagination">
-                                                        <div role="status" aria-live="polite" class="gridjs-summary"
-                                                            title="Page 1 of 1">
-                                                        </div>
-                                                        <div class="gridjs-pages">
-                                                            
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div id="gridjs-temp" class="gridjs-temp"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="tab-pane" id="productnav-published" role="tabpanel">
-                                        <div id="table-product-list-published" class="table-card gridjs-border-none">
-                                            <div role="complementary" class="gridjs gridjs-container"
-                                                style="width: 100%;">
-                                                <div class="gridjs-wrapper" style="height: auto;">
-                                                    <table role="grid" class="gridjs-table" style="height: auto;">
-                                                        <thead class="gridjs-thead">
-                                                            <tr class="" >
-                                                                <th data-column-id="#"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 40px;">
-                                                                <div class="gridjs-th-content">#</div>
-                                                                
-                                                            </th>
-                                                                <th data-column-id="event"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 360px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="organizer"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 200px;">
-                                                                <div class="gridjs-th-content">Added by</div>
-                                                            </th>
-                                                                <th data-column-id="guests"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:120px;">
-                                                                    <div class="gridjs-th-content">Max Guests</div>
-                                                                </th>
-                                                                <th data-column-id="price"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 101px;">
-                                                                    <div class="gridjs-th-content">Price</div>
-                                                                </th>
-                                                                <th data-column-id="location"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:184px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="rating"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 105px;">
-                                                                    <div class="gridjs-th-content">Rating</div>
-                                                                </th>
-                                                                <th data-column-id="action"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 80px;">
-                                                                    <div class="gridjs-th-content">Action</div>
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody class="gridjs-tbody">
-                                                            {% for item in new_locations_detailed %}
-                                                            <tbody class="gridjs-tbody">
-                                                                <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
-                                                                    <td data-column-id="#" class="gridjs-td">
-                                                                     <span>
-                                                                         <div class="form-check checkbox-product-list">
-                                                                             <input class="form-check-input"
-                                                                                 type="checkbox" value="1"
-                                                                                 id="checkbox-1">
-                                                                             <label class="form-check-label"
-                                                                                 for="checkbox-1"></label>
-                                                                         </div>
-                                                                     </span>
-                                                                 </td>
-                                                                 <td data-column-id="product" class="gridjs-td">
-                                                                     <span>
-                                                                         <div class="d-flex align-items-center">
-                                                                             <div class="flex-shrink-0 me-3">
-                                                                                 <div
-                                                                                     class="avatar-sm bg-light rounded p-1">
-                                                                                     <img src="{{ item.photo.url }}"
-                                                                                    alt=""
-                                                                                    class="img-fluid d-block"
-                                                                                    style="height: 50px;width:80px; object-fit: cover;">
-                                                                                 </div>
-                                                                             </div>
-                                                                             <div class="flex-grow-1">
-                                                                                 <h5 class="fs-14 mb-1">
-                                                                                     <a href="apps-ecommerce-product-details.html"
-                                                                                         class="text-body">{{ item.name }}</a>
-                                                                                 </h5>
-                                                                                 <p class="text-muted mb-0">Category :
-                                                                                     <span class="fw-medium">
-                                                                                         {% if item.seats >= 300 %}
-                                                                                             Big Location
-                                                                                         {% elif item.seats >= 100 %}
-                                                                                             Medium Location
-                                                                                         {% else %}
-                                                                                             Small Location
-                                                                                         {% endif %}
-                                                                                     </span>
-                                                                                     </p>
-                                                                             </div>
-                                                                         </div>
-                                                                     </span>
-                                                                 </td>
-                                                                 <td data-column-id="stock" class="gridjs-td"> {{ item.added_by }} </td>
-                                                                 <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
-                                                                 <td data-column-id="price" class="gridjs-td">
-                                                                     <span>{{ item.cost }}$</span>
-                                                                 </td>
-                                                                 <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
-
-                                                                 <td data-column-id="rating" class="gridjs-td">
-                                                                     <span>
-                                                                         <span
-                                                                             class="badge bg-light text-body fs-12 fw-medium">
-                                                                             <span class="star filled">★</span>
-                                                                             4.2
+                                    <div class="tab-pane active" id="locationnav-all" role="tabpanel">
+                                        <div id="table-location-list-all" class="table-card gridjs-border-none">
+                                           <div role="complementary" class="gridjs gridjs-container"
+                                              style="width: 100%;">
+                                              <div class="gridjs-wrapper" style="height: auto;">
+                                                 <table role="grid" class="gridjs-table" style="height: auto;">
+                                                    <thead class="gridjs-thead">
+                                                       <tr>
+                                                          <th data-column-id="#"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 40px;">
+                                                             <div class="gridjs-th-content">#</div>
+                                                          </th>
+                                                          <th data-column-id="event"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 360px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="organizer"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 200px;">
+                                                             <div class="gridjs-th-content">Added by</div>
+                                                          </th>
+                                                          <th data-column-id="guests"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:120px;">
+                                                             <div class="gridjs-th-content">Max Guests</div>
+                                                          </th>
+                                                          <th data-column-id="price"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 101px;">
+                                                             <div class="gridjs-th-content">Price</div>
+                                                          </th>
+                                                          <th data-column-id="location"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:184px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="rating"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 105px;">
+                                                             <div class="gridjs-th-content">Rating</div>
+                                                          </th>
+                                                          <th data-column-id="action"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 80px;">
+                                                             <div class="gridjs-th-content">Action</div>
+                                                          </th>
+                                                       </tr>
+                                                    </thead>
+                                                    {% for item in detailed_locations %}
+                                                    <tbody class="gridjs-tbody">
+                                                       <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                          <td data-column-id="#" class="gridjs-td">
+                                                             <span>
+                                                                <div class="form-check checkbox-location-list">
+                                                                   <input class="form-check-input"
+                                                                      type="checkbox" value="1"
+                                                                      id="checkbox-1">
+                                                                   <label class="form-check-label"
+                                                                      for="checkbox-1"></label>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="location" class="gridjs-td">
+                                                             <span>
+                                                                <div class="d-flex align-items-center">
+                                                                   <div class="flex-shrink-0 me-3">
+                                                                      <div
+                                                                         class="avatar-sm bg-light rounded p-1">
+                                                                         <img src="{{ item.photo.url }}"
+                                                                            alt=""
+                                                                            class="img-fluid d-block"
+                                                                            style="height: 50px;width:80px; object-fit: cover;">
+                                                                      </div>
+                                                                   </div>
+                                                                   <div class="flex-grow-1">
+                                                                      <h5 class="fs-14 mb-1">
+                                                                         <a href="{% url 'admin-view-location' item.name %}"
+                                                                            class="text-body">{{ item.name }}</a>
+                                                                      </h5>
+                                                                      <p class="text-muted mb-0">Category :
+                                                                         <span class="fw-medium">
+                                                                         {% if item.seats >= 300 %}
+                                                                         Big Location
+                                                                         {% elif item.seats >= 100 %}
+                                                                         Medium Location
+                                                                         {% else %}
+                                                                         Small Location
+                                                                         {% endif %}
                                                                          </span>
-                                                                     </span>
-                                                                 </td>
-                                                                 <td data-column-id="action" class="gridjs-td">
-                                                                     <span>
-                                                                         <div class="dropdown">
-                                                                             <button
-                                                                                 class="btn btn-soft-secondary btn-sm dropdown"
-                                                                                 type="button" data-bs-toggle="dropdown"
-                                                                                 aria-expanded="false">
-                                                                                 <i class="bi bi-three-dots"></i>
-                                                                             </button>
-                                                                             <ul class="dropdown-menu dropdown-menu-end">
-                                                                                 <li>
-                                                                                     <a class="dropdown-item"
-                                                                                         href="apps-ecommerce-product-details.html">
-                                                                                         <i
-                                                                                             class="bi bi-eye align-bottom me-2 text-muted"></i>
-                                                                                         View </a>
-                                                                                 </li>
-                                                                                 <li>
-                                                                                     <a class="dropdown-item edit-list"
-                                                                                         data-edit-id="1"
-                                                                                         href="apps-ecommerce-add-product.html">
-                                                                                         <i
-                                                                                             class="bi bi-pencil-fill align-bottom me-2 text-muted"></i>
-                                                                                         Edit </a>
-                                                                                 </li>
-                                                                                 <hr>
-                                                                                 <li>
-                                                                                     <a class="dropdown-item remove-list activate-modal"
-                                                                                         href="#" data-id="1"
-                                                                                         data-bs-toggle="modal"
-                                                                                         id = "activate-modal"
-                                                                                         data-bs-target="#removeItemModal">
-                                                                                         <i
-                                                                                             class="bi bi-trash3 align-bottom me-2 text-muted"></i>
-                                                                                         Delete </a>
-                                                                                 </li>
-                                                                             </ul>
-                                                                         </div>
-                                                                     </span>
-                                                                 </td>
-                                                             </tr>
-                                                             
-                                                         </tbody>
-                                                            {% endfor %}
-                                                        </tbody>
-                                                    </table>
-                                                        <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
-                                                            <div style="width:1185px;"></div>
-                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
-                                                        </div>
-                                                </div>
-                                                <div class="gridjs-footer" id="footer-2">
-                                                    <div class="gridjs-pagination">
-                                                        <div role="status" aria-live="polite" class="gridjs-summary"
-                                                            title="Page 1 of 1"></div>
-                                                        <div class="gridjs-pages">
-
-                                                        </div>
+                                                                      </p>
+                                                                   </div>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.added_by }} </td>
+                                                          <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
+                                                          <td data-column-id="price" class="gridjs-td">
+                                                             <span> {{ item.cost }}$ </span>
+                                                          </td>
+                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
+                                                          <td data-column-id="rating" class="gridjs-td">
+                                                             <span>
+                                                             <span
+                                                                class="badge bg-light text-body fs-12 fw-medium">
+                                                             <span class="star filled">★</span>
+                                                             4.2
+                                                             </span>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="action" class="gridjs-td" >
+                                                             <span>
+                                                                <div class="dropdown">
+                                                                   <button
+                                                                      class="btn btn-soft-secondary btn-sm dropdown"
+                                                                      type="button" data-bs-toggle="dropdown"
+                                                                      aria-expanded="false">
+                                                                   <i class="bi bi-three-dots"></i>
+                                                                   </button>
+                                                                   <ul class="dropdown-menu dropdown-menu-end" ">
+                                                                      <li>
+                                                                         <a class="dropdown-item"
+                                                                            href="{% url 'admin-view-location' item.name %}">
+                                                                         <i
+                                                                            class="bi bi-eye align-bottom me-2 text-muted"></i>
+                                                                         View </a>
+                                                                      </li>
+                                                                      <li>
+                                                                         <a class="dropdown-item edit-list"
+                                                                            data-edit-id="1"
+                                                                            href="{% url 'admin_edit_location' item.id %}">
+                                                                         <i
+                                                                            class="bi bi-pencil-fill align-bottom me-2 text-muted"></i>
+                                                                         Edit </a>
+                                                                      </li>
+                                                                      <hr>
+                                                                      <li>
+                                                                         <a class="dropdown-item remove-list activate-modal"
+                                                                            href="#" data-id="1"
+                                                                            data-bs-toggle="modal"
+                                                                            id = "activate-modal"
+                                                                            data-bs-target="#removeItemModal">
+                                                                         <i
+                                                                            class="bi bi-trash3 align-bottom me-2 text-muted"></i>
+                                                                         Delete </a>
+                                                                      </li>
+                                                                   </ul>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                       </tr>
+                                                    </tbody>
+                                                    {% endfor %}
+                                                 </table>
+                                                 <div class="py-4 text-center no-result-message"style="display: none;">
+                                                    <div style="width:1185px;"></div>
+                                                    <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                 </div>
+                                              </div>
+                                              <div class="gridjs-footer" id="footer-1">
+                                                 <div class="gridjs-pagination">
+                                                    <div role="status" aria-live="polite" class="gridjs-summary"
+                                                       title="Page 1 of 1">
                                                     </div>
-                                                </div>
-                                                <div id="gridjs-temp" class="gridjs-temp"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane" id="productnav-draft" role="tabpanel">
-                                        <div id="table-product-list-published" class="table-card gridjs-border-none">
-                                            <div role="complementary" class="gridjs gridjs-container"
-                                                style="width: 100%;">
-                                                <div class="gridjs-wrapper" style="height: auto;">
-                                                    <table role="grid" class="gridjs-table" style="height: auto;">
-                                                        <thead class="gridjs-thead">
-                                                            <tr class="" >
-                                                                <th data-column-id="#"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 40px;">
-                                                                <div class="gridjs-th-content">#</div>
-                                                                
-                                                            </th>
-                                                                <th data-column-id="event"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 360px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="organizer"
-                                                                class="gridjs-th gridjs-th-sort text-muted"
-                                                                tabindex="0" style="width: 200px;">
-                                                                <div class="gridjs-th-content">Added by</div>
-                                                            </th>
-                                                                <th data-column-id="guests"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:120px;">
-                                                                    <div class="gridjs-th-content">Max Guests</div>
-                                                                </th>
-                                                                <th data-column-id="price"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 101px;">
-                                                                    <div class="gridjs-th-content">Price</div>
-                                                                </th>
-                                                                <th data-column-id="location"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width:184px;">
-                                                                    <div class="gridjs-th-content">Location</div>
-                                                                </th>
-                                                                <th data-column-id="rating"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 105px;">
-                                                                    <div class="gridjs-th-content">Rating</div>
-                                                                </th>
-                                                                <th data-column-id="action"
-                                                                    class="gridjs-th gridjs-th-sort text-muted"
-                                                                    tabindex="0" style="width: 80px;">
-                                                                    <div class="gridjs-th-content">Action</div>
-                                                                </th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody class="gridjs-tbody">
-                                                            
-                                                        </tbody>
-                                                    </table>
-                                                        <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
-                                                            <div style="width:1185px;"></div>
-                                                            <h5 class="mt-4">Sorry! No Result Found</h5>
-                                                        </div>
-                                                </div>
-                                                <div class="gridjs-footer" id="footer-3">
-                                                    <div class="gridjs-pagination">
-                                                        <div role="status" aria-live="polite" class="gridjs-summary"
-                                                            title="Page 1 of 1">Showing <b>1</b> to <b>5</b> of <b>5</b>
-                                                            results</div>
-                                                        <div class="gridjs-pages"></div>
+                                                    <div class="gridjs-pages">
                                                     </div>
-                                                </div>
-                                                <div id="gridjs-temp" class="gridjs-temp"></div>
-                                            </div>
+                                                 </div>
+                                              </div>
+                                              <div id="gridjs-temp" class="gridjs-temp"></div>
+                                           </div>
                                         </div>
-                                    </div>
-
+                                     </div>
+                                     <div class="tab-pane" id="locationnav-published" role="tabpanel">
+                                        <div id="table-location-list-published" class="table-card gridjs-border-none">
+                                           <div role="complementary" class="gridjs gridjs-container"
+                                              style="width: 100%;">
+                                              <div class="gridjs-wrapper" style="height: auto;">
+                                                 <table role="grid" class="gridjs-table" style="height: auto;">
+                                                    <thead class="gridjs-thead">
+                                                       <tr class="" >
+                                                          <th data-column-id="#"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 40px;">
+                                                             <div class="gridjs-th-content">#</div>
+                                                          </th>
+                                                          <th data-column-id="event"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 360px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="organizer"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 200px;">
+                                                             <div class="gridjs-th-content">Added by</div>
+                                                          </th>
+                                                          <th data-column-id="guests"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:120px;">
+                                                             <div class="gridjs-th-content">Max Guests</div>
+                                                          </th>
+                                                          <th data-column-id="price"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 101px;">
+                                                             <div class="gridjs-th-content">Price</div>
+                                                          </th>
+                                                          <th data-column-id="location"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:184px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="rating"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 105px;">
+                                                             <div class="gridjs-th-content">Rating</div>
+                                                          </th>
+                                                          <th data-column-id="action"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 80px;">
+                                                             <div class="gridjs-th-content">Action</div>
+                                                          </th>
+                                                       </tr>
+                                                    </thead>
+                                                    <tbody class="gridjs-tbody">
+                                                       {% for item in new_locations_detailed %}
+                                                    <tbody class="gridjs-tbody">
+                                                       <tr class="gridjs-tr" data-types="{% for t in item.types.all %}{{ t.name|lower }}{% if not forloop.last %},{% endif %}{% endfor %}">
+                                                          <td data-column-id="#" class="gridjs-td">
+                                                             <span>
+                                                                <div class="form-check checkbox-location-list">
+                                                                   <input class="form-check-input"
+                                                                      type="checkbox" value="1"
+                                                                      id="checkbox-1">
+                                                                   <label class="form-check-label"
+                                                                      for="checkbox-1"></label>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="location" class="gridjs-td">
+                                                             <span>
+                                                                <div class="d-flex align-items-center">
+                                                                   <div class="flex-shrink-0 me-3">
+                                                                      <div
+                                                                         class="avatar-sm bg-light rounded p-1">
+                                                                         <img src="{{ item.photo.url }}"
+                                                                            alt=""
+                                                                            class="img-fluid d-block"
+                                                                            style="height: 50px;width:80px; object-fit: cover;">
+                                                                      </div>
+                                                                   </div>
+                                                                   <div class="flex-grow-1">
+                                                                      <h5 class="fs-14 mb-1">
+                                                                         <a href="apps-ecommerce-location-details.html"
+                                                                            class="text-body">{{ item.name }}</a>
+                                                                      </h5>
+                                                                      <p class="text-muted mb-0">Category :
+                                                                         <span class="fw-medium">
+                                                                         {% if item.seats >= 300 %}
+                                                                         Big Location
+                                                                         {% elif item.seats >= 100 %}
+                                                                         Medium Location
+                                                                         {% else %}
+                                                                         Small Location
+                                                                         {% endif %}
+                                                                         </span>
+                                                                      </p>
+                                                                   </div>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="stock" class="gridjs-td"> {{ item.added_by }} </td>
+                                                          <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
+                                                          <td data-column-id="price" class="gridjs-td">
+                                                             <span>{{ item.cost }}$</span>
+                                                          </td>
+                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
+                                                          <td data-column-id="rating" class="gridjs-td">
+                                                             <span>
+                                                             <span
+                                                                class="badge bg-light text-body fs-12 fw-medium">
+                                                             <span class="star filled">★</span>
+                                                             4.2
+                                                             </span>
+                                                             </span>
+                                                          </td>
+                                                          <td data-column-id="action" class="gridjs-td">
+                                                             <span>
+                                                                <div class="dropdown">
+                                                                   <button
+                                                                      class="btn btn-soft-secondary btn-sm dropdown"
+                                                                      type="button" data-bs-toggle="dropdown"
+                                                                      aria-expanded="false">
+                                                                   <i class="bi bi-three-dots"></i>
+                                                                   </button>
+                                                                   <ul class="dropdown-menu dropdown-menu-end">
+                                                                      <li>
+                                                                         <a class="dropdown-item"
+                                                                            href="apps-ecommerce-location-details.html">
+                                                                         <i
+                                                                            class="bi bi-eye align-bottom me-2 text-muted"></i>
+                                                                         View </a>
+                                                                      </li>
+                                                                      <li>
+                                                                         <a class="dropdown-item edit-list"
+                                                                            data-edit-id="1"
+                                                                            href="apps-ecommerce-add-location.html">
+                                                                         <i
+                                                                            class="bi bi-pencil-fill align-bottom me-2 text-muted"></i>
+                                                                         Edit </a>
+                                                                      </li>
+                                                                      <hr>
+                                                                      <li>
+                                                                         <a class="dropdown-item remove-list activate-modal"
+                                                                            href="#" data-id="1"
+                                                                            data-bs-toggle="modal"
+                                                                            id = "activate-modal"
+                                                                            data-bs-target="#removeItemModal">
+                                                                         <i
+                                                                            class="bi bi-trash3 align-bottom me-2 text-muted"></i>
+                                                                         Delete </a>
+                                                                      </li>
+                                                                   </ul>
+                                                                </div>
+                                                             </span>
+                                                          </td>
+                                                       </tr>
+                                                    </tbody>
+                                                    {% endfor %}
+                                                    </tbody>
+                                                 </table>
+                                                 <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
+                                                    <div style="width:1185px;"></div>
+                                                    <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                 </div>
+                                              </div>
+                                              <div class="gridjs-footer" id="footer-2">
+                                                <div class="gridjs-pagination">
+                                                    <div role="status" aria-live="polite" class="gridjs-summary"
+                                                       title="Page 1 of 1">
+                                                    </div>
+                                                    <div class="gridjs-pages">
+                                                    </div>
+                                                 </div>
+                                              </div>
+                                              <div id="gridjs-temp" class="gridjs-temp"></div>
+                                           </div>
+                                        </div>
+                                     </div>
+                                     <div class="tab-pane" id="locationnav-draft" role="tabpanel">
+                                        <div id="table-location-list-published" class="table-card gridjs-border-none">
+                                           <div role="complementary" class="gridjs gridjs-container"
+                                              style="width: 100%;">
+                                              <div class="gridjs-wrapper" style="height: auto;">
+                                                 <table role="grid" class="gridjs-table" style="height: auto;">
+                                                    <thead class="gridjs-thead">
+                                                       <tr class="" >
+                                                          <th data-column-id="#"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 40px;">
+                                                             <div class="gridjs-th-content">#</div>
+                                                          </th>
+                                                          <th data-column-id="event"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 360px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="organizer"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 200px;">
+                                                             <div class="gridjs-th-content">Added by</div>
+                                                          </th>
+                                                          <th data-column-id="guests"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:120px;">
+                                                             <div class="gridjs-th-content">Max Guests</div>
+                                                          </th>
+                                                          <th data-column-id="price"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 101px;">
+                                                             <div class="gridjs-th-content">Price</div>
+                                                          </th>
+                                                          <th data-column-id="location"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width:184px;">
+                                                             <div class="gridjs-th-content">Location</div>
+                                                          </th>
+                                                          <th data-column-id="rating"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 105px;">
+                                                             <div class="gridjs-th-content">Rating</div>
+                                                          </th>
+                                                          <th data-column-id="action"
+                                                             class="gridjs-th gridjs-th-sort text-muted"
+                                                             tabindex="0" style="width: 80px;">
+                                                             <div class="gridjs-th-content">Action</div>
+                                                          </th>
+                                                       </tr>
+                                                    </thead>
+                                                    <tbody class="gridjs-tbody">
+                                                    </tbody>
+                                                 </table>
+                                                 <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
+                                                    <div style="width:1185px;"></div>
+                                                    <h5 class="mt-4">Sorry! No Result Found</h5>
+                                                 </div>
+                                              </div>
+                                              <div class="gridjs-footer" id="footer-3">
+                                                <div class="gridjs-pagination">
+                                                    <div role="status" aria-live="polite" class="gridjs-summary"
+                                                       title="Page 1 of 1">
+                                                    </div>
+                                                    <div class="gridjs-pages">
+                                                    </div>
+                                                 </div>
+                                              </div>
+                                              <div id="gridjs-temp" class="gridjs-temp"></div>
+                                           </div>
+                                        </div>
+                                     </div>
+                                    
 
                             </div>
                         </div>
@@ -824,12 +815,12 @@
                     <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                         <h4>Are you sure?</h4>
-                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this product?</p>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this location?</p>
                     </div>
                 </div>
                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                     <button type="button" class="btn w-sm btn-light" id="close-modal"  data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn w-sm btn-danger" id="delete-product">Yes, Delete It!</button>
+                    <button type="button" class="btn w-sm btn-danger" id="delete-location">Yes, Delete It!</button>
                 </div>
             </div>
         </div>
@@ -839,80 +830,119 @@
         </div>
     </div>
 </div>
-
-    
-<script>
-    var existingSlider = document.getElementById('product-price-range');
-    
-    if (existingSlider) {
-        existingSlider.innerHTML = '';
+<style>
+    .noUi-base:first-of-type{
+        display: none !important;
     }
-
-    noUiSlider.create(existingSlider, {
-        start: [0, 2000], 
-        connect: true,   
-        range: {
-            'min': 0,      
-            'max': 2000   
-        },
-        step: 10,         
-        tooltips: true,    
-        format: {
-            to: function(value) {
-                return "$" + value; 
-            },
-            from: function(value) {
-                return value.replace('$', ''); 
-            }
-        }
-    });
-
-    existingSlider.noUiSlider.on('update', function(values, handle) {
-        document.getElementById('minCost').value = values[0];
-        document.getElementById('maxCost').value = values[1];
-    });
-
-    document.getElementById('minCost').addEventListener('input', function() {
-        var minValue = parseFloat(document.getElementById('minCost').value);
-        var maxValue = parseFloat(document.getElementById('maxCost').value);
-        
-        if (minValue >= 0 && minValue <= maxValue) {
-            existingSlider.noUiSlider.set([minValue, null]); 
-        }
-    });
-
-    document.getElementById('maxCost').addEventListener('input', function() {
-        var minValue = parseFloat(document.getElementById('minCost').value);
-        var maxValue = parseFloat(document.getElementById('maxCost').value);
-        
-        if (maxValue >= minValue && maxValue <= 2000) {
-            existingSlider.noUiSlider.set([null, maxValue]);
-        }
-    });
-</script>
+</style>
 <script>
     window.onload = function () {
-    let eventsCount = {{ all_locations_count }};  
-    let rowsPerPage = 5;  
-    let totalPages = Math.ceil(eventsCount / rowsPerPage);  
+    let rowsPerPage = 5;
     let currentPage = 1;
-    
-    let paginationContainer = document.querySelector(".gridjs-pages");
-    let rows = document.querySelectorAll(".gridjs-tr");
-    let summary = document.querySelector(".gridjs-summary");
-    let noResultMessages = document.querySelectorAll(".no-result-message");
-    let typeFilters = document.querySelectorAll(".filter-list .listname"); 
-    
-    function updatePagination() {
-        summary.innerHTML = `Showing <b>${(currentPage - 1) * rowsPerPage + 1}</b> to <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
-        createPaginationButtons();
-        filterRows();  
+    let selectedType = "all";
+    let eventsCount = 0;
+    let totalPages = 0;
+
+    var slider = document.getElementById('location-price-range');
+
+noUiSlider.create(slider, {
+    start: [0, 3500], 
+    connect: true,    
+    range: {
+        'min': 0,       
+        'max': 3500   
+    },
+    step: 1,           
+    format: {
+        to: function (value) {
+            return parseFloat(value).toFixed(0); 
+        },
+        from: function (value) {
+            return value; 
+        }
+    }
+});
+
+slider.noUiSlider.on('update', function(values, handle) {
+    if (handle === 0) {
+        document.getElementById('minCost').value = values[0];
+    } else {
+        document.getElementById('maxCost').value = values[1];
+    }
+    currentPage = 1;
+    updatePagination();
+});
+
+document.getElementById('minCost').addEventListener('input', function() {
+    slider.noUiSlider.set([this.value, null]);
+    currentPage = 1;
+    updatePagination();
+});
+
+document.getElementById('maxCost').addEventListener('input', function() {
+    slider.noUiSlider.set([null, this.value]);
+    currentPage = 1;
+    updatePagination();
+});
+
+function setActiveTab() {
+    let activeTab = document.querySelector(".tab-pane-active.show");
+    if (!activeTab) {
+        let firstTab = document.querySelector(".tab-pane");
+        if (firstTab) {
+            firstTab.classList.add("tab-pane-active", "show");
+        }
+    }
+}
+
+function getActiveRows() {
+    let activeTab = document.querySelector(".tab-pane-active.show");
+    if (!activeTab) return [];
+    return Array.from(activeTab.querySelectorAll(".gridjs-tr"));
+}
+
+function getFilteredRows() {
+    let rows = getActiveRows();
+    let filtered = rows.filter(row => {
+        let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
+        let priceCell = row.querySelector('.gridjs-td[data-column-id="price"]');
+        let price = priceCell ? parseFloat(priceCell.innerText.replace('$', '').trim()) : 0;
+        let minPrice = parseFloat(document.getElementById('minCost').value.replace('$', '') || 0);
+        let maxPrice = parseFloat(document.getElementById('maxCost').value.replace('$', '') || 3500);
+        return (eventTypes.includes(selectedType) || selectedType === "all") && price >= minPrice && price <= maxPrice;
+    });
+    return filtered;
+}
+
+function updatePagination() {
+    let filteredRows = getFilteredRows();
+    eventsCount = filteredRows.length;
+    totalPages = Math.ceil(eventsCount / rowsPerPage);
+
+    let activeTab = document.querySelector(".tab-pane-active.show");
+    if (!activeTab) return;
+
+    let paginationContainer = activeTab.querySelector(".gridjs-pages");
+    if (paginationContainer) {
+        paginationContainer.innerHTML = "";
+        createPaginationButtons(filteredRows, paginationContainer);
     }
 
-    function createPaginationButtons() {
-        paginationContainer.innerHTML = "";
+    let summary = activeTab.querySelector(".gridjs-summary");
+    if (summary) {
+        summary.innerHTML = `Showing <b>${Math.min((currentPage - 1) * rowsPerPage + 1, eventsCount)}</b> to <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
+    }
+
+    let noResultMessage = activeTab.querySelector(".no-result-message");
+    if (noResultMessage) {
+        noResultMessage.style.display = filteredRows.length === 0 ? "block" : "none";
+    }
+
+    filterRows(filteredRows);
+}
+
+    function createPaginationButtons(filteredRows, paginationContainer) {
         let prevButton = document.createElement("button");
-        prevButton.classList.add("pagination-button");
         prevButton.textContent = "Previous";
         prevButton.disabled = currentPage === 1;
         prevButton.onclick = function () {
@@ -926,8 +956,6 @@
         for (let i = 1; i <= totalPages; i++) {
             let pageButton = document.createElement("button");
             pageButton.textContent = i;
-            pageButton.classList.add("pagination-button");
-            pageButton.classList.toggle("gridjs-currentPage", i === currentPage);
             pageButton.onclick = function () {
                 currentPage = i;
                 updatePagination();
@@ -936,7 +964,6 @@
         }
 
         let nextButton = document.createElement("button");
-        nextButton.classList.add("pagination-button");
         nextButton.textContent = "Next";
         nextButton.disabled = currentPage === totalPages;
         nextButton.onclick = function () {
@@ -948,61 +975,53 @@
         paginationContainer.appendChild(nextButton);
     }
 
-    function filterRows() {
-        let visibleRows = 0;
+    function filterRows(filteredRows) {
+        let startIndex = (currentPage - 1) * rowsPerPage;
+        let endIndex = startIndex + rowsPerPage;
 
-        rows.forEach(row => {
-            let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
-            let isVisible = eventTypes.includes(selectedType) || selectedType === "all";
+        let activeTab = document.querySelector(".tab-pane-active.show");
+        if (!activeTab) return;
 
-            let rowIndex = Array.from(rows).indexOf(row);
-            if (isVisible && rowIndex >= (currentPage - 1) * rowsPerPage && rowIndex < currentPage * rowsPerPage) {
-                row.style.display = "";
-                visibleRows++;
-            } else {
-                row.style.display = "none";
-            }
+        let allRows = activeTab.querySelectorAll(".gridjs-tr");
+        allRows.forEach(row => row.style.display = "none");
+
+        filteredRows.slice(startIndex, endIndex).forEach(row => {
+            row.style.display = "";
         });
-
-        // Verifică dacă există rânduri vizibile și actualizează vizibilitatea mesajului
-        if (visibleRows === 0) {
-            noResultMessages.forEach(message => message.style.display = "block");
-        } else {
-            noResultMessages.forEach(message => message.style.display = "none");
-        }
     }
+    
+    document.getElementById('minCost').addEventListener('input', function() {
+        currentPage = 1;
+        updatePagination();
+    });
 
+    document.getElementById('maxCost').addEventListener('input', function() {
+        currentPage = 1;
+        updatePagination();
+    });
+
+    let typeFilters = document.querySelectorAll(".filter-list .listname");
     typeFilters.forEach(filter => {
         filter.addEventListener("click", function (event) {
             event.preventDefault();
-            let selectedType = filter.innerText.trim().toLowerCase();
-            
-            console.log("Filter selected:", selectedType); 
-
-            let visibleRows = 0;  // Contorizează rândurile vizibile
-
-            rows.forEach(row => {
-                let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
-                console.log("Row types:", eventTypes);  
-
-                // Filtrarea rândurilor
-                if (eventTypes.includes(selectedType) || selectedType === "all") {
-                    row.style.display = "";
-                    visibleRows++;  // Crește contorul pentru rândurile vizibile
-                } else {
-                    row.style.display = "none";
-                }
-            });
-
-            if (visibleRows === 0) {
-                noResultMessages.forEach(message => message.style.display = "block");  // Afișează toate mesajele
-            } else {
-                noResultMessages.forEach(message => message.style.display = "none");  // Ascunde toate mesajele
-            }
+            selectedType = filter.innerText.trim().toLowerCase();
+            currentPage = 1;
+            updatePagination();
         });
     });
 
-    // Inițializează paginarea și filtrarea
+    let tabLinks = document.querySelectorAll('.nav-link');
+    tabLinks.forEach(tab => {
+        tab.addEventListener('click', function () {
+            let allTabs = document.querySelectorAll('.tab-pane');
+            allTabs.forEach(t => t.classList.remove("tab-pane-active", "show"));
+            let activeTab = document.getElementById(tab.getAttribute("href").replace("#", ""));
+            activeTab.classList.add("tab-pane-active", "show");
+            setTimeout(updatePagination, 100);
+        });
+    });
+    
+    setActiveTab();
     updatePagination();
 };
 
@@ -1038,14 +1057,14 @@
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            let searchInput = document.getElementById("searchProductList");
+            let searchInput = document.getElementById("searchlocationList");
         
             searchInput.addEventListener("keyup", function () {
                 let filter = searchInput.value.toLowerCase();
                 let rows = document.querySelectorAll(".gridjs-tbody .gridjs-tr");
         
                 rows.forEach(row => {
-                    let locationName = row.querySelector("td[data-column-id='product']").textContent.toLowerCase();
+                    let locationName = row.querySelector("td[data-column-id='location']").textContent.toLowerCase();
                     if (locationName.includes(filter)) {
                         row.style.display = "";
                     } else {
@@ -1056,16 +1075,13 @@
         });
         </script>
 <style>
-    .pagination-button{
+    .gridjs-pages button{
         padding:5px;
         margin:10px;
         border:none;
         background: white;
         font-weight: 600;
     }
-    .pagination-button.gridjs-currentPage{
-        padding-left:10px;
-        padding-right:10px;
-    }
+   
 </style>
 {% endblock content %}

@@ -22,6 +22,7 @@ urlpatterns = [
     path('view_user_events/<str:pk>/', views.viewUserEvents, name="view_user_events"),
     path('view_user_locations/<str:pk>/', views.viewUserLocations, name="view_user_locations"),
     path('admin_account_settings', views.admin_settings, name="admin_account_settings"),
+    path('admin_edit_location/<int:pk>/', views.admin_edit_location, name='admin_edit_location'),
 
     # Evenimente
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
