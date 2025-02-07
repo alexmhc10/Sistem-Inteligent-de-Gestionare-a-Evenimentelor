@@ -699,7 +699,9 @@ def homeAdmin(request):
             }
         )
     print("Evenimente per luni: ", event_month_count)
+    budget = Budget.objects.first()
     context= {
+        'budget':budget,
         'event_month_count':json.dumps(event_month_count),
         'location_month_count':json.dumps(location_month_count),
         'loc_percentage_change':loc_percentage_change,

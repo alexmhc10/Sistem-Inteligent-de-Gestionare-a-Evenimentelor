@@ -157,12 +157,18 @@
                                     <p class="text-uppercase fw-medium text-muted text-truncate mb-0">Locations</p>
                                  </div>
                                  <div class="flex-shrink-0">
-                                    <h5 class="text-success fs-14 mb-0">
-                                       <i class="ri-arrow-right-up-line fs-13 align-middle"></i>
+                                    <h5 class="{% if loc_percentage_change > 0.00 %}
+                                       text-success
+                                       {% elif loc_percentage_change == 0.00 %}
+                                       text-muted
+                                       {% elif loc_percentage_change < 0.00 %}
+                                       text-danger
+                                       {% endif %} fs-14 mb-0">
+                                       <i class="ri-arrow-right-down-line fs-13 align-middle"></i>
                                        {% if loc_percentage_change > 0 %}
                                        +
                                        {% endif %}
-                                       {{loc_percentage_change}} %
+                                       {{ loc_percentage_change }} %
                                     </h5>
                                  </div>
                               </div>
