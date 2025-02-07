@@ -1248,6 +1248,7 @@ def viewUserLocations(request, pk):
     }
     return render(request, 'base/admin-user-locations.html', context)
 
+
 @login_required(login_url='/login')
 def deleteUserAdmin(request, pk):
     if not request.user.is_superuser:
@@ -1258,8 +1259,6 @@ def deleteUserAdmin(request, pk):
         return redirect('home-admin')
     return render(request, 'base/admin-delete-user.html', {
         'obj': user})
-
-
 
 
 @login_required(login_url='/login')
@@ -1409,22 +1408,63 @@ def personal_face_id(request, pk):
 @login_required(login_url='/login')
 @user_is_guest
 def guest_profile(request):
-    completed_profile = Guests.objects.filter(profile__user=request.user, state=False).exists()
+
+    profil = Profile.objects.get(user = request.user)
+    preferences = Guests.objects.get(profile = profil)
+    not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
+
+    if request.method == "POST":
+        if not_completed:
+            preferences.state = True
+            profil.first_name = request.POST.get('firstname')
+            profil.last_name = request.POST.get('lastname')
+            profil.email = request.POST.get('email')
+            profil.age = request.POST.get('age')
+            profil.photo = request.FILES.get('photo')
+            preferences.gender = request.POST.get('gender')
+            preferences.cuisine_preference = request.POST.get('meniu')
+            preferences.vegan = request.POST.get('vegan_check') == '1'
+            preferences.allergens = request.POST.getlist('allergens')
+
+            preferences.save()
+            profil.save()
+        else:
+            form_type = request.POST.get('form_type')
+            if form_type == 'form1':
+                profil.first_name = request.POST.get('firstname')
+                profil.last_name = request.POST.get('lastname')
+                profil.email = request.POST.get('email')
+                profil.photo = request.FILES.get('photo')
+                profil.number = request.POST.get('number')
+
+                profil.save()
+
+            elif form_type == 'form2':
+                preferences.cuisine_preference = request.POST.get('meniu')
+
+                preferences.save()
+
+            
+    not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
+    
     context = {
-        "completed": completed_profile
-    }
+        "not_completed": not_completed,
+        "preferences": preferences,
+        "profile": profil
+    }            
+
     return render(request, 'base/guest_profile.html', context)
 
 
 @login_required(login_url='/login')
 @user_is_guest
 def guest_home(request):
-    completed_profile = Guests.objects.filter(profile__user=request.user, state=False).exists()
+    not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
     context = {
-        "completed": completed_profile
+        "not_completed": not_completed
     }
-    if completed_profile:
-        return render(request, 'base/guest_profile.html', context)
+    if not_completed:
+        return redirect('guest_profile')
     else:
         return render(request, 'base/guest_home.html')
 

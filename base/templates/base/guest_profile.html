@@ -121,10 +121,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">Home</span>
           </li>
           <li class="sidebar-item">
-            {% if not completed %}
+            {% if not not_completed %}
             <a class="sidebar-link" href="{% url 'guest_home' %}" aria-expanded="false">
             {% endif %}
-            {% if completed %}
+            {% if not_completed %}
             <a class="sidebar-link btn btn-link link-underline link-underline-opacity-0 disabled" href="{% url 'guest_home' %}" tabindex="-1" role="button" aria-disabled="true" aria-expanded="false">
             {% endif %}
               <span>
@@ -204,263 +204,18 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <div class="container-fluid">
 
       <div class="title">
-          <h1 class="h1">       
+          <h1 class="h1 text-center">       
                 On this page, {{ request.user.username }}, you will have to add some information about your preferences related to the events you will participate in.
           </h1>
-          <p>This will help the organizers in preparing the event, and at the same time the experience will be much better for you</p>
+          <p class="text-center">This will help the organizers in preparing the event, and at the same time the experience will be much better for you</p>
       </div>
       <hr>
-
-      <!-- <div class="col-lg-12 mb-4 mt-5">
-        <h2 class="mb-4">Filter Events</h2>
-        <form id="filtersForm" class="row gy-3 gx-3 align-items-center">
-            <div class="col-md-4">
-                <label for="search" class="form-label">Search</label>
-                <input type="text" class="form-control" id="search" placeholder="Search events...">
-            </div>
-            <div class="col-md-4">
-                <label for="eventType" class="form-label">Event Type</label>
-                <select class="form-select" id="eventType">
-                    <option value="">All Events</option>
-                    <option value="future">Future Events</option>
-                    <option value="past">Past Events</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <label for="filterDate" class="form-label">Filter by Date</label>
-                <input type="date" class="form-control" id="filterDate">
-            </div>
-            <div class="col-12 text-end">
-                <button type="button" id="applyFilters" class="btn btn-primary">Apply Filters</button>
-                <button type="reset" id="resetFilters" class="btn btn-secondary">Reset</button>
-            </div>
-        </form>
-      </div> -->
-        
-
-        <!-- <div id="futureEventsSection">
-          <div class="col-lg-12">
-              <div class="card">
-                  <div class="card-body">
-                      <h1 class="card-title d-flex align-items-center gap-2">
-                          Upcoming events!
-                        </h1>
-                  </div>
-              </div>
-          </div>
-          <div id="futureEventsContainer">
-          {% for event in future_events %}
-            <div class="col-lg-4">
-              <div class="card overflow-hidden hover-img">
-                <div class="position-relative">
-                  <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                    <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img">
-                  </a>
-                  <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                  <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-                </div>
-                <div class="card-body p-4">
-                  <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-                  <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-                  <div class="d-flex align-items-center gap-4">
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                    </div>
-                    <div class="d-flex align-items-center fs-2 ms-auto">
-                      <i class="ti ti-point text-dark"></i>{{ event.event_date }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-          </div>
-        </div>
-
-        
-
-        <div id="pastEventsSection">
-          <div class="col-lg-12">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="card-title d-flex align-items-center gap-2">
-                        Past events!
-                      </h1>
-                </div>
-            </div>
-          </div>
-          <div id="pastEventsContainer">
-          {% for event in past_events %}
-            <div class="col-lg-4">
-              <div class="card overflow-hidden hover-img">
-                <div class="position-relative">
-                  <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
-                    <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50); max-height: 300px; object-fit: cover;">
-                  </a>
-                  <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                  <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-                </div>
-                <div class="card-body p-4">
-                  <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-                  <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-                  <div class="d-flex align-items-center gap-4">
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                    </div>
-                    <div class="d-flex align-items-center fs-2 ms-auto">
-                      <i class="ti ti-point text-dark"></i>{{ event.event_date }}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          {% endfor %}
-          </div>
-        </div> -->
-
-      
-      <!--<div class="col-lg-8">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">View by page title and screen class</h5>
-            <div class="table-responsive">
-              <table class="table text-nowrap align-middle mb-0">
-                <thead>
-                  <tr class="border-2 border-bottom border-primary border-0"> 
-                    <th scope="col" class="ps-0">Page Title</th>
-                    <th scope="col" >Link</th>
-                    <th scope="col" class="text-center">Pageviews</th>
-                    <th scope="col" class="text-center">Page Value</th>
-                  </tr>
-                </thead>
-                <tbody class="table-group-divider">
-                  <tr>
-                    <th scope="row" class="ps-0 fw-medium">
-                      <span class="table-link1 text-truncate d-block">Welcome to our
-                        website</span>
-                    </th>
-                    <td>
-                      <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/index.html</a>
-                    </td>
-                    <td class="text-center fw-medium">18,456</td>
-                    <td class="text-center fw-medium">$2.40</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="ps-0 fw-medium">
-                      <span class="table-link1 text-truncate d-block">Modern Admin
-                        Dashboard Template</span>
-                    </th>
-                    <td>
-                      <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/dashboard</a>
-                    </td>
-                    <td class="text-center fw-medium">17,452</td>
-                    <td class="text-center fw-medium">$0.97</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="ps-0 fw-medium">
-                      <span class="table-link1 text-truncate d-block">Explore our
-                        product catalog</span>
-                    </th>
-                    <td>
-                      <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/product-checkout</a>
-                    </td>
-                    <td class="text-center fw-medium">12,180</td>
-                    <td class="text-center fw-medium">$7,50</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="ps-0 fw-medium">
-                      <span class="table-link1 text-truncate d-block">Comprehensive
-                        User Guide</span>
-                    </th>
-                    <td>
-                      <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/docs</a>
-                    </td>
-                    <td class="text-center fw-medium">800</td>
-                    <td class="text-center fw-medium">$5,50</td>
-                  </tr>
-                  <tr>
-                    <th scope="row" class="ps-0 fw-medium border-0">
-                      <span class="table-link1 text-truncate d-block">Check out our
-                        services</span>
-                    </th>
-                    <td class="border-0">
-                      <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/services</a>
-                    </td>
-                    <td class="text-center fw-medium border-0">1300</td>
-                    <td class="text-center fw-medium border-0">$2,15</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
+      {% if not_completed %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <a href="#" class="alert-link">Sorry but you cant acces your home page until you complete your profile information!</a>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
-      <div class="col-lg-4">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title d-flex align-items-center gap-2 mb-5 pb-3">Sessions by
-              device<span><iconify-icon icon="solar:question-circle-bold" class="fs-7 d-flex text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Locations"></iconify-icon></span>
-            </h5>
-            <div class="row">
-              <div class="col-4">
-                <iconify-icon icon="solar:laptop-minimalistic-line-duotone" class="fs-7 d-flex text-primary"></iconify-icon>
-                <span class="fs-11 mt-2 d-block text-nowrap">Computers</span>
-                <h4 class="mb-0 mt-1">87%</h4>
-              </div>
-              <div class="col-4">
-                <iconify-icon icon="solar:smartphone-line-duotone" class="fs-7 d-flex text-secondary"></iconify-icon>
-                <span class="fs-11 mt-2 d-block text-nowrap">Smartphone</span>
-                <h4 class="mb-0 mt-1">9.2%</h4>
-              </div>
-              <div class="col-4">
-                <iconify-icon icon="solar:tablet-line-duotone" class="fs-7 d-flex text-success"></iconify-icon>
-                <span class="fs-11 mt-2 d-block text-nowrap">Tablets</span>
-                <h4 class="mb-0 mt-1">3.1%</h4>
-              </div>
-            </div>
-
-            <div class="vstack gap-4 mt-7 pt-2">
-              <div>
-                <div class="hstack justify-content-between">
-                  <span class="fs-3 fw-medium">Computers</span>
-                  <h6 class="fs-3 fw-medium text-dark lh-base mb-0">87%</h6>
-                </div>
-                <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                  <div class="progress-bar bg-primary" style="width: 100%"></div>
-                </div>
-              </div>
-
-              <div>
-                <div class="hstack justify-content-between">
-                  <span class="fs-3 fw-medium">Smartphones</span>
-                  <h6 class="fs-3 fw-medium text-dark lh-base mb-0">9.2%</h6>
-                </div>
-                <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                  <div class="progress-bar bg-secondary" style="width: 50%"></div>
-                </div>
-              </div>
-
-              <div>
-                <div class="hstack justify-content-between">
-                  <span class="fs-3 fw-medium">Tablets</span>
-                  <h6 class="fs-3 fw-medium text-dark lh-base mb-0">3.1%</h6>
-                </div>
-                <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                  <div class="progress-bar bg-success" style="width: 35%"></div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>-->
-      <div class="container">
+      <div class="container mb-4">
         <div class="steps">
             
             <div class="step" id="step-1">
@@ -480,137 +235,271 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div id="form-1" class="form-container flex-column align-items-center justify-content-center">
             <h2 class="text-center">Since you just got your new account we'll have to go through and se up your profile.</h2>
             <div class = "button-container">
-                <button class="btn" id="accept-btn">Let's go!</button>
+                <button class="btn btn-outline-success" id="accept-btn">Let's go!</button>
             </div>
         </div>
+          <form method="post" action="" enctype="multipart/form-data">
+            <div id="form-2" class="form-container flex-column">
+                  {% csrf_token %}
+                  <h2 class="text-center">Please fill with your personal details</h2>
+            
+                  <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
+                    <label for="firstname">Firsname:</label>
+                    <input type="text" class="form-control" id="firstname" name="firstname" required>
 
-        <div id="form-2" class="form-container flex-column">
-            <h2>Introducerea datelor tale personale</h2>
-            <form action="" method="post">
-                <label for="nume">Nume:</label>
-                <input type="text" class="form-control" id="nume" name="nume" required>
+                    <label for="lastname">Lastname:</label>
+                    <input type="text" class="form-control" id="lastname" name="lastname" required>      
+                  </div>
 
-                <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                  <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" name="email" required >
+                  </div>
 
-                <label for="varsta">Varsta:</label>
-                <input type="text" class="form-control" id="varsta" name="varsta" required>
+                  <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
+                    <label for="age">Varsta:</label>
+                    <input type="text" class="form-control" id="age" name="age" required>
+                  </div>
 
-                <label for="poza">Poza pentru accesul la eveniment:</label>
-                <input type="file" class="form-control" id="poza" name="poza" required>
+                  <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
+                    <label for="photo">Poza pentru accesul la eveniment:</label>
+                    <input type="file" class="form-control" id="photo" name="photo" required>
+                  </div>
 
-                <h4>Gender</h4>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">M</label>
+                  <div class="d-grid gap-2 d-md-flex align-items-center mt-2">
+                    <p>Gender:</p>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios1" value="M">
+                        <label class="form-check-label" for="exampleRadios1">M</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="F">
+                        <label class="form-check-label" for="exampleRadios2">F</label>
+                    </div>
+                  </div>
+
+                  <div class="d-grid gap-2 d-md-flex justify-content-end">
+                    <button class="btn btn-outline-success" type="button" id="continue-1">Continue</button>
+                  </div>
+
+              </div>
+
+              <div id="form-3" class="form-container flex-column">
+                <h2>Detalii Eveniment</h2>
+                <label for="zona">Zona la masă:</label>
+                <select id="zona" class="form-select" name="zona">
+                    <option value="Margine">Margine</option>
+                    <option value="Central">Central</option>
+                    <option value="Oriunde" selected>Oriunde</option>
+                    <option value="Spre_iesire">Spre iesire</option>
+                    <option value="Langa_scena">Langa scena</option>
+                </select>
+                <!-- <label for="prieteni">Cu cine vei veni la eveniment?</label>
+                <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
+                    Scrie numele complet al priteninilor cu care vei veni la eveniment
+                </textarea> -->
+                <label for="meniu">Preferințe meniu:</label>
+                <select id="meniu" class="form-select" name="meniu" required>
+                    <option value="Iberic">Iberic</option>
+                    <option value="Italienesc">Italienesc</option>
+                    <option value="Chinezesc" selected>Chinezesc</option>
+                    <option value="Fara_preferinte">Fara preferinte</option>
+                    <option value="Oriental">Oriental</option>
+                </select>
+                    <h4>Esti vegetarian?</h4>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
+                        <label class="form-check-label" for="inlineCheckbox1">Da</label>
+                    </div>
+                    <h4>Esti alergic la ceva?</h4>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza">
+                        <label class="form-check-label" for="inlineCheckbox2">Lactoza</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten">
+                        <label class="form-check-label" for="inlineCheckbox3">Gluten</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-2">
+                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia">
+                        <label class="form-check-label" for="inlineCheckbox4">Soia</label>
+                    </div>
+                  <div class="d-grid gap-2 d-md-flex justify-content-between">
+                    <button type="button" id="back-2" class="btn btn-outline-dark">Back</button>
+                    <button type="button" id="continue-2" class="btn btn-outline-success">Finalizeaza</button>
+                  </div>
+                </div> 
+          
+            <div id="final-page" class="form-container flex-column text-center">
+                <h2>Thank you for your patience!</h2>
+                <h3>We wish you a great time at your future event!</h3>
+                <button type="submit" name="submit" class="btn btn-outline-success mt-2 mb-2">Check out your profile!</button>
+            </div>
+          </form>
+      </div>
+      <script>
+        document.getElementById('accept-btn').addEventListener('click', function() {
+        document.getElementById('form-1').style.display = 'none';
+        document.getElementById('form-2').style.display = 'flex';
+        document.getElementById('step-1').querySelector('.circle').style.backgroundColor = 'green';
+        });
+    
+        document.getElementById('continue-1').addEventListener('click', function(e) {
+        e.preventDefault();
+        document.getElementById('form-2').style.display = 'none';
+        document.getElementById('form-3').style.display = 'flex';
+        document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
+        });
+    
+        document.getElementById('continue-2').addEventListener('click', function(e) {
+        document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
+        document.getElementById('form-3').style.display = 'none';
+        document.getElementById('final-page').style.display = 'flex';
+        });
+        document.getElementById('back-2').addEventListener('click', function () {
+        document.getElementById('form-3').style.display = 'none';
+        document.getElementById('form-2').style.display = 'flex';
+        document.getElementById('step-2').querySelector('.circle').style.backgroundColor = '';
+        });
+    
+    </script>
+      {% else %}
+      <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row gutters-sm mt-4">
+            <div class="col-lg-4 mb-3">
+              <div class="card">
+                <div class="card-body">
+                  <div class="d-flex flex-column align-items-center text-center">
+                    <label class="avatar avatar-xxl avatar-circle avatar-uploader profile-cover-avatar" for="editAvatarUploaderModal">
+                    <img src="{{ MEDIA_URL }}{{ profile.photo }}" id="editAvatarImgModal" alt="Admin" class="rounded-circle" width="150">
+                    <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
+                                           data-hs-file-attach-options="{
+                                              &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
+                                              &quot;mode&quot;: &quot;image&quot;,
+                                              &quot;targetAttr&quot;: &quot;src&quot;,
+                                              &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
+                                            }" onchange="updateImage(event)"
+                                            name="photo">
+                    </label>
+                                            <script>
+                                              function updateImage(event) {
+                                                  const file = event.target.files[0];
+                                                  const reader = new FileReader();
+                                          
+                                                  reader.onload = function (e) {
+                                                      document.getElementById('editAvatarImgModal').src = e.target.result;
+                                                  }
+                                          
+                                                  if (file) {
+                                                      reader.readAsDataURL(file); 
+                                                  }
+                                              }
+                                          </script>                        
+                    <div class="mt-3">
+                      <h4>{{ profile.username }}</h4>
+                    </div>
+                  </div>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option2">
-                    <label class="form-check-label" for="inlineCheckbox2">F</label>
+              </div>
+            </div>
+            <div class="col-lg-8">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-3 text-center">Personal informations</h5>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">First Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" name="firstname" class="form-control" value="{{ profile.first_name }}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Last Name</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" name="lastname" class="form-control" value="{{ profile.last_name }}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" name="email" class="form-control" value="{{ profile.email }}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Phone</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" name="number" class="form-control" value="{{ profile.number }}">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9 text-secondary">
+                      <button type="submit" id="submit" name="form_type" value="form1" class="btn btn-primary px-4">Save changes</button>
+                    </div>
+                  </div>
                 </div>
+              </div>
+            </div>
+            <div class="col-lg-8 offset-lg-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title mb-3 text-center">Preferences for events</h5>
 
-                <button type="submit" id="continue-1">Continue</button>
-                <button id="back-1">Back</button>
-
+                  <div class="row align-items-center mb-3">
+                    <div class="col-sm-2">
+                      <h6 class="mb-0">Cuisine:</h6>
+                    </div>
+                    <div class="col-sm-4 text-secondary">
+                      <input type="text" name="meniu" class="form-control" value="{{ preferences.cuisine_preference }}">
+                    </div>
+                    <div class="col-sm-2">
+                      <h6 class="mb-0">Last Name</h6>
+                    </div>
+                    <div class="col-sm-4 text-secondary">
+                      <input type="text" name="lastname" class="form-control" value="{{ profile.last_name }}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Email</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" name="email" class="form-control" value="{{ profile.email }}">
+                    </div>
+                  </div>
+                  <div class="row mb-3">
+                    <div class="col-sm-3">
+                      <h6 class="mb-0">Phone</h6>
+                    </div>
+                    <div class="col-sm-9 text-secondary">
+                      <input type="text" class="form-control" value="{{ profile.number }}">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-3"></div>
+                    <div class="col-sm-9 text-secondary">
+                      <button type="submit" id="submit" name="form_type" value="form2" class="btn btn-primary px-4">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         </div>
-
-
-        <div id="form-3" class="form-container flex-column">
-            <h2>Detalii Eveniment</h2>
-            <label for="zona">Zona la masă:</label>
-            <select id="zona" class="form-select" name="zona">
-                <option value="Margine">Margine</option>
-                <option value="Central">Central</option>
-                <option value="Oriunde" selected>Oriunde</option>
-                <option value="Spre_iesire">Spre iesire</option>
-                <option value="Langa_scena">Langa scena</option>
-            </select>
-            <label for="prieteni">Cu cine vei veni la eveniment?</label>
-            <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
-                Scrie numele complet al priteninilor cu care vei veni la eveniment
-            </textarea>
-            <label for="meniu">Preferințe meniu:</label>
-            <select id="meniu" class="form-select" name="meniu" required>
-                <option value="Iberic">Iberic</option>
-                <option value="Italienesc">Italienesc</option>
-                <option value="Chinezesc" selected>Chinezesc</option>
-                <option value="Fara_preferinte">Fara preferinte</option>
-                <option value="Oriental">Oriental</option>
-            </select>
-                <h4>Esti vegetarian?</h4>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option0">
-                    <label class="form-check-label" for="inlineCheckbox1">Da</label>
-                </div>
-                <h4>Esti alergic la ceva?</h4>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                    <label class="form-check-label" for="inlineCheckbox1">Lactoza</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
-                    <label class="form-check-label" for="inlineCheckbox2">Gluten</label>
-                </div>
-                <div class="form-check form-check-inline mb-2">
-                    <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
-                    <label class="form-check-label" for="inlineCheckbox3">Soia</label>
-                </div>
-
-            <button type="submit" id="submit" class="btn btn-succes">Finalizeaza</button>
-            <button id="back-2" class="btn">Back</button>
-
-        </form>
-        </div> 
-
-        <div id="final-page" class="form-container flex-column text-center">
-            <h2>Thank you for your patience!</h2>
-            <h3>We wish you a great time at your future event!</h3>
-            <button class="btn" type="button" id="exit-button">See your profile down below</button>
-            <button class="btn" id="back-3">Back</button>
-        </div>
+      </form>
+      {% endif %}
     </div>
-    </div>
+
+   
   </div>
 </div>
-<script>
-    document.getElementById('accept-btn').addEventListener('click', function() {
-document.getElementById('form-1').style.display = 'none';
-document.getElementById('form-2').style.display = 'flex';
-document.getElementById('step-1').querySelector('.circle').style.backgroundColor = 'green';
-});
 
-document.getElementById('decline-btn').addEventListener('click', function() {
-alert('Ne pare rău că nu poți participa!');
-});
-
-document.getElementById('continue-1').addEventListener('click', function(e) {
-e.preventDefault();
-document.getElementById('form-2').style.display = 'none';
-document.getElementById('form-3').style.display = 'flex';
-document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
-});
-
-document.getElementById('submit').addEventListener('click', function(e) {
-e.preventDefault();
-document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
-document.getElementById('form-3').style.display = 'none';
-document.getElementById('final-page').style.display = 'flex';
-});
-document.getElementById('back-1').addEventListener('click', function () {
-document.getElementById('form-2').style.display = 'none';
-document.getElementById('form-1').style.display = 'flex';
-document.getElementById('step-1').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
-});
-document.getElementById('back-2').addEventListener('click', function () {
-document.getElementById('form-3').style.display = 'none';
-document.getElementById('form-2').style.display = 'flex';
-document.getElementById('step-2').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
-});
-document.getElementById('back-3').addEventListener('click', function () {
-document.getElementById('final-page').style.display = 'none';
-document.getElementById('form-3').style.display = 'flex';
-document.getElementById('step-3').querySelector('.circle').style.backgroundColor = ''; // Resetare culoare dacă este nevoie
-});
-
-</script>
 {% endblock %}
