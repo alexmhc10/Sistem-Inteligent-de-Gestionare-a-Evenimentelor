@@ -1,0 +1,26 @@
+{% extends 'base/main.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center">Profil Organizator</h2>
+    
+    <div class="row">
+        <!-- Poza de profil -->
+        <div class="col-md-4 text-center">
+            <img src="{{ profile.photo.url }}" alt="Poza de profil" class="img-fluid rounded-circle" width="200">
+        </div>
+
+        <!-- Informații organizator -->
+        <div class="col-md-8">
+            <h3>{{ profile.first_name }} {{ profile.last_name }}</h3>
+            <p><strong>Email:</strong> {{ profile.email }}</p>
+            <p><strong>Descriere:</strong> {{ profile.description }}</p>
+            <p><strong>Număr:</strong> {{ profile.number }}</p>
+            <p><strong>Locație:</strong> {{ profile.location }}</p>
+            <p><strong>Facebook:</strong> <a href="{{ profile.facebook }}">{{ profile.facebook }}</a></p>
+            <p><strong>Link de muncă:</strong> <a href="{{ profile.work_link }}">{{ profile.work_link }}</a></p>
+            <p><strong>Țară:</strong> {{ profile.country }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

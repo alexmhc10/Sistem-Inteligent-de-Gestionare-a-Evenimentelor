@@ -27,7 +27,12 @@ from django.contrib.auth.hashers import check_password
 from django.utils.timezone import make_aware
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
+from .models import Profile
 
+@login_required(login_url='/login')
+def organizerProfilePage(request, username):
+    profile = get_object_or_404(Profile, user__username=username)
+    return render(request, 'base/organizer_profile.html', {'profile': profile})
 
 def resume_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
