@@ -1407,7 +1407,11 @@ def personal_face_id(request, pk):
 @login_required(login_url='/login')
 @user_is_guest
 def guest_profile(request):
-    return render(request, 'base/guest_profile.html')
+    completed_profile = Guests.objects.filter(profile__user=request.user, state=False).exists()
+    context = {
+        "completed": completed_profile
+    }
+    return render(request, 'base/guest_profile.html', context)
 
 
 @login_required(login_url='/login')
