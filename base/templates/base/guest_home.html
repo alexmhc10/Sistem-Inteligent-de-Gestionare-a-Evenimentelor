@@ -59,10 +59,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">Home</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link active" aria-expanded="false">
-              <span>
-                <iconify-icon icon="solar:home-smile-bold-duotone" class="fs-6"></iconify-icon>
-              </span>
+            <a class="sidebar-link active ps-4" aria-expanded="false">
+              <i class="bi bi-house"></i>
               <span class="hide-menu">Home</span>
             </a>
           </li>
@@ -71,10 +69,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">About you</span>
           </li>
           <li class="sidebar-item">
-              <a class="sidebar-link" href="{% url 'guest_profile' %}" aria-expanded="false">
-              <span>
-                <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
-              </span>
+              <a class="sidebar-link ps-4" href="{% url 'guest_profile' %}" aria-expanded="false">
+                <i class="bi bi-person-fill"></i>
               <span class="hide-menu">Profile</span>
             </a>
           </li>
@@ -108,17 +104,13 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <li class="nav-item dropdown">
               <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <img src="{{ MEDIA_URL }}{{request.user.profile.photo}}" alt="Ceva" width="35" height="35" class="rounded-circle">
+                <img src="{{ MEDIA_URL }}{{ profile.photo }}" alt="Ceva" width="35" height="35" class="rounded-circle">
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                 <div class="message-body">
                   <a href="{% url 'guest_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
                     <i class="ti ti-user fs-6"></i>
                     <p class="mb-0 fs-3">My Profile</p>
-                  </a>
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                    <i class="ti ti-list-check fs-6"></i>
-                    <p class="mb-0 fs-3">My Task</p>
                   </a>
                   <a href="{% url 'logout' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
                 </div>
@@ -390,15 +382,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
       </div>-->
       <div class="row mt-4">
         <div class="col-lg-8">
-          <div class="row flex-column">
-            <div class="col-lg-6">
               <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
-            </div>
-            <div class="col"> 
-              <div class="card mb-3" style="max-width: 540px;">
+              <div class="card mb-3">
                 <div class="row g-0">
                     <div class="col-md-4">
                     <a href="">
@@ -412,33 +400,30 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       <p class="card-text"><small class="text-body-secondary">Date: 2025-01-25</small></p>
                     </div>
                   </div>
-                </div>
               </div>
-            </div>   
-            <div class="card">
-
             </div>
+        </div>  
+          <div class="col-lg-4 mb-4">
+              <a href="{% url 'guest_profile' %}">
+                <div class="card card-hover" style="max-height: 300px; max-width: 300px;">
+                  <img class="card-img" src="{{ MEDIA_URL }}poze_invitati/male.png" style="max-height: 300px; max-width: 300px;">
+                  <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text">
+                    <h2 class="h2">Acces your profile!</h2>
+                  </div>
+              </div>
+            </a>
           </div>
-        </div>
-        <div class="col-lg-4 mb-4">
-          <a href="{% url 'guest_profile' %}">
-            <div class="card card-hover">
-              <img class="card-img" src="{{ MEDIA_URL }}poze_invitati/ProfilePicDefault.jpg">
-              <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text">
-                <h1>Acces your profile!</h1>
-              </div>
-            </div>
-          </a>
-        </div>
-        <div class="col-lg-12">
+        
+        
+        <!-- <div class="col-lg-12">
           <div class="container my-5">
             <h2 class="text-center">Here are some of the events created with our app</h2>
-            <div id="eventsCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div id="eventsCarousel" class="carousel slide p-4" data-bs-ride="carousel">
               <div class="carousel-inner">
-                <!-- Evenimente în prima secțiune -->
+                
                 <div class="carousel-item active">
                   <div class="d-flex justify-content-between">
-                    <!-- Carduri Eveniment -->
+                   
                     <div class="event-card">
                       <img src="{{ MEDIA_URL }}/images/Amour_de_levenement_QkHvJo6.jpg" class="d-block w-100" alt="Eveniment 1">
                       <h5>Nunta Ana</h5>
@@ -461,7 +446,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
                   </div>
                 </div>
-                <!-- Evenimente în a doua secțiune -->
+               
                 <div class="carousel-item">
                   <div class="d-flex justify-content-between">
                     <div class="event-card">
@@ -486,9 +471,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
                   </div>
                 </div>
-                <!-- Poți adăuga mai multe secțiuni de evenimente -->
+                
               </div>
-              <!-- Săgețile pentru navigare -->
+              
               <button class="carousel-control-prev" type="button" data-bs-target="#eventsCarousel" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
@@ -500,7 +485,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
           </div>
           
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

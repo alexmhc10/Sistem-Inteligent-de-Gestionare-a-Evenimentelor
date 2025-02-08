@@ -1433,12 +1433,15 @@ def guest_profile(request):
             if form_type == 'form1':
                 profil.first_name = request.POST.get('firstname')
                 profil.last_name = request.POST.get('lastname')
-                profil.email = request.POST.get('email')
-                profil.photo = request.FILES.get('photo')
+                profil.user.email = request.POST.get('email')
+                profil.email = request.POST.get('email') 
+                if 'photo' in request.FILES:
+                    profil.photo = request.FILES.get('photo')
                 profil.number = request.POST.get('number')
 
                 profil.save()
-
+                profil.user.save()
+                
             elif form_type == 'form2':
                 preferences.cuisine_preference = request.POST.get('meniu')
 
@@ -1459,14 +1462,21 @@ def guest_profile(request):
 @login_required(login_url='/login')
 @user_is_guest
 def guest_home(request):
+    profil = Profile.objects.get(user = request.user)
+    preferences = Guests.objects.get(profile = profil)
+
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
+
     context = {
-        "not_completed": not_completed
+        "not_completed": not_completed,
+        "preferences": preferences,
+        "profile": profil
     }
+
     if not_completed:
         return redirect('guest_profile')
     else:
-        return render(request, 'base/guest_home.html')
+        return render(request, 'base/guest_home.html', context)
 
 
 @login_required(login_url='/login')

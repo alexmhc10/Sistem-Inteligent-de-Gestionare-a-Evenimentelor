@@ -122,14 +122,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </li>
           <li class="sidebar-item">
             {% if not not_completed %}
-            <a class="sidebar-link" href="{% url 'guest_home' %}" aria-expanded="false">
+            <a class="sidebar-link ps-4" href="{% url 'guest_home' %}" aria-expanded="false">
             {% endif %}
             {% if not_completed %}
-            <a class="sidebar-link btn btn-link link-underline link-underline-opacity-0 disabled" href="{% url 'guest_home' %}" tabindex="-1" role="button" aria-disabled="true" aria-expanded="false">
+            <a class="sidebar-link btn btn-link link-underline link-underline-opacity-0 disabled ps-4" href="{% url 'guest_home' %}" tabindex="-1" role="button" aria-disabled="true" aria-expanded="false">
             {% endif %}
-              <span>
-                <iconify-icon icon="solar:home-smile-bold-duotone" class="fs-6"></iconify-icon>
-              </span>
+              <i class="bi bi-house"></i>
               <span class="hide-menu">Home</span>
             </a>
           </li>
@@ -138,10 +136,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <span class="hide-menu">About you</span>
           </li>
           <li class="sidebar-item">
-            <a class="sidebar-link active" href="{% url 'guest_profile' %}" aria-expanded="false">
-              <span>
-                <iconify-icon icon="solar:layers-minimalistic-bold-duotone" class="fs-6"></iconify-icon>
-              </span>
+            <a class="sidebar-link active ps-4" href="{% url 'guest_profile' %}" aria-expanded="false">
+              <i class="bi bi-person-fill"></i>
+
               <span class="hide-menu">Profile</span>
             </a>
           </li>
@@ -173,23 +170,15 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
           <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
             <li class="nav-item dropdown">
-              <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
+              <a class="nav-link nav-icon-hover" href=" {% url 'guest_profile' %} " id="drop2" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <img src="{{ MEDIA_URL }}{{request.user.profile.photo}}" alt="Ceva" width="35" height="35" class="rounded-circle">
+                <img src="{{ MEDIA_URL }}{{ profile.photo }}" alt="Ceva" width="35" height="35" class="rounded-circle">
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                 <div class="message-body">
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                  <a href="{% url 'guest_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
                     <i class="ti ti-user fs-6"></i>
                     <p class="mb-0 fs-3">My Profile</p>
-                  </a>
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                    <i class="ti ti-mail fs-6"></i>
-                    <p class="mb-0 fs-3">My Account</p>
-                  </a>
-                  <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                    <i class="ti ti-list-check fs-6"></i>
-                    <p class="mb-0 fs-3">My Task</p>
                   </a>
                   <a href="{% url 'logout' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
                 </div>
@@ -408,36 +397,36 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <div class="card">
                 <div class="card-body">
                   <h5 class="card-title mb-3 text-center">Personal informations</h5>
-                  <div class="row mb-3">
+                  <div class="row mb-3 align-items-center">
                     <div class="col-sm-3">
                       <h6 class="mb-0">First Name</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="firstname" class="form-control" value="{{ profile.first_name }}">
+                      <input type="text" name="firstname" class="form-control mb-0" value="{{ profile.first_name }}">
                     </div>
                   </div>
-                  <div class="row mb-3">
+                  <div class="row mb-3 align-items-center">
                     <div class="col-sm-3">
                       <h6 class="mb-0">Last Name</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="lastname" class="form-control" value="{{ profile.last_name }}">
+                      <input type="text" name="lastname" class="form-control mb-0" value="{{ profile.last_name }}">
                     </div>
                   </div>
-                  <div class="row mb-3">
+                  <div class="row mb-3 align-items-center">
                     <div class="col-sm-3">
                       <h6 class="mb-0">Email</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="email" class="form-control" value="{{ profile.email }}">
+                      <input type="text" name="email" class="form-control mb-0" value="{{ profile.email }}">
                     </div>
                   </div>
-                  <div class="row mb-3">
+                  <div class="row mb-3 align-items-center">
                     <div class="col-sm-3">
                       <h6 class="mb-0">Phone</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="number" class="form-control" value="{{ profile.number }}">
+                      <input type="text" name="number" class="form-control mb-0" value="{{ profile.number }}">
                     </div>
                   </div>
                   <div class="row">
@@ -456,32 +445,62 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
                   <div class="row align-items-center mb-3">
                     <div class="col-sm-2">
-                      <h6 class="mb-0">Cuisine:</h6>
+                      <h6 class="mb-0">Cuisine</h6>
                     </div>
                     <div class="col-sm-4 text-secondary">
-                      <input type="text" name="meniu" class="form-control" value="{{ preferences.cuisine_preference }}">
+                      <input type="text" name="meniu" class="form-control mb-0" value="{{ preferences.cuisine_preference }}" readonly>
                     </div>
                     <div class="col-sm-2">
-                      <h6 class="mb-0">Last Name</h6>
+                      <h6 class="mb-0">Choose cuisine</h6>
                     </div>
                     <div class="col-sm-4 text-secondary">
-                      <input type="text" name="lastname" class="form-control" value="{{ profile.last_name }}">
+                      <select id="meniu" class="form-select" name="meniu" va aria-valuetext="{{ preferences.cuisine_preference }}">
+                        <option value="Iberic">Iberic</option>
+                        <option value="Italienesc">Italienesc</option>
+                        <option value="Chinezesc">Chinezesc</option>
+                        <option value="Fara_preferinte">Fara preferinte</option>
+                        <option value="Oriental">Oriental</option>
+                    </select>                   
                     </div>
                   </div>
-                  <div class="row mb-3">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0">Email</h6>
+                  <div class="row mb-3 mt-2">
+                    <div class="col-sm-2">
+                      <h6 class="mb-0">Allergens</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                      <input type="text" name="email" class="form-control" value="{{ profile.email }}">
+                    <div class="col-sm-5 text-secondary justify-content-evenly">
+                      <div class="form-check form-check-inline">
+                          {% if "Lactoza" in preferences.allergens %}
+                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza" checked>
+                          {% else %}
+                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza">
+                          {% endif %}
+                          <label class="form-check-label text-dark" for="inlineCheckbox2">Lactoza</label>
+                      </div>
+                      <div class="form-check form-check-inline">
+                          {% if "Gluten" in preferences.allergens %}
+                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten" checked>
+                          {% else %}
+                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten">
+                          {% endif %}
+                          <label class="form-check-label text-dark" for="inlineCheckbox3">Gluten</label>
+                        </div>
+                      <div class="form-check form-check-inline mb-2">
+                        {% if "Soia" in preferences.allergens %}
+                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia" checked>
+                        {% else %}
+                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia">
+                        {% endif %}
+                        <label class="form-check-label text-dark" for="inlineCheckbox4">Soia</label>
+                      </div>
                     </div>
-                  </div>
-                  <div class="row mb-3">
-                    <div class="col-sm-3">
-                      <h6 class="mb-0">Phone</h6>
+                    <div class="col-sm-2">
+                      <h6 class="mb-0">Vegan</h6>
                     </div>
-                    <div class="col-sm-9 text-secondary">
-                      <input type="text" class="form-control" value="{{ profile.number }}">
+                    <div class="col-sm-3 text-secondary">
+                      <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
+                        <label class="form-check-label text-dark" for="inlineCheckbox1">Da</label>
+                      </div>                    
                     </div>
                   </div>
                   <div class="row">
