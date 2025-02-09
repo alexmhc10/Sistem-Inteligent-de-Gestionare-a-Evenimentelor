@@ -1444,7 +1444,8 @@ def guest_profile(request):
                 
             elif form_type == 'form2':
                 preferences.cuisine_preference = request.POST.get('meniu')
-
+                preferences.vegan = request.POST.get('vegan_check') == '1'
+                preferences.allergens = request.POST.getlist('allergens')
                 preferences.save()
 
             

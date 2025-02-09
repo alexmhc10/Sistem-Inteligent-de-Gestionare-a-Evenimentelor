@@ -35,6 +35,15 @@
 .event-card p {
   color: #777;
 }
+.glowing-card {
+    border: 2px solid yellow;
+    box-shadow: 0 0 15px yellow; /* Efect de strălucire */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.glowing-card:hover {
+    box-shadow: 0 0 25px yellow, 0 0 50px gold; /* Strălucire mai intensă la hover */
+}
 
 </style>
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
@@ -386,7 +395,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
-              <div class="card mb-3">
+              <div class="card glowing-card mb-3">
                 <div class="row g-0">
                     <div class="col-md-4">
                     <a href="">
@@ -400,8 +409,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       <p class="card-text"><small class="text-body-secondary">Date: 2025-01-25</small></p>
                     </div>
                   </div>
+                </div>
               </div>
-            </div>
         </div>  
           <div class="col-lg-4 mb-4">
               <a href="{% url 'guest_profile' %}">

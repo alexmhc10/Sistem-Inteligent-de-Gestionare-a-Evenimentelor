@@ -165,6 +165,7 @@ class Guests(models.Model):
     state = models.BooleanField(default=False)
     
     
+    
 class Menu(models.Model):
     item_name = models.CharField(max_length=80)
     item_cuisine = models.CharField(max_length=20)

@@ -498,8 +498,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
                     <div class="col-sm-3 text-secondary">
                       <div class="form-check form-check-inline">
+                        {% if preferences.vegan %}
+                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1" checked>
+                        {% else %}
                         <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
-                        <label class="form-check-label text-dark" for="inlineCheckbox1">Da</label>
+                        {% endif %}
+                        <label class="form-check-label text-dark" for="inlineCheckbox1">Yes</label>
                       </div>                    
                     </div>
                   </div>
