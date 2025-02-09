@@ -77,6 +77,7 @@ urlpatterns = [
     path('guest_profile', views.guest_profile, name='guest_profile'),
 
     ##organizator
+    path('organizer-profile/<str:username>/', views.organizerProfilePage, name='organizer-profile'),
     path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
     path('organizer-events', views.organizer_events, name='organizer_events')
