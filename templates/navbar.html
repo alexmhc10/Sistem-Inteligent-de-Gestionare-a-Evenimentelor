@@ -49,6 +49,41 @@
         color: #B08A2E;
         text-decoration: underline;
     }
+    .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.dropdown-content {
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    right: 0; /* Fix pentru scrollbar */
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+}
+.profile-dropdown:hover .dropdown-content {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+.dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
+body {
+    overflow-x: hidden;
+}
 </style>
 <div class="header">
     <div class="first">
@@ -61,13 +96,20 @@
         <a href="{% url 'event_history' %}">Event History</a>
         <a href="{% url 'event_builder' %}">Event Builder</a>
         <a href="{% url 'organizer_dashboard' %}">Dashboard</a>
-        <a href="{% url 'add_location' %}">Locations</a> <!-- Noua locație adăugată -->
+        <a href="{% url 'add_location' %}">Locations</a> 
         {% endif %}
     </div>
     
     <div class="second">
         {% if request.user.is_authenticated %}
-            <a href="{% url 'logout' %}">Logout</a>
+        <div class="profile-dropdown">
+            <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture" style="width:30px;height:30px;border-radius:50%;">
+            <span>{{ user.username }}</span>
+            <div class="dropdown-content">
+                <a href="{% url 'organizer-profile' request.user.username %}">Profile</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
+        </div>
             {% if request.path == '/' and request.user.is_superuser %}
                 <a href="{% url 'new_users' %}">#</a>
             {% endif %}
