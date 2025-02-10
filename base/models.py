@@ -95,6 +95,7 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class Notification(models.Model):
     ACTION_TYPES = [
         ('created_event', 'Created Event'),
@@ -308,4 +309,10 @@ class Salary(models.Model):
         return f"Salary for {self.user.username}: {self.total_salary}"
 
 
+class LocationImages(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f"Imagine pentru {self.location.name}"

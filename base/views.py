@@ -1301,17 +1301,28 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
-    locations = Location.objects.filter(owner=request.user)
 
+    locations = Location.objects.filter(owner=request.user)
     events = Event.objects.filter(location__in=locations)
+    event_data = [
+        {
+            'id': event.id,
+            'title': event.event_name,
+            'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+        }
+        for event in events
+    ]
 
     current_date = datetime.today()
+
     past_events = Event.objects.filter(event_date__lt = current_date)
     future_events = Event.objects.filter(event_date__gte = current_date)
+
     profiles = Profile.objects.all()
     user = request.user
     context = {
         'events': events,
+        'event_data': event_data,
         'future_events': future_events,
         'past_events': past_events,
         'profiles': profiles,
@@ -1320,57 +1331,92 @@ def personal_eveniment_home(request):
 
     return render(request, 'base/personal_eveniment_home.html', context)
 
+
+def personal_profile(request):
+    location_owned = Location.objects.filter(owner=request.user).first()
+
+    if location_owned:
+        print(f"Location found: {location_owned}")
+        print(f"Gallery path: {location_owned.gallery}")
+        print(location_owned.gallery.url)
+
+    else:
+        print("No location found for this user.")
+    profile = Profile.objects.filter(user = location_owned.owner)
+
+    location_images = LocationImages.objects.filter(location=location_owned)
+
+    context = {
+        location_owned:'location_owned',
+        profile:'profile',
+        location_images:'location_images'
+    }
+    return render(request, 'base/personal_profile.html', context)
+
+
+def upload_images(request):
+    location_owned = Location.objects.get(owner=request.user)
+    if request.method == 'POST' and request.FILES.getlist('images'):
+        images = request.FILES.getlist('images')
+        for image in images:
+            LocationImages.objects.create(location=location_owned, image=image)
+    
+    user_images = LocationImages.objects.filter(user=request.user)
+
+    return redirect('personal_profile') 
+
+
 from django.http import JsonResponse
 
-def filter_events(request):
-    try:
-        search = request.GET.get('search', '').lower()
-        event_type = request.GET.get('event_type', '')
-        filter_date = request.GET.get('filter_date', '')
+# def filter_events(request):
+#     try:
+#         search = request.GET.get('search', '').lower()
+#         event_type = request.GET.get('event_type', '')
+#         filter_date = request.GET.get('filter_date', '')
 
-        events = Event.objects.all()
+#         events = Event.objects.all()
 
-        # Filtrare după căutare
-        if search:
-            events = events.filter(title__icontains=search)
+#         # Filtrare după căutare
+#         if search:
+#             events = events.filter(title__icontains=search)
 
-        # Filtrare după tip (Future/Past)
-        if event_type == 'future':
-            events = events.filter(date__gte=datetime.today())
-        elif event_type == 'past':
-            events = events.filter(date__lt=datetime.today())
+#         # Filtrare după tip (Future/Past)
+#         if event_type == 'future':
+#             events = events.filter(date__gte=datetime.today())
+#         elif event_type == 'past':
+#             events = events.filter(date__lt=datetime.today())
 
-        # Filtrare după dată exactă
-        if filter_date:
-            events = events.filter(datetime=filter_date)
+#         # Filtrare după dată exactă
+#         if filter_date:
+#             events = events.filter(datetime=filter_date)
 
-        # Împărțim evenimentele în viitoare și trecute
-        future_events = events.filter(date__gte=datetime.today())
-        past_events = events.filter(date__lt=datetime.today())
+#         # Împărțim evenimentele în viitoare și trecute
+#         future_events = events.filter(date__gte=datetime.today())
+#         past_events = events.filter(date__lt=datetime.today())
 
-        # Construim răspunsul JSON
-        response_data = {
-            'future_events': [
-                {
-                    'title': event.event_name,
-                    'description': event.event_description,
-                    'date': event.event_time.strftime('%Y-%m-%d')
-                }
-                for event in future_events
-            ],
-            'past_events': [
-                {
-                    'title': event.event_name,
-                    'description': event.event_description,
-                    'date': event.event_time.strftime('%Y-%m-%d')
-                }
-                for event in past_events
-            ],
-        }
+#         # Construim răspunsul JSON
+#         response_data = {
+#             'future_events': [
+#                 {
+#                     'title': event.event_name,
+#                     'description': event.event_description,
+#                     'date': event.event_time.strftime('%Y-%m-%d')
+#                 }
+#                 for event in future_events
+#             ],
+#             'past_events': [
+#                 {
+#                     'title': event.event_name,
+#                     'description': event.event_description,
+#                     'date': event.event_time.strftime('%Y-%m-%d')
+#                 }
+#                 for event in past_events
+#             ],
+#         }
 
-        return JsonResponse(response_data)
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
+#         return JsonResponse(response_data)
+#     except Exception as e:
+#         return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required(login_url='/login')

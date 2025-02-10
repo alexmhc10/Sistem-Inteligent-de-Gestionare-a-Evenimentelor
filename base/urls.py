@@ -69,8 +69,8 @@ urlpatterns = [
     path('personal_vizualizare_eveniment/<int:pk>', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
     path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
     path('personal_aranjament_invitati/<int:pk>', views.personal_aranjament_invitati, name='personal_aranjament_invitati_event'),
-    path('filter_events', views.filter_events, name='filter_events'),
     path('personal_face_id/<int:pk>', views.personal_face_id, name='personal_face_id'),
+    path('personal_profile/', views.personal_profile, name='personal_profile'),
 
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
