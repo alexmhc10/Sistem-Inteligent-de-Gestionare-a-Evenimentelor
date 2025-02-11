@@ -1,0 +1,144 @@
+<header>
+    <nav class="navbar navbar-expand-lg fixed-top navbar-scroll h-10" data-mdb-navbar-init>
+      <div class="container-fluid" style="margin-top:-25px;">
+        <a class="navbar-brand" href="#"><img src="{{ MEDIA_URL }}logos/no_bg_logo.png" alt=""></a>
+        <button class="navbar-toggler" type="button" data-mdb-collapse-init
+          data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+          aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="#!">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">Services</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">Attractions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">Opinions</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#!">Contact</a>
+            </li>
+            {% if request.user.is_authenticated == False %}
+            <li class="nav-item" style="margin-left: 30px; margin-top: -5px;">
+                <div class="d-flex align-items-center">
+                  <img src="{{ MEDIA_URL }}poze_invitati/male.png" 
+                       style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px;" alt="">
+                  <div class="d-flex flex-column">
+                    <a class="nav-link p-0 " style="margin-right:100%;" href="{% url 'login' %}">Login</a>
+                    <a class="nav-link p-0" href="{% url 'register' %}">Register</a>
+                  </div>
+                </div>
+              </li>
+              
+            {% endif %}
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <section>
+        <div id="intro" >
+            <img src="{{MEDIA_URL}}images/wedding.jpg" alt="" style="width: 100%;">
+      </div>
+    </section>
+  </header>
+  
+   <main>
+     <div class="container my-5 py-5"></div>
+  </main>
+  <style>
+    @media (max-width: 991px) {
+  .navbar-scroll {
+    background-color: #fff;
+  }
+     
+  .navbar-scroll .navbar-brand,
+  .navbar-scroll .nav-link,
+  .navbar-scroll .fa-bars {
+    color: #4f4f4f !important;
+  }         
+}
+
+.navbar-brand img{
+    height: 150px;
+    width: 150px;
+    object-fit:cover;
+    border-radius: 150px;
+}
+.navbar-brand {
+  letter-spacing: 3px;
+  font-size: 2rem;
+  font-weight: 100;
+}
+.navbar-scroll .navbar-brand,
+.navbar-scroll .nav-link,
+.navbar-scroll .fa-bars {
+  color: #fff;
+}
+
+.navbar-scroll {
+  box-shadow: none;
+}
+
+.navbar-scrolled {
+  box-shadow: 0 10px 20px 0 rgba(0, 0, 0, 0.05);
+}
+
+.navbar-scrolled .navbar-brand,
+.navbar-scrolled .nav-link,
+.navbar-scrolled .fa-bars {
+  color: #4f4f4f;
+}
+
+.navbar-scrolled {
+  background-color: #fff;
+}
+
+@media (max-width: 450px) {
+  #intro {
+    height: 950px !important;
+  }
+}
+
+@media (min-width: 550px) and (max-width: 750px) {
+  #intro {
+    height: 1100px !important;
+  }
+}
+
+@media (min-width: 800px) and (max-width: 990px) {
+  #intro {
+    height: 600px !important;
+  }
+}
+
+.display-1 {
+  font-weight: 500 !important;
+  letter-spacing: 40px;
+}
+
+@media (min-width: 1600px) {
+  .display-1 {
+    font-size: 10rem;
+  }
+}
+  </style>
+  <script>
+    window.addEventListener('scroll', function() {
+  const navbar = document.querySelector('.navbar-scroll');
+  if (window.scrollY > 50) {
+    navbar.classList.add('navbar-scrolled');
+  } else {
+    navbar.classList.remove('navbar-scrolled');
+  }
+});
+
+  </script>

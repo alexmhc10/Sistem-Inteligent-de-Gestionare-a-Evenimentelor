@@ -1,24 +1,9 @@
 {% extends 'main.html' %}
-
 {% block content %}
+{% block navbar %}
+{% endblock navbar %}
 
-{% if request.user.is_authenticated and request.path == '/' %}
-    <h1 class="greeting">Welcome, {{ request.user.username }}</h1>
-{% endif %}
-
-<div class="home-container">
-    <div class="task-manager-container equal-height">
-        {% include 'base/task-manager.html' %}
-    </div>
-    
-    <div class="carousel-container">
-        {% include 'base/carousel-imagini.html' %}
-    </div>
-    
-    <div class="users-container">
-        {% include 'base/users_component.html' %}
-    </div>
-</div>
+{% include 'base/home-navbar.html' %}
 
 <div class="lower-container">
     <div class="browse-container">
