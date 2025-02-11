@@ -28,6 +28,9 @@ from django.utils.timezone import make_aware
 from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from .models import Profile
+from django.http import JsonResponse
+
+
 
 @login_required(login_url='/login')
 def organizerProfilePage(request, username):
@@ -1334,13 +1337,30 @@ def personal_eveniment_home(request):
 
 def personal_profile(request):
     location_owned = Location.objects.filter(owner=request.user).first()
-
-    profile = Profile.objects.filter(user = location_owned.owner)
-
+    profile = Profile.objects.filter(user = location_owned.owner).first()
     location_images = LocationImages.objects.filter(location=location_owned)
 
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type')
+        if form_type == 'form1':
+            location_owned.name = request.POST.get('name')
+            request.user.email = request.POST.get('email')
+            profile.email = request.POST.get('email')
+            profile.number = request.POST.get('number')
+            location_owned.location = request.POST.get('adress')
+            profile.save()
+            location_owned.save()
+
+        elif form_type == 'form2':
+            location_owned.description = request.POST.get('description')
+            location_owned.seats_numbers = request.POST.get('number') or 0
+            location_owned.save()
+
+    location_owned = Location.objects.filter(owner=request.user).first()
+    profile = Profile.objects.filter(user = location_owned.owner).first()
+
     context = {
-        'location_owned':location_owned,
+        'location_data':location_owned,
         'profile':profile,
         'location_images':location_images
     }
@@ -1364,65 +1384,20 @@ def delete_image(request, image_id):
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 
-from django.http import JsonResponse
-
-# def filter_events(request):
-#     try:
-#         search = request.GET.get('search', '').lower()
-#         event_type = request.GET.get('event_type', '')
-#         filter_date = request.GET.get('filter_date', '')
-
-#         events = Event.objects.all()
-
-#         # Filtrare după căutare
-#         if search:
-#             events = events.filter(title__icontains=search)
-
-#         # Filtrare după tip (Future/Past)
-#         if event_type == 'future':
-#             events = events.filter(date__gte=datetime.today())
-#         elif event_type == 'past':
-#             events = events.filter(date__lt=datetime.today())
-
-#         # Filtrare după dată exactă
-#         if filter_date:
-#             events = events.filter(datetime=filter_date)
-
-#         # Împărțim evenimentele în viitoare și trecute
-#         future_events = events.filter(date__gte=datetime.today())
-#         past_events = events.filter(date__lt=datetime.today())
-
-#         # Construim răspunsul JSON
-#         response_data = {
-#             'future_events': [
-#                 {
-#                     'title': event.event_name,
-#                     'description': event.event_description,
-#                     'date': event.event_time.strftime('%Y-%m-%d')
-#                 }
-#                 for event in future_events
-#             ],
-#             'past_events': [
-#                 {
-#                     'title': event.event_name,
-#                     'description': event.event_description,
-#                     'date': event.event_time.strftime('%Y-%m-%d')
-#                 }
-#                 for event in past_events
-#             ],
-#         }
-
-#         return JsonResponse(response_data)
-#     except Exception as e:
-#         return JsonResponse({'error': str(e)}, status=500)
-
-
 @login_required(login_url='/login')
 @user_is_staff
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
+    event_data = [
+        {
+            'id': event.id,
+            'title': event.event_name,
+            'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+        }
+    ]
     context = {
-        'event': event
+        'event': event,
+        'event_data': event_data
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 

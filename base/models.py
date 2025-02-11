@@ -8,7 +8,6 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime, timedelta
 
 
-#model pentru noua baza de date
 class EventHistory(models.Model):
     event_name = models.CharField(max_length=255)
     event_date = models.DateTimeField()
@@ -19,7 +18,7 @@ class EventHistory(models.Model):
     organized_by = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    deleted_at = models.DateTimeField(null=True, blank=True)  # Marcare pentru evenimente șterse
+    deleted_at = models.DateTimeField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.event_name} on {self.event_date}"

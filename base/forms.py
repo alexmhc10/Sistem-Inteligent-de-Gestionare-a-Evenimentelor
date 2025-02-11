@@ -76,13 +76,13 @@ class LocationForm(ModelForm):
         return None
 
 
-
 class RegisterForm(ModelForm):
     password = forms.CharField(widget=forms.PasswordInput, label="Password")
 
     class Meta:
         model = User
         fields = ['username', 'email', 'password']
+
 
 class ProfileForm(forms.ModelForm):
     class Meta:
@@ -98,6 +98,7 @@ class ProfileForm(forms.ModelForm):
             profile.save()
         return profile
     
+
 class MessageForm(forms.ModelForm):
     class Meta:
         model = Message
