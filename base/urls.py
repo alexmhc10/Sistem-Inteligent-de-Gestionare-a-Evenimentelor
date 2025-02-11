@@ -71,7 +71,9 @@ urlpatterns = [
     path('personal_aranjament_invitati/<int:pk>', views.personal_aranjament_invitati, name='personal_aranjament_invitati_event'),
     path('personal_face_id/<int:pk>', views.personal_face_id, name='personal_face_id'),
     path('personal_profile/', views.personal_profile, name='personal_profile'),
-
+    path('upload_images/', views.upload_images, name='upload_images'),
+    path("delete-image/<int:image_id>/", views.delete_image, name="delete_image"),
+    
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
     path('guest_profile', views.guest_profile, name='guest_profile'),

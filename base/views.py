@@ -1335,21 +1335,14 @@ def personal_eveniment_home(request):
 def personal_profile(request):
     location_owned = Location.objects.filter(owner=request.user).first()
 
-    if location_owned:
-        print(f"Location found: {location_owned}")
-        print(f"Gallery path: {location_owned.gallery}")
-        print(location_owned.gallery.url)
-
-    else:
-        print("No location found for this user.")
     profile = Profile.objects.filter(user = location_owned.owner)
 
     location_images = LocationImages.objects.filter(location=location_owned)
 
     context = {
-        location_owned:'location_owned',
-        profile:'profile',
-        location_images:'location_images'
+        'location_owned':location_owned,
+        'profile':profile,
+        'location_images':location_images
     }
     return render(request, 'base/personal_profile.html', context)
 
@@ -1360,10 +1353,15 @@ def upload_images(request):
         images = request.FILES.getlist('images')
         for image in images:
             LocationImages.objects.create(location=location_owned, image=image)
-    
-    user_images = LocationImages.objects.filter(user=request.user)
+        return redirect('personal_profile') 
 
-    return redirect('personal_profile') 
+
+def delete_image(request, image_id):
+    if request.method == "POST":
+        image = get_object_or_404(LocationImages, id=image_id)
+        image.delete()
+        return JsonResponse({"status": "success"}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
 
 
 from django.http import JsonResponse
