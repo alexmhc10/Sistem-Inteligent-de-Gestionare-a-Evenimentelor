@@ -4,6 +4,12 @@ from .models import *
 from django.contrib.auth.hashers import make_password
 from .models import Task
 from django.contrib.auth.forms import UserChangeForm
+from .models import Profile
+
+class ProfileEditForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['email', 'number', 'age', 'location', 'street', 'zip_code', 'country', 'facebook', 'work_link', 'google_link', 'photo']
 
 class TaskForm(forms.ModelForm):
     class Meta:

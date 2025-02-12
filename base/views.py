@@ -29,22 +29,45 @@ from django.db.models.functions import TruncMonth
 from django.db.models import Count
 from .models import Profile
 from django.http import JsonResponse
+from .forms import ProfileEditForm
 
+@login_required
+def edit_profile(request, username):
+    profile = get_object_or_404(Profile, username=username)
 
+    if profile.user != request.user:
+        return redirect('profile')
 
-@login_required(login_url='/login')
-def organizerProfilePage(request, username):
-    profile = get_object_or_404(Profile, user__username=username)
-    return render(request, 'base/organizer_profile.html', {'profile': profile})
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('edit_profile', username=profile.username)  
+    else:
+        form = ProfileEditForm(instance=profile)
+
+    return render(request, 'organizer_profile.html', {'form': form, 'profile': profile})    
+@login_required
+def organizer_profile(request, username):
+    profile = Profile.objects.get(user__username=username)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            form.save()
+            return redirect('organizer-profile', username=profile.user.username)  
+    else:
+        form = ProfileForm(instance=profile)
+
+    return render(request, 'base/organizer_profile.html', {'profile': profile, 'form': form})
 
 def resume_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     if request.method == 'POST':
-        # Modifică câmpul `is_canceled` pentru a marca evenimentul ca activ
-        event.is_canceled = False  # Evenimentul nu mai este anulat
+        event.is_canceled = False  
         event.save()
         messages.success(request, 'Event has been resumed and moved to "My Events".')
-    return redirect('event_history')  # Redirecționează înapoi la istoricul evenimentelor
+    return redirect('event_history')  
 
 
 @login_required(login_url='login')

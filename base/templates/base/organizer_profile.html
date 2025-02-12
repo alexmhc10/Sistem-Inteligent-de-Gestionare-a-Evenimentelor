@@ -11,27 +11,81 @@
                 {% endif %}
                 <h4 class="mt-3">{{ profile.first_name }} {{ profile.last_name }}</h4>
                 <p class="text-muted">@{{ profile.username }}</p>
+                <button id="edit-btn" class="btn btn-warning mt-3">Edit Profile</button>
             </div>
             <div class="col-md-8">
-                <h3 class="text-primary">Personal Information</h3>
-                <hr>
-                <p><strong>Email:</strong> {{ profile.email }}</p>
-                <p><strong>Phone:</strong> {{ profile.number }}</p>
-                <p><strong>Age:</strong> {{ profile.age }}</p>
-                <p><strong>Location:</strong> {{ profile.location }}</p>
-                <p><strong>Address:</strong> {{ profile.street }}, {{ profile.zip_code }}, {{ profile.country }}</p>
-                <p><strong>User Type:</strong> {{ profile.get_user_type_display }}</p>
-                <hr>
-                
-                <h3 class="text-primary">Social Media</h3>
-                <p>{% if profile.facebook %} <a href="{{ profile.facebook }}" target="_blank" class="text-decoration-none text-dark"><i class="fab fa-facebook"></i> Facebook</a> {% endif %}</p>
-                <p>{% if profile.work_link %} <a href="{{ profile.work_link }}" target="_blank" class="text-decoration-none text-dark"><i class="fas fa-briefcase"></i> Website</a> {% endif %}</p>
-                <p>{% if profile.google_link %} <a href="{{ profile.google_link }}" target="_blank" class="text-decoration-none text-dark"><i class="fab fa-google"></i> Google</a> {% endif %}</p>
-                <div class="mt-3">
-                    <a href="" class="btn btn-warning">Edit Profile</a>
+                <div id="display-info">
+                    <h3 class="text-primary">Personal Information</h3>
+                    <hr>
+                    <p><strong>Email:</strong> {{ profile.email }}</p>
+                    <p><strong>Phone:</strong> {{ profile.number }}</p>
+                    <p><strong>Age:</strong> {{ profile.age }}</p>
+                    <p><strong>Location:</strong> {{ profile.location }}</p>
+                    <p><strong>Address:</strong> {{ profile.street }}, {{ profile.zip_code }}, {{ profile.country }}</p>
+                    <h3 class="text-primary">Social Media</h3>
+                    <p><strong>Facebook:</strong> {{ profile.facebook }}</p>
+                    <p><strong>Work Website:</strong> {{ profile.work_link }}</p>
+                    <p><strong>Google Profile:</strong> {{ profile.google_link }}</p>
                 </div>
+                <!-- Formularul de editare va fi ascuns inițial -->
+                <form id="edit-form" method="POST" enctype="multipart/form-data" style="display: none;" novalidate>
+                    {% csrf_token %}
+                    {{ form.as_p }} 
+                    <h3 class="text-primary">Personal Information</h3>
+                    <hr>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ profile.email }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="text" name="number" class="form-control" value="{{ profile.number }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Age</label>
+                        <input type="number" name="age" class="form-control" value="{{ profile.age }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" name="location" class="form-control" value="{{ profile.location }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Address</label>
+                        <input type="text" name="street" class="form-control" value="{{ profile.street }}">
+                        <input type="text" name="zip_code" class="form-control mt-2" value="{{ profile.zip_code }}">
+                        <input type="text" name="country" class="form-control mt-2" value="{{ profile.country }}">
+                    </div>
+                    <h3 class="text-primary">Social Media</h3>
+                    <div class="mb-3">
+                        <label class="form-label">Facebook</label>
+                        <input type="url" name="facebook" class="form-control" value="{{ profile.facebook }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Work Website</label>
+                        <input type="url" name="work_link" class="form-control" value="{{ profile.work_link }}">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Google Profile</label>
+                        <input type="url" name="google_link" class="form-control" value="{{ profile.google_link }}">
+                    </div>
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <button type="button" id="cancel-btn" class="btn btn-danger">Cancel</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("edit-btn").addEventListener("click", function() {
+        document.getElementById("display-info").style.display = "none";  
+        document.getElementById("edit-form").style.display = "block";  
+        this.style.display = "none"; 
+    });
+    document.getElementById("cancel-btn").addEventListener("click", function() {
+        document.getElementById("edit-form").style.display = "none"; 
+        document.getElementById("display-info").style.display = "block";  
+        document.getElementById("edit-btn").style.display = "block";  
+    });
+</script>
 {% endblock %}
