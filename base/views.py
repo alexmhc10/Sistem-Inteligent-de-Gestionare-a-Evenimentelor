@@ -33,8 +33,18 @@ from .forms import ProfileEditForm
 from base.models import Event
 
 
+@login_required
+def guest_list(request, event_id):
+    
+    event = get_object_or_404(Event, id=event_id)
+    guests = event.guests.all() 
+    return render(request, 'base/guest_list.html', {'event': event, 'guests': guests})
+
+def event_details(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    return render(request, 'base/event_details.html', {'event': event})
 def event_list(request):
-    events = Event.objects.all()  # Selectează toate evenimentele din baza de date
+    events = Event.objects.all()  
     return render(request, 'base/my_events.html', {'events': events})
 
 @login_required

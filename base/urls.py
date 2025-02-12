@@ -25,6 +25,8 @@ urlpatterns = [
     path('admin_edit_location/<int:pk>/', views.admin_edit_location, name='admin_edit_location'),
 
     # Evenimente
+    path('event/<int:event_id>/guest_list/', views.guest_list, name='guest_list'),
+    path('event/<int:event_id>/details/', views.event_details, name='event_details'),
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
     path('admin-events', views.admin_events, name="admin-events"),
     path('admin-view-event/<str:pk>/', views.admin_view_events, name="admin-view-event"),

@@ -14,22 +14,28 @@
     }
 
     .btn-view {
-        background-color: #2E8B57; /* Emerald green */
+        background-color: #D4AF37; /* Gold */
         color: white;
         margin-right: 10px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
     }
 
     .btn-view:hover {
-        background-color: #246F45; /* Darker emerald green */
+        background-color: #B8860B; /* Darker gold */
     }
 
     .btn-delete {
-        background-color: #D9534F; /* Bootstrap danger color */
+        background-color: #D4AF37; /* Gold */
         color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
     }
 
     .btn-delete:hover {
-        background-color: #C9302C; /* Darker danger color */
+        background-color: #B8860B; /* Darker gold */
     }
 
     .alert {
@@ -43,6 +49,43 @@
         color: #002B5B; /* Navy blue */
         margin-bottom: 30px;
     }
+
+    /* Styling for the table container */
+    .table-container {
+        border: 2px solid #D4AF37; /* Gold border */
+        border-radius: 10px;
+        padding: 20px;
+        background-color: #FAF9F6; /* Pearl white background */
+    }
+
+    /* Styling for the table */
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .table th, .table td {
+        padding: 15px;
+        text-align: left;
+    }
+
+    .table th {
+        background-color: #D4AF37; /* Gold */
+        color: white;
+    }
+
+    .table tr:nth-child(even) {
+        background-color: #FAF9F6; /* Pearl white for even rows */
+    }
+
+    .table tr:nth-child(odd) {
+        background-color: #ECECEC; /* Light gray for odd rows */
+    }
+
+    .table td {
+        border-bottom: 1px solid #D4AF37; /* Gold border for table cells */
+    }
+
 </style>
 
 <div class="container my-4">
@@ -57,32 +100,36 @@
     {% endif %}
 
     {% if events %}
-    <div class="row">
-        {% for event in events %}
-        <div class="col-md-6 mb-4">
-            <div class="card shadow-sm border-0">
-                <div class="card-body">
-                    <h3 class="card-title">{{ event.event_name }}</h3>
-                    <p><strong>Date:</strong> {{ event.event_date }}</p>
-                    <p><strong>Time:</strong> {{ event.event_time }}</p>
-                    <p><strong>Description:</strong> {{ event.event_description }}</p>
-                    <p><strong>Location:</strong> {{ event.location }}</p>
-                    <p><strong>Guests:</strong> {{ event.guests.all|join:", " }}</p>
-
-                    <!-- Action buttons -->
-                    <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view">View Event</a>
-                    
-                    <!-- Delete event form -->
-                   
-                </div>
-            </div>
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr>
+                        <td>{{ event.event_name }}</td>
+                        <td>{{ event.location }}</td>
+                        <td>{{ event.event_date }}</td>
+                        <td>{% if event.is_canceled %}Canceled{% else %}Active{% endif %}</td>
+                        <td>
+                            <a href="{% url 'event_details' event.id %}" class="btn btn-view">View</a>
+                            <a href="{% url 'guest_list' event.id %}" class="btn btn-view">Guest List</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
-        {% endfor %}
-    </div>
     {% else %}
-    <p class="text-center">You have not created any events yet.</p>
+        <p class="text-center">You have not created any events yet.</p>
     {% endif %}
 </div>
 
-{% include 'back_button.html' %}
 {% endblock %}
