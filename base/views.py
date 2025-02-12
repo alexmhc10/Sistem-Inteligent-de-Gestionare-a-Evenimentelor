@@ -1411,6 +1411,7 @@ def delete_image(request, image_id):
 @user_is_staff
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
+    rspv = RSVP.objects.filter(event = event, response = "Accepted")
     event_data = [
         {
             'id': event.id,
@@ -1420,7 +1421,8 @@ def personal_vizualizare_eveniment(request, pk):
     ]
     context = {
         'event': event,
-        'event_data': event_data
+        'event_data': event_data,
+        'rspv': rspv
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 
