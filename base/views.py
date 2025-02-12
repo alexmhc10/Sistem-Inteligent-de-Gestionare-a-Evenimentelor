@@ -33,7 +33,7 @@ from .forms import ProfileEditForm
 
 @login_required
 def edit_profile(request, username):
-    profile = get_object_or_404(Profile, username=username)
+    profile = get_object_or_404(Profile, user__username=username)
 
     if profile.user != request.user:
         return redirect('profile')
@@ -42,17 +42,17 @@ def edit_profile(request, username):
         form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('edit_profile', username=profile.username)  
+            return redirect('edit_profile', username=profile.user.username)  
     else:
         form = ProfileEditForm(instance=profile)
 
-    return render(request, 'organizer_profile.html', {'form': form, 'profile': profile})    
+    return render(request, 'base/organizer_profile.html', {'form': form, 'profile': profile})    
 @login_required
 def organizer_profile(request, username):
-    profile = Profile.objects.get(user__username=username)
+    profile = get_object_or_404(Profile, user__username=username)
 
     if request.method == 'POST':
-        form = ProfileForm(request.POST, request.FILES, instance=profile)
+        form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             return redirect('organizer-profile', username=profile.user.username)  
