@@ -30,6 +30,12 @@ from django.db.models import Count
 from .models import Profile
 from django.http import JsonResponse
 from .forms import ProfileEditForm
+from base.models import Event
+
+
+def event_list(request):
+    events = Event.objects.all()  # Selectează toate evenimentele din baza de date
+    return render(request, 'base/my_events.html', {'events': events})
 
 @login_required
 def edit_profile(request, username):
@@ -61,27 +67,7 @@ def organizer_profile(request, username):
 
     return render(request, 'base/organizer_profile.html', {'profile': profile, 'form': form})
 
-def resume_event(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    if request.method == 'POST':
-        event.is_canceled = False  
-        event.save()
-        messages.success(request, 'Event has been resumed and moved to "My Events".')
-    return redirect('event_history')  
 
-
-@login_required(login_url='login')
-def cancel_event(request, event_id):
-    if request.method == "POST":
-        event = get_object_or_404(Event, id=event_id)
-        
-        event.is_canceled = True
-        event.save()
-        
-        messages.success(request, f'Event "{event.event_name}" has been canceled successfully.')
-        
-        return redirect('my_events') 
-       
 
 @login_required(login_url='login')
 @user_is_organizer

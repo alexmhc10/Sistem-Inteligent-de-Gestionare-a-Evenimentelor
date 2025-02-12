@@ -73,10 +73,7 @@
                     <a href="{% url 'vizualizare_eveniment' event.id %}" class="btn btn-view">View Event</a>
                     
                     <!-- Delete event form -->
-                    <form action="{% url 'cancel_event' event.id %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-warning">Cancel Event</button>
-                    </form>
+                   
                 </div>
             </div>
         </div>
