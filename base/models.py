@@ -135,20 +135,7 @@ class Review(models.Model):
 
     def __str__(self):
         return self.comment[0:20]
-    
 
-# class Guests(models.Model):
-#     firstname = models.CharField(max_length=20, unique=True)
-#     lastname = models.CharField(max_length=20, unique=True)
-#     email = models.EmailField(max_length=100, unique=True, null=True, blank=True)
-#     age = models.IntegerField(null=True, blank=True)
-    # gender = models.CharField(max_length=10)
-#     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
-#     cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
-#     vegan = models.BooleanField(default=False)
-    # allergens = models.JSONField(default=list, blank=True, null=True)
-#     def __str__(self):
-#         return f"{self.firstname} {self.lastname}"
 
 class Guests(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='guest_profile', null=True)
@@ -163,7 +150,6 @@ class Guests(models.Model):
     vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)
     state = models.BooleanField(default=False)
-    
     
     
 class Menu(models.Model):
@@ -207,6 +193,21 @@ class Event(models.Model):
             self.completed = True
             self.save()
             
+
+class RSVP(models.Model):
+    RESPONSE_CHOICES = [
+        ("Accepted", "Accepted"),
+        ("Declined", "Declined"),
+        ("Pending", "Pending"),
+    ]
+    
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="rsvps")
+    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rsvps")
+    response = models.CharField(max_length=10, choices=RESPONSE_CHOICES, default="Pending")
+    
+    def __str__(self):
+        return f"{self.guest.username} - {self.event.event_name} - {self.response}"
+
 
 class EventMenu(models.Model):
     event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)
