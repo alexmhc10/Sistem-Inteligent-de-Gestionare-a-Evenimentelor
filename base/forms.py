@@ -9,7 +9,8 @@ from .models import Profile
 class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['email', 'number', 'age', 'location', 'street', 'zip_code', 'country', 'facebook', 'work_link', 'google_link', 'photo']
+        fields = ['email', 'number', 'age', 'location', 'street', 'zip_code', 'country', 'facebook', 'work_link', 'google_link', 'photo', 'description']
+
 
 class TaskForm(forms.ModelForm):
     class Meta:
