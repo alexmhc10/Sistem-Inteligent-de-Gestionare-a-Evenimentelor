@@ -386,8 +386,9 @@
                                            </td>
                                            <td><i class="bi-laptop fs-3 me-2"></i> DESKTOP-EGKKMQC {% if device_name == "Windows PC" %} <span class="badge bg-soft-success text-success ms-1">Current</span> {% else %} {% endif %} </td>
                                            <td>Romania</td>
-                                           <td>{% if device_name == "Windows PC" %} now {% else %} {% for item in devices %} 
-                                             {% if item.device_name == device_name %}
+                                           <td>{% if device_name == "Windows PC" %} now {% else %}
+                                             {% for item in devices %} 
+                                             {% if item.device_name != device_name %}
                                              {{ item.last_access_time }}
                                              {% else %}
                                              {% endif %}
