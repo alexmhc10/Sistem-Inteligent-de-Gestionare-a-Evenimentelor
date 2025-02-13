@@ -54,12 +54,48 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <i class="bi bi-list"></i>          
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link nav-icon-hover" href="javascript:void(0)">
-            <i class="ti ti-bell-ringing"></i>
-            <div class="notification bg-primary rounded-circle"></div>
+        <li class="nav-item dropdown">
+          <a class="nav-link nav-icon-hover" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell-fill"></i>              
+            <div id="notification-badge" class="notification bg-primary rounded-circle d-none"></div>
           </a>
-        </li>
+          <ul class="dropdown-menu p-2" aria-labelledby="notificationDropdown" id="notification-list">
+              <li class="dropdown-header">Notifications</li>
+              <li><hr class="dropdown-divider"></li>
+              <li class="text-center"><small>You got no notifications</small></li>
+          </ul>
+      </li>
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const notificationButton = document.getElementById("notificationDropdown");
+        const notificationList = document.getElementById("notification-list");
+        const notificationBadge = document.getElementById("notification-badge");
+
+        function fetchNotifications() {
+            fetch("/get-notifications/")
+                .then(response => response.json())
+                .then(data => {
+                    notificationList.innerHTML = '<li class="dropdown-header">Notifications</li><li><hr class="dropdown-divider"></li>';
+                    
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(notification => {
+                            const listItem = document.createElement("li");
+                            listItem.innerHTML = `<a class="dropdown-item" href="#">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
+                            notificationList.appendChild(listItem);
+                        });
+                        notificationBadge.classList.remove("d-none");
+                    } else {
+                        notificationList.innerHTML += '<li class="text-center"><small>You got no notifications</small></li>';
+                        notificationBadge.classList.add("d-none");
+                    }
+                })
+                .catch(error => console.error("Error:", error));
+        }
+        notificationButton.addEventListener("click", fetchNotifications);
+        
+        setInterval(fetchNotifications, 10000);
+        });
+      </script>
       </ul>
       <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">

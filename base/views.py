@@ -1537,6 +1537,36 @@ def invite_form(request,event_id,guest_id):
     return render(request, 'base/invite_form.html', context)
 
 
+@login_required(login_url='/login')
+def send_notification(request):
+    if request.method == 'POST':
+        sender = request.user
+        message = request.POST.get('message')
+        receiver = request.POST.get('receiver')
+        event_id = request.POST.get('event_id')
+        event = Event.objects.get(id=int(event_id))
+        
+        if receiver == "organizer":
+            receiver = event.organized_by
+
+        EventNotification.objects.create(sender=sender, receiver=receiver, event=event ,message=message)
+
+    
+    return redirect('personal_eveniment_home')
+
+
+def get_notifications(request):
+    if request.user.is_authenticated:
+        notifications = EventNotification.objects.filter(receiver=request.user, is_read=False).order_by('-timestamp')
+        notifications_data = [
+            {"id": n.id, "message": n.message, "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M")}
+            for n in notifications
+        ]
+        return JsonResponse({"notifications": notifications_data})
+    return JsonResponse({"error": "User not authenticated"}, status=403)
+
+
+
 # @login_required(login_url='/login')
 # def chat(request):
 #     print("DATE:")

@@ -191,8 +191,19 @@ class Event(models.Model):
     def check_completed(self):
         if self.event_date <= now().date():
             self.completed = True
-            self.save()
-            
+            self.save()     
+
+
+class EventNotification(models.Model):
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")
+    receiver = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reciever", null=True, blank=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver if self.receiver else 'All'}"
+
 
 class RSVP(models.Model):
     RESPONSE_CHOICES = [
@@ -282,6 +293,7 @@ class CompanyProfit(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"Profit of {self.profit} at {self.created_at}"
+
 
 class Salary(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)  
