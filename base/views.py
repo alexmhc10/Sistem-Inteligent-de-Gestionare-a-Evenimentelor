@@ -1354,6 +1354,8 @@ def personal_eveniment_home(request):
     return render(request, 'base/personal_eveniment_home.html', context)
 
 
+@login_required(login_url='/login')
+@user_is_staff
 def personal_profile(request):
     location_owned = Location.objects.filter(owner=request.user).first()
     profile = Profile.objects.filter(user = location_owned.owner).first()
@@ -1386,6 +1388,8 @@ def personal_profile(request):
     return render(request, 'base/personal_profile.html', context)
 
 
+@login_required(login_url='/login')
+@user_is_staff
 def upload_images(request):
     location_owned = Location.objects.get(owner=request.user)
     if request.method == 'POST' and request.FILES.getlist('images'):
@@ -1395,6 +1399,8 @@ def upload_images(request):
         return redirect('personal_profile') 
 
 
+@login_required(login_url='/login')
+@user_is_staff
 def delete_image(request, image_id):
     if request.method == "POST":
         image = get_object_or_404(LocationImages, id=image_id)
@@ -1555,11 +1561,17 @@ def send_notification(request):
     return redirect('personal_eveniment_home')
 
 
+@login_required(login_url='/login')
 def get_notifications(request):
     if request.user.is_authenticated:
         notifications = EventNotification.objects.filter(receiver=request.user, is_read=False).order_by('-timestamp')
         notifications_data = [
-            {"id": n.id, "message": n.message, "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M")}
+            {
+                "id": n.id, 
+                "message": n.message, 
+                "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
+                "event_id":n.event.id
+                }
             for n in notifications
         ]
         return JsonResponse({"notifications": notifications_data})

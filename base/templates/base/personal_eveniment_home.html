@@ -72,7 +72,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
         const notificationBadge = document.getElementById("notification-badge");
 
         function fetchNotifications() {
-            fetch("/get-notifications/")
+            fetch("/get_notifications/")
                 .then(response => response.json())
                 .then(data => {
                     notificationList.innerHTML = '<li class="dropdown-header">Notifications</li><li><hr class="dropdown-divider"></li>';
@@ -80,7 +80,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     if (data.notifications && data.notifications.length > 0) {
                         data.notifications.forEach(notification => {
                             const listItem = document.createElement("li");
-                            listItem.innerHTML = `<a class="dropdown-item" href="#">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
+                            const eventId = notification.event_id;
+                              const eventUrl = `/personal_vizualizare_eveniment/${eventId}`;
+                            listItem.innerHTML = `<a class="dropdown-item" href="${eventUrl}">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
                             notificationList.appendChild(listItem);
                         });
                         notificationBadge.classList.remove("d-none");

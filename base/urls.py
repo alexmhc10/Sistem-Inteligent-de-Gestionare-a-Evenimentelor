@@ -81,7 +81,7 @@ urlpatterns = [
 
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),
-    path("get-notifications/", views.get_notifications, name="get_notifications"),
+    path("get_notifications/", views.get_notifications, name="get_notifications"),
 
     ##organizator
     path('edit-profile/<str:username>/', views.edit_profile, name='edit_profile'),

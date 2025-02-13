@@ -108,7 +108,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
               const notificationButton = document.getElementById("notificationDropdown");
               const notificationList = document.getElementById("notification-list");
               const notificationBadge = document.getElementById("notification-badge");
-      
+
               function fetchNotifications() {
                   fetch("/get_notifications/")
                       .then(response => response.json())
@@ -118,7 +118,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           if (data.notifications && data.notifications.length > 0) {
                               data.notifications.forEach(notification => {
                                   const listItem = document.createElement("li");
-                                  listItem.innerHTML = `<a class="dropdown-item" href="#">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
+                                  const eventId = notification.event_id;
+                                    const eventUrl = `/personal_vizualizare_eveniment/${eventId}`;
+                                  listItem.innerHTML = `<a class="dropdown-item" href="${eventUrl}">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
                                   notificationList.appendChild(listItem);
                               });
                               notificationBadge.classList.remove("d-none");
@@ -237,39 +239,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-            <!-- <div class="col-lg-4">
-                    <div class="card h-100 card-hover overflow-hidden">
-                            <img src="{{ MEDIA_URL }}images/SeatingPlan.png" class="card-img" style="object-fit: cover; height: 100%; width: 100%; filter: brightness(50%);" alt="matdash-img">
-                        <a href="{% url 'personal_aranjament_invitati_event' event.id %}">
-                            <div class="card-img-overlay d-flex justify-content-center align-items-center p-4 fs-5 glow-text">
-                                <h1 class="mb-auto mt-auto fw-semibold text-center" style="color: white;">Acces the seating plan for this event here</h1>
-                                <div class="d-flex align-items-center position-absolute bottom-0 mb-4 gap-4">
-                                    <div class="d-flex align-items-center gap-2" style="color: white;">
-                                    {{ event.guests.count }} guests
-                                    </div>
-                                    <div class="d-flex align-items-center gap-2" style="color: white;">
-                                    {{event.location.seats_numbers}} seats
-                                    </div>
-                                </div>
-                            </div>
-                        </a>    
-                    </div>
+        <div class="col-lg-12">
+            <div class="d-flex">
+                <button class="btn btn-primary">Scan guests</button>
             </div>
-            <div class="col-lg-4">
-                <div class="card h-100 card-hover overflow-hidden">
-                    <img src="{{ MEDIA_URL }}images/FaceRecognition2.jpg" class="card-img" style="object-fit: cover; height: 100%; width: 100%;" alt="matdash-img">
-                <a href="{% url 'personal_face_id' event.id %}">
-                <div class="card-img-overlay d-flex justify-content-center align-items-center glow-text p-4 fs-5">
-                    <h1 class="mb-auto mt-auto fw-semibold text-center" style="color: white;">Acces the guest face recognition for their acces to the event</h1>
-                    <div class="d-flex align-items-center position-absolute bottom-0 mb-4 gap-4">
-                        <div class="d-flex align-items-center gap-2" style="color: white;">
-                        <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                        </div>
-                    </div>
-                </div>
-                </a>    
-                </div>
-            </div> -->
+        </div>
         <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
@@ -298,8 +272,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <td class="text-center fw-medium">22:31</td>
                                     <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.gender }}</td>
                                     <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.cuisine_preference }}</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.vegan }}</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.allergens }}</td>
+                                    {% if response.guest.profile_set.all.0.guest_profile.vegan %}
+                                    <td class="text-center fw-medium">Yes</td>
+                                    {% else %}
+                                    <td class="text-center fw-medium">No</td>
+                                    {% endif %}
+                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.allergens|join:", " }}</td>
                                     <td class="text-center fw-medium">Table x</td>
                                 </tr>
                                 {% endfor %}
@@ -356,6 +334,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         <label for="receiver">To:</label>
                         <select class="form-control mb-2" name="receiver" id="receiver">
                             <option value="organizer">The organiser</option>
+                            <option value="everyone">Organiser and guests</option>
                         </select>
                         <textarea class="form-control mb-2" name="message" id="message" cols="30" rows="5"></textarea>
                         <button type="submit" name="submit" class="btn btn-primary">Send</button>
