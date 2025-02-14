@@ -1,77 +1,100 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<div class="container-fluid mt-4 px-3">
+    <h1 class="mb-4" style="color: #002B5B;">Organizer Dashboard</h1>
 
-{% if request.user.is_authenticated and request.path == '/' %}
-    <h1 class="greeting">Welcome, {{ request.user.username }}</h1>
-{% endif %}
+    <div class="row">
+        <!-- profile -->
+        <div class="col-md-3">
+            <div class="card" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
+                <div class="card-body">
+                    {% if request.user.profile_set.first.photo %}
+                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3">
+                    {% else %}
+                        <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
+                    {% endif %}
+                    <h5 class="card-title">Your Profile</h5>
+                    <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ request.user.email }}</p>
+                    <p><strong>Events Organized:</strong> 15</p>
+                    <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
+                    <a href="{% url 'edit_profile' username=request.user.username %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit Profile</a>
+                </div>
+            </div>
+        </div>
+        
 
-<div class="home-container">
-    <div class="task-manager-container equal-height">
-        {% include 'base/task-manager.html' %}
-    </div>
-    
-    <div class="carousel-container">
-        {% include 'base/carousel-imagini.html' %}
-    </div>
-    
-    <div class="users-container">
-        {% include 'base/users_component.html' %}
-    </div>
-</div>
+        <!-- upcoming events -->
+        <div class="col-md-6">
+            <div class="card" style="background-color: #FAF9F6; color: #002B5B; border-radius: 8px; height: 100%;">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Events</h5>
+                    <table class="table table-striped" style="border-radius: 8px; border-color: #ECECEC;">
+                        <thead>
+                            <tr style="background-color: #ECECEC;">
+                                <th style="color: #002B5B;">Name</th>
+                                <th style="color: #002B5B;">Date</th>
+                                <th style="color: #002B5B;">Location</th>
+                                <th style="color: #002B5B;">Participants</th>
+                                <th style="color: #002B5B;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for event in upcoming_events %}
+                            <tr>
+                                <td>{{ event.event_name }}</td>
+                                <td>{{ event.event_date }}</td>
+                                <td>{{ event.location }}</td>
+                                <td>{{ event.guests.count }}</td>
+                                <td>
+                                    <a href="{% url 'event_details' event.id %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Details</a>
+                                    <a href="{}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit</a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No upcoming events</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<div class="lower-container">
-    <div class="browse-container">
-        {% include 'base/browse_component.html' %}
-    </div>
-    
-    <div class="locations-container" id="locations-section">
-        <h5>
-            {% if location_count == 1 %}
-                Only one location available
-            {% elif location_count == 0 %}
-                No location matches the criteria
-            {% else %}
-                There are {{ location_count }} available locations
-            {% endif %}
-        </h5>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'add_location' %}">Add Location</a>
-        {% endif %}
-        <br><br>
-        <div>
-            {% if request.path == '/' %}
-                <form action="{% url 'home' %}" method="GET">
-                    <input type="text" name="q" placeholder="Search for Locations..." />
-                </form>
-                <hr>
-            {% endif %}
-            {% include 'base/feed_component.html' %}
+        <!-- stats -->
+        <div class="col-md-3">
+            <div class="card" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
+                <div class="card-body">
+                    <h5 class="card-title">Organized Events</h5>
+                    <p class="card-text display-4">{{ total_events }}</p>
+                </div>
+            </div>
+            <div class="card mt-3" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
+                <div class="card-body">
+                    <h5 class="card-title">Registered Participants</h5>
+                    <p class="card-text display-4">{{ total_participants }}</p>
+                </div>
+            </div>
+            <div class="card mt-3" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
+                <div class="card-body">
+                    <h5 class="card-title">Acceptance Rate</h5>
+                    <p class="card-text display-4">{{ acceptance_rate }}%</p>
+                </div>
+            </div>
+            <div class="card mt-3" style="background-color: #FAF9F6; color: #D4AF37; border-radius: 8px;">
+                <div class="card-body">
+                    <h5 class="card-title">Average Feedback</h5>
+                    <p class="card-text display-4">{{ average_feedback }} ⭐</p>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- create event button -->
+    <div class="text-center mb-4">
+        <a href="" class="btn" style="background-color: #D4AF37; color: #FAF9F6; font-size: 1.2rem; padding: 10px 20px; border-radius: 8px;">+ Create a New Event</a>
+    </div>
 </div>
-
-<script>
-    function scrollToLocations() {
-        const locationsSection = document.getElementById('locations-section');
-        if (locationsSection) {
-            locationsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-    }
-</script>
-
-{% endblock content %}
-
-{% block javascript %}
-<script>
-    function scrollToBottom() {
-        const container = document.getElementById('chat-area');
-        if (container) {
-            container.scrollTop = container.scrollHeight;
-        } else {
-            console.error("Container '.message-area' not found!");
-        }
-    }
-    document.addEventListener('DOMContentLoaded', scrollToBottom);
-</script>
 {% endblock %}

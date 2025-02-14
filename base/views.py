@@ -31,6 +31,18 @@ from .models import Profile
 from django.http import JsonResponse
 from .forms import ProfileEditForm
 from base.models import Event
+@login_required
+def home_organizer(request):
+    events = Event.objects.all()
+    upcoming_events = events.filter(event_date__gte=timezone.now())
+    context = {
+        'total_events': events.count(),
+        'total_participants': sum(event.guests.count() for event in events),
+        'acceptance_rate': 85,  
+        'average_feedback': 4.7,  
+        'upcoming_events': upcoming_events
+    }
+    return render(request, 'base/home-organizer.html', context)
 
 
 @login_required
@@ -79,25 +91,7 @@ def organizer_profile(request, username):
 
 
 
-@login_required(login_url='login')
-@user_is_organizer
-def organizer_dashboard(request):
 
-    events = Event.objects.filter(organized_by=request.user)
-    locations = Location.objects.filter(owner=request.user)
-    
-  
-    context = {
-        'events_count': 12,  # Example data
-        'confirmed_guests': 240,
-        'estimated_profit': 15000,
-        'notifications': [
-            "Invitatul 'Ion Popescu' a confirmat prezența.",
-            "Evenimentul 'Nuntă Maria' este în 3 zile.",
-            "Un nou feedback a fost adăugat de un participant."
-        ]
-    }
-    return render(request, 'base/organizator-dashboard.html', context)
 
 
 @login_required(login_url='/login')
@@ -212,15 +206,6 @@ def complete_task(request, task_id):
 
 
 
-def carousel_view(request):
-    if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            form.save()  
-            return redirect('home')  
-    else:
-        form = EventForm()
-    return render(request, 'base/carousel-imagini.html', {'form': form})
 
 def loginPage(request):
     if request.user.is_authenticated:
@@ -250,7 +235,7 @@ def loginPage(request):
                 return HttpResponseRedirect(reverse('personal_eveniment_home'))  
             elif profile.user_type == 'organizer':
                 print(f"Redirecting user {user.username} to organizer home.")
-                return HttpResponseRedirect(reverse('organizer_dashboard'))  
+                return HttpResponseRedirect(reverse('home-organizer'))  
             else:
                 print(f"Redirecting user {user.username} to guest home.")
                 return HttpResponseRedirect(reverse('guest_home'))  
@@ -968,42 +953,7 @@ def logoutPage(request):
     return redirect('home')
 
 
-def home_organizer(request):
-    form1 = TaskForm()
-    q = request.GET.get('q') if request.GET.get('q') != None else ''
-    locations = Location.objects.filter(
-        Q(types__name__icontains=q) |
-        Q(name__icontains=q) |
-        Q(description__icontains=q) | 
-        Q(owner__username__icontains=q) |
-        Q(location__icontains=q)
-        ).distinct()
-    users = User.objects.all()
-    types = Type.objects.all()
-    location_count = locations.count()
-    tasks = Task.objects.all()
-    tasks_count = tasks.count()
-    profiles = Profile.objects.filter(approved=True)
-    form2 = EventForm
-    context = {
-        'form2':form2,
-        'form1':form1, 
-        'tasks': tasks,
-        'tasks_count':tasks_count,
-        'users' : users,
-        'locations' : locations,
-        'types' : types,
-        'location_count' : location_count,
-        'profiles' : profiles
-        }
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            task = form.save(commit=False)
-            task.user = request.user
-            task.save()
-            return redirect('home')
-    return render(request, 'base/home-organizer.html', context)
+
 
 
 def home(request):

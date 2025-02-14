@@ -85,7 +85,7 @@ body {
 </style>
 <div class="header">
     <div class="first">
-        <a href="{% url 'home_organizer' %}">
+        <a href="{% url 'home-organizer' %}">
             <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
         </a>
         
@@ -93,7 +93,6 @@ body {
         <a href="{% url 'my_events' %}">Event Management</a>
         <a href="{% url 'event_history' %}">Event History</a>
         <a href="{% url 'event_builder' %}">Event Builder</a>
-        <a href="{% url 'organizer_dashboard' %}">Dashboard</a>
         <a href="{% url 'add_location' %}">Locations</a> 
         {% endif %}
     </div>

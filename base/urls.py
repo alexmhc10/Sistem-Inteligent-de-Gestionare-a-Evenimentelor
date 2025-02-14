@@ -6,7 +6,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Paginile principale și autentificare
     path('', views.home, name="home"),
-    path('organizer_home', views.home_organizer, name="home_organizer"),
     path('login/', views.loginPage, name="login"),
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),
@@ -60,8 +59,7 @@ urlpatterns = [
     path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
     path('complete-task/<int:task_id>/', views.complete_task, name='complete_task'),
 
-    # Altele
-    path('carousel/', views.carousel_view, name='carousel'),
+
 
     #Formular invitati
     path('invite_form/<int:event_id>/<int:guest_id>', views.invite_form, name='invite_form'),
@@ -85,9 +83,9 @@ urlpatterns = [
     path("get_notifications/", views.get_notifications, name="get_notifications"),
 
     ##organizator
+    path('home-organizer/', views.home_organizer, name='home-organizer'),
     path('edit-profile/<str:username>/', views.edit_profile, name='edit_profile'),
     path('organizer-profile/<str:username>/', views.organizer_profile, name='organizer-profile'),
-    path('dashboard/', views.organizer_dashboard, name='organizer_dashboard'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
     path('organizer-events', views.organizer_events, name='organizer_events')
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
