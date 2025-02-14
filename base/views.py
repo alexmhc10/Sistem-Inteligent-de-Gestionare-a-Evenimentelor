@@ -150,10 +150,6 @@ def event_history(request):
     return render(request, 'base/istoric_evenimente.html', {'events': events})
 
 
-@login_required(login_url='/login')
-def guest_list(request):
-    guests = Guests.objects.all()
-    return render(request, 'base/guest_list.html', {'guests': guests})
 
 def vizualizare_eveniment(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -971,6 +967,43 @@ def logoutPage(request):
     logout(request)
     return redirect('home')
 
+
+def home_organizer(request):
+    form1 = TaskForm()
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    locations = Location.objects.filter(
+        Q(types__name__icontains=q) |
+        Q(name__icontains=q) |
+        Q(description__icontains=q) | 
+        Q(owner__username__icontains=q) |
+        Q(location__icontains=q)
+        ).distinct()
+    users = User.objects.all()
+    types = Type.objects.all()
+    location_count = locations.count()
+    tasks = Task.objects.all()
+    tasks_count = tasks.count()
+    profiles = Profile.objects.filter(approved=True)
+    form2 = EventForm
+    context = {
+        'form2':form2,
+        'form1':form1, 
+        'tasks': tasks,
+        'tasks_count':tasks_count,
+        'users' : users,
+        'locations' : locations,
+        'types' : types,
+        'location_count' : location_count,
+        'profiles' : profiles
+        }
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            task = form.save(commit=False)
+            task.user = request.user
+            task.save()
+            return redirect('home')
+    return render(request, 'base/home-organizer.html', context)
 
 
 def home(request):

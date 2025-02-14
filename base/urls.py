@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     # Paginile principale și autentificare
     path('', views.home, name="home"),
+    path('organizer_home', views.home_organizer, name="home_organizer"),
     path('login/', views.loginPage, name="login"),
     path('register/', views.registerPage, name='register'),
     path('logout/', views.logoutPage, name="logout"),

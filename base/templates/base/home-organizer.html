@@ -1,0 +1,77 @@
+{% extends 'main.html' %}
+
+{% block content %}
+
+{% if request.user.is_authenticated and request.path == '/' %}
+    <h1 class="greeting">Welcome, {{ request.user.username }}</h1>
+{% endif %}
+
+<div class="home-container">
+    <div class="task-manager-container equal-height">
+        {% include 'base/task-manager.html' %}
+    </div>
+    
+    <div class="carousel-container">
+        {% include 'base/carousel-imagini.html' %}
+    </div>
+    
+    <div class="users-container">
+        {% include 'base/users_component.html' %}
+    </div>
+</div>
+
+<div class="lower-container">
+    <div class="browse-container">
+        {% include 'base/browse_component.html' %}
+    </div>
+    
+    <div class="locations-container" id="locations-section">
+        <h5>
+            {% if location_count == 1 %}
+                Only one location available
+            {% elif location_count == 0 %}
+                No location matches the criteria
+            {% else %}
+                There are {{ location_count }} available locations
+            {% endif %}
+        </h5>
+        {% if request.user.is_authenticated %}
+            <a href="{% url 'add_location' %}">Add Location</a>
+        {% endif %}
+        <br><br>
+        <div>
+            {% if request.path == '/' %}
+                <form action="{% url 'home' %}" method="GET">
+                    <input type="text" name="q" placeholder="Search for Locations..." />
+                </form>
+                <hr>
+            {% endif %}
+            {% include 'base/feed_component.html' %}
+        </div>
+    </div>
+</div>
+
+<script>
+    function scrollToLocations() {
+        const locationsSection = document.getElementById('locations-section');
+        if (locationsSection) {
+            locationsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+</script>
+
+{% endblock content %}
+
+{% block javascript %}
+<script>
+    function scrollToBottom() {
+        const container = document.getElementById('chat-area');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        } else {
+            console.error("Container '.message-area' not found!");
+        }
+    }
+    document.addEventListener('DOMContentLoaded', scrollToBottom);
+</script>
+{% endblock %}
