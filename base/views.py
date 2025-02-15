@@ -1516,6 +1516,16 @@ def guest_home(request):
 
 @login_required(login_url='/login')
 @user_is_guest
+def guest_event_view(request, pk):
+    event=Event.objects.get(id=pk)
+    context={
+        'event':event
+    }
+    return render(request,'base/guest_event_view.html', context)
+
+
+@login_required(login_url='/login')
+@user_is_guest
 def invite_form(request,event_id,guest_id):
     event = Event.objects.get(id=event_id)
     guest = Guests.objects.first()
@@ -1534,9 +1544,12 @@ def send_notification(request):
         receiver = request.POST.get('receiver')
         event_id = request.POST.get('event_id')
         event = Event.objects.get(id=int(event_id))
-        
+
         if receiver == "organizer":
             receiver = event.organized_by
+        elif receiver == "everyone":
+            EventNotification.objects.create(sender=sender, event=event ,message=message)
+            return redirect('personal_eveniment_home')
 
         EventNotification.objects.create(sender=sender, receiver=receiver, event=event ,message=message)
 
@@ -1547,13 +1560,17 @@ def send_notification(request):
 @login_required(login_url='/login')
 def get_notifications(request):
     if request.user.is_authenticated:
-        notifications = EventNotification.objects.filter(receiver=request.user, is_read=False).order_by('-timestamp')
+        notifications = EventNotification.objects.filter(Q(receiver=request.user) | Q(receiver__isnull=True), is_read="False").order_by('-timestamp')
+        print(notifications)
+        for n in notifications:
+            print(f"Notification ID: {n.id}, Event: {n.event}")
+
         notifications_data = [
             {
                 "id": n.id, 
                 "message": n.message, 
                 "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
-                "event_id":n.event.id
+                "event_id":n.event.id if n.event else None
                 }
             for n in notifications
         ]

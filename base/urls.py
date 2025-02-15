@@ -77,6 +77,7 @@ urlpatterns = [
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
     path('guest_profile', views.guest_profile, name='guest_profile'),
+    path('guest_event_view/<int:pk>', views.guest_event_view, name='guest_event_view'),
 
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),

@@ -324,10 +324,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-        <div class="col-lg-4">
+        <div class="col-lg-4 offset-lg-4">
             <div class="card">
                 <div class="card-body">
-                    <h1 class="card-title">Sent a notification</h1>
+                    <h1 class="card-title">Send a notification</h1>
                     <form action="{% url 'send_notification' %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
                         <input type="hidden" name="event_id" value="{{ event.id }}">
