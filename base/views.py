@@ -1518,8 +1518,22 @@ def guest_home(request):
 @user_is_guest
 def guest_event_view(request, pk):
     event=Event.objects.get(id=pk)
+    profile=Profile.objects.get(user=request.user)
+    preferences = Guests.objects.get(profile = profile)
+    event_data = [
+        {
+            'id': event.id,
+            'title': event.event_name,
+            'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+        }
+    ]
+
+
     context={
-        'event':event
+        'event':event,
+        'profile':profile,
+        'preferences':preferences,
+        'event_data': event_data
     }
     return render(request,'base/guest_event_view.html', context)
 
