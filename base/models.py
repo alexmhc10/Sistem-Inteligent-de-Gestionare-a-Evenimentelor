@@ -267,13 +267,13 @@ class Budget(models.Model):
             self.initial_budget = self.total_budget
             total_location_cost = sum(location.cost for location in locations)
             self.total_expenses += total_location_cost
-            self.final_budget = self.total_revenue - self.total_expenses
+            self.final_budget = self.total_budget - self.total_expenses
             self.last_location_update = current_month
             self.save()
     
     def add_new_location(self, location_cost):
         self.total_expenses += location_cost
-        self.final_budget = self.total_revenue - self.total_expenses
+        self.final_budget -= self.total_expenses
         self.save()
     
     def calc_profit(self):
