@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h2 class="text-center">Locații disponibile</h2>
+    <h2 class="text-center">Available Locations</h2>
     <div class="row">
         {% for location in locations %}
             <div class="col-md-4">
@@ -15,15 +15,15 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ location.name }}</h5>
                         <p class="card-text">{{ location.description|truncatechars:100 }}</p>
-                        <p><strong>Locație:</strong> {{ location.location }}</p>
-                        <p><strong>Număr locuri:</strong> {{ location.seats_numbers }}</p>
+                        <p><strong>Location:</strong> {{ location.location }}</p>
+                        <p><strong>Number of seats:</strong> {{ location.seats_numbers }}</p>
                         <p><strong>Cost:</strong> {{ location.cost }} RON</p>
-                        <a href="#" class="btn btn-primary">Vezi detalii</a>
+                        <a href="#" class="btn btn-primary">View Details</a>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <p class="text-center">Momentan nu există locații disponibile.</p>
+            <p class="text-center">Currently, there are no available locations.</p>
         {% endfor %}
     </div>
 </div>
