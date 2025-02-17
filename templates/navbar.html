@@ -6,35 +6,35 @@
         border-radius: 40px;
         border: 2px solid #D4AF37;
     }
-
+    
     .greeting {
         font-size: 1.2em;
         color: #D4AF37;
         font-weight: bold;
         margin-right: 20px;
     }
-
+    
     .first {
         display: flex;
         flex-direction: row;
         align-items: center;
     }
-
+    
     .first a {
-        margin-right: 15px;
+        margin-right: 15px; 
         color: #D4AF37;
         font-size: 1em;
         text-decoration: none;
         font-weight: bold;
     }
-
+    
     .second {
         margin-left: auto;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
-
+    
     .second a {
         color: #D4AF37;
         font-size: 1em;
@@ -42,69 +42,37 @@
         margin-left: 15px;
         font-weight: bold;
     }
-
+    
     .second a:hover {
         color: #B08A2E;
         text-decoration: underline;
     }
 
-    .location-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .location-dropdown > span {
-        color: #D4AF37; 
-        font-weight: bold;
-        cursor: pointer;
-    }
-
-    .location-dropdown-content {
-        display: none;
-        position: absolute;
-        background-color: #FAF9F6; 
-        min-width: 180px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-        z-index: 10;
-        border-radius: 8px;
-        overflow: hidden;
-        top: 100%;
-    }
-
-    .location-dropdown-content a {
-        color: #002B5B; 
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
-        font-weight: bold;
-    }
-
-    .location-dropdown-content a:hover {
-        background-color: #ECECEC; 
-    }
-
-    .location-dropdown:hover .location-dropdown-content {
-        display: block;
-    }
-
-    .profile-dropdown {
+    .profile-dropdown, .events-dropdown, .locations-dropdown {
         position: relative;
         display: inline-block;
     }
 
     .dropdown-content {
-        display: none;
+        display: block;
+        opacity: 0;
+        visibility: hidden;
         position: absolute;
-        background-color: #FAF9F6;
+        right: 0;
+        background-color: #f9f9f9;
         min-width: 160px;
-        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
         z-index: 1;
         transform: translateY(-10px);
         transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
     }
 
-    .profile-dropdown:hover .dropdown-content {
-        display: block;
+    .profile-dropdown:hover .dropdown-content,
+    .events-dropdown:hover .dropdown-content,
+    .locations-dropdown:hover .dropdown-content {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
     }
 
     .dropdown-content a {
@@ -118,6 +86,14 @@
         background-color: #f1f1f1;
     }
 
+    
+    .events-dropdown span, .locations-dropdown span {
+        color: #D4AF37; 
+        font-size: 1em;
+        font-weight: bold;
+        margin-right: 15px;
+    }
+
     body {
         overflow-x: hidden;
     }
@@ -128,23 +104,29 @@
         <a href="{% url 'home-organizer' %}">
             <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
         </a>
-
+        
         {% if request.user.is_authenticated %}
-        <a href="{% url 'my_events' %}">Event Management</a>
-        <a href="{% url 'event_history' %}">Event History</a>
-        <a href="{% url 'event_builder' %}">Event Builder</a>
-
-       
-        <div class="location-dropdown">
-            <span>Locations ▼</span>
-            <div class="location-dropdown-content">
-                <a href="{% url 'add_location' %}">Add Location</a>
-                <a href="{% url 'locations-list' %}">List of Locations</a>
+        <div class="events-dropdown">
+            <span>Events</span>
+            <div class="dropdown-content">
+                <a href="{% url 'event_builder' %}">Event Builder</a>
+                <a href="{% url 'event_history' %}">Event History</a>
+                <a href="{% url 'my_events' %}">Event Management</a>
             </div>
         </div>
+        
+        <!--dropdown locatie -->
+        <div class="locations-dropdown" style="margin-left: 2px;">
+            <span>Locations</span>
+            <div class="dropdown-content">
+                <a href="{% url 'add_location' %}">Add Location</a>
+                <a href="{% url 'locations-list' %}">Location List</a> 
+            </div>
+        </div>
+
         {% endif %}
     </div>
-
+    
     <div class="second">
         {% if request.user.is_authenticated %}
         <div class="profile-dropdown">
@@ -155,6 +137,13 @@
                 <a href="{% url 'logout' %}">Logout</a>
             </div>
         </div>
+        {% if request.path == '/' and request.user.is_superuser %}
+            <a href="{% url 'new_users' %}">#</a>
+        {% endif %}
+        {% else %}
+            {% if request.path != '/login/' and request.path != '/register/' %}
+                <a href="{% url 'login' %}">Login</a>
+            {% endif %}
         {% endif %}
     </div>
 </div>
