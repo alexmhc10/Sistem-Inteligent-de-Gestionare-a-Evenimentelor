@@ -84,6 +84,7 @@ urlpatterns = [
     path("get_notifications/", views.get_notifications, name="get_notifications"),
 
     ##organizator
+    path('locations/', views.locations_list, name='locations-list'),
     path('home-organizer/', views.home_organizer, name='home-organizer'),
     path('edit-profile/<str:username>/', views.edit_profile, name='edit_profile'),
     path('organizer-profile/<str:username>/', views.organizer_profile, name='organizer-profile'),

@@ -31,6 +31,14 @@ from .models import Profile
 from django.http import JsonResponse
 from .forms import ProfileEditForm
 from base.models import Event
+from .models import Location
+
+
+def locations_list(request):
+    locations = Location.objects.all()
+    return render(request, 'base/locations_list.html', {'locations': locations})
+
+
 @login_required
 def home_organizer(request):
     events = Event.objects.all()

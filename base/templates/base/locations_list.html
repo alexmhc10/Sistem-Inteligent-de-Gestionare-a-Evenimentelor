@@ -1,0 +1,30 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Locații disponibile</h2>
+    <div class="row">
+        {% for location in locations %}
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    {% if location.gallery %}
+                        <img src="{{ location.gallery.url }}" class="card-img-top" alt="{{ location.name }}">
+                    {% else %}
+                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="Placeholder">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ location.name }}</h5>
+                        <p class="card-text">{{ location.description|truncatechars:100 }}</p>
+                        <p><strong>Locație:</strong> {{ location.location }}</p>
+                        <p><strong>Număr locuri:</strong> {{ location.seats_numbers }}</p>
+                        <p><strong>Cost:</strong> {{ location.cost }} RON</p>
+                        <a href="#" class="btn btn-primary">Vezi detalii</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">Momentan nu există locații disponibile.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
