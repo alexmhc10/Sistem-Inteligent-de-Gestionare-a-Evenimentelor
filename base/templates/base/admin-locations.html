@@ -360,19 +360,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="col-auto" style="display: block;">
-                                        <div id="selection-element">
-                                            <div class="my-n1 d-flex align-items-center text-muted">
-                                                Select <div id="select-content" class="text-body fw-semibold px-1">
-                                                </div> Result <button
-                                                id="Rmvbtn"
-                                                type="button"
-                                                    class="btn btn-link link-danger p-0 ms-3 material-shadow-none"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#removeItemModal">Remove</button>
-                                            </div>
-                                        </div>
-                                    </div>
+                                  
                                 </div>
                             </div>
                             <div class="card-body">
@@ -831,6 +819,17 @@
     </div>
 </div>
 <style>
+    .bi-three-dots {
+    z-index: auto !important;
+}
+.dropdown .btn {
+    position: relative;
+    z-index: 2;
+}
+.dropdown-menu {
+    z-index: 3050 !important;
+}
+
     .noUi-base:first-of-type{
         display: none !important;
     }

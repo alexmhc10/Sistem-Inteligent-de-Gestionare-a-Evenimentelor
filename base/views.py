@@ -348,7 +348,7 @@ def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     events = Event.objects.all()
-    users = User.objects.filter(is_superuser=False)
+    users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
     types = Type.objects.all()
     types_with_event_count = []
     
@@ -370,6 +370,7 @@ def admin_events(request):
             'event_date': event.event_date,
             'event_time': event.event_time,
             'completed': event.completed,
+            'cancelled': event.is_canceled,
             'types': event_types,
             'guest_count': guest_count,
             'organized_by':event.organized_by

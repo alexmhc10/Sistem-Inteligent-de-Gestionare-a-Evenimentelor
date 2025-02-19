@@ -98,7 +98,7 @@
                                             <div class="col-sm">
                                                 <div class="d-flex justify-content-sm"style="margin-right:auto !important;">
                                                     <div class="search-box ms-2 w-50">
-                                                        <input type="text" class="form-control" id="searchProductList"
+                                                        <input type="text" class="form-control" id="searchEventList"
                                                             placeholder="Search Events...">
                                                         <i class="ri-search-line search-icon"></i>
                                                     </div>
@@ -106,7 +106,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <!--end col-->
                                     <div class="col-xxl-2 col-sm-6">
                                         <div>
                                                     <input type="text"
@@ -117,7 +116,6 @@
                                                         id="SelectDate">
                                         </div>
                                     </div>
-                                    <!--end col-->
                                     <div class="col-xxl-2 col-sm-4">
                                         <div>
                                             <div class="choices" data-type="select-one" tabindex="0" role="listbox"
@@ -126,67 +124,16 @@
                                                         data-choices="" data-choices-search-false=""
                                                         name="choices-single-default" id="idStatus" hidden=""
                                                         tabindex="-1" data-choice="active">
-                                                        <option value="">Status</option>
                                                         <option value="all" selected="">All</option>
-                                                        <option value="Pending">Pending</option>
+                                                        <option value="Completed">Completed</option>
                                                         <option value="Inprogress">Inprogress</option>
                                                         <option value="Cancelled">Cancelled</option>
-                                                        <option value="Pickups">Pickups</option>
-                                                        <option value="Returns">Returns</option>
-                                                        <option value="Delivered">Delivered</option>
                                                     </select>
-                                                    
-                                                </div>
-                                                <div class="choices__list choices__list--dropdown"
-                                                    aria-expanded="false">
-                                                    <div class="choices__list" role="listbox">
-                                                        <div id="choices--idStatus-item-choice-1"
-                                                            class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
-                                                            role="option" data-choice="" data-id="1" data-value=""
-                                                            data-select-text="Press to select" data-choice-selectable=""
-                                                            aria-selected="true">Status</div>
-                                                        <div id="choices--idStatus-item-choice-2"
-                                                            class="choices__item choices__item--choice is-selected choices__item--selectable"
-                                                            role="option" data-choice="" data-id="2" data-value="all"
-                                                            data-select-text="Press to select"
-                                                            data-choice-selectable="">All</div>
-                                                        <div id="choices--idStatus-item-choice-5"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="5"
-                                                            data-value="Cancelled" data-select-text="Press to select"
-                                                            data-choice-selectable="">Cancelled</div>
-                                                        <div id="choices--idStatus-item-choice-8"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="8"
-                                                            data-value="Delivered" data-select-text="Press to select"
-                                                            data-choice-selectable="">Delivered</div>
-                                                        <div id="choices--idStatus-item-choice-4"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="4"
-                                                            data-value="Inprogress" data-select-text="Press to select"
-                                                            data-choice-selectable="">Inprogress</div>
-                                                        <div id="choices--idStatus-item-choice-3"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="3"
-                                                            data-value="Pending" data-select-text="Press to select"
-                                                            data-choice-selectable="">Pending</div>
-                                                        <div id="choices--idStatus-item-choice-6"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="6"
-                                                            data-value="Pickups" data-select-text="Press to select"
-                                                            data-choice-selectable="">Pickups</div>
-                                                        <div id="choices--idStatus-item-choice-7"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="7"
-                                                            data-value="Returns" data-select-text="Press to select"
-                                                            data-choice-selectable="">Returns</div>
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                         
                                     </div>
-                                    <!--end col-->
                                     <div class="col-xxl-2 col-sm-4">
                                         <div>
                                             <div class="choices" data-type="select-one" tabindex="0" role="listbox"
@@ -195,77 +142,26 @@
                                                         data-choices="" data-choices-search-false=""
                                                         name="choices-single-default" id="idPayment" hidden=""
                                                         tabindex="-1" data-choice="active">
-                                                        <option value="">Status</option>
                                                         <option value="all" selected="">All</option>
-                                                        <option value="Pending">Pending</option>
-                                                        <option value="Inprogress">Inprogress</option>
-                                                        <option value="Cancelled">Cancelled</option>
-                                                        <option value="Pickups">Pickups</option>
-                                                        <option value="Returns">Returns</option>
-                                                        <option value="Delivered">Delivered</option>
+                                                        {% for user in users %}
+                                                        <option value="{{ user.username }}"> {{ user.username }} </option>
+                                                        {% endfor %}
                                                     </select>
                                                     
                                                 </div>
-                                                <div class="choices__list choices__list--dropdown"
-                                                    aria-expanded="false">
-                                                    <div class="choices__list" role="listbox">
-                                                        <div id="choices--idStatus-item-choice-1"
-                                                            class="choices__item choices__item--choice choices__placeholder choices__item--selectable is-highlighted"
-                                                            role="option" data-choice="" data-id="1" data-value=""
-                                                            data-select-text="Press to select" data-choice-selectable=""
-                                                            aria-selected="true">Status</div>
-                                                        <div id="choices--idStatus-item-choice-2"
-                                                            class="choices__item choices__item--choice is-selected choices__item--selectable"
-                                                            role="option" data-choice="" data-id="2" data-value="all"
-                                                            data-select-text="Press to select"
-                                                            data-choice-selectable="">All</div>
-                                                        <div id="choices--idStatus-item-choice-5"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="5"
-                                                            data-value="Cancelled" data-select-text="Press to select"
-                                                            data-choice-selectable="">Cancelled</div>
-                                                        <div id="choices--idStatus-item-choice-8"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="8"
-                                                            data-value="Delivered" data-select-text="Press to select"
-                                                            data-choice-selectable="">Delivered</div>
-                                                        <div id="choices--idStatus-item-choice-4"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="4"
-                                                            data-value="Inprogress" data-select-text="Press to select"
-                                                            data-choice-selectable="">Inprogress</div>
-                                                        <div id="choices--idStatus-item-choice-3"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="3"
-                                                            data-value="Pending" data-select-text="Press to select"
-                                                            data-choice-selectable="">Pending</div>
-                                                        <div id="choices--idStatus-item-choice-6"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="6"
-                                                            data-value="Pickups" data-select-text="Press to select"
-                                                            data-choice-selectable="">Pickups</div>
-                                                        <div id="choices--idStatus-item-choice-7"
-                                                            class="choices__item choices__item--choice choices__item--selectable"
-                                                            role="option" data-choice="" data-id="7"
-                                                            data-value="Returns" data-select-text="Press to select"
-                                                            data-choice-selectable="">Returns</div>
-                                                    </div>
-                                                </div>
+                                        
                                             </div>
                                         </div>
                                     </div>
-                                    <!--end col-->
                                     <div class="col-xxl-1 col-sm-4">
                                         <div>
-                                            <button type="button" class="btn btn-primary w-100" onclick="SearchData();">
+                                            <button type="button" class="btn btn-primary w-100">
                                                 <i class="ri-equalizer-fill me-1 align-bottom"></i>
-                                                Filters
+                                                Apply Filters
                                             </button>
                                         </div>
                                     </div>
-                                    <!--end col-->
                                 </div>
-                                <!--end row-->
                             </form>
                         </div>
                         <div class="card-body pt-0">
@@ -277,7 +173,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <a class="nav-link py-3 Delivered" data-bs-toggle="tab" href="#delivered" role="tab" aria-selected="false">
+                                        <a class="nav-link py-3 completed" data-bs-toggle="tab" href="#completed" role="tab" aria-selected="false">
                                             <i class="ri-checkbox-circle-line me-1 align-bottom"></i> Completed
                                             {% if finished_count %}
                                                 <span class="badge bg-danger align-middle ms-1">{{ finished_count }}</span>
@@ -285,7 +181,7 @@
                                         </a>
                                     </li>
                                     <li class="nav-item" role="presentation">
-                                        <a class="nav-link py-3 Pickups" data-bs-toggle="tab" href="#pickups" role="tab" aria-selected="false">
+                                        <a class="nav-link py-3 ongoing" data-bs-toggle="tab" href="#ongoing" role="tab" aria-selected="false">
                                             <i class="ri-truck-line me-1 align-bottom"></i> Ongoing
                                             {% if unfinished_count %}
                                                 <span class="badge bg-danger align-middle ms-1">{{ unfinished_count }}</span>
@@ -359,6 +255,13 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
+                                        <div class="py-4 text-center no-result-message">
+                                            <div style="width:1185px;"></div>
+                                            <h5 class="mt-4">Sorry! No events matching your criteria 
+                                                <strong style="font-weight: 500;">
+                                                <i class="bi bi-search"></i>
+                                            </strong>.</h5>
+                                         </div>
                                     </div>
                                     
                                     <div id="cancelled" class="tab-pane fade">
@@ -382,7 +285,7 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if not item.completed %}
+                                                    {% if item.cancelled %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -420,8 +323,15 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
+                                        <div class="py-4 text-center no-result-message">
+                                            <div style="width:1185px;"></div>
+                                            <h5 class="mt-4">Sorry! No events matching your criteria 
+                                                <strong style="font-weight: 500;">
+                                                <i class="bi bi-search"></i>
+                                            </strong>.</h5>
+                                         </div>
                                     </div>
-                                    <div id="delivered" class="tab-pane fade">
+                                    <div id="completed" class="tab-pane fade">
                                         <table class="table table-nowrap align-middle" id="orderTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
@@ -442,7 +352,7 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if not item.completed %}
+                                                    {% if  item.completed %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -451,11 +361,11 @@
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
                                                             <td class="customer_name"> {{ item.organized_by }} </td>
-                                                            <td class="product_name"> trm </td>
+                                                            <td class="product_name"> {{ item.name }} </td>
                                                             <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
                                                             <td>
                                                                 <ul class="list-inline hstack gap-2 mb-0">
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
@@ -478,10 +388,128 @@
                                                         </tr>
                                                     {% endif %}
                                                 {% endfor %}
+                                                {% for item in detailed_events %}
+                                                {% if  item.completed %}
+                                                    <tr>
+                                                        <th scope="row">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
+                                                            </div>
+                                                        </th>
+                                                        <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                        <td class="customer_name"> {{ item.organized_by }} </td>
+                                                        <td class="product_name"> {{ item.name }} </td>
+                                                        <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                        <td class="amount"> {{ item.guest_count }} </td>
+                                                        <td class="payment"> {{ item.cost }}$ </td>
+                                                        <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+                                                        <td>
+                                                            <ul class="list-inline hstack gap-2 mb-0">
+                                                                <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                                    <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
+                                                                        <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                                    <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
+                                                                        <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+                                                                    </a>
+                                                                </li>
+                                                                <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                    <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                        <i class="bi bi-trash fs-16"></i>
+                                                                    </a>
+                                                                </li>
+                                                            </ul>
+                                                        </td>
+                                                    </tr>
+                                                {% endif %}
+                                            {% endfor %}
+                                            {% for item in detailed_events %}
+                                            {% if  item.completed %}
+                                                <tr>
+                                                    <th scope="row">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
+                                                        </div>
+                                                    </th>
+                                                    <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                    <td class="customer_name"> {{ item.organized_by }} </td>
+                                                    <td class="product_name"> {{ item.name }} </td>
+                                                    <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                    <td class="amount"> {{ item.guest_count }} </td>
+                                                    <td class="payment"> {{ item.cost }}$ </td>
+                                                    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+                                                    <td>
+                                                        <ul class="list-inline hstack gap-2 mb-0">
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                                <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
+                                                                    <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                                <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
+                                                                    <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                            <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                    <i class="bi bi-trash fs-16"></i>
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for item in detailed_events %}
+                                        {% if  item.completed %}
+                                            <tr>
+                                                <th scope="row">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
+                                                    </div>
+                                                </th>
+                                                <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                <td class="customer_name"> {{ item.organized_by }} </td>
+                                                <td class="product_name"> {{ item.name }} </td>
+                                                <td class="date"> {{ item.event_date }} <small class="text-muted"> da </small></td>
+                                                <td class="amount"> {{ item.guest_count }} </td>
+                                                <td class="payment"> {{ item.cost }}$ </td>
+                                                <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+                                                <td>
+                                                    <ul class="list-inline hstack gap-2 mb-0">
+                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                            <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
+                                                                <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
+                                                            </a>
+                                                        </li>
+                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                            <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
+                                                                <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+                                                            </a>
+                                                        </li>
+                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                            <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                <i class="bi bi-trash fs-16"></i>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    {% endfor %}
                                             </tbody>
                                         </table>
+                                        <div class="py-4 text-center no-result-message">
+                                            <div style="width:1185px;"></div>
+                                            <h5 class="mt-4">Sorry! No events matching your criteria 
+                                                <strong style="font-weight: 500;">
+                                                <i class="bi bi-search"></i>
+                                            </strong>.</h5>
+                                         </div>
                                     </div>
-                                    <div id="pickups" class="tab-pane fade">
+                                    <div id="ongoing" class="tab-pane fade">
                                         <table class="table table-nowrap align-middle" id="orderTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
@@ -540,17 +568,15 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
+                                        <div class="py-4 text-center no-result-message">
+                                            <div style="width:1185px;"></div>
+                                            <h5 class="mt-4">Sorry! No events matching your criteria 
+                                                <strong style="font-weight: 500;">
+                                                <i class="bi bi-search"></i>
+                                            </strong>.</h5>
+                                         </div>
                                     </div>
-                                    <div class="noresult" style="display: none">
-                                        <div class="text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
-                                                colors="primary:#405189,secondary:#0ab39c"
-                                                style="width:75px;height:75px"></lord-icon>
-                                            <h5 class="mt-2">Sorry! No Result Found</h5>
-                                            <p class="text-muted">We've searched more than 150+ Orders We did not find
-                                                any orders for you search.</p>
-                                        </div>
-                                    </div>
+                                    
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <div class="pagination-wrap hstack gap-2" style="display: flex;">
@@ -655,14 +681,14 @@
 </div>
 
 <style>
-#home1, #cancelled, #delivered, #pickups {
+#home1, #cancelled, #completed, #ongoing {
     display: none;
     visibility: hidden;
     height: 0;
     margin: 0;
 }
 
-#home1.show, #cancelled.show, #delivered.show, #pickups.show {
+#home1.show, #cancelled.show, #completed.show, #ongoing.show {
     display: block;
     visibility: visible;
     height: auto;
@@ -679,7 +705,7 @@
 </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        let searchInput = document.getElementById("searchProductList");
+        let searchInput = document.getElementById("searchEventList");
 
         searchInput.addEventListener("keyup", function () {
             let filter = searchInput.value.toLowerCase();
@@ -810,5 +836,143 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterButton = document.querySelector(".btn.btn-primary");
+        const dateInput = document.getElementById("SelectDate");
+        const statusSelect = document.getElementById("idStatus");
+        const organizerSelect = document.getElementById("idPayment");
     
+        function normalizeDate(dateStr) {
+            const months = {
+                "jan.": "Jan", "feb.": "Feb", "mar.": "Mar", "apr.": "Apr", "mai": "May", "iun.": "Jun",
+                "iul.": "Jul", "aug.": "Aug", "sept.": "Sep", "oct.": "Oct", "nov.": "Nov", "dec.": "Dec"
+            };
+    
+            let parts = dateStr.split(" ");
+            if (parts.length >= 3) {
+                let day = parts[1].replace(",", ""); 
+                let month = months[parts[0].toLowerCase()] || parts[0]; 
+                let year = parts[2];
+    
+                return `${day} ${month}, ${year}`;
+            }
+            return dateStr;
+        }
+    
+        filterButton.addEventListener("click", function () {
+            const selectedDate = dateInput.value.trim();
+            const selectedStatus = statusSelect.value.trim().toLowerCase();
+            const selectedOrganizer = organizerSelect.value.trim().toLowerCase();
+            console.log("status: ", selectedStatus)
+            document.querySelectorAll("tbody.list tr").forEach(row => {
+                const eventDateRaw = row.querySelector(".date")?.textContent.trim().toLowerCase();
+                const eventStatus = row.querySelector(".status span")?.textContent.trim().toLowerCase();
+                const eventOrganizer = row.querySelector(".customer_name")?.textContent.trim().toLowerCase();
+                console.log("evstat: ", eventStatus)
+                let eventDate = normalizeDate(eventDateRaw);
+    
+                let showRow = true;
+    
+                if (selectedDate && selectedDate !== eventDate) showRow = false;
+                if (selectedStatus !== "all" && eventStatus !== selectedStatus) showRow = false;
+                if (selectedOrganizer !== "all" && eventOrganizer !== selectedOrganizer) showRow = false;
+    
+                row.style.display = showRow ? "" : "none";
+            });
+        });
+    });
+    </script>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const rowsPerPage = 6; // Numărul maxim de rânduri pe pagină
+            let currentPage = 1;
+        
+            function getActiveTabRows() {
+                const activeTab = document.querySelector(".tab-pane.active"); // Selectează doar tab-ul activ
+                if (!activeTab) return [];
+        
+                return activeTab.querySelectorAll("tbody.list tr"); // Ia doar rândurile din acel tab
+            }
+        
+            function updatePagination() {
+                const tableRows = getActiveTabRows();
+                const paginationContainer = document.querySelector(".pagination.listjs-pagination");
+                const prevButton = document.querySelector(".pagination-prev");
+                const nextButton = document.querySelector(".pagination-next");
+        
+                let totalPages = Math.ceil(tableRows.length / rowsPerPage);
+                if (currentPage > totalPages) currentPage = totalPages;
+        
+                paginationContainer.innerHTML = ""; // Golește paginile existente
+        
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageItem = document.createElement("li");
+                    pageItem.classList.add("page-item");
+                    if (i === currentPage) pageItem.classList.add("active");
+        
+                    const pageLink = document.createElement("a");
+                    pageLink.href = "#";
+                    pageLink.classList.add("page");
+                    pageLink.textContent = i;
+                    pageLink.dataset.page = i;
+        
+                    pageLink.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        currentPage = i;
+                        showPage(currentPage);
+                    });
+        
+                    pageItem.appendChild(pageLink);
+                    paginationContainer.appendChild(pageItem);
+                }
+        
+                prevButton.classList.toggle("disabled", currentPage === 1);
+                nextButton.classList.toggle("disabled", currentPage === totalPages);
+            }
+        
+            function showPage(page) {
+                const tableRows = getActiveTabRows();
+                if (!tableRows.length) return;
+        
+                const start = (page - 1) * rowsPerPage;
+                const end = start + rowsPerPage;
+        
+                tableRows.forEach((row, index) => {
+                    row.style.display = (index >= start && index < end) ? "" : "none";
+                });
+        
+                updatePagination();
+            }
+        
+            document.querySelector(".pagination-prev").addEventListener("click", function (e) {
+                e.preventDefault();
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            });
+        
+            document.querySelector(".pagination-next").addEventListener("click", function (e) {
+                e.preventDefault();
+                if (currentPage < Math.ceil(getActiveTabRows().length / rowsPerPage)) {
+                    currentPage++;
+                    showPage(currentPage);
+                }
+            });
+        
+            // Detectează schimbarea tab-ului
+            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+                tab.addEventListener("shown.bs.tab", function () {
+                    currentPage = 1; // Resetare la prima pagină
+                    showPage(currentPage);
+                });
+            });
+        
+            showPage(1); // Inițializare la prima pagină
+        });
+        </script>
+        
+           
 {% endblock %}
