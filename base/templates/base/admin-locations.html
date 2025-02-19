@@ -90,7 +90,7 @@
                                     <h5 class="fs-16">Filters</h5>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <a href="{% url 'admin-events' %}" class="text-decoration-underline" id="clearall">Clear All</a>
+                                    <a href="{% url 'admin-locations' %}" class="text-decoration-underline" id="clearall">Clear All</a>
                                 </div>
                             </div>
                         </div>
@@ -175,11 +175,11 @@
                                     aria-labelledby="flush-headingBrands">
                                     <div class="accordion-body text-body pt-0">
                                         <div class="search-box search-box-sm">
-                                            <input type="text" class="form-control bg-light border-0"
-                                                id="searchBrandsList" placeholder="Search Organizers...">
+                                            <input type="text" class=" form-control bg-light border-0"
+                                                id="searchOrganizersList" placeholder="Search Organizers...">
                                             <i class="ri-search-line search-icon"></i>
                                         </div>
-                                        <div class="d-flex flex-column gap-2 mt-3 filter-check">
+                                        <div class="d-flex flex-column gap-2 mt-3 org-filter-check">
                                             {% for organizer in organizers %}
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" value="Boat"
@@ -255,10 +255,10 @@
                                 <div id="flush-collapseRating" class="accordion-collapse collapse show"
                                     aria-labelledby="flush-headingRating" >
                                     <div class="accordion-body text-body">
-                                        <div class="d-flex flex-column gap-2 filter-check">
+                                        <div class="d-flex flex-column gap-2 star-filter-check">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="4 &amp; Above Star" id="locationratingRadio4" checked="">
+                                                    value="4" id="locationratingRadio4" checked="">
                                                 <label class="form-check-label" for="locationratingRadio4">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
@@ -271,7 +271,7 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="3 &amp; Above Star" id="locationratingRadio3">
+                                                    value="3" id="locationratingRadio3">
                                                 <label class="form-check-label" for="locationratingRadio3">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
@@ -284,7 +284,7 @@
                                             </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
-                                                    value="2 &amp; Above Star" id="locationratingRadio2">
+                                                    value="2" id="locationratingRadio2">
                                                 <label class="form-check-label" for="locationratingRadio2">
                                                     <span class="text-muted">
                                                         <span class="star filled">★</span>
@@ -296,7 +296,7 @@
                                                 </label>
                                             </div>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="1 Star"
+                                                <input class="form-check-input" type="checkbox" value="1"
                                                     id="locationratingRadio1">
                                                 <label class="form-check-label" for="locationratingRadio1">
                                                     <span class="text-muted">
@@ -396,7 +396,7 @@
                                                              tabindex="0" style="width: 360px;">
                                                              <div class="gridjs-th-content">Location</div>
                                                           </th>
-                                                          <th data-column-id="organizer"
+                                                          <th data-column-id=""
                                                              class="gridjs-th gridjs-th-sort text-muted"
                                                              tabindex="0" style="width: 200px;">
                                                              <div class="gridjs-th-content">Added by</div>
@@ -474,12 +474,12 @@
                                                                 </div>
                                                              </span>
                                                           </td>
-                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.added_by }} </td>
+                                                          <td data-column-id="organized_by" class="gridjs-td"> {{ item.added_by }} </td>
                                                           <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
                                                           <td data-column-id="price" class="gridjs-td">
                                                              <span> {{ item.cost }}$ </span>
                                                           </td>
-                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
+                                                          <td data-column-id="organizer" class="gridjs-td"> {{ item.located }} </td>
                                                           <td data-column-id="rating" class="gridjs-td">
                                                              <span>
                                                              <span
@@ -569,7 +569,7 @@
                                                              tabindex="0" style="width: 360px;">
                                                              <div class="gridjs-th-content">Location</div>
                                                           </th>
-                                                          <th data-column-id="organizer"
+                                                          <th data-column-id=""
                                                              class="gridjs-th gridjs-th-sort text-muted"
                                                              tabindex="0" style="width: 200px;">
                                                              <div class="gridjs-th-content">Added by</div>
@@ -648,12 +648,12 @@
                                                                 </div>
                                                              </span>
                                                           </td>
-                                                          <td data-column-id="stock" class="gridjs-td"> {{ item.added_by }} </td>
+                                                          <td data-column-id="organized_by" class="gridjs-td"> {{ item.added_by }} </td>
                                                           <td data-column-id="stock" class="gridjs-td"> {{ item.seats }} </td>
                                                           <td data-column-id="price" class="gridjs-td">
                                                              <span>{{ item.cost }}$</span>
                                                           </td>
-                                                          <td data-column-id="orders" class="gridjs-td"> {{ item.located }} </td>
+                                                          <td data-column-id="organizer" class="gridjs-td"> {{ item.located }} </td>
                                                           <td data-column-id="rating" class="gridjs-td">
                                                              <span>
                                                              <span
@@ -744,7 +744,7 @@
                                                              tabindex="0" style="width: 360px;">
                                                              <div class="gridjs-th-content">Location</div>
                                                           </th>
-                                                          <th data-column-id="organizer"
+                                                          <th data-column-id=""
                                                              class="gridjs-th gridjs-th-sort text-muted"
                                                              tabindex="0" style="width: 200px;">
                                                              <div class="gridjs-th-content">Added by</div>
@@ -844,102 +844,139 @@
     let totalPages = 0;
 
     var slider = document.getElementById('location-price-range');
+    document.getElementById("searchOrganizersList").addEventListener("keyup", function () {
+    let filter = this.value.toLowerCase();
+    let checkboxes = document.querySelectorAll(".org-filter-check .form-check");
 
-noUiSlider.create(slider, {
-    start: [0, 3500], 
-    connect: true,    
-    range: {
-        'min': 0,       
-        'max': 3500   
-    },
-    step: 1,           
-    format: {
-        to: function (value) {
-            return parseFloat(value).toFixed(0); 
-        },
-        from: function (value) {
-            return value; 
+    checkboxes.forEach(check => {
+        let labelElement = check.querySelector("label");
+        if (!labelElement) return;
+
+        let hasNestedElements = labelElement.querySelector("span, i, svg");
+
+        if (hasNestedElements) return;
+
+        let labelText = labelElement.innerText.trim().toLowerCase();
+
+        if (labelText.includes(filter)) {
+            check.style.display = "";
+        } else {
+            check.style.display = "none";
         }
-    }
-});
-
-slider.noUiSlider.on('update', function(values, handle) {
-    if (handle === 0) {
-        document.getElementById('minCost').value = values[0];
-    } else {
-        document.getElementById('maxCost').value = values[1];
-    }
-    currentPage = 1;
-    updatePagination();
-});
-
-document.getElementById('minCost').addEventListener('input', function() {
-    slider.noUiSlider.set([this.value, null]);
-    currentPage = 1;
-    updatePagination();
-});
-
-document.getElementById('maxCost').addEventListener('input', function() {
-    slider.noUiSlider.set([null, this.value]);
-    currentPage = 1;
-    updatePagination();
-});
-
-function setActiveTab() {
-    let activeTab = document.querySelector(".tab-pane-active.show");
-    if (!activeTab) {
-        let firstTab = document.querySelector(".tab-pane");
-        if (firstTab) {
-            firstTab.classList.add("tab-pane-active", "show");
-        }
-    }
-}
-
-function getActiveRows() {
-    let activeTab = document.querySelector(".tab-pane-active.show");
-    if (!activeTab) return [];
-    return Array.from(activeTab.querySelectorAll(".gridjs-tr"));
-}
-
-function getFilteredRows() {
-    let rows = getActiveRows();
-    let filtered = rows.filter(row => {
-        let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
-        let priceCell = row.querySelector('.gridjs-td[data-column-id="price"]');
-        let price = priceCell ? parseFloat(priceCell.innerText.replace('$', '').trim()) : 0;
-        let minPrice = parseFloat(document.getElementById('minCost').value.replace('$', '') || 0);
-        let maxPrice = parseFloat(document.getElementById('maxCost').value.replace('$', '') || 3500);
-        return (eventTypes.includes(selectedType) || selectedType === "all") && price >= minPrice && price <= maxPrice;
     });
-    return filtered;
-}
+});
 
-function updatePagination() {
-    let filteredRows = getFilteredRows();
-    eventsCount = filteredRows.length;
-    totalPages = Math.ceil(eventsCount / rowsPerPage);
 
-    let activeTab = document.querySelector(".tab-pane-active.show");
-    if (!activeTab) return;
+    noUiSlider.create(slider, {
+        start: [0, 3500],
+        connect: true,
+        range: {
+            'min': 0,
+            'max': 3500
+        },
+        step: 1,
+        format: {
+            to: value => parseFloat(value).toFixed(0),
+            from: value => value
+        }
+    });
 
-    let paginationContainer = activeTab.querySelector(".gridjs-pages");
-    if (paginationContainer) {
-        paginationContainer.innerHTML = "";
-        createPaginationButtons(filteredRows, paginationContainer);
+    slider.noUiSlider.on('update', function(values, handle) {
+        document.getElementById(handle === 0 ? 'minCost' : 'maxCost').value = values[handle];
+        currentPage = 1;
+        updatePagination();
+    });
+
+    document.getElementById('minCost').addEventListener('input', function() {
+        slider.noUiSlider.set([this.value, null]);
+        currentPage = 1;
+        updatePagination();
+    });
+
+    document.getElementById('maxCost').addEventListener('input', function() {
+        slider.noUiSlider.set([null, this.value]);
+        currentPage = 1;
+        updatePagination();
+    });
+
+    function setActiveTab() {
+        let activeTab = document.querySelector(".tab-pane-active.show");
+        if (!activeTab) {
+            let firstTab = document.querySelector(".tab-pane");
+            if (firstTab) {
+                firstTab.classList.add("tab-pane-active", "show");
+            }
+        }
     }
 
-    let summary = activeTab.querySelector(".gridjs-summary");
-    if (summary) {
-        summary.innerHTML = `Showing <b>${Math.min((currentPage - 1) * rowsPerPage + 1, eventsCount)}</b> to <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
+    function getActiveRows() {
+        let activeTab = document.querySelector(".tab-pane-active.show");
+        return activeTab ? Array.from(activeTab.querySelectorAll(".gridjs-tr")) : [];
     }
 
-    let noResultMessage = activeTab.querySelector(".no-result-message");
-    if (noResultMessage) {
-        noResultMessage.style.display = filteredRows.length === 0 ? "block" : "none";
+    function getFilteredRows() {
+        let rows = getActiveRows();
+        let searchFilter = document.getElementById("searchlocationList").value.toLowerCase();
+        let minPrice = parseFloat(document.getElementById('minCost').value || 0);
+        let maxPrice = parseFloat(document.getElementById('maxCost').value || 3500);
+        let checkedOrganizers = Array.from(document.querySelectorAll('.org-filter-check .form-check-input:checked'))
+        .map(checkbox => checkbox.parentElement.querySelector("label").textContent.trim().toLowerCase());
+        let checkedRatings = Array.from(document.querySelectorAll('.star-filter-check .form-check-input:checked'))
+    .map(checkbox => {
+        let label = checkbox.parentElement.querySelector("label").textContent.trim();
+        let rating = label.match(/\d+/)?.[0];
+        return rating ? parseInt(rating) : null;
+    })
+    .filter(rating => rating !== null);
+
+console.log(checkedRatings); 
+        return rows.filter(row => {
+            let eventTypes = row.dataset.types ? row.dataset.types.toLowerCase().split(",") : [];
+            let priceCell = row.querySelector('.gridjs-td[data-column-id="price"]');
+            let price = priceCell ? parseFloat(priceCell.innerText.replace('$', '').trim()) : 0;
+            let locationName = row.querySelector("td[data-column-id='location']").textContent.toLowerCase();
+            let organizer = row.querySelector("td[data-column-id='organized_by']").textContent.trim().toLowerCase();
+            let starText = Array.from(row.querySelector("td[data-column-id='rating'] .badge")?.childNodes || [])
+    .filter(node => node.nodeType === 3)
+    .map(node => node.textContent.trim())
+    .join("");
+    let star = starText ? parseFloat(starText) : null;
+    let starMatch = (star !== null && checkedRatings.includes(Math.floor(star)));
+            let organizerMatch = checkedOrganizers.length === 0 || checkedOrganizers.includes(organizer);
+            return (eventTypes.includes(selectedType) || selectedType === "all") && 
+                   price >= minPrice && price <= maxPrice &&
+                   locationName.includes(searchFilter) &&
+                   organizerMatch && starMatch;
+        });
     }
 
-    filterRows(filteredRows);
-}
+    function updatePagination() {
+        let filteredRows = getFilteredRows();
+        eventsCount = filteredRows.length;
+        totalPages = Math.ceil(eventsCount / rowsPerPage);
+
+        let activeTab = document.querySelector(".tab-pane-active.show");
+        if (!activeTab) return;
+
+        let paginationContainer = activeTab.querySelector(".gridjs-pages");
+        if (paginationContainer) {
+            paginationContainer.innerHTML = "";
+            createPaginationButtons(filteredRows, paginationContainer);
+        }
+
+        let summary = activeTab.querySelector(".gridjs-summary");
+        if (summary) {
+            summary.innerHTML = `Showing <b>${Math.min((currentPage - 1) * rowsPerPage + 1, eventsCount)}</b> to 
+                <b>${Math.min(currentPage * rowsPerPage, eventsCount)}</b> of <b>${eventsCount}</b> results`;
+        }
+
+        let noResultMessage = activeTab.querySelector(".no-result-message");
+        if (noResultMessage) {
+            noResultMessage.style.display = filteredRows.length === 0 ? "block" : "none";
+        }
+
+        filterRows(filteredRows);
+    }
 
     function createPaginationButtons(filteredRows, paginationContainer) {
         let prevButton = document.createElement("button");
@@ -989,17 +1026,18 @@ function updatePagination() {
             row.style.display = "";
         });
     }
-    
-    document.getElementById('minCost').addEventListener('input', function() {
+document.querySelectorAll(".org-filter-check .form-check-input").forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
         currentPage = 1;
         updatePagination();
     });
-
-    document.getElementById('maxCost').addEventListener('input', function() {
+});
+document.querySelectorAll(".star-filter-check .form-check-input").forEach(checkbox => {
+    checkbox.addEventListener("change", function () {
         currentPage = 1;
         updatePagination();
     });
-
+});
     let typeFilters = document.querySelectorAll(".filter-list .listname");
     typeFilters.forEach(filter => {
         filter.addEventListener("click", function (event) {
@@ -1010,6 +1048,12 @@ function updatePagination() {
         });
     });
 
+    let searchInput = document.getElementById("searchlocationList");
+    searchInput.addEventListener("keyup", function () {
+        currentPage = 1;
+        updatePagination();
+    });
+
     let tabLinks = document.querySelectorAll('.nav-link');
     tabLinks.forEach(tab => {
         tab.addEventListener('click', function () {
@@ -1017,10 +1061,10 @@ function updatePagination() {
             allTabs.forEach(t => t.classList.remove("tab-pane-active", "show"));
             let activeTab = document.getElementById(tab.getAttribute("href").replace("#", ""));
             activeTab.classList.add("tab-pane-active", "show");
-            setTimeout(updatePagination, 100);
+            updatePagination();
         });
     });
-    
+
     setActiveTab();
     updatePagination();
 };
@@ -1055,25 +1099,7 @@ function updatePagination() {
         });
     });
     </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            let searchInput = document.getElementById("searchlocationList");
-        
-            searchInput.addEventListener("keyup", function () {
-                let filter = searchInput.value.toLowerCase();
-                let rows = document.querySelectorAll(".gridjs-tbody .gridjs-tr");
-        
-                rows.forEach(row => {
-                    let locationName = row.querySelector("td[data-column-id='location']").textContent.toLowerCase();
-                    if (locationName.includes(filter)) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                });
-            });
-        });
-        </script>
+
 <style>
     .gridjs-pages button{
         padding:5px;
