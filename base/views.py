@@ -359,6 +359,7 @@ def admin_events(request):
     events_count = events.count()
 
     detailed_events = []
+    today = datetime.today()
     for event in events:
         guest_count = event.guests.count()  
         event_types = [type.name for type in event.types.all()] 
@@ -376,14 +377,16 @@ def admin_events(request):
             'organized_by':event.organized_by
         })
     print("Date evenimente: ", detailed_events)
+    for item in detailed_events:
+        print("Data event: ", item['event_date'], "" , "Data de Azi: ", today)
     detailed_incompleted_events = []
     finished_count = 0
     for item in detailed_events:
         if item['completed'] == True:
             finished_count += 1
-            print(item)
             detailed_incompleted_events.append(item)
     context = {
+        'today': today,
         'finished_count':finished_count,
         'detailed_incompleted_events':detailed_incompleted_events,
         'detailed_events': detailed_events,

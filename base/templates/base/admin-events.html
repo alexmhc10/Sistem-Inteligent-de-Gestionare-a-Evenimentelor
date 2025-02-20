@@ -207,7 +207,7 @@
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
                                                     <th class="sort" data-sort="customer_name">Organizer</th>
-                                                    <th class="sort asc" data-sort="product_name">Event Name</th>
+                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
                                                     <th class="sort" data-sort="payment">Event's Price</th>
@@ -217,7 +217,6 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if item %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -226,11 +225,22 @@
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
                                                             <td class="customer_name"> {{ item.organized_by }} </td>
-                                                            <td class="product_name"> {{ item.name }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
                                                             <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+                                                            {% if item.cancelled %}
+    <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+{% elif item.event_date.date > today.date %}
+    <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
+{% elif item.event_date < today.date %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+{% elif item.event_date == today.date and item.event_date.time > today.time %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
+{% endif %}
+
+                                                        
+
                                                             <td>
                                                                 <ul class="list-inline hstack gap-2 mb-0">
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
@@ -251,11 +261,10 @@
                                                                 </ul>
                                                             </td>
                                                         </tr>
-                                                    {% endif %}
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-                                        <div class="py-4 text-center no-result-message">
+                                        <div class="py-4 text-center no-result-message"style="display: none;">
                                             <div style="width:1185px;"></div>
                                             <h5 class="mt-4">Sorry! No events matching your criteria 
                                                 <strong style="font-weight: 500;">
@@ -275,7 +284,7 @@
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
                                                     <th class="sort" data-sort="customer_name">Organizer</th>
-                                                    <th class="sort asc" data-sort="product_name">Event Name</th>
+                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
                                                     <th class="sort" data-sort="payment">Event's Price</th>
@@ -294,7 +303,7 @@
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
                                                             <td class="customer_name"> {{ item.organized_by }} </td>
-                                                            <td class="product_name"> {{ item.name }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
                                                             <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
@@ -323,7 +332,7 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-                                        <div class="py-4 text-center no-result-message">
+                                        <div class="py-4 text-center no-result-message"style="display: none;">
                                             <div style="width:1185px;"></div>
                                             <h5 class="mt-4">Sorry! No events matching your criteria 
                                                 <strong style="font-weight: 500;">
@@ -342,7 +351,7 @@
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
                                                     <th class="sort" data-sort="customer_name">Organizer</th>
-                                                    <th class="sort asc" data-sort="product_name">Event Name</th>
+                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
                                                     <th class="sort" data-sort="payment">Event's Price</th>
@@ -361,7 +370,7 @@
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
                                                             <td class="customer_name"> {{ item.organized_by }} </td>
-                                                            <td class="product_name"> {{ item.name }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
                                                             <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
@@ -388,120 +397,10 @@
                                                         </tr>
                                                     {% endif %}
                                                 {% endfor %}
-                                                {% for item in detailed_events %}
-                                                {% if  item.completed %}
-                                                    <tr>
-                                                        <th scope="row">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                            </div>
-                                                        </th>
-                                                        <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                        <td class="customer_name"> {{ item.organized_by }} </td>
-                                                        <td class="product_name"> {{ item.name }} </td>
-                                                        <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                        <td class="amount"> {{ item.guest_count }} </td>
-                                                        <td class="payment"> {{ item.cost }}$ </td>
-                                                        <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-                                                        <td>
-                                                            <ul class="list-inline hstack gap-2 mb-0">
-                                                                <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                    <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
-                                                                        <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                    </a>
-                                                                </li>
-                                                                <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                    <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                        <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                    </a>
-                                                                </li>
-                                                                <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                    <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
-                                                                        <i class="bi bi-trash fs-16"></i>
-                                                                    </a>
-                                                                </li>
-                                                            </ul>
-                                                        </td>
-                                                    </tr>
-                                                {% endif %}
-                                            {% endfor %}
-                                            {% for item in detailed_events %}
-                                            {% if  item.completed %}
-                                                <tr>
-                                                    <th scope="row">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                        </div>
-                                                    </th>
-                                                    <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                    <td class="customer_name"> {{ item.organized_by }} </td>
-                                                    <td class="product_name"> {{ item.name }} </td>
-                                                    <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                    <td class="amount"> {{ item.guest_count }} </td>
-                                                    <td class="payment"> {{ item.cost }}$ </td>
-                                                    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-                                                    <td>
-                                                        <ul class="list-inline hstack gap-2 mb-0">
-                                                            <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
-                                                                    <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                    <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                </a>
-                                                            </li>
-                                                            <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
-                                                                    <i class="bi bi-trash fs-16"></i>
-                                                                </a>
-                                                            </li>
-                                                        </ul>
-                                                    </td>
-                                                </tr>
-                                            {% endif %}
-                                        {% endfor %}
-                                        {% for item in detailed_events %}
-                                        {% if  item.completed %}
-                                            <tr>
-                                                <th scope="row">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                    </div>
-                                                </th>
-                                                <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                <td class="customer_name"> {{ item.organized_by }} </td>
-                                                <td class="product_name"> {{ item.name }} </td>
-                                                <td class="date"> {{ item.event_date }} <small class="text-muted"> da </small></td>
-                                                <td class="amount"> {{ item.guest_count }} </td>
-                                                <td class="payment"> {{ item.cost }}$ </td>
-                                                <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-                                                <td>
-                                                    <ul class="list-inline hstack gap-2 mb-0">
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                            <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
-                                                                <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                            <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                        <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                            <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
-                                                                <i class="bi bi-trash fs-16"></i>
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </td>
-                                            </tr>
-                                        {% endif %}
-                                    {% endfor %}
+                                                
                                             </tbody>
                                         </table>
-                                        <div class="py-4 text-center no-result-message">
+                                        <div class="py-4 text-center no-result-message"style="display: none;">
                                             <div style="width:1185px;"></div>
                                             <h5 class="mt-4">Sorry! No events matching your criteria 
                                                 <strong style="font-weight: 500;">
@@ -520,7 +419,7 @@
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
                                                     <th class="sort" data-sort="customer_name">Organizer</th>
-                                                    <th class="sort asc" data-sort="product_name">Event Name</th>
+                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
                                                     <th class="sort" data-sort="payment">Event's Price</th>
@@ -538,8 +437,8 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> Pick </td>
-                                                            <td class="product_name"> trm </td>
+                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
                                                             <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
@@ -568,7 +467,7 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-                                        <div class="py-4 text-center no-result-message">
+                                        <div class="py-4 text-center no-result-message"style="display: none;">
                                             <div style="width:1185px;"></div>
                                             <h5 class="mt-4">Sorry! No events matching your criteria 
                                                 <strong style="font-weight: 500;">
@@ -580,17 +479,7 @@
                                 </div>
                                 <div class="d-flex justify-content-end">
                                     <div class="pagination-wrap hstack gap-2" style="display: flex;">
-                                        <a class="page-item pagination-prev disabled" href="#">
-                                            Previous
-                                        </a>
-                                        <ul class="pagination listjs-pagination mb-0">
-                                            <li class="active"><a class="page" href="#" data-i="1" data-page="8">1</a>
-                                            </li>
-                                            <li><a class="page" href="#" data-i="2" data-page="8">2</a></li>
-                                        </ul>
-                                        <a class="page-item pagination-next" href="#">
-                                            Next
-                                        </a>
+                                        <div class="pagination listjs-pagination"></div>
                                     </div>
                                 </div>
                             </div>
@@ -639,7 +528,6 @@
                                                     <button type="button" class="btn btn-light"
                                                         data-bs-dismiss="modal">Close</button>
                                                     <button type="submit" class="btn btn-success" id="add-btn">Update Event</button>
-                                                    <!-- <button type="button" class="btn btn-success" id="edit-btn">Update</button> -->
                                                 </div>
                                             </div>
                                         </form>
@@ -680,51 +568,9 @@
     </div>
 </div>
 
-<style>
-#home1, #cancelled, #completed, #ongoing {
-    display: none;
-    visibility: hidden;
-    height: 0;
-    margin: 0;
-}
-
-#home1.show, #cancelled.show, #completed.show, #ongoing.show {
-    display: block;
-    visibility: visible;
-    height: auto;
-}
 
 
-</style>
 
-<script src="https://cdn.jsdelivr.net/gh/habibmhamadi/multi-select-tag@3.1.0/dist/js/multi-select-tag.js"></script>
-<script>
-    new MultiSelectTag('countries')
-    document.querySelector('.mult-select-tag .input').setAttribute('placeholder', 'Search for an event');
-
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        let searchInput = document.getElementById("searchEventList");
-
-        searchInput.addEventListener("keyup", function () {
-            let filter = searchInput.value.toLowerCase();
-            let rows = document.querySelectorAll("tr"); 
-            
-            rows.forEach(row => {
-                let productName = row.querySelector(".product_name");
-                if (productName) {
-                    let locationName = productName.textContent.toLowerCase();
-                    if (locationName.includes(filter)) {
-                        row.style.display = "";
-                    } else {
-                        row.style.display = "none";
-                    }
-                }
-            });
-        });
-    });
-</script>
 
 <style>
     .input-container{
@@ -883,96 +729,156 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
     </script>
-    
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const rowsPerPage = 6; // Numărul maxim de rânduri pe pagină
-            let currentPage = 1;
-        
-            function getActiveTabRows() {
-                const activeTab = document.querySelector(".tab-pane.active"); // Selectează doar tab-ul activ
-                if (!activeTab) return [];
-        
-                return activeTab.querySelectorAll("tbody.list tr"); // Ia doar rândurile din acel tab
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const rowsPerPage = 6;
+    let currentPage = 1;
+    let searchInput = document.getElementById("searchEventList");
+    function getActiveTabRows() {
+        const activeTab = document.querySelector(".tab-pane.fade.active.show");
+        if (!activeTab) return [];
+        const rows = activeTab.querySelectorAll("tbody.list tr");
+        return rows;
+    }
+
+function createPaginationButtons(filteredRows) {
+        const tableRows = getActiveTabRows();
+        const paginationContainer = document.querySelector(".pagination.listjs-pagination");
+        if (!paginationContainer) return;
+
+       let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+        if (totalPages === 0) {
+            paginationContainer.innerHTML = "";
+            return;
+        }
+
+        if (currentPage > totalPages) currentPage = totalPages;
+        paginationContainer.innerHTML = "";
+
+        let prevButton = document.createElement("button");
+        prevButton.textContent = "Previous";
+        prevButton.classList.add("pagination-prev");
+        prevButton.disabled = currentPage === 1;
+        prevButton.onclick = function () {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
             }
-        
-            function updatePagination() {
-                const tableRows = getActiveTabRows();
-                const paginationContainer = document.querySelector(".pagination.listjs-pagination");
-                const prevButton = document.querySelector(".pagination-prev");
-                const nextButton = document.querySelector(".pagination-next");
-        
-                let totalPages = Math.ceil(tableRows.length / rowsPerPage);
-                if (currentPage > totalPages) currentPage = totalPages;
-        
-                paginationContainer.innerHTML = ""; // Golește paginile existente
-        
-                for (let i = 1; i <= totalPages; i++) {
-                    const pageItem = document.createElement("li");
-                    pageItem.classList.add("page-item");
-                    if (i === currentPage) pageItem.classList.add("active");
-        
-                    const pageLink = document.createElement("a");
-                    pageLink.href = "#";
-                    pageLink.classList.add("page");
-                    pageLink.textContent = i;
-                    pageLink.dataset.page = i;
-        
-                    pageLink.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        currentPage = i;
-                        showPage(currentPage);
-                    });
-        
-                    pageItem.appendChild(pageLink);
-                    paginationContainer.appendChild(pageItem);
-                }
-        
-                prevButton.classList.toggle("disabled", currentPage === 1);
-                nextButton.classList.toggle("disabled", currentPage === totalPages);
+        };
+        paginationContainer.appendChild(prevButton);
+
+        for (let i = 1; i <= totalPages; i++) {
+            let pageButton = document.createElement("button");
+            pageButton.textContent = i;
+            pageButton.classList.add("page-item");
+            if (i === currentPage) pageButton.classList.add("active");
+
+            pageButton.onclick = function () {
+                currentPage = i;
+                showPage(currentPage);
+            };
+
+            paginationContainer.appendChild(pageButton);
+        }
+
+        let nextButton = document.createElement("button");
+        nextButton.textContent = "Next";
+        nextButton.classList.add("pagination-next");
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.onclick = function () {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
             }
-        
-            function showPage(page) {
-                const tableRows = getActiveTabRows();
-                if (!tableRows.length) return;
-        
-                const start = (page - 1) * rowsPerPage;
-                const end = start + rowsPerPage;
-        
-                tableRows.forEach((row, index) => {
-                    row.style.display = (index >= start && index < end) ? "" : "none";
-                });
-        
-                updatePagination();
+        };
+        paginationContainer.appendChild(nextButton);
+    }
+
+    function showPage(page) {
+        const activeTab = document.querySelector(".tab-pane.active.show");
+        if (!activeTab) return;
+
+        const tableRows = getActiveTabRows();
+        let noResultMessage = activeTab.querySelector(".no-result-message");
+        const filteredRows = Array.from(tableRows).filter(row => {
+            let productName = row.querySelector(".event_name");
+            if (productName) {
+                let locationName = productName.textContent.toLowerCase();
+                return locationName.includes(searchInput.value.toLowerCase());
             }
-        
-            document.querySelector(".pagination-prev").addEventListener("click", function (e) {
-                e.preventDefault();
-                if (currentPage > 1) {
-                    currentPage--;
-                    showPage(currentPage);
-                }
-            });
-        
-            document.querySelector(".pagination-next").addEventListener("click", function (e) {
-                e.preventDefault();
-                if (currentPage < Math.ceil(getActiveTabRows().length / rowsPerPage)) {
-                    currentPage++;
-                    showPage(currentPage);
-                }
-            });
-        
-            // Detectează schimbarea tab-ului
-            document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
-                tab.addEventListener("shown.bs.tab", function () {
-                    currentPage = 1; // Resetare la prima pagină
-                    showPage(currentPage);
-                });
-            });
-        
-            showPage(1); // Inițializare la prima pagină
+            return false;
         });
-        </script>
-        
-           
+
+        if (filteredRows.length === 0 && tableRows.length > 0) {
+            if (noResultMessage) {
+                noResultMessage.style.display = "block";
+            }
+            tableRows.forEach(row => row.style.display = "none");
+            createPaginationButtons(filteredRows);
+            return; 
+        } else {
+            if (noResultMessage) {
+                noResultMessage.style.display = "none";
+            }
+        }
+
+        const start = (page - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, filteredRows.length);
+
+        tableRows.forEach(row => row.style.display = "none");
+
+        filteredRows.slice(start, end).forEach(row => {
+            row.style.display = ""; 
+        });
+
+        createPaginationButtons(filteredRows); 
+    }
+
+
+    showPage(1);
+
+    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+        tab.addEventListener("shown.bs.tab", function () {
+            const allTabs = document.querySelectorAll('.tab-pane');
+            allTabs.forEach(tab => {
+                tab.classList.remove("active", "show");
+                tab.style.display = "none";
+            });
+
+            const targetTab = document.querySelector(tab.getAttribute("href"));
+            targetTab.classList.add("active", "show");
+            targetTab.style.display = "block";
+
+            currentPage = 1;
+            showPage(currentPage);
+
+        });
+    });
+    searchInput.addEventListener("keyup", function () {
+        showPage(1);
+        showPage(currentPage);
+    });
+});
+
+</script>
+<style>
+    #home1, #cancelled, #completed, #ongoing {
+    display: none;
+}
+
+#home1.active, #home1.show {
+    display: block;
+}
+    .pagination button{
+        padding:10px;
+        border:none;
+        background:none;
+        font-weight: 500;
+        color:black;
+    }
+    button:disabled{
+        color:rgb(164, 162, 162);
+    }
+</style>
 {% endblock %}
