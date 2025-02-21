@@ -106,7 +106,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-2 col-sm-6">
+                                    <div class="col-xxl-1 col-sm-6">
                                         <div>
                                                     <input type="text"
                                                     value=""
@@ -126,7 +126,7 @@
                                                         tabindex="-1" data-choice="active">
                                                         <option value="all" selected="">All</option>
                                                         <option value="Completed">Completed</option>
-                                                        <option value="Inprogress">Inprogress</option>
+                                                        <option value="Ongoing">Ongoing</option>
                                                         <option value="Cancelled">Cancelled</option>
                                                     </select>
                                                 </div>
@@ -153,9 +153,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-1 col-sm-4">
+                                    <div class="col-xxl-2 col-sm-8">
                                         <div>
-                                            <button type="button" class="btn btn-primary w-100">
+                                            <button type="button" class="btn btn-primary" style="width: auto !important;">
                                                 <i class="ri-equalizer-fill me-1 align-bottom"></i>
                                                 Apply Filters
                                             </button>
@@ -216,6 +216,98 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all">
+                                                {% for item in detailed_events %}
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
+                                                                </div>
+                                                            </th>
+                                                            <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
+                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="amount"> {{ item.guest_count }} </td>
+                                                            <td class="payment"> {{ item.cost }}$ </td>
+                                                            {% if item.cancelled %}
+    <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+{% elif item.event_date.date > today.date %}
+    <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
+{% elif item.event_date < today.date %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+{% elif item.event_date == today.date and item.event_date.time > today.time %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
+{% endif %}
+
+                                                        
+
+                                                            <td>
+                                                                <ul class="list-inline hstack gap-2 mb-0">
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                                        <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
+                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
+                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                            <i class="bi bi-trash fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                {% endfor %}
+                                                {% for item in detailed_events %}
+                                                        <tr>
+                                                            <th scope="row">
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
+                                                                </div>
+                                                            </th>
+                                                            <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
+                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_name"> {{ item.name }} </td>
+                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="amount"> {{ item.guest_count }} </td>
+                                                            <td class="payment"> {{ item.cost }}$ </td>
+                                                            {% if item.cancelled %}
+    <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+{% elif item.event_date.date > today.date %}
+    <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
+{% elif item.event_date < today.date %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+{% elif item.event_date == today.date and item.event_date.time > today.time %}
+    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
+{% endif %}
+
+                                                        
+
+                                                            <td>
+                                                                <ul class="list-inline hstack gap-2 mb-0">
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
+                                                                        <a href="{% url 'admin-view-event' item.name %}" class="text-primary d-inline-block">
+                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
+                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
+                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                            <i class="bi bi-trash fs-16"></i>
+                                                                        </a>
+                                                                    </li>
+                                                                </ul>
+                                                            </td>
+                                                        </tr>
+                                                {% endfor %}
                                                 {% for item in detailed_events %}
                                                         <tr>
                                                             <th scope="row">
@@ -712,20 +804,22 @@ document.addEventListener('DOMContentLoaded', function () {
             const selectedOrganizer = organizerSelect.value.trim().toLowerCase();
             console.log("status: ", selectedStatus)
             document.querySelectorAll("tbody.list tr").forEach(row => {
-                const eventDateRaw = row.querySelector(".date")?.textContent.trim().toLowerCase();
-                const eventStatus = row.querySelector(".status span")?.textContent.trim().toLowerCase();
-                const eventOrganizer = row.querySelector(".customer_name")?.textContent.trim().toLowerCase();
-                console.log("evstat: ", eventStatus)
-                let eventDate = normalizeDate(eventDateRaw);
+    const eventStatus = row.querySelector(".status span")?.textContent.trim().toLowerCase();
+    console.log(`Row Status: '${eventStatus}'`);
     
-                let showRow = true;
-    
-                if (selectedDate && selectedDate !== eventDate) showRow = false;
-                if (selectedStatus !== "all" && eventStatus !== selectedStatus) showRow = false;
-                if (selectedOrganizer !== "all" && eventOrganizer !== selectedOrganizer) showRow = false;
-    
-                row.style.display = showRow ? "" : "none";
-            });
+    const selectedStatus = statusSelect.value.trim().toLowerCase();
+    console.log(`Selected Status: '${selectedStatus}'`);
+
+    let showRow = true;
+
+    if (selectedStatus !== "all" && eventStatus !== selectedStatus) {
+        console.log(`Hiding row: '${eventStatus}' != '${selectedStatus}'`);
+        showRow = false;
+    }
+
+    row.style.display = showRow ? "" : "none";
+});
+
         });
     });
     </script>

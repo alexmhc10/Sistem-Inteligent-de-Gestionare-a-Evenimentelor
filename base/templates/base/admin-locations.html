@@ -941,7 +941,7 @@ console.log(checkedRatings);
     .join("");
     let star = starText ? parseFloat(starText) : null;
     let starMatch = (star !== null && checkedRatings.includes(Math.floor(star)));
-            let organizerMatch = checkedOrganizers.length === 0 || checkedOrganizers.includes(organizer);
+            let organizerMatch = checkedOrganizers.length > 0 && checkedOrganizers.includes(organizer);
             return (eventTypes.includes(selectedType) || selectedType === "all") && 
                    price >= minPrice && price <= maxPrice &&
                    locationName.includes(searchFilter) &&

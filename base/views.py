@@ -315,7 +315,10 @@ def admin_locations(request):
             'id':location.id,
             'types':location.types
         })
-    organizers = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    organizers = Profile.objects.filter(
+    user__is_superuser=False, 
+    user_type="organizer"
+).exclude(user__username="defaultuser").select_related('user')
     count_organizers = organizers.count()
     filter_date = datetime(2024, 12, 2, 0, 0, 0)
     new_locations_count = sum(1 for location in detailed_locations 
