@@ -388,8 +388,11 @@ def admin_events(request):
         if item['completed'] == True:
             finished_count += 1
             detailed_incompleted_events.append(item)
+    today_date = today.date()
+    today_time = today.strftime("%H:%M:%S")
     context = {
-        'today': today,
+        'today_date':today_date,
+        'today_time':today_time,
         'finished_count':finished_count,
         'detailed_incompleted_events':detailed_incompleted_events,
         'detailed_events': detailed_events,

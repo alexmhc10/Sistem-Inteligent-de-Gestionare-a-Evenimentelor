@@ -96,17 +96,18 @@
                                     <div class="col-xxl-5 col-sm-6">
                                         <div class="row g-4">
                                             <div class="col-sm">
-                                                <div class="d-flex justify-content-sm"style="margin-right:auto !important;">
-                                                    <div class="search-box ms-2 w-50">
-                                                        <input type="text" class="form-control" id="searchEventList"
-                                                            placeholder="Search Events...">
-                                                        <i class="ri-search-line search-icon"></i>
+                                                <div class="d-flex justify-content-sm" style="margin-right:auto !important;">
+                                                    <div class="search-box ms-2 w-50 position-relative">
+                                                        <input type="text" class="form-control" id="searchEventList" placeholder="Search Events...">
+                                                        <i class="bi bi-search position-absolute top-50 translate-middle-y" style="left:90%"></i>
                                                     </div>
+                                                    
                                                 </div>
+                                                
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-1 col-sm-6">
+                                    <div class="col-xxl-2 col-sm-6">
                                         <div>
                                                     <input type="text"
                                                     value=""
@@ -140,7 +141,7 @@
                                                 aria-haspopup="true" aria-expanded="false">
                                                 <div class="choices__inner"><select class="form-control choices_input choices-single"
                                                         data-choices="" data-choices-search-false=""
-                                                        name="choices-single-default" id="idPayment" hidden=""
+                                                        name="choices-single-default" id="idUsers" hidden=""
                                                         tabindex="-1" data-choice="active">
                                                         <option value="all" selected="">All</option>
                                                         {% for user in users %}
@@ -153,14 +154,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-2 col-sm-8">
-                                        <div>
-                                            <button type="button" class="btn btn-primary" style="width: auto !important;">
-                                                <i class="ri-equalizer-fill me-1 align-bottom"></i>
-                                                Apply Filters
-                                            </button>
-                                        </div>
-                                    </div>
+                        
                                 </div>
                             </form>
                         </div>
@@ -205,14 +199,15 @@
                                                             <input class="form-check-input" type="checkbox" id="checkAll" value="option">
                                                         </div>
                                                     </th>
-                                                    <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="customer_name">Organizer</th>
-                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
-                                                    <th class="sort" data-sort="date">Event Date and Time</th>
-                                                    <th class="sort" data-sort="amount">Guests</th>
-                                                    <th class="sort" data-sort="payment">Event's Price</th>
-                                                    <th class="sort" data-sort="status">Status</th>
-                                                    <th class="sort" data-sort="city">Action</th>
+                                                    <th class="sort" data-sort="id">Event ID <i class="bi bi-sort"></i></th>
+<th class="sort" data-sort="event_organizer">Organizer <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort asc" data-sort="event_name">Event Name <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort" data-sort="date">Event Date and Time <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort" data-sort="amount">Guests <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort" data-sort="payment">Event's Price <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort" data-sort="status">Status <i class="bi bi-sort-down-alt"></i></th>
+<th class="sort" data-sort="city">Action <i class="bi bi-sort-down-alt"></i></th>
+
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all">
@@ -224,18 +219,18 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             {% if item.cancelled %}
     <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-{% elif item.event_date.date > today.date %}
+{% elif item.event_date.date > today_date%}
     <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-{% elif item.event_date < today.date %}
+{% elif item.event_date < today_date %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-{% elif item.event_date == today.date and item.event_date.time > today.time %}
+{% elif item.event_date == today_date and item.event_date.time > today_time %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
 {% endif %}
 
@@ -270,18 +265,18 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             {% if item.cancelled %}
     <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-{% elif item.event_date.date > today.date %}
+{% elif item.event_date.date > today_date %}
     <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-{% elif item.event_date < today.date %}
+{% elif item.event_date < today_date %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-{% elif item.event_date == today.date and item.event_date.time > today.time %}
+{% elif item.event_date == today_date and item.event_date.time > today_time %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
 {% endif %}
 
@@ -316,18 +311,18 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             {% if item.cancelled %}
     <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-{% elif item.event_date.date > today.date %}
+{% elif item.event_date.date > today_date %}
     <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-{% elif item.event_date < today.date %}
+{% elif item.event_date < today_date %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-{% elif item.event_date == today.date and item.event_date.time > today.time %}
+{% elif item.event_date == today_date and item.event_date.time > today_time %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
 {% endif %}
 
@@ -375,7 +370,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="customer_name">Organizer</th>
+                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
                                                     <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
@@ -394,9 +389,9 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
@@ -442,7 +437,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="customer_name">Organizer</th>
+                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
                                                     <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
@@ -461,9 +456,9 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
@@ -510,7 +505,7 @@
                                                         </div>
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="customer_name">Organizer</th>
+                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
                                                     <th class="sort asc" data-sort="event_name">Event Name</th>
                                                     <th class="sort" data-sort="date">Event Date and Time</th>
                                                     <th class="sort" data-sort="amount">Guests</th>
@@ -522,6 +517,7 @@
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
                                                     {% if not item.completed %}
+                                                        {% if item.event_date == today_date and today_time >= item.even_time  %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -529,9 +525,9 @@
                                                                 </div>
                                                             </th>
                                                             <td class="id"><a href="{% url 'admin-view-event' item.name %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="customer_name"> {{ item.organized_by }} </td>
+                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
                                                             <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
+                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
@@ -555,6 +551,7 @@
                                                                 </ul>
                                                             </td>
                                                         </tr>
+                                                        {% endif %}
                                                     {% endif %}
                                                 {% endfor %}
                                             </tbody>
@@ -720,7 +717,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
   const statusElement = document.getElementById('idStatus');
-  const paymentElement = document.getElementById('idPayment');
+  const paymentElement = document.getElementById('idUsers');
 
   function resetChoices(element) {
     if (element.choicesInstance) {
@@ -750,7 +747,7 @@ document.addEventListener('DOMContentLoaded', function () {
     shouldSort: false,
   });
 
-  console.log('Choices initialized successfully for idStatus and idPayment');
+  console.log('Choices initialized successfully for idStatus and idUsers');
 });
 
 
@@ -769,196 +766,290 @@ document.addEventListener('DOMContentLoaded', function () {
         dateInputElement.value = formattedCurrentDate;
     
         flatpickr(dateInputElement, {
-            dateFormat: "d M, Y", 
+            dateFormat: "M d, Y", 
             defaultDate: formattedCurrentDate,
         });
     });
     </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const rowsPerPage = 6;
+        let currentPage = 1;
+        let searchInput = document.getElementById("searchEventList");
         const filterButton = document.querySelector(".btn.btn-primary");
         const dateInput = document.getElementById("SelectDate");
         const statusSelect = document.getElementById("idStatus");
-        const organizerSelect = document.getElementById("idPayment");
-    
+        const organizerSelect = document.getElementById("idUsers");
+
         function normalizeDate(dateStr) {
             const months = {
                 "jan.": "Jan", "feb.": "Feb", "mar.": "Mar", "apr.": "Apr", "mai": "May", "iun.": "Jun",
                 "iul.": "Jul", "aug.": "Aug", "sept.": "Sep", "oct.": "Oct", "nov.": "Nov", "dec.": "Dec"
             };
-    
+
             let parts = dateStr.split(" ");
             if (parts.length >= 3) {
-                let day = parts[1].replace(",", ""); 
-                let month = months[parts[0].toLowerCase()] || parts[0]; 
+                let day = parts[1].replace(",", "");
+                let month = months[parts[0].toLowerCase()] || parts[0];
                 let year = parts[2];
-    
+
                 return `${day} ${month}, ${year}`;
             }
             return dateStr;
         }
-    
-        filterButton.addEventListener("click", function () {
-            const selectedDate = dateInput.value.trim();
-            const selectedStatus = statusSelect.value.trim().toLowerCase();
-            const selectedOrganizer = organizerSelect.value.trim().toLowerCase();
-            console.log("status: ", selectedStatus)
-            document.querySelectorAll("tbody.list tr").forEach(row => {
-    const eventStatus = row.querySelector(".status span")?.textContent.trim().toLowerCase();
-    console.log(`Row Status: '${eventStatus}'`);
-    
-    const selectedStatus = statusSelect.value.trim().toLowerCase();
-    console.log(`Selected Status: '${selectedStatus}'`);
 
-    let showRow = true;
+        function getActiveTabRows() {
+            const activeTab = document.querySelector(".tab-pane.fade.active.show");
+            if (!activeTab) return [];
+            const rows = activeTab.querySelectorAll("tbody.list tr");
+            return rows;
+        }
 
-    if (selectedStatus !== "all" && eventStatus !== selectedStatus) {
-        console.log(`Hiding row: '${eventStatus}' != '${selectedStatus}'`);
-        showRow = false;
+        function createPaginationButtons(filteredRows) {
+            const paginationContainer = document.querySelector(".pagination.listjs-pagination");
+            if (!paginationContainer) return;
+
+            let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+
+            if (totalPages === 0) {
+                paginationContainer.innerHTML = "";
+                return;
+            }
+
+            if (currentPage > totalPages) currentPage = totalPages;
+            paginationContainer.innerHTML = "";
+
+            let prevButton = document.createElement("button");
+            prevButton.textContent = "Previous";
+            prevButton.classList.add("pagination-prev");
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = function () {
+                if (currentPage > 1) {
+                    currentPage--;
+                    showPage(currentPage);
+                }
+            };
+            paginationContainer.appendChild(prevButton);
+
+            for (let i = 1; i <= totalPages; i++) {
+                let pageButton = document.createElement("button");
+                pageButton.textContent = i;
+                pageButton.classList.add("page-item");
+                if (i === currentPage) pageButton.classList.add("active");
+
+                pageButton.onclick = function () {
+                    currentPage = i;
+                    showPage(currentPage);
+                };
+
+                paginationContainer.appendChild(pageButton);
+            }
+
+            let nextButton = document.createElement("button");
+            nextButton.textContent = "Next";
+            nextButton.classList.add("pagination-next");
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = function () {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    showPage(currentPage);
+                }
+            };
+            paginationContainer.appendChild(nextButton);
+        }
+
+        let changed = false;
+
+let defaultDate = dateInput.value.trim();
+
+dateInput.addEventListener("change", function () {
+    if (dateInput.value.trim() !== defaultDate) {
+        changed = true; 
     }
-
-    row.style.display = showRow ? "" : "none";
 });
 
-        });
+function getFilteredRows() {
+    const tableRows = getActiveTabRows();
+
+    return Array.from(tableRows).filter(row => {
+        let matchesSearch = true;
+        let matchesStatus = true;
+        let matchesOrganizer = true;
+        let matchesDate = true;
+
+        let eventName = row.querySelector(".event_name");
+        if (eventName) {
+            let locationName = eventName.textContent.trim().toLowerCase();
+            matchesSearch = locationName.includes(searchInput.value.trim().toLowerCase());
+        }
+
+        let statusText = row.querySelector(".status")?.textContent?.trim().toLowerCase() || "";
+        let selectedStatus = statusSelect.value.trim().toLowerCase();
+
+        if (selectedStatus !== "all" && statusText !== selectedStatus) {
+            matchesStatus = false;
+        }
+
+        let organizerText = row.querySelector(".event_organizer")?.textContent?.trim().toLowerCase() || "";
+        let selectedOrganizer = organizerSelect.value.trim().toLowerCase();
+
+        if (selectedOrganizer !== "all" && organizerText !== selectedOrganizer) {
+            matchesOrganizer = false;
+        }
+
+        let eventDateText = row.querySelector(".event_date")?.textContent?.trim();
+        console.log("data: ", eventDateText);
+
+        if (dateInput.value && eventDateText && changed) {
+            try {
+                let normalizedEventDate = normalizeDate(eventDateText);
+                let normalizedInputDate = normalizeDate(dateInput.value);
+                matchesDate = normalizedEventDate === normalizedInputDate;
+            } catch (e) {
+                console.error("Eroare la compararea datelor:", e);
+                matchesDate = false;
+            }
+        }
+
+        return matchesSearch && matchesStatus && matchesOrganizer && matchesDate;
     });
-    </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    const rowsPerPage = 6;
-    let currentPage = 1;
-    let searchInput = document.getElementById("searchEventList");
-    function getActiveTabRows() {
-        const activeTab = document.querySelector(".tab-pane.fade.active.show");
-        if (!activeTab) return [];
-        const rows = activeTab.querySelectorAll("tbody.list tr");
-        return rows;
-    }
+}
 
-function createPaginationButtons(filteredRows) {
-        const tableRows = getActiveTabRows();
-        const paginationContainer = document.querySelector(".pagination.listjs-pagination");
-        if (!paginationContainer) return;
+function showPage(page) {
+    currentPage = page;
+    const allTabs = document.querySelectorAll('.tab-pane');
+    const filteredRows = getFilteredRows();
 
-       let totalPages = Math.ceil(filteredRows.length / rowsPerPage);
+    allTabs.forEach(tab => {
+        const tableRows = tab.querySelectorAll('tbody.list tr');
+        let noResultMessage = tab.querySelector(".no-result-message");
 
-        if (totalPages === 0) {
-            paginationContainer.innerHTML = "";
-            return;
-        }
-
-        if (currentPage > totalPages) currentPage = totalPages;
-        paginationContainer.innerHTML = "";
-
-        let prevButton = document.createElement("button");
-        prevButton.textContent = "Previous";
-        prevButton.classList.add("pagination-prev");
-        prevButton.disabled = currentPage === 1;
-        prevButton.onclick = function () {
-            if (currentPage > 1) {
-                currentPage--;
-                showPage(currentPage);
-            }
-        };
-        paginationContainer.appendChild(prevButton);
-
-        for (let i = 1; i <= totalPages; i++) {
-            let pageButton = document.createElement("button");
-            pageButton.textContent = i;
-            pageButton.classList.add("page-item");
-            if (i === currentPage) pageButton.classList.add("active");
-
-            pageButton.onclick = function () {
-                currentPage = i;
-                showPage(currentPage);
-            };
-
-            paginationContainer.appendChild(pageButton);
-        }
-
-        let nextButton = document.createElement("button");
-        nextButton.textContent = "Next";
-        nextButton.classList.add("pagination-next");
-        nextButton.disabled = currentPage === totalPages;
-        nextButton.onclick = function () {
-            if (currentPage < totalPages) {
-                currentPage++;
-                showPage(currentPage);
-            }
-        };
-        paginationContainer.appendChild(nextButton);
-    }
-
-    function showPage(page) {
-        const activeTab = document.querySelector(".tab-pane.active.show");
-        if (!activeTab) return;
-
-        const tableRows = getActiveTabRows();
-        let noResultMessage = activeTab.querySelector(".no-result-message");
-        const filteredRows = Array.from(tableRows).filter(row => {
-            let productName = row.querySelector(".event_name");
-            if (productName) {
-                let locationName = productName.textContent.toLowerCase();
-                return locationName.includes(searchInput.value.toLowerCase());
-            }
-            return false;
-        });
-
-        if (filteredRows.length === 0 && tableRows.length > 0) {
-            if (noResultMessage) {
-                noResultMessage.style.display = "block";
-            }
+        if (filteredRows.length === 0) {
+            if (noResultMessage) noResultMessage.style.display = "block";
             tableRows.forEach(row => row.style.display = "none");
-            createPaginationButtons(filteredRows);
-            return; 
         } else {
-            if (noResultMessage) {
-                noResultMessage.style.display = "none";
-            }
+            if (noResultMessage) noResultMessage.style.display = "none";
         }
 
         const start = (page - 1) * rowsPerPage;
         const end = Math.min(start + rowsPerPage, filteredRows.length);
 
         tableRows.forEach(row => row.style.display = "none");
-
         filteredRows.slice(start, end).forEach(row => {
             row.style.display = ""; 
         });
+    });
 
-        createPaginationButtons(filteredRows); 
-    }
+    createPaginationButtons(filteredRows);
+}
 
 
-    showPage(1);
+        showPage(1);
 
-    document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
-        tab.addEventListener("shown.bs.tab", function () {
-            const allTabs = document.querySelectorAll('.tab-pane');
-            allTabs.forEach(tab => {
-                tab.classList.remove("active", "show");
-                tab.style.display = "none";
+        document.querySelectorAll('[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener("shown.bs.tab", function () {
+                const allTabs = document.querySelectorAll('.tab-pane');
+                allTabs.forEach(tab => {
+                    tab.classList.remove("active", "show");
+                    tab.style.display = "none";
+                });
+
+                const targetTab = document.querySelector(tab.getAttribute("href"));
+                targetTab.classList.add("active", "show");
+                targetTab.style.display = "block";
+
+                currentPage = 1;
+                showPage(currentPage);
             });
+        });
 
-            const targetTab = document.querySelector(tab.getAttribute("href"));
-            targetTab.classList.add("active", "show");
-            targetTab.style.display = "block";
+        statusSelect.addEventListener("change", function () {
+            showPage(1);
+        });
 
-            currentPage = 1;
-            showPage(currentPage);
+        organizerSelect.addEventListener("change", function () {
+            showPage(1);
+        });
 
+        dateInput.addEventListener("change", function () {
+            showPage(1);
+        });
+
+        searchInput.addEventListener("keyup", function () {
+            showPage(1);
         });
     });
-    searchInput.addEventListener("keyup", function () {
-        showPage(1);
-        showPage(currentPage);
+</script>
+<script>
+    document.querySelectorAll('.sort').forEach(function(header) {
+    header.addEventListener('click', function() {
+        var icon = header.querySelector('i');
+        if (header.classList.contains('asc')) {
+            header.classList.remove('asc');
+            icon.classList.remove('bi-sort-down-alt');
+            icon.classList.add('bi-sort-up');
+        } else {
+            header.classList.add('asc');
+            icon.classList.remove('bi-sort-up');
+            icon.classList.add('bi-sort-down-alt');
+        }
+    });
+});
+document.addEventListener('DOMContentLoaded', function () {
+    const headers = document.querySelectorAll('.sort');
+    let isAscending = true;
+
+    headers.forEach(header => {
+        header.addEventListener('click', function () {
+            const index = Array.from(header.parentNode.children).indexOf(header);
+            const rows = Array.from(document.querySelector('tbody').children);
+
+            rows.sort((a, b) => {
+                const aText = a.children[index].textContent.trim();
+                const bText = b.children[index].textContent.trim();
+
+                if (isAscending) {
+                    return aText > bText ? 1 : -1;  
+                } else {
+                    return aText < bText ? 1 : -1;  
+                }
+            });
+
+            rows.forEach(row => document.querySelector('tbody').appendChild(row));
+
+            const icon = header.querySelector('i');
+            if (isAscending) {
+                header.classList.add('asc');
+                header.classList.remove('desc');
+            } else {
+                header.classList.add('desc');
+                header.classList.remove('asc');
+            }
+
+            isAscending = !isAscending;  
+        });
     });
 });
 
 </script>
 <style>
+    .choices *{
+        font-size:20px;
+    }
+    .flatpickr-input{
+        text-align: center;
+        font-size:20px;
+    }
     #home1, #cancelled, #completed, #ongoing {
     display: none;
+}
+select {
+    -webkit-appearance: none; 
+    -moz-appearance: none; 
+    appearance: none; 
+    background: url('{{ MEDIA_URL }}images/right-arrow-svgrepo-com.svg') no-repeat right center;
+    background-size:20px;
+    padding-right: 35px !important; 
 }
 
 #home1.active, #home1.show {
