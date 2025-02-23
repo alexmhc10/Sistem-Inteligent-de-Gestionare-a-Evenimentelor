@@ -265,7 +265,7 @@ def registerPage(request):
         if form.is_valid():
             profile = form.save(commit=False)  
             profile.approved = False
-            profile.user_type = "Organizer"
+            profile.user_type = "organizer"
             profile.save()
             messages.success(request, "Profile submitted for approval.")
             return redirect('login')
@@ -333,7 +333,6 @@ def admin_locations(request):
     for type in types:
         location_count = Location.objects.filter(types=type).count()
         types_with_location_count.append({'type': type.name, 'count': location_count})
-    print("Date locatii cu tipuri:" ,types_with_location_count)
     context = {
         'new_locations_detailed':new_locations_detailed,
         'types_with_location_count':types_with_location_count,
@@ -379,18 +378,19 @@ def admin_events(request):
             'guest_count': guest_count,
             'organized_by':event.organized_by
         })
-    print("Date evenimente: ", detailed_events)
-    for item in detailed_events:
-        print("Data event: ", item['event_date'], "" , "Data de Azi: ", today)
     detailed_incompleted_events = []
     finished_count = 0
+    cancelled_count = 0
     for item in detailed_events:
         if item['completed'] == True:
             finished_count += 1
+        elif item['cancelled'] == True:
+            cancelled_count += 1
             detailed_incompleted_events.append(item)
     today_date = today.date()
     today_time = today.strftime("%H:%M:%S")
     context = {
+        'cancelled_count':cancelled_count,
         'today_date':today_date,
         'today_time':today_time,
         'finished_count':finished_count,
@@ -535,7 +535,7 @@ def users(request):
                 error_pas = True
     user_profiles = {user: user.profile_set.first() for user in users}
     profiles = Profile.objects.all()
-    user_data = [{'username': profile.user.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
+    user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False)
     notifications = Notification.objects.all()
     context = {

@@ -30,19 +30,8 @@ def update_completed_event(sender, instance, **kwargs):
     if instance.event_date <= now().date():
         instance.completed = True
         event_cost = instance.cost
-
-        # 1️⃣ Găsim organizatorul evenimentului și îi actualizăm bonusul
-        organizer = instance.organized_by  # Asigură-te că Event are un câmp `organizer`
+        organizer = instance.organized_by  
         if organizer:
             salary, created = Salary.objects.get_or_create(user=organizer)
             salary.update_bonus_for_event(event_cost)
 
-
-@receiver(post_save, sender=Profile)
-def create_guest_for_profile(sender, instance, created, **kwargs):
-    if created:
-        Guests.objects.create(
-            profile=instance,
-            preferences='',  # Inițializează câmpurile default, dacă este necesar
-            additional_info=''  # Exemplu de câmp specific din tabela Guests
-        )

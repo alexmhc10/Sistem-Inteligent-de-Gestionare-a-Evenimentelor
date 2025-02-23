@@ -57,11 +57,8 @@ class Location(models.Model):
         return self.name
 
 
-def get_default_user():
-    return User.objects.get(username='defaultuser')
-
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, default=get_default_user)  
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()

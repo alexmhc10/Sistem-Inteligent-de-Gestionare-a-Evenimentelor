@@ -4,8 +4,7 @@ import base.models
 import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
-
-
+from base.models import User
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -17,6 +16,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='user',
-            field=models.ForeignKey(blank=True, default=base.models.get_default_user, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(blank=True, default=User.objects.get_or_create(username='defaultuser')[0]
+, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
         ),
     ]
