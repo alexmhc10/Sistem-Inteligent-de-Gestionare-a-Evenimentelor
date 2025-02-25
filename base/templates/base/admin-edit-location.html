@@ -1,430 +1,365 @@
 {% extends 'main.html' %}
 {% block navbar %}
 {% endblock %}
-
+{% load static %}
 {% block content %}
+<script src="{% static 'js/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'js/jquery-ui.min.js' %}"></script>
 <div class="container-fluid">
-    <div class="row flex-nowrap">
-        <div class="col-auto siderbar col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
-            <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
-                <a href="{% url 'home-admin' %}"
-                    class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
-                    <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg"
-                        alt="EventEase Logo">
-                </a>
-                <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start"
-                    id="menu">
-                    <li class="nav-item">
-                        <a href="{% url 'home-admin' %}" class="nav-link align-middle px-0 text-white">
-                            <i class="fs-4 bi-house"></i>
-                            <span class="ms-1 d-none d-sm-inline">Home</span>
-                        </a>
-                    </li>
+   <div class="row flex-nowrap">
+      <div class="col-auto siderbar forevents col-md-2 px-sm-1 px-0" style="flex: 0 0 12.5%; max-width: 12.5%;">
+         <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100">
+            <a href="{% url 'home-admin' %}"
+               class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+               <img class="navbar-brand" style="width:100%" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+            </a>
+            <ul class="nav nav-pills flex-column text-white mb-sm-auto mb-0 align-items-center align-items-sm-start"
+               id="menu">
+               <li class="nav-item">
+                  <a href="{% url 'home-admin' %}" class="nav-link align-middle px-0 text-white">
+                     <i class="fs-4 bi-house"></i>
+                     <span class="ms-1 d-none d-sm-inline">Home</span>
+                  </a>
+               </li>
 
-                    <li>
-                        <a href="{% url 'users' %}" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-people"></i>
-                            <span class="ms-1 d-none d-sm-inline">Users</span>
-                        </a>
-                    </li>
+               <li>
+                  <a href="{% url 'users' %}" class="nav-link px-0 align-middle text-white">
+                     <i class="fs-4 bi-people"></i>
+                     <span class="ms-1 d-none d-sm-inline">Users</span>
+                  </a>
+               </li>
 
-                    <li>
-                        <a href="{% url 'admin-events' %}" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-calendar-event"></i>
-                            <span class="ms-1 d-none d-sm-inline">Events</span>
-                        </a>
-                    </li>
-                   
+               <li>
+                  <a href="{% url 'admin-events' %}" class="nav-link px-0 align-middle text-white">
+                     <i class="fs-4 bi-calendar-event"></i>
+                     <span class="ms-1 d-none d-sm-inline">Events</span>
+                  </a>
+               </li>
 
-                    <li>
-                        <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
-                            <i class="fs-4 bi-geo-alt"></i>
-                            <span class="ms-1 d-none d-sm-inline">Locations</span>
-                        </a>
-                    </li>
-                </ul>
 
-                <hr>
-                <div class="dropdown pb-4">
-                    <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
-                        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
-                            class="rounded-circle">
-                        <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-light text-small shadow">
-                        <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
-                        <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
-                    </ul>
-                </div>
+               <li>
+                  <a href="{% url 'admin-locations' %}" class="nav-link px-0 align-middle text-white">
+                     <i class="fs-4 bi-geo-alt"></i>
+                     <span class="ms-1 d-none d-sm-inline">Locations</span>
+                  </a>
+               </li>
+            </ul>
+
+            <hr>
+            <div class="dropdown pb-4">
+               <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
+                  id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
+                     class="rounded-circle">
+                  <span class="d-none d-sm-inline mx-1">{{ request.user.username }}</span>
+               </a>
+               <ul class="dropdown-menu dropdown-menu-light text-small shadow">
+                  <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
+                  <li><a class="dropdown-item" href="#">Profile</a></li>
+                  <li>
+                     <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="{% url 'logout' %}">Sign out</a></li>
+               </ul>
             </div>
-        </div>
-        <div class="col py-3">
-         <div class="container">
-            <div class="row">
-               <div class="col-12 mb-5">
-                   <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
-                       <h4 class="mb-sm-0">Edit Location</h4>
-
-                       <div class="page-title-right">
-                           <ol class="breadcrumb m-0">
-                               <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
-                               <li class="breadcrumb-item active">Edit Location</li>
-                           </ol>
-                       </div>
-
-                   </div>
+         </div>
+      </div>
+      <div class="col py-3 events" style="flex: 1; padding-left: 10px; margin-left: 12.5%;">
+         <div class="row">
+            <div class="col-12 mb-5">
+               <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+                  <h4 class="mb-sm-0">Edit Location</h4>
+                  <div class="page-title-right">
+                     <ol class="breadcrumb m-0">
+                        <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
+                        <li class="breadcrumb-item active">Edit Location</li>
+                     </ol>
+                  </div>
                </div>
-           </div>
-            <div class="row">
-               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
-                  <div class="statbox widget box box-shadow">
-                     <div class="widget-header">
-                        <div class="row">
-                           <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                              <h4>Edit Location </h4>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-xl-9 col-lg-9 col-md-8 col-sm-12 ms-md-3">
+               <div class="widget-header">
+                  <h4>Edit Location</h4>
+               </div>
+               <div class="widget-content mb-5 widget-content-area add-manage-Location-1">
+                  <div class="row">
+                     <div class="col-xl-4 col-lg-4 col-md-12 text-center">
+                        <div class="col-md-6 ms-5">
+                           <div class="img-thumbnail">
+                              <img src="{{ location.gallery.url }}" alt="img" class="img-fluid">
                            </div>
                         </div>
+                        <div class="d-flex thumbs-img mt-4 justify-content-center"
+                           style="margin-left: auto !important;">
+                           {% for picture in pictures %}
+                           <div style="margin-right:10px;">
+                              <div class="img-thumbnail">
+                                 <img src="{{ picture.image.url }}" alt="img" style="width: 80px;">
+                              </div>
+                           </div>
+                           {% empty %}
+                           <div class="text-center" style="margin-right:10vh;">
+                              <h5>No picture to display yet!</h5>
+                           </div>
+                           {% endfor %}
+                        </div>
+                        <div class="row "
+                           style="margin-left:-100px;display: flex; flex-direction: row; align-items: center;">
+                           <i class="bi bi-file-earmark-arrow-up"
+                              onclick="document.getElementById('fileInput').click();"
+                              style="cursor: pointer; margin-right: 10px;">
+                           </i>
+                           <h5 style="margin: 0; padding: 0;">Add A new Picture.</h5>
+                           <input type="file" id="fileInput" style="display: none;" onchange="updateFileName()">
+                        </div>
+
+
                      </div>
-                     <div class="widget-content widget-content-area add-manage-product-1">
-                        <div class="row">
-                           <div class="col-xl-4 col-lg-4 col-md-12 text-center">
-                              <div class="product-img">
-                                 <img src="assets/img/t-shirt-5.jpg" alt="img">
-                              </div>
-                              <div class="d-flex thumbs-img mt-4 justify-content-center">
-                                 <div class="mr-2">
-                                    <img src="assets/img/t-shirt-3.jpg" alt="img">
-                                 </div>
-                                 <div class="mr-2">
-                                    <img src="assets/img/t-shirt-2.jpg" alt="img">
-                                 </div>
-                                 <div class="mr-2">
-                                    <img src="assets/img/t-shirt-4.jpg" alt="img">
-                                 </div>
-                                 <div class="file-input position-relative">
-                                    <i class="flaticon-circle-plus"></i>
-                                    <input type="file">
+                     <div class="col-xl-8 col-lg-8 col-md-12">
+                        <form class="form-horizontal" action="#">
+                           <br>
+                           <div class="form-group">
+                              <div class="row">
+                                 <label class="col-md-5">Location Type :</label>
+                                 <div class="col-md-7">
+                                    <select class="form-control form-custom" name="Location">
+                                       <option value="opt1">Simple Location</option>
+                                       <option value="opt2">Configurable Location</option>
+                                       <option value="opt3">Bundle Location</option>
+                                       <option value="opt4">Grouped Location</option>
+                                       <option value="opt5">Virtual Location</option>
+                                       <option value="opt6">Downloadable Location</option>
+                                    </select>
                                  </div>
                               </div>
                            </div>
-                           <div class="col-xl-8 col-lg-8 col-md-12">
-                              <form class="form-horizontal" action="#">
-                                 <div class="form-group">
-                                    <div class="row">
-                                       <label class="col-md-5">Attribute Set :</label>
-                                       <div class="col-md-7">
-                                          <select class="form-control form-custom" name="attribute_set">
-                                             <option value="opt1">Default</option>
-                                             <option value="opt2">Furniture</option>
-                                             <option value="opt3">Shoes</option>
-                                             <option value="opt4">Cell Phones</option>
-                                             <option value="opt5">Monitors</option>
-                                             <option value="opt6">Clothing</option>
-                                          </select>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <br>
-                                 <div class="form-group">
-                                    <div class="row">
-                                       <label class="col-md-5">Product Type :</label>
-                                       <div class="col-md-7">
-                                          <select class="form-control form-custom" name="product">
-                                             <option value="opt1">Simple Product</option>
-                                             <option value="opt2">Configurable Product</option>
-                                             <option value="opt3">Bundle Product</option>
-                                             <option value="opt4">Grouped Product</option>
-                                             <option value="opt5">Virtual Product</option>
-                                             <option value="opt6">Downloadable Product</option>
-                                          </select>
-                                       </div>
-                                    </div>
-                                 </div>
-                                 <br>
-                                 <div class="align-center"> 
-                                    <input value="Continue" class="btn" type="submit">
-                                 </div>
-                              </form>
-                           </div>
-                        </div>
+                           <br>
+                        </form>
                      </div>
                   </div>
                </div>
             </div>
-            <div class="row">
-               <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
-                  <div class="statbox widget box box-shadow">
-                     <div class="widget-header">
-                        <div class="row">
-                           <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                              <h4>Add / Manage Product </h4>
-                           </div>
+         </div>
+         <div class="row">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 layout-spacing">
+               <div class="statbox widget box box-shadow">
+                  <div class="widget-header">
+                     <div class="row">
+                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                           <h4>Add / Manage Location </h4>
                         </div>
                      </div>
-                     <div class="widget-content widget-content-area add-manage-product-2">
-                        <div class="row">
-                           <div class="col-xl-7 col-md-12">
-                              <div class="card card-default">
-                                 <div class="card-heading">
-                                    <h2 class="card-title"><span>GENERAL</span></h2>
-                                 </div>
-                                 <div class="card-body">
-                                    <div class="card-body">
-                                       <form class="form-horizontal">
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Name :</label>
-                                                <div class="col-md-8">
-                                                   <input class="form-control" name="name" type="text">
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Description :</label>
-                                                <div class="col-md-8">
-                                                   <textarea rows="4" cols="5" name="description" class="form-control"></textarea>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Short Description :</label>
-                                                <div class="col-md-8">
-                                                   <textarea rows="4" cols="5" name="description" class="form-control"></textarea>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Category :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom mb-4" name="category">
-                                                      <option value="">Select Category</option>
-                                                      <option value="category1">Electronics</option>
-                                                      <option value="category2">Apparel</option>
-                                                      <option value="category3">Clothing</option>
-                                                      <option value="category4">Furniture</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Brand :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom" name="brand">
-                                                      <option value="">Select a Brand</option>
-                                                      <option value="brand1">Microsoft</option>
-                                                      <option value="brand2">Samsung</option>
-                                                      <option value="brand3">HP</option>
-                                                      <option value="brand4">Ford</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Color :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom" name="color">
-                                                      <option value="">Select a Color</option>
-                                                      <option value="color1">Black</option>
-                                                      <option value="color2">White</option>
-                                                      <option value="color3">Blue</option>
-                                                      <option value="color4">Red</option>
-                                                      <option value="color5">Green</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Size :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom" name="size">
-                                                      <option value="">Select Size</option>
-                                                      <option value="size1">Size 1</option>
-                                                      <option value="size2">Size 2</option>
-                                                      <option value="size3">Size 3</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">SKU :</label>
-                                                <div class="col-md-8">
-                                                   <input class="form-control" name="sku" type="text">
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Weight :</label>
-                                                <div class="col-md-8">
-                                                   <input class="form-control" name="weight" type="text">
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Status :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom" name="status">
-                                                      <option value="">Please Select</option>
-                                                      <option value="status1">In Stock</option>
-                                                      <option value="status2">Out of Stock</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Visibility :</label>
-                                                <div class="col-md-8">
-                                                   <select class="form-control form-custom" name="visibility">
-                                                      <option value="">Please Select</option>
-                                                      <option value="yes">Yes</option>
-                                                      <option value="no">No</option>
-                                                   </select>
-                                                </div>
-                                             </div>
-                                          </div>
-                                          <div class="form-group cutom-autocomplete mb-4">
-                                             <div class="row">
-                                                <label class="col-md-4">Country of Manufacture :</label>
-                                                <div class="col-md-8">
-                                                   <input id="autocomplete" class="ui-corner-all form-control ui-autocomplete-input" placeholder="Type a Country..." autocomplete="off">
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </form>
-                                    </div>
-                                 </div>
+                  </div>
+                  <div class="widget-content widget-content-area add-manage-Location-2">
+                     <div class="row">
+                        <div class="col-xl-7 col-md-12">
+                           <div class="card card-default">
+                              <div class="card-heading">
+                                 <h2 class="card-title"><span>GENERAL</span></h2>
                               </div>
-                           </div>
-                           <div class="col-xl-5 col-md-12">
-                              <div class="card card-default">
-                                 <div class="card-heading">
-                                    <h2 class="card-title"><span>PRICING</span></h2>
-                                 </div>
+                              <div class="card-body">
                                  <div class="card-body">
                                     <form class="form-horizontal">
                                        <div class="form-group mb-4">
                                           <div class="row">
-                                             <label class="col-md-4">Price :</label>
+                                             <label class="col-md-4">Name :</label>
                                              <div class="col-md-8">
-                                                <input class="form-control" name="price" type="text">
+                                                <input class="form-control" name="name" type="text"
+                                                   value="{{ location.name }}">
                                              </div>
                                           </div>
                                        </div>
                                        <div class="form-group mb-4">
                                           <div class="row">
-                                             <label class="col-md-4">Tax Class :</label>
+                                             <label class="col-md-4">Description :</label>
                                              <div class="col-md-8">
-                                                <select class="form-control form-custom" name="tax_class">
-                                                   <option value="">Please Select</option>
-                                                   <option value="tax1">None</option>
-                                                   <option value="tax2">Shipping</option>
-                                                   <option value="tax3">Taxable Goods</option>
+                                                <textarea rows="4" cols="5" name="description"
+                                                   class="form-control">{{ location.description }}</textarea>
+                                             </div>
+
+                                          </div>
+                                       </div>
+                                       <div class="form-group mb-4">
+                                          <div class="row">
+                                             <label class="col-md-4">Type :</label>
+                                             <div class="col-md-8">
+                                                <select class="form-control form-custom mb-4" name="category" multiple style="border:none;">
+                                                   <option value="">Select Category</option>
+                                                   {% for type in types %}
+                                                   <option value="{{ type.name }}">
+                                                      {{ type.name }}
+                                                      {% for item in location.types.all %}
+                                                      {% if item.name == type.name %}
+                                                      <small>(Already selected)</small>
+                                                      {% endif %}
+                                                      {% endfor %}
+                                                   </option>
+                                                   {% endfor %}
                                                 </select>
                                              </div>
                                           </div>
                                        </div>
                                        <div class="form-group mb-4">
                                           <div class="row">
-                                             <label class="col-md-4">Discount :</label>
+                                             <label class="col-md-4">Organizer In Charge :</label>
                                              <div class="col-md-8">
-                                                <input class="form-control" name="discount" type="text">
+                                                <select class="form-control form-custom" name="organizer">
+                                                   <option value="">Select an Organizer</option>
+                                                   {% for organizer in organizers %}
+                                                   <option value="{{ organizer.username }}">{{ organizer.username }} </option>
+                                                   {% endfor %}
+                                                </select>
                                              </div>
                                           </div>
                                        </div>
-                                       <div class="form-group mb-4">
+                                       
+                                       <div class="form-group cutom-autocomplete mb-4">
                                           <div class="row">
-                                             <label class="col-md-4">Coupon :</label>
+                                             <label class="col-md-4">County In Which The Location Is Found:</label>
                                              <div class="col-md-8">
-                                                <input class="form-control" name="coupon" type="text">
+                                                <input id="autocomplete" type="text" class="form-control"
+                                                   placeholder="Type a County..." autocomplete="on">
                                              </div>
                                           </div>
-                                       </div>
-                                       <div class="form-group mb-4">
-                                          <div class="row">
-                                             <label class="col-md-4"></label>
-                                             <div class="col-md-8">
-                                                <div class="custom-control custom-checkbox">
-                                                   <input type="checkbox" class="custom-control-input" id="customCheck4">
-                                                   <label class="custom-control-label" for="customCheck4">Check to Apply</label>
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-12"><span>Image</span></label>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-4">Image :</label>
-                                             <div class="col-md-8">
-                                                <div class="mb-3">
-                                                   <div class="custom-file">
-                                                      <input type="file" class="form-control-file" id="file-input">
-                                                   </div>
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-12"><span>INVENTORY</span></label>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-4">QTY :</label>
-                                             <div class="col-md-8">
-                                                <input class="form-control" name="qty" type="text">
-                                             </div>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-12"><span>KEYWORDS</span></label>
-                                          </div>
-                                       </div>
-                                       <div class="form-group">
-                                          <div class="row">
-                                             <label class="col-md-4">Keywords :</label>
-                                             <div class="col-md-8">
-                                                <input class="form-control" name="keywords" type="text">
-                                             </div>
-                                          </div>
+                                          <script>
+                                             $(document).ready(function () {
+                                                var availableTags = [
+                                                   "Maramures", "Satu Mare", "Teleorman", "Dambovita", "Ialomita", "Mehedinti", "Mures", "Neamt",
+                                                   "Timis", "Alba", "Arad", "Arges", "Bacau", "Bihor", "Bistrita-Nasaud", "Botosani", "Braila",
+                                                   "Brasov", "Bucuresti", "Buzau", "Caras-Severin", "Calarasi", "Cluj", "Constanta", "Covasna",
+                                                   "Dolj", "Galati", "Giurgiu", "Gorj", "Harghita", "Hunedoara", "Iasi", "Ilfov", "Olt",
+                                                   "Prahova", "Salaj", "Sibiu", "Suceava", "Tulcea", "Vaslui", "Valcea", "Vrancea"
+                                                ];
+
+
+                                                $("#autocomplete").autocomplete({
+                                                   source: availableTags,
+                                                   minLength: 2,
+                                                   select: function (event, ui) {
+                                                      $('#autocomplete').val(ui.item.value);
+                                                   }
+                                                });
+                                             });
+                                          </script>
                                        </div>
                                     </form>
                                  </div>
                               </div>
-                              <div class="align-center"> 
-                                 <input value="Insert Product" class="btn" type="submit">
-                              </div>
                            </div>
                         </div>
+                        <div class="col-xl-5 col-md-12">
+                           <div class="card card-default">
+                              <div class="card-heading">
+                                 <h2 class="card-title"><span>PRICING</span></h2>
+                              </div>
+                              <div class="card-body">
+                                 <form class="form-horizontal">
+                                    <div class="form-group mb-4">
+                                       <div class="row">
+                                          <label class="col-md-4">Price in Euros :</label>
+                                          <div class="col-md-8">
+                                             <input class="form-control" name="price" type="text" value="{{ location.cost }}">
+                                          </div>
+                                       </div>
+                                    </div>
+                                 
+                                   
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-12"><span>Image</span></label>
+                                       </div>
+                                    </div>
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-4">Image :</label>
+                                          <div class="col-md-8">
+                                             <div class="mb-3">
+                                                <div class="custom-file">
+                                                   <input type="file" class="form-control-file" id="file-input">
+                                                </div>
+                                             </div>
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-12"><span>INVENTORY</span></label>
+                                       </div>
+                                    </div>
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-4">QTY :</label>
+                                          <div class="col-md-8">
+                                             <input class="form-control" name="qty" type="text">
+                                          </div>
+                                       </div>
+                                    </div>
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-12"><span>KEYWORDS</span></label>
+                                       </div>
+                                    </div>
+                                    <div class="form-group">
+                                       <div class="row">
+                                          <label class="col-md-4">Keywords :</label>
+                                          <div class="col-md-8">
+                                             <input class="form-control" name="keywords" type="text">
+                                          </div>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                              <div class="align-center">
+                                 <input value="Insert Location" class="btn" type="submit">
+                              </div>
+                           </div>
+                        </form>
                      </div>
                   </div>
                </div>
             </div>
          </div>
-        </div>
-    </div>
+      </div>
+   </div>
 </div>
 
+<script>
+   function updateFileName() {
+      var input = document.getElementById('fileInput');
+      var fileName = input.files[0] ? input.files[0].name : "No file chosen";
+      document.querySelector('h5').innerText = fileName;
+   }
 
+</script>
+<style>
+select {
+    appearance: none; 
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    overflow-y: auto;
+}
+
+select::-webkit-scrollbar {
+    width: 8px;
+}
+
+select::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+select::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+select::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+</style>
 {% endblock content %}
 {% block javascript %}
 

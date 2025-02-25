@@ -301,8 +301,16 @@ def approve_user(request, pk):
 def admin_locations(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    locations = Location.objects.all()
     detailed_locations = []
+    organizers = Profile.objects.filter(
+    user__is_superuser=False, 
+    user_type="organizer"
+).exclude(user__username="defaultuser").select_related('user')
+
+    organizer_users = organizers.values_list('user', flat=True)
+
+    locations = Location.objects.filter(owner__in=organizer_users)
+
     for location in locations:
         detailed_locations.append({
             'name':location.name,
@@ -315,10 +323,7 @@ def admin_locations(request):
             'id':location.id,
             'types':location.types
         })
-    organizers = Profile.objects.filter(
-    user__is_superuser=False, 
-    user_type="organizer"
-).exclude(user__username="defaultuser").select_related('user')
+    
     count_organizers = organizers.count()
     filter_date = datetime(2024, 12, 2, 0, 0, 0)
     new_locations_count = sum(1 for location in detailed_locations 
@@ -765,7 +770,16 @@ def admin_edit_location(request, pk):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     location = Location.objects.get(id=pk)
+    pictures = LocationImages.objects.filter(location=location)
+    types = Type.objects.all()
+    organizers = Profile.objects.filter(
+    user__is_superuser=False, 
+    user_type="organizer"
+).exclude(user__username="defaultuser").select_related('user')
     context={
+        'organizers':organizers,
+        'types':types,
+        'pictures':pictures,
         'location':location
     }
     return render(request, 'base/admin-edit-location.html',context)
