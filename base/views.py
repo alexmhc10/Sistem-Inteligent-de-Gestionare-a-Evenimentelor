@@ -776,6 +776,34 @@ def admin_edit_location(request, pk):
     user__is_superuser=False, 
     user_type="organizer"
 ).exclude(user__username="defaultuser").select_related('user')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        organizer = request.POST.get('organizer')
+        County = request.POST.get('County')
+        selected_types = request.POST.getlist('category')  
+        image = request.FILES.get('image')  
+        location.name = name
+        location.description = description
+        location.location = County
+        current_types = location.types.all()
+        for type_name in selected_types:
+            type_obj = Type.objects.get(name=type_name)
+            if type_obj not in current_types:
+                location.types.add(type_obj)  
+
+        for type_obj in current_types:
+            if type_obj.name not in selected_types:
+                location.types.remove(type_obj)
+        location.save()
+        if image:
+            LocationImages.objects.create(
+                location=location,
+                image=image
+            )
+
+    messages.success(request, "Location updated successfully!")
+
     context={
         'organizers':organizers,
         'types':types,
