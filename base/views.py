@@ -213,8 +213,6 @@ def complete_task(request, task_id):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-
-
 def loginPage(request):
     if request.user.is_authenticated:
         print(f"User {request.user.username} is already authenticated, logging out.")
@@ -301,8 +299,16 @@ def approve_user(request, pk):
 def admin_locations(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    locations = Location.objects.all()
     detailed_locations = []
+    organizers = Profile.objects.filter(
+    user__is_superuser=False, 
+    user_type="organizer"
+).exclude(user__username="defaultuser").select_related('user')
+
+    organizer_users = organizers.values_list('user', flat=True)
+
+    locations = Location.objects.filter(owner__in=organizer_users)
+
     for location in locations:
         detailed_locations.append({
             'name':location.name,
@@ -315,10 +321,7 @@ def admin_locations(request):
             'id':location.id,
             'types':location.types
         })
-    organizers = Profile.objects.filter(
-    user__is_superuser=False, 
-    user_type="organizer"
-).exclude(user__username="defaultuser").select_related('user')
+    
     count_organizers = organizers.count()
     filter_date = datetime(2024, 12, 2, 0, 0, 0)
     new_locations_count = sum(1 for location in detailed_locations 
@@ -765,7 +768,44 @@ def admin_edit_location(request, pk):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     location = Location.objects.get(id=pk)
+    pictures = LocationImages.objects.filter(location=location)
+    types = Type.objects.all()
+    organizers = Profile.objects.filter(
+    user__is_superuser=False, 
+    user_type="organizer"
+).exclude(user__username="defaultuser").select_related('user')
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        description = request.POST.get('description')
+        organizer = request.POST.get('organizer')
+        County = request.POST.get('County')
+        selected_types = request.POST.getlist('category')  
+        image = request.FILES.get('image')  
+        location.name = name
+        location.description = description
+        location.location = County
+        current_types = location.types.all()
+        for type_name in selected_types:
+            type_obj = Type.objects.get(name=type_name)
+            if type_obj not in current_types:
+                location.types.add(type_obj)  
+
+        for type_obj in current_types:
+            if type_obj.name not in selected_types:
+                location.types.remove(type_obj)
+        location.save()
+        if image:
+            LocationImages.objects.create(
+                location=location,
+                image=image
+            )
+
+    messages.success(request, "Location updated successfully!")
+
     context={
+        'organizers':organizers,
+        'types':types,
+        'pictures':pictures,
         'location':location
     }
     return render(request, 'base/admin-edit-location.html',context)
@@ -1517,13 +1557,16 @@ def guest_profile(request):
 def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
+    rsvp = RSVP.objects.filter(guest = request.user, response = 'Accepted').first()
+    print(rsvp)
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 
     context = {
         "not_completed": not_completed,
         "preferences": preferences,
-        "profile": profil
+        "profile": profil,
+        "rsvp": rsvp
     }
 
     if not_completed:
@@ -1538,6 +1581,7 @@ def guest_event_view(request, pk):
     event=Event.objects.get(id=pk)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
+
     event_data = [
         {
             'id': event.id,
@@ -1545,7 +1589,6 @@ def guest_event_view(request, pk):
             'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
         }
     ]
-
 
     context={
         'event':event,

@@ -239,8 +239,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-        <video autoplay="true" id="video_element" ></video>
-        <div id="image_element"></div>
+        <video id="camera" autoplay playsinline   ></video>
+        <button id="capture">Photo</button>
+        <canvas id="canvas" style="display:none;"></canvas>
 
         <div class="col-lg-12">
             <div class="d-flex">
@@ -249,14 +250,17 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
 
         <script>
-            const = document.getElementById('video_element')
+            const video = document.getElementById('camera');
 
-            if(navigator.mediaDevices.getUserMedia){
-                navigator.mediaDevices.getUserMedia({video: true})
-                .then((stream)=> {
-                    video.srcObject = stream
-                })
+            async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+            } catch (error) {
+                console.error("Eroare la accesarea camerei:", error);
+                alert("Nu s-a putut accesa camera. Asigură-te că ai acordat permisiunea.");
             }
+        }
         </script>
 
         <div class="col-lg-12">
