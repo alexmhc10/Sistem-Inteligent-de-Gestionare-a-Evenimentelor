@@ -1627,30 +1627,32 @@ def send_notification(request):
             return redirect('personal_eveniment_home')
 
         EventNotification.objects.create(sender=sender, receiver=receiver, event=event ,message=message)
-
-    
     return redirect('personal_eveniment_home')
 
 
 @login_required(login_url='/login')
 def get_notifications(request):
-    if request.user.is_authenticated:
-        notifications = EventNotification.objects.filter(Q(receiver=request.user) | Q(receiver__isnull=True), is_read="False").order_by('-timestamp')
+    profil = Profile.objects.get(user = request.user)
+    if profil.user_type == "guest":
+        rsvp = RSVP.objects.filter(guest = request.user, response = "Accepted").values_list('event', flat=True)
+        notifications = EventNotification.objects.filter(event__in=rsvp, receiver__isnull=True, is_read="False").order_by('-timestamp')
+    elif profil.user_type == "staff":
+        events = Event.objects.filter(location__owner = request.user)
+        notifications = EventNotification.objects.filter(Q(receiver=request.user) | Q(receiver__isnull=True), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')
         print(notifications)
         for n in notifications:
             print(f"Notification ID: {n.id}, Event: {n.event}")
 
-        notifications_data = [
-            {
-                "id": n.id, 
-                "message": n.message, 
-                "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
-                "event_id":n.event.id if n.event else None
-                }
-            for n in notifications
-        ]
-        return JsonResponse({"notifications": notifications_data})
-    return JsonResponse({"error": "User not authenticated"}, status=403)
+    notifications_data = [
+        {
+            "id": n.id, 
+            "message": n.message, 
+            "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
+            "event_id":n.event.id if n.event else None
+            }
+        for n in notifications
+    ]
+    return JsonResponse({"notifications": notifications_data})
 
 
 

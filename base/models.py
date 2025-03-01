@@ -199,7 +199,7 @@ class EventNotification(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
     def __str__(self):
-        return f"From {self.sender} to {self.receiver if self.receiver else 'All'}"
+        return f"From {self.sender} to {self.receiver if self.receiver else 'All'} for {self.event}"
 
 
 class RSVP(models.Model):
