@@ -173,143 +173,50 @@
                               <!-- End Card -->
                            </div>
                         </div>
-                        <!-- End Card -->
                      </div>
                      <div class="col-lg-8">
                         <div class="d-grid gap-3 gap-lg-5">
-                           <!-- Card -->
                            <div class="card">
-                              <!-- Header -->
                               <div class="card-header card-header-content-between">
                                  <h4 class="card-header-title">Recent Activity</h4>
                                 
                               </div>
-                              <!-- End Header -->
-                              <!-- Body -->
                               <div class="card-body card-body-height" style="height: auto;">
-                                 <!-- Step -->
                                  <ul class="step step-icon-xs mb-0">
-                                    <!-- Step Item -->
+                                    {% for notification in notifications %}
                                     <li class="step-item">
                                        <div class="step-content-wrapper">
                                           <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
                                           <div class="step-content">
                                              <h5 class="step-title">
-                                                <a class="text-dark" href="#">Task report - uploaded weekly reports</a>
+                                                <a class="text-dark" href="#">{{ notification.action_type }}</a>
                                              </h5>
-                                             <p class="fs-5 mb-1">Added 3 files to task <a class="text-uppercase" href="#"><i class="bi-journal-bookmark-fill"></i> Fd-7</a></p>
-                                            
-                                             <span class="text-muted small text-uppercase">Now</span>
+                                             {% if notification.action_type == "updated_location" %}
+                                       Modified <a href="{% url 'admin_view_location' notification.target_object_name %}">location</a> at {{ notification.timestamp }}
+                                    {% elif notification.action_type == "created_event" %}
+                                       Created <a href="{% url 'admin_view_event' notification.target_object_name %}">event</a> at {{ notification.timestamp }}
+                                    {% elif notification.action_type == "updated_profile" %}
+                                       Updated <a href="{% url 'admin_view_user' notification.target_object_name %}">profile</a> at {{ notification.timestamp }}
+                                    {% endif %}
                                           </div>
                                        </div>
                                     </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li class="step-item">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">Project status updated</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Marked <a class="text-uppercase" href="#"><i class="bi-journal-bookmark-fill"></i> Fr-6</a> as <span class="badge bg-soft-success text-success rounded-pill"><span class="legend-indicator bg-success"></span>"Completed"</span></p>
-                                             <span class="text-muted small text-uppercase">Today</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li class="step-item">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">New card styles added</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Added 3 card to <a href="#">Payments</a></p>
-                                             
-                                             <span class="text-muted small text-uppercase">May 12</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li class="step-item">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">Dean added a new team member</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Added a new member to Front Dashboard</p>
-                                             <span class="text-muted small text-uppercase">May 15</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li class="step-item">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">Project status updated</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Marked <a class="text-uppercase" href="#"><i class="bi-journal-bookmark-fill"></i> Fr-3</a> as <span class="badge bg-soft-primary text-primary rounded-pill"><span class="legend-indicator bg-primary"></span>"In progress"</span></p>
-                                             <span class="text-muted small text-uppercase">Apr 29</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li class="step-item">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">Achievements</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Earned a "Top endorsed" <i class="tio-verified text-primary"></i> badge</p>
-                                             <span class="text-muted small text-uppercase">Apr 06</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
-                                    <!-- Step Item -->
-                                    <li id="collapseActivitySection" class="step-item collapse">
-                                       <div class="step-content-wrapper">
-                                          <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
-                                          <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">Project status updated</a>
-                                             </h5>
-                                             <p class="fs-5 mb-1">Updated <a class="text-uppercase" href="#"><i class="bi-journal-bookmark-fill"></i> Fr-3</a> as <span class="badge bg-soft-secondary text-secondary rounded-pill"><span class="legend-indicator bg-secondary"></span>"To do"</span></p>
-                                             <span class="text-muted small text-uppercase">Feb 10</span>
-                                          </div>
-                                       </div>
-                                    </li>
-                                    <!-- End Step Item -->
+                                    {% empty %}
+                                    <h4><i class="bi bi-bell"></i>  No recent Activity</h2>
+                                    {% endfor %}
                                  </ul>
-                                 <!-- End Step -->
                               </div>
-                              <!-- End Body -->
                              
                            </div>
-                           <!-- End Card -->
                            <div class="row">
                            
                         
                            </div>
-                           <!-- End Row -->
-                           <!-- Card -->
                            <div class="card">
-                              <!-- Header -->
                               <div class="card-header card-header-content-between">
                                  <h4 class="card-header-title">Events</h4>
                                 
                               </div>
-                              <!-- End Header -->
-                              <!-- Table -->
                               <div class="table-responsive">
                                  <table class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table">
                                     <thead class="thead-light">
@@ -333,11 +240,15 @@
                                        </td>
                                        <td>
                                           <div class="d-flex align-items-center">
-                                             <span class="me-3">{% if event.completed == True %} <span
-                                                class="badge bg-success-subtle text-success text-uppercase">Completed</span></span> 
-                                                {% else %}
+                                             <span class="me-3">{% if event.is_canceled == True %} <span
+                                                class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></span> 
+                                                {% elif event.completed == True %}
                                                 <span
-                                                    class="badge bg-info-subtle text-info text-uppercase">INPROGRESS</span>
+                                                    class="badge bg-success-subtle text-success text-uppercase">Completed</span>
+                                                {% elif event.event_date > today %}
+                                                <span
+                                                    class="badge bg-info-subtle text-info text-uppercase">Upcoming</span>
+                                                
                                                 {% endif %}
                                              
                                           </div>
@@ -349,24 +260,16 @@
                                     </tbody>
                                  </table>
                               </div>
-                              <!-- End Table -->
-                              <!-- Footer -->
                               <a class="card-footer text-center" href="{% url 'view_user_events' user.username %}">
                               View all events <i class="bi-chevron-right"></i>
                               </a>
-                              <!-- End Footer -->
                            </div>
-                           <!-- End Card -->
                         </div>
-                        <!-- Sticky Block End Point -->
                         <div id="stickyBlockEndPoint"></div>
                      </div>
                   </div>
-                  <!-- End Row -->
                </div>
-               <!-- End Col -->
             </div>
-            <!-- End Row -->
          </div>
     </div>
 </div>

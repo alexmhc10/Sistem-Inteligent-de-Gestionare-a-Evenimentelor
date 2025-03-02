@@ -1235,12 +1235,6 @@ def viewUserAdmin(request, pk):
     if not request.user.is_superuser:
             return HttpResponse("Only admin can access this page.")
     user = User.objects.get(username=pk)
-    # form = CustomUserChangeForm(instance=user)  
-    # if request.method == 'POST':
-    #     form = CustomUserChangeForm(request.POST, instance=user)
-    #     if form.is_valid():
-    #         form.save()
-    #         return redirect('users')
     events = Event.objects.filter(organized_by=user)
     locations = Location.objects.filter(owner=user)
     count_events = 0 
@@ -1251,12 +1245,14 @@ def viewUserAdmin(request, pk):
         count_locations += 1
     last_login = user.last_login
     location_counts = defaultdict(int)
-
+    today = datetime.today().date()
     for event in events:
         location_counts[event.location.name] += 1
     detailed_locations = [{'location_name': loc.name, 'ev_count': location_counts[loc.name]} for loc in locations] 
-    print("Locatii cu evenimente:", detailed_locations)
+    notifications = Notification.objects.filter(user=user).order_by('-timestamp')[:10]
     context = {
+        'notifications':notifications,
+        'today':today,
         'detailed_locations':detailed_locations,
         'locations':locations,
         'count_events':count_events,
