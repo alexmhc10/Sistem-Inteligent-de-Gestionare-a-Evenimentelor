@@ -257,8 +257,8 @@ class Budget(models.Model):
         self.total_revenue += event_cost
         self.final_budget += event_cost 
         self.save()
-
     def update_locations(self, locations):
+        locations = Location.objects.all()
         current_month = now().date().replace(day=1)
         if self.last_location_update != current_month:
             self.initial_budget = self.total_budget

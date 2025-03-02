@@ -728,6 +728,7 @@ def homeAdmin(request):
             }
         )
     print("Evenimente per luni: ", event_month_count)
+    print("Evenimente si loc lor: ", event_locations)
     budget = Budget.objects.first()
     context= {
         'budget':budget,

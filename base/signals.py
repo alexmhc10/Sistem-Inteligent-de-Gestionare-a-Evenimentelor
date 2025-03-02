@@ -8,6 +8,7 @@ from .models import *
 from django.db.models.signals import post_save
 from decimal import Decimal
 
+
 @receiver(pre_save, sender=Event)
 def update_completed_status(sender, instance, **kwargs):
     if instance.event_date <= now().date():
