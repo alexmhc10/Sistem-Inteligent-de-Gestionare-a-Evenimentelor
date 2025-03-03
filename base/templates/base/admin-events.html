@@ -54,7 +54,6 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
                         <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -129,6 +128,7 @@
                                                         <option value="Completed">Completed</option>
                                                         <option value="Ongoing">Ongoing</option>
                                                         <option value="Cancelled">Cancelled</option>
+                                                        <option value="Upcoming">Upcoming</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -224,11 +224,11 @@
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             {% if item.cancelled %}
     <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-{% elif item.event_date.date > today_date%}
+{% elif item.event_date > today_date%}
     <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-{% elif item.event_date < today_date %}
+{% elif item.completed %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-{% elif item.event_date == today_date and item.event_date.time > today_time %}
+{% elif item.event_date == today_date and item.event_time > today_time %}
     <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
 {% endif %}
 

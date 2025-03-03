@@ -101,6 +101,7 @@ class Notification(models.Model):
         ('updated_location', 'Updated Location'),
         ('deleted_location', 'Deleted Location'),
         ('updated_profile', 'Updated Profile'),
+        ('completed_event', 'Completed Event'),
     ]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -55,7 +55,6 @@ def home_organizer(request):
 
 @login_required
 def guest_list(request, event_id):
-    
     event = get_object_or_404(Event, id=event_id)
     guests = event.guests.all() 
     return render(request, 'base/guest_list.html', {'event': event, 'guests': guests})
@@ -78,7 +77,14 @@ def edit_profile(request, username):
         form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
-            return redirect('edit_profile', username=profile.user.username)  
+            Notification.objects.create(
+                    user=request.user,
+                    action_type='updated_profile',
+                    target_object_id=request.user.id,
+                    target_object_name=request.user.username,
+                    target_model='Profile'
+                )
+            return redirect('edit_profile', username=profile.user.username)
     else:
         form = ProfileEditForm(instance=profile)
 
@@ -91,6 +97,13 @@ def organizer_profile(request, username):
         form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
+            Notification.objects.create(
+                    user=request.user,
+                    action_type='updated_profile',
+                    target_object_id=request.user.id,
+                    target_object_name=request.user.username,
+                    target_model='Profile'
+                )
             return redirect('organizer-profile', username=profile.user.username)  
     else:
         form = ProfileForm(instance=profile)
@@ -128,14 +141,21 @@ def delete_event(request, event_id):
 
 @login_required(login_url='/login')
 def event_builder(request):
-    locations = Location.objects.all()  # Obține toate locațiile
+    locations = Location.objects.all()
     if request.method == 'POST':
         form = EventForm(request.POST)
         if form.is_valid():
             event = form.save(commit=False)
             event.organized_by = request.user
             event.save()
-            form.save_m2m()  
+            form.save_m2m()
+            Notification.objects.create(
+                    user=request.user,
+                    action_type='created_event',
+                    target_object_id=request.user.id,
+                    target_object_name=request.user.username,
+                    target_model='Event'
+                )  
             return redirect('my_events')  
     else:
         form = EventForm()
@@ -830,6 +850,7 @@ def admin_settings(request):
     elif "Windows" in user_agent_string:
         device_name = "Windows PC"
         os_name = "Windows"
+    
     device_access, created = DeviceAccess.objects.update_or_create(
         device_name=device_name,
         os_name=os_name,
@@ -893,7 +914,7 @@ def admin_settings(request):
                 profile.facebook = facebook
             elif action == "disconnect_facebook":
                 profile.facebook = ""
-                profile.save()
+            profile.save()
             return redirect('admin_account_settings')
             print("Profil: ", request.profile)
             action = request.POST.get('action')
@@ -1177,7 +1198,14 @@ def addLocation(request):
         form = LocationForm(request.POST, request.FILES)
         if form.is_valid():
             location = form.save(commit=False)
-            location.owner = request.user 
+            location.owner = request.user
+            Notification.objects.create(
+                user=request.user,
+                action_type='created_location',
+                target_object_id=location.id,
+                target_object_name=location.name,
+                target_model='Location'
+            ) 
             location.save()
 
             custom_types = form.cleaned_data.get('custom_types')
@@ -1260,7 +1288,6 @@ def viewUserAdmin(request, pk):
         'last_login':last_login,
         'user':user,
         'events':events,
-        # 'form':form
     }
     return render(request, 'base/admin-view-user.html', context)
 

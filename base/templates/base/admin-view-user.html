@@ -52,7 +52,6 @@
                     </a>
                     <ul class="dropdown-menu dropdown-menu-light text-small shadow">
                         <li><a class="dropdown-item" href="{% url 'admin_account_settings' %}">Settings</a></li>
-                        <li><a class="dropdown-item" href="#">Profile</a></li>
                         <li>
                             <hr class="dropdown-divider">
                         </li>
@@ -188,15 +187,43 @@
                                        <div class="step-content-wrapper">
                                           <span class="step-icon step-icon-pseudo step-icon-soft-dark"></span>
                                           <div class="step-content">
-                                             <h5 class="step-title">
-                                                <a class="text-dark" href="#">{{ notification.action_type }}</a>
-                                             </h5>
                                              {% if notification.action_type == "updated_location" %}
-                                       Modified <a href="{% url 'admin_view_location' notification.target_object_name %}">location</a> at {{ notification.timestamp }}
-                                    {% elif notification.action_type == "created_event" %}
-                                       Created <a href="{% url 'admin_view_event' notification.target_object_name %}">event</a> at {{ notification.timestamp }}
-                                    {% elif notification.action_type == "updated_profile" %}
-                                       Updated <a href="{% url 'admin_view_user' notification.target_object_name %}">profile</a> at {{ notification.timestamp }}
+                                             <mb-4>
+                                                <h3>
+                                                   <i class="bi bi-geo-alt-fill"></i>
+                                                </h3>Modified the location {{ notification.target_object_name }} <a href="{% url 'admin_view_location' notification.target_object_name %}"></a> at {{ notification.timestamp }}
+                                             </mb-4>
+                                             {% elif notification.action_type == "created_location" %}
+                                             <div class="mb-4">
+                                             <h3>
+                                                <i class="bi bi-geo-alt-fill"></i> 
+                                             </h3>Added the location {{ notification.target_object_name }} <a href="{% url 'admin_view_location' notification.target_object_name %}"></a> at {{ notification.timestamp }}
+
+                                             </div>
+                                             {% elif notification.action_type == "created_event" %}
+                                             <mb-4>
+                                                <h3>
+                                                   <i class="bi bi-calendar-event"></i> 
+                                                </h3>Created the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                             </mb-4>
+                                             {% elif notification.action_type == "updated_event" %}
+                                             <mb-4>
+                                                <h3>
+                                                   <i class="bi bi-calendar-event"></i> 
+                                                </h3>Updated the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                             </mb-4>
+                                             {% elif notification.action_type == "updated_profile" %}
+                                    <div class="mb-4">
+                                       <h3>
+                                          <i class="bi bi-person-check"></i>
+                                       </h3>   Updated his own profile, <a href="{% url 'view_user_admin' notification.target_object_name %}"> {{ notification.target_object_name }} </a> at {{ notification.timestamp }}
+                                    </div>
+                                    {% elif notification.action_type == "completed_event" %}
+                                    <mb-4>
+                                       <h3>
+                                          <i class="bi bi-calendar2-event-fill"></i> 
+                                       </h3>Succesfully completed the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                    </mb-4>
                                     {% endif %}
                                           </div>
                                        </div>

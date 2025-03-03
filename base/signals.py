@@ -13,6 +13,13 @@ from decimal import Decimal
 def update_completed_status(sender, instance, **kwargs):
     if instance.event_date <= now().date():
         instance.completed = True
+        Notification.objects.create(
+                    user=instance.organized_by,
+                    action_type='completed_event',
+                    target_object_id=instance.id,
+                    target_object_name=instance.event_name,
+                    target_model='Event'
+                )
         event_cost = instance.cost
         budget = Budget.objects.first()
         if budget:
