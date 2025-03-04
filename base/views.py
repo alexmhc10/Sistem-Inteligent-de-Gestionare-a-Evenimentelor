@@ -1388,32 +1388,51 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
-
     locations = Location.objects.filter(owner=request.user)
     events = Event.objects.filter(location__in=locations)
-    event_data = [
-        {
-            'id': event.id,
-            'title': event.event_name,
-            'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
-        }
-        for event in events
-    ]
+    profiles = Profile.objects.all()
 
     current_date = datetime.today()
 
-    past_events = Event.objects.filter(event_date__lt = current_date)
-    future_events = Event.objects.filter(event_date__gte = current_date)
+    past_events = Event.objects.filter(event_date__lte = current_date).order_by('event_date')
 
-    profiles = Profile.objects.all()
-    user = request.user
+    upcoming_events = Event.objects.filter(event_date__gte = current_date).order_by('event_date')
+
+    next_event = upcoming_events.first() if upcoming_events.exists() else None
+
+    remaining_events = upcoming_events[1:] if upcoming_events.count() > 1 else []
+
+    if next_event:
+        next_event_data = [
+        {
+            'id': next_event.id,
+            'title': next_event.event_name,
+            'event_date': datetime.combine(next_event.event_date, next_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+        }
+    ]
+    else:
+        next_event_data = None
+
+    if remaining_events:
+        remaining_events_data = [
+            {
+                'id': event.id,
+                'title': event.event_name,
+                'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+            }
+            for event in remaining_events
+        ]
+    else:
+        remaining_events_data = None
+
     context = {
         'events': events,
-        'event_data': event_data,
-        'future_events': future_events,
         'past_events': past_events,
+        'next_event_data': json.dumps(next_event_data),
+        'remaining_events_data': remaining_events_data,
+        'next_event': next_event,
+        'remaining_events': remaining_events,
         'profiles': profiles,
-        'logged_user': user
         }
 
     return render(request, 'base/personal_eveniment_home.html', context)

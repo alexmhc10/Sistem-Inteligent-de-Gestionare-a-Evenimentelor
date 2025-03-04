@@ -196,33 +196,37 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>    
         </div>
+        <script type="application/json" id="next-event-data">
+            {{ next_event_data|safe }}
+        </script>
         <script>
-            var events = {{ event_data|safe }};
-            
-            events.forEach(function(event) {
+            var eventData = JSON.parse(document.getElementById("next-event-data").textContent);
+        
+            if (event) {
                 var eventDate = new Date(event.event_date).getTime();
                 var countdownElement = document.getElementById("countdown-" + event.id);
-                
+        
                 function updateCountdown() {
                     var now = new Date().getTime();
                     var timeLeft = eventDate - now;
-    
+        
                     var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                     var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-    
+        
                     if (timeLeft > 0) {
                         countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
                     } else {
-                        countdownElement.innerHTML = "The event its live!";
+                        countdownElement.innerHTML = "The event is live!";
                     }
                 }
-    
+        
                 updateCountdown(); 
                 setInterval(updateCountdown, 1000);
-            });
+            }
         </script>
+        
         <div class="col-lg-4">
             <div class="card">
                 <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" class="card-img" style="max-height: 300px; object-fit: cover;">
