@@ -60,7 +60,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <div id="notification-badge" class="notification bg-primary rounded-circle d-none"></div>
           </a>
           <ul class="dropdown-menu p-2" aria-labelledby="notificationDropdown" id="notification-list">
+            <div class="d-flex flex-row justify-content-between">
               <li class="dropdown-header">Notifications</li>
+              <li class="dropdown-header"><button id="mark-as-read-button" class="btn p-0 m-0"><i class="bi bi-eyeglasses p-0 m-0"></i></button></li>
+            </div>            
+              
               <li><hr class="dropdown-divider"></li>
               <li class="text-center"><small>You got no notifications</small></li>
           </ul>
@@ -68,6 +72,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
       <script>
         document.addEventListener("DOMContentLoaded", function () {
         const notificationButton = document.getElementById("notificationDropdown");
+        const markAsReadButton = document.getElementById("mark-as-read-button");
         const notificationList = document.getElementById("notification-list");
         const notificationBadge = document.getElementById("notification-badge");
 
@@ -75,8 +80,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             fetch("/get_notifications/")
                 .then(response => response.json())
                 .then(data => {
-                    notificationList.innerHTML = '<li class="dropdown-header">Notifications</li><li><hr class="dropdown-divider"></li>';
-                    
+                    notificationList.innerHTML = '<div class="d-flex flex-row justify-content-between"><li class="dropdown-header">Notifications</li><li class="dropdown-header"><button id="mark-as-read-button" class="btn p-0 m-0"><i class="bi bi-eyeglasses p-0 m-0"></i></button></li></div><li><hr class="dropdown-divider"></li>';
                     if (data.notifications && data.notifications.length > 0) {
                         data.notifications.forEach(notification => {
                             const listItem = document.createElement("li");
@@ -90,13 +94,49 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         notificationList.innerHTML += '<li class="text-center"><small>You got no notifications</small></li>';
                         notificationBadge.classList.add("d-none");
                     }
+                    document.getElementById("mark-as-read-button").addEventListener("click", markNotificationsAsRead);
                 })
                 .catch(error => console.error("Error:", error));
         }
-        notificationButton.addEventListener("click", fetchNotifications);
+        
+
+        function markNotificationsAsRead() {
+          fetch("/mark_notifications_as_read/", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+                  "X-CSRFToken": getCookie("csrftoken"),
+              },
+              body: JSON.stringify({}),
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.status === "success") {
+                  notificationBadge.classList.add("d-none");
+              }
+          })
+          .catch(error => console.error("Error:", error));
+        }
+        markAsReadButton.addEventListener("click", markNotificationsAsRead);
+       
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      notificationButton.addEventListener("click", fetchNotifications);
         
         setInterval(fetchNotifications, 10000);
-        });
+ });
       </script>
       </ul>
       <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
@@ -409,84 +449,4 @@ data-sidebar-position="fixed" data-header-position="fixed">
   </div>
 </div>
 </div>
-<script>
-document.getElementById("applyFilters").addEventListener("click", function () {
-    const search = document.getElementById("search").value;
-    const eventType = document.getElementById("eventType").value;
-    const filterDate = document.getElementById("filterDate").value;
-
-    fetch(`/filter_events?search=${search}&event_type=${eventType}&filter_date=${filterDate}`)
-        .then(response => response.json())
-        .then(data => {
-            const futureEventsContainer = document.getElementById("futureEventsContainer");
-            const pastEventsContainer = document.getElementById("pastEventsContainer");
-            const futureEventsSection = document.getElementById("futureEventsSection");
-            const pastEventsSection = document.getElementById("pastEventsSection");
-
-            // Clear existing content
-            futureEventsContainer.innerHTML = "";
-            pastEventsContainer.innerHTML = "";
-
-            // Populate future events
-            if (data.future_events.length > 0) {
-                futureEventsSection.style.display = "block";
-                data.future_events.forEach(event => {
-                    const card = `
-                        <div class="col">
-                            <div class="card">
-                                <div class="card-body">
-                                    <h5 class="card-title">${event.event_name}</h5>
-                                    <p class="card-text">${event.event_description}</p>
-                                    <p class="card-text"><small class="text-muted">Date: ${event.event_time}</small></p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    futureEventsContainer.innerHTML += card;
-                });
-            } else {
-                futureEventsSection.style.display = "none";
-            }
-
-            // Populate past events
-            if (data.past_events.length > 0) {
-                pastEventsSection.style.display = "block";
-                data.past_events.forEach(event => {
-                    const card = `
-                        <div class="col-lg-4">
-                          <div class="card overflow-hidden hover-img card-hover">
-                            <div class="position-relative">
-                              <a href="#">
-                                <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" alt="matdash-img" style="filter: grayscale(50); max-height: 300px; object-fit: cover;">
-                              </a>
-                              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ event.event_time }}</span>
-                              <img src="{{ MEDIA_URL }}{{event.organized_by.profile.photo}}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-                            </div>
-                            <div class="card-body p-4">
-                              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
-                              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
-                              <div class="d-flex align-items-center gap-4">
-                                <div class="d-flex align-items-center gap-2">
-                                  <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
-                                </div>
-                                <div class="d-flex align-items-center gap-2">
-                                  <i class="ti ti-message-2 text-dark fs-5"></i> {{event.location.seats_numbers}} seats
-                                </div>
-                                <div class="d-flex align-items-center fs-2 ms-auto">
-                                  <i class="ti ti-point text-dark"></i>{{ event.event_date }}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                    `;
-                    pastEventsContainer.innerHTML += card;
-                });
-            } else {
-                pastEventsSection.style.display = "none";
-            }
-        });
-});
-
-</script>
 {% endblock %}

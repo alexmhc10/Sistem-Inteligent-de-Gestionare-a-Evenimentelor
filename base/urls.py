@@ -82,7 +82,8 @@ urlpatterns = [
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),
     path("get_notifications/", views.get_notifications, name="get_notifications"),
-
+    path('mark_notifications_as_read/', views.mark_notifications_as_read, name='mark_notifications_as_read'),
+    
     ##organizator
     path('locations/', views.locations_list, name='locations-list'),
     path('home-organizer/', views.home_organizer, name='home-organizer'),

@@ -60,10 +60,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </a>
           <ul class="dropdown-menu p-2" aria-labelledby="notificationDropdown" id="notification-list">
               <li class="dropdown-header">Notifications</li>
+              <li><button id="mark-as-read-button" class="btn btn-primary"></button></li>             
               <li><hr class="dropdown-divider"></li>
               <li class="text-center"><small>You got no notifications</small></li>
           </ul>
-      </li>
+        </li>
       <script>
         document.addEventListener("DOMContentLoaded", function () {
         const notificationButton = document.getElementById("notificationDropdown");

@@ -1644,12 +1644,16 @@ def send_notification(request):
         event_id = request.POST.get('event_id')
         event = Event.objects.get(id=int(event_id))
 
-        if receiver == "organizer":
-            receiver = event.organized_by
-        elif receiver == "everyone":
-            EventNotification.objects.create(sender=sender, event=event ,message=message)
-            return redirect('personal_eveniment_home')
-
+        if receiver == "everyone":
+            rsvp_list = RSVP.objects.filter(event=event, response="Accepted")
+            for rsvp in rsvp_list:
+                EventNotification.objects.create(
+                    sender=sender,
+                    event=event,
+                    receiver=rsvp.guest,
+                    message=message
+                )
+        receiver = event.organized_by
         EventNotification.objects.create(sender=sender, receiver=receiver, event=event ,message=message)
     return redirect('personal_eveniment_home')
 
@@ -1659,10 +1663,10 @@ def get_notifications(request):
     profil = Profile.objects.get(user = request.user)
     if profil.user_type == "guest":
         rsvp = RSVP.objects.filter(guest = request.user, response = "Accepted").values_list('event', flat=True)
-        notifications = EventNotification.objects.filter(event__in=rsvp, receiver__isnull=True, is_read="False").order_by('-timestamp')
+        notifications = EventNotification.objects.filter(event__in=rsvp, receiver=request.user, is_read="False").order_by('-timestamp')
     elif profil.user_type == "staff":
         events = Event.objects.filter(location__owner = request.user)
-        notifications = EventNotification.objects.filter(Q(receiver=request.user) | Q(receiver__isnull=True), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')
+        notifications = EventNotification.objects.filter(Q(receiver=request.user), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')
         print(notifications)
         for n in notifications:
             print(f"Notification ID: {n.id}, Event: {n.event}")
@@ -1676,7 +1680,16 @@ def get_notifications(request):
             }
         for n in notifications
     ]
-    return JsonResponse({"notifications": notifications_data})
+    return JsonResponse({"notifications": notifications_data}) 
+
+
+@login_required
+def mark_notifications_as_read(request):
+    if request.method == 'POST':
+        EventNotification.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
+        print("Succes")
+        return JsonResponse({"status": "success"})
+    return JsonResponse({"status": "error", "message": "Invalid request method"}, status=400)
 
 
 

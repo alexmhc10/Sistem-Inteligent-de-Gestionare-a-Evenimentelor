@@ -126,69 +126,72 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
       </nav>
     </header>
-    <div class="container-fluid">
-        <div class="card">
-            <div class="card-body d-flex flex-column">
-                <div class="card-title h1 text-center">Checkout the details about the event!</div>                
-            </div>
+    <div class="container-sm">
+      <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+          <div class="card">
+              <div class="card-body d-flex flex-column">
+                  <div class="card-title h1 text-center">Checkout the details about the event!</div>                
+              </div>
+          </div>
+          <div class="card">
+              <div class="card-body">
+                  <div class="image d-flex justify-content-center">
+                      <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid" style="max-height: 300px;">
+                  </div>
+                  <div class="row">
+                      <div class="col-lg-6">
+                          <h3>Time to start:</h3>
+                          <div class="event">
+                              <p id="countdown-{{ event.id }}"></p>
+                          </div>
+                          <script>
+                              var events = {{ event_data|safe }};
+                              
+                              events.forEach(function(event) {
+                                  var eventDate = new Date(event.event_date).getTime();
+                                  var countdownElement = document.getElementById("countdown-" + event.id);
+                                  
+                                  function updateCountdown() {
+                                      var now = new Date().getTime();
+                                      var timeLeft = eventDate - now;
+                      
+                                      var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                                      var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                      var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                                      var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+                      
+                                      if (timeLeft > 0) {
+                                          countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
+                                      } else {
+                                          countdownElement.innerHTML = "The event its live!";
+                                      }
+                                  }
+                      
+                                  updateCountdown(); 
+                                  setInterval(updateCountdown, 1000);
+                              });
+                          </script>
+                      </div>
+                      <div class="col-lg-6">
+                          <h3>Location data</h3>
+                          <p>{{event.event_name}}</p>
+                      </div>
+                      <div class="col-lg-6">
+                          <h3>Your preferences:</h3>
+                          <p>{{ preferences.age }}</p>
+                          <a href="{% url 'guest_profile' %}" class="btn btn-primary">Change them</a>
+                      </div>
+                      <div class="col-lg-6">
+                          <h3>Change status:</h3>
+                          <p>Your current status: </p>
+                          <button type="submit" class="btn btn-danger">Cancel presence</button>
+                      </div>
+                  </div>
+              </div>
+          </div>
         </div>
-        <div class="card">
-            <div class="card-body">
-                <div class="image d-flex justify-content-center">
-                    <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid" style="max-height: 300px;">
-                </div>
-                <div class="row">
-                    <div class="col-lg-6">
-                        <h3>Time to start:</h3>
-                        <div class="event">
-                            <p id="countdown-{{ event.id }}"></p>
-                        </div>
-                        <script>
-                            var events = {{ event_data|safe }};
-                            
-                            events.forEach(function(event) {
-                                var eventDate = new Date(event.event_date).getTime();
-                                var countdownElement = document.getElementById("countdown-" + event.id);
-                                
-                                function updateCountdown() {
-                                    var now = new Date().getTime();
-                                    var timeLeft = eventDate - now;
-                    
-                                    var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                                    var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                    var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                                    var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-                    
-                                    if (timeLeft > 0) {
-                                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-                                    } else {
-                                        countdownElement.innerHTML = "The event its live!";
-                                    }
-                                }
-                    
-                                updateCountdown(); 
-                                setInterval(updateCountdown, 1000);
-                            });
-                        </script>
-                    </div>
-                    <div class="col-lg-6">
-                        <h3>Location data</h3>
-                        <p>{{event.event_name}}</p>
-                    </div>
-                    <div class="col-lg-6">
-                        <h3>Your preferences:</h3>
-                        <p>{{ preferences.age }}</p>
-                        <a href="{% url 'guest_profile' %}" class="btn btn-primary">Change them</a>
-                    </div>
-                    <div class="col-lg-6">
-                        <h3>Change status:</h3>
-                        <p>Your current status: </p>
-                        <button type="submit" class="btn btn-danger">Cancel presence</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+      </div>  
     </div>
         
     </div>
