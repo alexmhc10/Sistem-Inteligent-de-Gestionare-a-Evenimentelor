@@ -243,28 +243,41 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-        <video id="camera" autoplay playsinline   ></video>
-        <button id="capture">Photo</button>
+        <video id="camera" autoplay playsinline style="display:none;"></video>
         <canvas id="canvas" style="display:none;"></canvas>
+        <button id="capture">Photo</button>
+        
 
         <div class="col-lg-12">
             <div class="d-flex">
-                <button class="btn btn-primary" id="capture_element">Scan guests</button>
+                <button class="btn btn-primary" id="launch_camera">Scan guests</button>
             </div>
         </div>
 
         <script>
-            const video = document.getElementById('camera');
+        //     const video = document.getElementById('camera');
 
-            async function startCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
-                video.srcObject = stream;
-            } catch (error) {
-                console.error("Eroare la accesarea camerei:", error);
-                alert("Nu s-a putut accesa camera. Asigură-te că ai acordat permisiunea.");
-            }
-        }
+        //     async function startCamera() {
+        //     try {
+        //         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+        //         video.srcObject = stream;
+        //     } catch (error) {
+        //         console.error("Eroare la accesarea camerei:", error);
+        //         alert("Nu s-a putut accesa camera. Asigură-te că ai acordat permisiunea.");
+        //     }
+        // }
+        document.getElementById("launch_camera").addEventListener("click", function() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function(stream) {
+                        let video = document.getElementById("camera");
+                        video.srcObject = stream;
+                        video.play();
+                    })
+                    .catch(function(error) {
+                        console.error("Camera error:", error);
+                    });
+            });
+
         </script>
 
         <div class="col-lg-12">

@@ -32,6 +32,7 @@ from django.http import JsonResponse
 from .forms import ProfileEditForm
 from base.models import Event
 from .models import Location
+import base64
 
 
 def locations_list(request):
@@ -1538,6 +1539,32 @@ def personal_face_id(request, pk):
         'event': event
     }
     return render(request, 'base/personal_face_id.html', context)
+
+
+def find_user_view(request):
+    if is_ajax(request):
+        photo = request.POST.get('photo')
+        _, str_img = photo.split(';base64')
+
+        decoded_file = base64.b64decode(str_img)
+        print(decoded_file)
+
+        x = Log()
+        x.photo.save('upload.png', ContentFile(decoded_file))
+        x.save()
+
+        res = classify_face(x.photo.path)
+        if res:
+            user_exists = User.objects.filter(username=res).exists()
+            if user_exists:
+                user = User.objects.get(username=res)
+                profile = Profile.objects.get(user=user)
+                x.profile = profile
+                x.save()
+
+                login(request, user)
+                return JsonResponse({'success': True})
+        return JsonResponse({'success': False})
 
 
 @login_required(login_url='/login')
