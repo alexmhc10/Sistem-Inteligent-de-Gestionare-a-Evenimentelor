@@ -1,6 +1,6 @@
 import face_recognition as fr
 import numpy as np
-from models import Profile
+from .models import Profile, RSVP
 
 
 def is_ajax(request):
@@ -12,13 +12,13 @@ def get_encoded_faces():
     This function loads all user 
     profile images and encodes their faces
     """
-    # Retrieve all user profiles from the database
-    qs = Profile.objects.all()
+    accepted_guests_ids = RSVP.objects.filter(response="Accepted").values_list('guest', flat=True)
+    profiles = Profile.objects.filter(user__in=accepted_guests_ids)
 
     # Create a dictionary to hold the encoded face for each user
     encoded = {}
 
-    for p in qs:
+    for p in profiles:
         # Initialize the encoding variable with None
         encoding = None
 

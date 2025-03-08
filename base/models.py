@@ -218,6 +218,16 @@ class RSVP(models.Model):
         return f"{self.guest.username} - {self.event.event_name} - {self.response}"
 
 
+class Log(models.Model):
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, blank=True, null=True)
+    photo = models.ImageField(upload_to='logs')
+    is_correct = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.id) 
+
+
 class EventMenu(models.Model):
     event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)
     item_name = models.CharField(max_length=80)

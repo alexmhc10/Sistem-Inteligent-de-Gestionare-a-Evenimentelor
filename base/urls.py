@@ -79,6 +79,9 @@ urlpatterns = [
     path('guest_profile', views.guest_profile, name='guest_profile'),
     path('guest_event_view/<int:pk>', views.guest_event_view, name='guest_event_view'),
 
+    #Face_recog
+    path('classify/', views.find_user_view, name='classify'),
+
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),
     path("get_notifications/", views.get_notifications, name="get_notifications"),

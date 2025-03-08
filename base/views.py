@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib.auth import authenticate, login,logout
@@ -32,6 +33,7 @@ from django.http import JsonResponse
 from .forms import ProfileEditForm
 from base.models import Event
 from .models import Location
+from .utils import is_ajax, classify_face
 import base64
 
 
@@ -1562,7 +1564,6 @@ def find_user_view(request):
                 x.profile = profile
                 x.save()
 
-                login(request, user)
                 return JsonResponse({'success': True})
         return JsonResponse({'success': False})
 

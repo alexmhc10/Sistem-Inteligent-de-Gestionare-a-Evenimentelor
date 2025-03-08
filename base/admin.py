@@ -1,8 +1,5 @@
 from django.contrib import admin
 from .models import EventHistory
-# Register your models here.
-
-
 from .models import *
 
 admin.site.register(EventHistory)
@@ -24,3 +21,4 @@ admin.site.register(CompanyProfit)
 admin.site.register(LocationImages)
 admin.site.register(RSVP)
 admin.site.register(EventNotification)
+admin.site.register(Log)
