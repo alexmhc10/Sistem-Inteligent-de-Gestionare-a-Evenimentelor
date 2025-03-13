@@ -1628,7 +1628,7 @@ def guest_profile(request):
 def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
-    rsvp = RSVP.objects.filter(guest = request.user, response = 'Accepted').first()
+    rsvp = RSVP.objects.filter(guest = request.user).first()
     print(rsvp)
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
@@ -1649,9 +1649,24 @@ def guest_home(request):
 @login_required(login_url='/login')
 @user_is_guest
 def guest_event_view(request, pk):
+    
     event=Event.objects.get(id=pk)
+    rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
+
+    print(rsvp)
+
+    if request.method == "POST":
+        print(request.POST)
+        value = request.POST.get("response")
+        print(value)
+        if value in ["Accepted", "Declined"]:
+            rsvp.response = value
+            rsvp.save() 
+
+    rsvp = RSVP.objects.get(event=event, guest=request.user)
+    print(rsvp)
 
     event_data = [
         {
@@ -1665,7 +1680,8 @@ def guest_event_view(request, pk):
         'event':event,
         'profile':profile,
         'preferences':preferences,
-        'event_data': event_data
+        'event_data': event_data,
+        'rsvp':rsvp
     }
     return render(request,'base/guest_event_view.html', context)
 

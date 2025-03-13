@@ -8,21 +8,13 @@ def is_ajax(request):
 
 
 def get_encoded_faces():
-    """
-    This function loads all user 
-    profile images and encodes their faces
-    """
-    accepted_guests_ids = RSVP.objects.filter(response="Accepted").values_list('guest', flat=True)
-    profiles = Profile.objects.filter(user__in=accepted_guests_ids)
+    profiles = Profile.objects.all()
 
-    # Create a dictionary to hold the encoded face for each user
     encoded = {}
 
     for p in profiles:
-        # Initialize the encoding variable with None
         encoding = None
-
-        # Load the user's profile image
+        print(p.photo.path)
         face = fr.load_image_file(p.photo.path)
 
         # Encode the face (if detected)
@@ -38,6 +30,9 @@ def get_encoded_faces():
 
     # Return the dictionary of encoded faces
     return encoded
+
+
+get_encoded_faces()
 
 
 def classify_face(img):

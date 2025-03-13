@@ -148,7 +148,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <li class="nav-item dropdown">
                 <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" alt="" width="35" height="35" class="rounded-circle">
+                <img src="{{ MEDIA_URL }}{{ request.user.profile_set.all.0.photo }}" alt="" width="35" height="35" class="rounded-circle">
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                 <div class="message-body">
