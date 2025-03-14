@@ -1393,7 +1393,7 @@ def deleteUser(request, pk):
 def personal_eveniment_home(request):
     locations = Location.objects.filter(owner=request.user)
     events = Event.objects.filter(location__in=locations)
-    profiles = Profile.objects.all()
+    profiles = Profile.objects.get(user=request.user)
 
     current_date = datetime.today()
 
@@ -1435,7 +1435,7 @@ def personal_eveniment_home(request):
         'remaining_events_data': remaining_events_data,
         'next_event': next_event,
         'remaining_events': remaining_events,
-        'profiles': profiles,
+        'profile': profiles,
         }
 
     return render(request, 'base/personal_eveniment_home.html', context)
@@ -1445,7 +1445,7 @@ def personal_eveniment_home(request):
 @user_is_staff
 def personal_profile(request):
     location_owned = Location.objects.filter(owner=request.user).first()
-    profile = Profile.objects.filter(user = location_owned.owner).first()
+    profile = Profile.objects.get(user = request.user)
     location_images = LocationImages.objects.filter(location=location_owned)
 
     if request.method == 'POST':
@@ -1543,29 +1543,29 @@ def personal_face_id(request, pk):
     return render(request, 'base/personal_face_id.html', context)
 
 
-def find_user_view(request):
-    if is_ajax(request):
-        photo = request.POST.get('photo')
-        _, str_img = photo.split(';base64')
+# def find_user_view(request):
+#     if is_ajax(request):
+#         photo = request.POST.get('photo')
+#         _, str_img = photo.split(';base64')
 
-        decoded_file = base64.b64decode(str_img)
-        print(decoded_file)
+#         decoded_file = base64.b64decode(str_img)
+#         print(decoded_file)
 
-        x = Log()
-        x.photo.save('upload.png', ContentFile(decoded_file))
-        x.save()
+#         x = Log()
+#         x.photo.save('upload.png', ContentFile(decoded_file))
+#         x.save()
 
-        res = classify_face(x.photo.path)
-        if res:
-            user_exists = User.objects.filter(username=res).exists()
-            if user_exists:
-                user = User.objects.get(username=res)
-                profile = Profile.objects.get(user=user)
-                x.profile = profile
-                x.save()
+#         res = classify_face(x.photo.path)
+#         if res:
+#             user_exists = User.objects.filter(username=res).exists()
+#             if user_exists:
+#                 user = User.objects.get(username=res)
+#                 profile = Profile.objects.get(user=user)
+#                 x.profile = profile
+#                 x.save()
 
-                return JsonResponse({'success': True})
-        return JsonResponse({'success': False})
+#                 return JsonResponse({'success': True})
+#         return JsonResponse({'success': False})
 
 
 @login_required(login_url='/login')
@@ -1629,7 +1629,6 @@ def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
     rsvp = RSVP.objects.filter(guest = request.user).first()
-    print(rsvp)
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 

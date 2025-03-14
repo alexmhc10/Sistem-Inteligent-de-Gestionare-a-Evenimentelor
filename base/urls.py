@@ -80,7 +80,7 @@ urlpatterns = [
     path('guest_event_view/<int:pk>', views.guest_event_view, name='guest_event_view'),
 
     #Face_recog
-    path('classify/', views.find_user_view, name='classify'),
+    #path('classify/', views.find_user_view, name='classify'),
 
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),

@@ -13,22 +13,23 @@ def get_encoded_faces():
     encoded = {}
 
     for p in profiles:
-        encoding = None
-        print(p.photo.path)
-        face = fr.load_image_file(p.photo.path)
+        try:
+            encoding = None
+            print(p.photo.path)
+            face = fr.load_image_file(p.photo.path)
 
-        # Encode the face (if detected)
-        face_encodings = fr.face_encodings(face)
-        if len(face_encodings) > 0:
-            encoding = face_encodings[0]
-        else:
-            print("No face found in the image")
+            face_encodings = fr.face_encodings(face)
+            if len(face_encodings) > 0:
+                encoding = face_encodings[0]
+            else:
+                print("No face found in the image")
 
-        # Add the user's encoded face to the dictionary if encoding is not None
-        if encoding is not None:
-            encoded[p.user.username] = encoding
+            if encoding is not None:
+                encoded[p.user.username] = encoding
+        
+        except Exception as e:
+            print(f"Eroor:  {e}")
 
-    # Return the dictionary of encoded faces
     return encoded
 
 

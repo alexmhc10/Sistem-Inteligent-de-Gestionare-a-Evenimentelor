@@ -1,0 +1,87 @@
+{% block content %}
+{% load static %}
+
+<aside class="left-sidebar">
+    <!-- Sidebar scroll-->
+    <div>
+      <style>
+        .logo-img {
+          display: inline-block;
+          position: relative; 
+        }
+        .close-btn {
+          position: absolute;
+          top: 5px; 
+          right: 5px; 
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+
+        .close-btn i {
+          font-size: 16px;  
+          color: black;
+        }
+      </style>
+      <div class="brand-logo d-flex align-items-center justify-content-between">
+        {% if profile.user_type == 'guest' %}
+          <a href="{% url 'guest_home' %}" class="text-nowrap logo-img">
+            <img src="{% static 'images/image.png' %}" class="mt-3" style="max-width: 100%; max-height: 100%;"> 
+          </a>
+        {% else %}
+          <a href="{% url 'personal_eveniment_home' %}" class="text-nowrap logo-img">
+            <img src="{% static 'images/image.png' %}" class="mt-3" style="max-width: 100%; max-height: 100%;"> 
+          </a>
+        {% endif %}               
+        <div class="close-btn d-xl-none d-block sidebartoggler fs-8 cursor-pointer" id="sidebarCollapse">
+          <i class="bi bi-x-lg"></i>        
+        </div>
+      </div>
+      <!-- Sidebar navigation-->
+      <nav class="sidebar-nav scroll-sidebar" data-simplebar="">
+        <ul id="sidebarnav">
+          {% if user.is_authenticated %}
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
+              <span class="hide-menu">Home</span>
+            </li>
+            <li class="sidebar-item">
+              {% if profile.user_type == 'guest' %}
+                {% if not not_completed %}
+                  <a class="sidebar-link ps-4" href="{% url 'guest_home' %}" aria-expanded="false">
+                {% elif not_completed %}
+                  <a class="sidebar-link btn btn-link link-underline link-underline-opacity-0 disabled ps-4" href="{% url 'guest_home' %}" tabindex="-1" role="button" aria-disabled="true" aria-expanded="false">
+                {% endif %}
+              {% else %}
+                <a class="sidebar-link ps-4" href="{% url 'personal_eveniment_home' %}" aria-expanded="false">
+              {% endif %}    
+                <i class="bi bi-house"></i>
+                <span class="hide-menu">Home</span>
+              </a>
+            </li>
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
+              <span class="hide-menu">About you</span>
+            </li>
+            <li class="sidebar-item">
+              {% if profile.user_type == 'guest' %}
+                <a class="sidebar-link ps-4" href="{% url 'guest_profile' %}" aria-expanded="false">
+              {% else %}
+                <a class="sidebar-link ps-4" href="{% url 'personal_profile' %}" aria-expanded="false">
+              {% endif %}
+                  <i class="bi bi-person-fill"></i>
+                <span class="hide-menu">Profile</span>
+              </a>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+      <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+  </aside>
+
+{% endblock %}
