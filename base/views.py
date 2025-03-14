@@ -1391,8 +1391,12 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
-    locations = Location.objects.filter(owner=request.user)
-    events = Event.objects.filter(location__in=locations)
+    location = Location.objects.filter(owner=request.user)
+    print("Locatie:", location)
+
+    events = Event.objects.filter(location__in=location)
+    print("Events:", events)
+
     profiles = Profile.objects.get(user=request.user)
 
     current_date = datetime.today()
@@ -1628,7 +1632,14 @@ def guest_profile(request):
 def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
-    rsvp = RSVP.objects.filter(guest = request.user).first()
+
+    rsvp = RSVP.objects.filter(guest = request.user)
+
+    next_rsvp = rsvp.first() if rsvp.exists() else None
+    print(next_rsvp)
+     
+    other_rsvp = rsvp[1:] if rsvp.count() > 1 else []
+    print(other_rsvp)
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 
@@ -1636,7 +1647,8 @@ def guest_home(request):
         "not_completed": not_completed,
         "preferences": preferences,
         "profile": profil,
-        "rsvp": rsvp
+        "rsvp": next_rsvp,
+        "other_rsvp": other_rsvp
     }
 
     if not_completed:
