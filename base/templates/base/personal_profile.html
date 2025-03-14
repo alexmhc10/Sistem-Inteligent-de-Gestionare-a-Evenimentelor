@@ -7,87 +7,13 @@
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
   data-sidebar-position="fixed" data-header-position="fixed">
   
-  <!--Sidebar-->
+  <!-- Sidebar -->
   {% include 'sidebar.html' %}
 
   <div class="body-wrapper">
 
-    <header class="app-header">
-      <nav class="navbar navbar-expand-lg navbar-light">
-        <ul class="navbar-nav">
-          <li class="nav-item d-block d-xl-none">
-            <a class="nav-link sidebartoggler nav-icon-hover" id="headerCollapse" href="javascript:void(0)">
-              <i class="ti ti-menu-2"></i>
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link nav-icon-hover" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-bell-fill"></i>              
-              <div id="notification-badge" class="notification bg-primary rounded-circle d-none"></div>
-            </a>
-            <ul class="dropdown-menu p-2" aria-labelledby="notificationDropdown" id="notification-list">
-                <li class="dropdown-header">Notifications</li>
-                <li><button id="mark-as-read-button" class="btn btn-primary"></button></li>             
-                <li><hr class="dropdown-divider"></li>
-                <li class="text-center"><small>You got no notifications</small></li>
-            </ul>
-          </li>
-        <script>
-          document.addEventListener("DOMContentLoaded", function () {
-          const notificationButton = document.getElementById("notificationDropdown");
-          const notificationList = document.getElementById("notification-list");
-          const notificationBadge = document.getElementById("notification-badge");
-
-          function fetchNotifications() {
-              fetch("/get_notifications/")
-                  .then(response => response.json())
-                  .then(data => {
-                      notificationList.innerHTML = '<li class="dropdown-header">Notifications</li><li><hr class="dropdown-divider"></li>';
-                      
-                      if (data.notifications && data.notifications.length > 0) {
-                          data.notifications.forEach(notification => {
-                              const listItem = document.createElement("li");
-                              const eventId = notification.event_id;
-                                const eventUrl = `/personal_vizualizare_eveniment/${eventId}`;
-                              listItem.innerHTML = `<a class="dropdown-item" href="${eventUrl}">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
-                              notificationList.appendChild(listItem);
-                          });
-                          notificationBadge.classList.remove("d-none");
-                      } else {
-                          notificationList.innerHTML += '<li class="text-center"><small>You got no notifications</small></li>';
-                          notificationBadge.classList.add("d-none");
-                      }
-                  })
-                  .catch(error => console.error("Error:", error));
-          }
-          notificationButton.addEventListener("click", fetchNotifications);
-          
-          setInterval(fetchNotifications, 10000);
-          });
-        </script>
-        </ul>
-        <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-          <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-            <li class="nav-item dropdown">
-              <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
-                aria-expanded="false">
-                <img src="{{ MEDIA_URL }}{{ location_data.gallery }}" alt="Ceva" width="35" height="35" class="rounded-circle">
-              </a>
-              <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-                <div class="message-body">
-                  <a href="{% url 'personal_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
-                    <i class="ti ti-user fs-6"></i>
-                    <p class="mb-0 fs-3">My Profile</p>
-                  </a>
-                  <a href="{% url 'logout' %}" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
-    <!--  Header End -->
+    <!--  Header -->
+    {% include 'header.html' %}
     
     <div class="container-fluid">
       <div class="col-lg-12">
@@ -321,7 +247,7 @@
                           border-radius: 5px;
                       }
 
-                      .close-btn {
+                      .close-btn-gallery {
                           position: absolute;
                           top: 20px;
                           right: 30px;
@@ -370,7 +296,7 @@
                       {% endfor %}
                     </div>
                     <div class="lightbox" id="lightbox" onclick="closeLightbox()">
-                      <span class="close-btn" onclick="closeLightbox()">&times;</span>
+                      <span class="close-btn-gallery" onclick="closeLightbox()">&times;</span>
                       <img id="lightbox-img">
                     </div>
                   <script>

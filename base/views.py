@@ -1723,6 +1723,7 @@ def send_notification(request):
 @login_required(login_url='/login')
 def get_notifications(request):
     profil = Profile.objects.get(user = request.user)
+    user_type = profil.user_type
     if profil.user_type == "guest":
         rsvp = RSVP.objects.filter(guest = request.user, response = "Accepted").values_list('event', flat=True)
         notifications = EventNotification.objects.filter(event__in=rsvp, receiver=request.user, is_read="False").order_by('-timestamp')
@@ -1738,8 +1739,9 @@ def get_notifications(request):
             "id": n.id, 
             "message": n.message, 
             "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
-            "event_id":n.event.id if n.event else None
-            }
+            "event_id":n.event.id if n.event else None,
+            "user_type": user_type,
+        }
         for n in notifications
     ]
     return JsonResponse({"notifications": notifications_data}) 
