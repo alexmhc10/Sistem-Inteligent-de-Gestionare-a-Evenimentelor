@@ -1504,6 +1504,11 @@ def delete_image(request, image_id):
 @user_is_staff
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
+
+    if event.location.owner != request.user:
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+        
+    profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
     event_data = [
         {
@@ -1512,10 +1517,12 @@ def personal_vizualizare_eveniment(request, pk):
             'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
         }
     ]
+    
     context = {
         'event': event,
-        'event_data': event_data,
-        'rspv': rspv
+        'event_data': json.dumps(event_data),
+        'rspv': rspv,
+        'profile': profile
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 

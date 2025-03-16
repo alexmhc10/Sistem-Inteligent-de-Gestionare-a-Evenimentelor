@@ -27,12 +27,11 @@
 data-sidebar-position="fixed" data-header-position="fixed">
     <!-- Sidebar Start -->
     {% include 'sidebar.html' %}
-    <!--  Sidebar End -->
     <!--  Main wrapper -->
     <div class="body-wrapper">
     <!--  Header Start -->
     {% include 'header.html' %}
-    <!--  Header End -->
+
     <div class="container-fluid">
         <div class="row">
 
@@ -70,35 +69,50 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>    
         </div>
-        <script type="application/json" id="next-event-data">
-            {{ next_event_data|safe }}
-        </script>
         <script>
-            var eventData = JSON.parse(document.getElementById("next-event-data").textContent);
-        
-            if (event) {
-                var eventDate = new Date(event.event_date).getTime();
-                var countdownElement = document.getElementById("countdown-" + event.id);
-        
+            document.addEventListener("DOMContentLoaded", function () {
+            try {
+                var eventDataArray = JSON.parse('{{ event_data|safe }}');
+                
+                if (!eventDataArray || eventDataArray.length === 0) {
+                    console.warn("No upcoming event found!");
+                    return;
+                }
+
+                var eventData = eventDataArray[0];
+                
+                console.log("Event Data:", eventData);
+
+                var eventDate = new Date(eventData.event_date).getTime();
+                var countdownElement = document.getElementById("countdown-" + eventData.id);
+
+                if (!countdownElement) {
+                    console.warn("Countdown element not found!");
+                    return;
+                }
+
                 function updateCountdown() {
                     var now = new Date().getTime();
                     var timeLeft = eventDate - now;
-        
+
                     var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
                     var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                     var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-        
-                    if (timeLeft > 0) {
-                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
-                    } else {
-                        countdownElement.innerHTML = "The event is live!";
-                    }
+
+                    countdownElement.innerHTML = timeLeft > 0
+                        ? `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
+                        : "The event is live!";
                 }
-        
-                updateCountdown(); 
+
+                updateCountdown();
                 setInterval(updateCountdown, 1000);
+            } catch (error) {
+                console.error("Error parsing event data:", error);
             }
+        });
+
+
         </script>
         
         <div class="col-lg-4">
