@@ -40,34 +40,62 @@
                     </div>
                   </div>
                   <hr class="my-4">
-                  <ul class="list-group list-group-flush">
-                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                      <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe me-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Website</h6>
-                      <a href="{{ profile.work_link }}" target="_blank"><span class="text-secondary">Link</span></a>
-                    </li>
-                    <!-- <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                      <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github me-2 icon-inline"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>Github</h6>
-                      <span class="text-secondary">bootdey</span>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                      <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-twitter me-2 icon-inline text-info"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path></svg>Twitter</h6>
-                      <span class="text-secondary">@bootdey</span>
-                    </li> -->
-                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                      <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram me-2 icon-inline text-danger"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</h6>
-                      <a href="https://www.instagram.com/hotel.romanita/" target="_blank"><span class="text-secondary">Link</span></a>
-                    </li>
-                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
-                      <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook me-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
-                      <a href="{{ profile.facebook }}" target="_blank"><span class="text-secondary">Link</span></a>
-                    </li>
-                  </ul>                
-                  <div class="d-flex align-items-center justify-content-center gap-2 text-center">
-                    <button class="btn btn-primary">Edit socials</button>
+                  <div id="socialsLinks">
+                    <ul class="list-group list-group-flush">
+                      <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                        <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe me-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Website</h6>
+                        <a href="{{ profile.work_link }}" target="_blank"><span class="text-secondary">Link</span></a>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                        <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram me-2 icon-inline text-danger"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</h6>
+                        <a href="https://www.instagram.com/hotel.romanita/" target="_blank"><span class="text-secondary">Link</span></a>
+                      </li>
+                      <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap">
+                        <h6 class="mb-0"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook me-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
+                        <a href="{{ profile.facebook }}" target="_blank"><span class="text-secondary">Link</span></a>
+                      </li>
+                    </ul>                
+                    <div class="d-flex align-items-center justify-content-center gap-2 text-center">
+                      <button class="btn btn-primary" id="toggleSocials">Edit socials</button>
+                    </div>
                   </div>
+                  <div style="display: none;" id="socialsContainer">
+                    <form action="" method="POST">
+                      {% csrf_token %}
+                      <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex input-group mt-0 mb-0 justify-content-between align-items-center flex-wrap">
+                          <h6 class="mb-0 me-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-globe me-2 icon-inline"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>Website</h6>
+                          <input type="text" class="form-control" name="website">
+                        </li>
+                        <li class="list-group-item d-flex input-group mt-0 mb-0 justify-content-between align-items-center flex-wrap">
+                          <h6 class="mb-0 me-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-instagram me-2 icon-inline text-danger"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>Instagram</h6>
+                          <input type="text" class="form-control" name="instagram">
+                        </li>
+                        <li class="list-group-item d-flex input-group mt-0 mb-0 justify-content-between align-items-center flex-wrap">
+                          <h6 class="mb-0 me-2"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook me-2 icon-inline text-primary"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>Facebook</h6>
+                          <input type="text" class="form-control" name="facebook">
+                        </li>
+                      </ul>                
+                      <div class="d-flex align-items-center justify-content-center gap-2 text-center">
+                        <button class="btn btn-warning" id="saveSocials" name="form_type" value="formSocials">Save</button>
+                      </div> 
+                    </form> 
+                  </div>   
                 </div>
               </div>
             </div>
+            <script>
+              document.getElementById("toggleSocials").addEventListener("click", function () {
+                document.getElementById("socialsLinks").style.display = "none";
+                document.getElementById("socialsContainer").style.display = "block";
+              });
+
+              document.getElementById("saveSocials").addEventListener("click", function () {
+                document.getElementById("socialsLinks").style.display = "block";
+                document.getElementById("socialsContainer").style.display = "none";
+
+              });
+            </script>
             <div class="col-lg-8">
               <div class="card">
                 <form action="" method="post" enctype="multipart/form-data">
@@ -212,7 +240,6 @@
                           display: inline-block;
                       }
                   </style>
-                  
                   <script>
                       document.getElementById("file-upload").addEventListener("change", function() {
                           let fileLabel = document.getElementById("file-chosen");
@@ -278,9 +305,9 @@
                           background: darkred;
                       }
                   </style>
-                    <div class="row gallery">
+                    <div class="row m-0 gallery">
                       {% for image in location_images %}
-                      <div class="col-lg-4 col-md-6 mb-4 mb-lg-0 image-container">
+                      <div class="col-lg-4 m-0 col-md-6 mb-4 mb-lg-0 image-container">
                         <img
                           src="{{ MEDIA_URL }}{{ image.image }}"
                           class="w-100 shadow-1-strong rounded mb-4"
@@ -299,75 +326,45 @@
                       <span class="close-btn-gallery" onclick="closeLightbox()">&times;</span>
                       <img id="lightbox-img">
                     </div>
-                  <script>
-                    function openLightbox(img) {
-                        document.getElementById("lightbox").style.display = "flex";
-                        document.getElementById("lightbox-img").src = img.src;
-                    }
-            
-                    function closeLightbox() {
-                        document.getElementById("lightbox").style.display = "none";
-                    }
-                    function confirmDelete(imageId) {
-                        if (confirm("Ești sigur că vrei să ștergi această imagine?")) {
-                            deleteImage(imageId);
-                        }
-                    }
+                    <script>
+                      function openLightbox(img) {
+                          document.getElementById("lightbox").style.display = "flex";
+                          document.getElementById("lightbox-img").src = img.src;
+                      }
+              
+                      function closeLightbox() {
+                          document.getElementById("lightbox").style.display = "none";
+                      }
+                      function confirmDelete(imageId) {
+                          if (confirm("Are you sure you want to detele the image?")) {
+                              deleteImage(imageId);
+                          }
+                      }
 
-                    function deleteImage(imageId) {
-                        fetch(`/delete-image/${imageId}/`, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRFToken": getCSRFToken(),
-                                "Content-Type": "application/json"
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                location.reload(); // Reîncarcă pagina după ștergere
-                            } else {
-                                alert("A apărut o eroare. Imaginea nu a fost ștearsă.");
-                            }
-                        });
-                    }
+                      function deleteImage(imageId) {
+                          fetch(`/delete-image/${imageId}/`, {
+                              method: "POST",
+                              headers: {
+                                  "X-CSRFToken": getCSRFToken(),
+                                  "Content-Type": "application/json"
+                              }
+                          })
+                          .then(response => {
+                              if (response.ok) {
+                                  location.reload();
+                              } else {
+                                  alert("Error");
+                              }
+                          });
+                      }
 
-                    // Funcție pentru a obține tokenul CSRF din pagina
-                    function getCSRFToken() {
-                        return document.querySelector("[name=csrfmiddlewaretoken]").value;
-                    }
+                      function getCSRFToken() {
+                          return document.querySelector("[name=csrfmiddlewaretoken]").value;
+                      }
 
-                </script>
-                
+                    </script>
                   </div>
                 </div>  
-
-                <!-- <div class="col-lg-4 mb-4 mb-lg-0">
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Vertical/mountain2.webp"
-                    class="w-100 shadow-1-strong rounded mb-4"
-                    alt="Mountains in the Clouds"
-                  />
-
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/Nature/4-col/img%20(73).webp"
-                    class="w-100 shadow-1-strong rounded mb-4"
-                    alt="Boat on Calm Water"
-                  />
-                </div>
-
-                <div class="col-lg-4 mb-4 mb-lg-0">
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Horizontal/Nature/4-col/img%20(18).webp"
-                    class="w-100 shadow-1-strong rounded mb-4"
-                    alt="Waves at Sea"
-                  />
-
-                  <img
-                    src="https://mdbcdn.b-cdn.net/img/Photos/Vertical/mountain3.webp"
-                    class="w-100 shadow-1-strong rounded mb-4"
-                    alt="Yosemite National Park"
-                  />
-                </div> -->
             </div>          
           </div>
         </div>

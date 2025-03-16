@@ -111,7 +111,7 @@
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
               <div class="message-body">
                 {% if profile.user_type == "guest" %}
-                <a href="{% url 'guest_home' %}" class="d-flex align-items-center gap-2 dropdown-item">
+                <a href="{% url 'guest_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
                 {% else %}
                 <a href="{% url 'personal_profile' %}" class="d-flex align-items-center gap-2 dropdown-item">
                 {% endif %}

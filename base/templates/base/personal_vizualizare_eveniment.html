@@ -59,61 +59,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
                 <div class="col-lg-12">
                     <div class="card">
-                        <div class="card-body">
-                            <h1 class="card-title">Time left:</h1>
-                            <div class="event">
-                                <p id="countdown-{{ event.id }}"></p>
-                            </div>
-                        </div>
+                        {% include 'timer.html' %}
                     </div>
                 </div>
             </div>    
         </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-            try {
-                var eventDataArray = JSON.parse('{{ event_data|safe }}');
-                
-                if (!eventDataArray || eventDataArray.length === 0) {
-                    console.warn("No upcoming event found!");
-                    return;
-                }
-
-                var eventData = eventDataArray[0];
-                
-                console.log("Event Data:", eventData);
-
-                var eventDate = new Date(eventData.event_date).getTime();
-                var countdownElement = document.getElementById("countdown-" + eventData.id);
-
-                if (!countdownElement) {
-                    console.warn("Countdown element not found!");
-                    return;
-                }
-
-                function updateCountdown() {
-                    var now = new Date().getTime();
-                    var timeLeft = eventDate - now;
-
-                    var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                    var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                    var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                    countdownElement.innerHTML = timeLeft > 0
-                        ? `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
-                        : "The event is live!";
-                }
-
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            } catch (error) {
-                console.error("Error parsing event data:", error);
-            }
-        });
-
-
-        </script>
         
         <div class="col-lg-4">
             <div class="card">

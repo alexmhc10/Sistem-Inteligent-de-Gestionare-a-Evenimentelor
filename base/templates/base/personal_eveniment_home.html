@@ -67,61 +67,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
           <div class="col-lg-4 col-sm-6">
             <div class="card card-hover">
-              <div class="card-body">
-                <h1 class="card-title d-flex align-items-center gap-2">
-                  Time left until event start!
-                </h1>
-                      <div class="event">
-                          <p id="countdown-{{ next_event.id }}">Nimic</p>
-                      </div>
-                    
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function () {
-                        try {
-                            var eventDataArray = JSON.parse('{{ next_event_data|safe }}');
-                            
-                            if (!eventDataArray || eventDataArray.length === 0) {
-                                console.warn("No upcoming event found!");
-                                return;
-                            }
-
-                            var eventData = eventDataArray[0];
-                            
-                            console.log("Event Data:", eventData);
-
-                            var eventDate = new Date(eventData.event_date).getTime();
-                            var countdownElement = document.getElementById("countdown-" + eventData.id);
-
-                            if (!countdownElement) {
-                                console.warn("Countdown element not found!");
-                                return;
-                            }
-
-                            function updateCountdown() {
-                                var now = new Date().getTime();
-                                var timeLeft = eventDate - now;
-
-                                var days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                                var hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                                var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                                var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-
-                                countdownElement.innerHTML = timeLeft > 0
-                                    ? `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
-                                    : "The event is live!";
-                            }
-
-                            updateCountdown();
-                            setInterval(updateCountdown, 1000);
-                        } catch (error) {
-                            console.error("Error parsing event data:", error);
-                        }
-                    });
-
-
-                    </script>
-                      </div>
-                    </div>
+              {% include 'timer.html' %}
+            </div>
           </div>
         </div>             
 
@@ -132,24 +79,24 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="col-lg-4">
                   <div class="card overflow-hidden hover-img card-hover">
                     <div class="position-relative">
-                      <a href="{% url 'personal_vizualizare_eveniment' next_event.id %}">
-                        <img src="{{ MEDIA_URL }}{{next_event.location.gallery}}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
+                      <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
+                        <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
                       </a>
                       <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ next_event.event_time }}</span>
-                      <img src="{{ MEDIA_URL }}{{ next_event.organized_by.profile_set.all.0.photo }}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
+                      <img src="{{ MEDIA_URL }}{{ event.organized_by.profile_set.all.0.photo }}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
                     </div>
                     <div class="card-body p-4">
-                      <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ next_event.organised_by }}</span>
-                      <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ next_event.event_name }}</a>
+                      <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">{{ event.organised_by }}</span>
+                      <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">{{ event.event_name }}</a>
                       <div class="d-flex align-items-center gap-4">
                         <div class="d-flex align-items-center gap-2">
-                          <i class="ti ti-eye text-dark fs-5"></i>{{ next_event.guests.count }} guests
+                          <i class="ti ti-eye text-dark fs-5"></i>{{ event.guests.count }} guests
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                          <i class="ti ti-message-2 text-dark fs-5"></i> {{ next_event.location.seats_numbers }} seats
+                          <i class="ti ti-message-2 text-dark fs-5"></i> {{ event.location.seats_numbers }} seats
                         </div>
                         <div class="d-flex align-items-center fs-2 ms-auto">
-                          <i class="ti ti-point text-dark"></i>{{ next_event.event_date }}
+                          <i class="ti ti-point text-dark"></i>{{ event.event_date }}
                         </div>
                       </div>
                     </div>

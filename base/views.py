@@ -1435,9 +1435,9 @@ def personal_eveniment_home(request):
     context = {
         'events': events,
         'past_events': past_events,
-        'next_event_data': json.dumps(next_event_data),
+        'event_data': json.dumps(next_event_data),
         'remaining_events_data': remaining_events_data,
-        'next_event': next_event,
+        'event': next_event,
         'remaining_events': remaining_events,
         'profile': profiles,
         }
@@ -1467,6 +1467,12 @@ def personal_profile(request):
             location_owned.description = request.POST.get('description')
             location_owned.seats_numbers = request.POST.get('number') or 0
             location_owned.save()
+
+        elif form_type == 'formSocials':
+            profile.facebook = request.POST.get('facebook')
+            profile.work_link = request.POST.get('website')
+            profile.save()
+
 
     location_owned = Location.objects.filter(owner=request.user).first()
     profile = Profile.objects.filter(user = location_owned.owner).first()
@@ -1510,13 +1516,14 @@ def personal_vizualizare_eveniment(request, pk):
         
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
+
     event_data = [
         {
             'id': event.id,
             'title': event.event_name,
             'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
         }
-    ]
+    ]   
     
     context = {
         'event': event,
@@ -1643,10 +1650,18 @@ def guest_home(request):
     rsvp = RSVP.objects.filter(guest = request.user)
 
     next_rsvp = rsvp.first() if rsvp.exists() else None
-    print(next_rsvp)
-     
     other_rsvp = rsvp[1:] if rsvp.count() > 1 else []
-    print(other_rsvp)
+
+    next_event = next_rsvp.event
+
+    event_data = [
+        {
+            'id': next_event.id,
+            'title': next_event.event_name,
+            'event_date': datetime.combine(next_event.event_date, next_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+        }
+    ] 
+
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 
@@ -1655,7 +1670,9 @@ def guest_home(request):
         "preferences": preferences,
         "profile": profil,
         "rsvp": next_rsvp,
-        "other_rsvp": other_rsvp
+        "other_rsvp": other_rsvp,
+        "event": next_event,
+        "event_data": json.dumps(event_data)
     }
 
     if not_completed:
@@ -1698,7 +1715,7 @@ def guest_event_view(request, pk):
         'event':event,
         'profile':profile,
         'preferences':preferences,
-        'event_data': event_data,
+        'event_data': json.dumps(event_data),
         'rsvp':rsvp
     }
     return render(request,'base/guest_event_view.html', context)
