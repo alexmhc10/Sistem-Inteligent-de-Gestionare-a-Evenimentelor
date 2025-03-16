@@ -32,14 +32,38 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid" style="max-height: 300px;">
                   </div>
                   <div class="row mt-4">
-                      <div class="col-lg-6 border border-secondary-subtle">
+                      <div class="col-lg-6 border border-secondary-subtle rounded-4">
                         {% include 'timer.html' %}
                       </div>
-                      <div class="col-lg-6">
-                          <h3 class="text-center">Location data</h3>
-                          
+                      <div class="col-lg-6 border border-secondary-subtle rounded-4 p-1">
+                          <h3 class="text-center">Location map</h3>
+                          <div class="mapouter" style="flex: 1;">
+                            <div class="gmap_canvas">
+                                <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                  src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                            </div>
+                            <style>
+                                .mapouter {
+                                    position: relative;
+                                    text-align: right;
+                                    width: 100%;
+                                }
+                    
+                                .gmap_canvas {
+                                    overflow: hidden;
+                                    background: none !important;
+                                    width: 100%; 
+                                    height: 100%; 
+                                }
+                    
+                                .gmap_iframe {
+                                    width: 100% !important; 
+                                    height: 100% !important; 
+                                }
+                            </style>
+                        </div>
                       </div>
-                      <div class="col-lg-6 d-flex flex-column justify-content-center text-center" style="min-height: 200px;">
+                      <div class="col-lg-6 d-flex flex-column justify-content-center text-center border border-secondary-subtle rounded-4" style="min-height: 200px;">
                           <h3 class="text-center">Preferences</h3>
                           <div class="row d-flex flex-row">
                             <div class="col-3 d-flex flex-column text-center">
@@ -52,10 +76,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <p>Vegan</p>
                               {% if preferences.vegan %}
                               <i class="bi bi-check-lg"></i>
-
                               {% else %}
                               <i class="bi bi-x-lg"></i>
-
                               {% endif %}
                             </div>
                             <div class="col-3 d-flex flex-column text-center">
@@ -70,9 +92,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </div>
                     
                           </div>
+                          <div class="flex justify-content-center mt-4">
                             <a href="{% url 'guest_profile' %}" class="btn btn-primary">Change preferences</a>
+                          </div> 
                       </div>
-                      <div class="col-lg-6">
+                      <div class="col-lg-6 border border-secondary-subtle rounded-4">
                           <h3 class="text-center">Attendence status</h3>
                           <div class="status d-flex flex-row gap-2 align-items-center">
                             <p class="h2 fs-4">Your current status: </p>
