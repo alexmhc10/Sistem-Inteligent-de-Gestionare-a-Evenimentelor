@@ -78,8 +78,10 @@
                       </ul>                
                       <div class="d-flex align-items-center justify-content-center gap-2 text-center">
                         <button class="btn btn-warning" id="saveSocials" name="form_type" value="formSocials">Save</button>
+                        <button class="btn btn-danger" id="cancelEdit">Cancel</button>
                       </div> 
-                    </form> 
+                    </form>
+                     
                   </div>   
                 </div>
               </div>
@@ -93,8 +95,13 @@
               document.getElementById("saveSocials").addEventListener("click", function () {
                 document.getElementById("socialsLinks").style.display = "block";
                 document.getElementById("socialsContainer").style.display = "none";
-
               });
+
+              document.getElementById("cancelEdit").addEventListener("click", function () {
+                document.getElementById("socialsLinks").style.display = "block";
+                document.getElementById("socialsContainer").style.display = "none";
+              });
+
             </script>
             <div class="col-lg-8">
               <div class="card">
@@ -173,7 +180,7 @@
                         <h6 class="mb-0">Hosted event types</h6>
                       </div>
                       <div class="col-sm-9 text-secondary">
-                        <input type="text" class="form-control" value="{{ profile.email }}">
+                        {{ form.as_p }}
                       </div>
                     </div>
                     <div class="row mb-3 align-items-center">

@@ -113,3 +113,18 @@ class MessageForm(forms.ModelForm):
         widgets ={ 
             'body': forms.TextInput(attrs={'placeholder': 'Write a message...', 'class': 'message-input', 'maxlength': '300', 'autofocus': True })
         }
+
+class LocationEventTypesForm(forms.ModelForm):
+    types = forms.ModelMultipleChoiceField(
+        queryset=Type.objects.all(),
+        widget=forms.SelectMultiple,
+        required=False
+    )
+    class Meta:
+        model = Location
+        fields = ['types']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'}) 

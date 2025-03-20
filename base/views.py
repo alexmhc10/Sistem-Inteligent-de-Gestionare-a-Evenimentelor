@@ -1464,6 +1464,9 @@ def personal_profile(request):
             location_owned.save()
 
         elif form_type == 'form2':
+            form = LocationEventTypesForm(request.POST, instance=location_owned)
+            if form.is_valid():
+                form.save()  # Salvăm în baza de date
             location_owned.description = request.POST.get('description')
             location_owned.seats_numbers = request.POST.get('number') or 0
             location_owned.save()
@@ -1472,15 +1475,19 @@ def personal_profile(request):
             profile.facebook = request.POST.get('facebook')
             profile.work_link = request.POST.get('website')
             profile.save()
+    else:
+        form_type = LocationEventTypesForm()
 
 
+    form_types = LocationEventTypesForm()
     location_owned = Location.objects.filter(owner=request.user).first()
     profile = Profile.objects.filter(user = location_owned.owner).first()
 
     context = {
         'location_data':location_owned,
         'profile':profile,
-        'location_images':location_images
+        'location_images':location_images,
+        'form': form_types
     }
     return render(request, 'base/personal_profile.html', context)
 
@@ -1561,30 +1568,42 @@ def personal_face_id(request, pk):
     return render(request, 'base/personal_face_id.html', context)
 
 
-# def find_user_view(request):
-#     if is_ajax(request):
-#         photo = request.POST.get('photo')
-#         _, str_img = photo.split(';base64')
+def find_user_view(request):
+    if is_ajax(request):
+        photo = request.POST.get('photo')
+        _, str_img = photo.split(';base64')
 
-#         decoded_file = base64.b64decode(str_img)
-#         print(decoded_file)
+        # print(photo)
+        decoded_file = base64.b64decode(str_img)
 
-#         x = Log()
-#         x.photo.save('upload.png', ContentFile(decoded_file))
-#         x.save()
+        x = Log()
+        x.photo.save('upload.png', ContentFile(decoded_file))
+        x.save()
 
-#         res = classify_face(x.photo.path)
-#         if res:
-#             user_exists = User.objects.filter(username=res).exists()
-#             if user_exists:
-#                 user = User.objects.get(username=res)
-#                 profile = Profile.objects.get(user=user)
-#                 x.profile = profile
-#                 x.save()
+        try:
+            res = classify_face(x.photo.path)
+            print(f"Rezultatul clasificării: {res}")  # Debugging
+            
+            if res:
+                user_exists = User.objects.filter(username=res).exists()
+                print(f"User exists: {user_exists}")  # Debugging
+                
+                if user_exists:
+                    user = User.objects.get(username=res)
+                    profile = Profile.objects.get(user=user)
+                    x.profile = profile
+                    x.save()
+                    return JsonResponse({'success': True})
+                else:
+                    return JsonResponse({'success': False, 'error': 'User not found'})
+            else:
+                return JsonResponse({'success': False, 'error': 'Face recognition failed'})
 
-#                 return JsonResponse({'success': True})
-#         return JsonResponse({'success': False})
+        except Exception as e:
+            print(f"Eroare la clasificare: {e}")
+            return JsonResponse({'success': False, 'error': str(e)})
 
+    
 
 @login_required(login_url='/login')
 @user_is_guest
