@@ -32,7 +32,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid" style="max-height: 300px;">
                   </div>
                   <div class="row mt-4">
-                      <div class="col-lg-6 border border-secondary-subtle rounded-4">
+                      <div class="col-lg-6 border border-secondary-subtle d-flex flex-column justify-content-center rounded-4">
+                        <h3 class="text-center gap-2">
+                          Time left until event start!
+                        </h3>
+                        <h1 class="text-center"><i class="bi bi-clock"></i></h1>
                         {% include 'timer.html' %}
                       </div>
                       <div class="col-lg-6 border border-secondary-subtle rounded-4 p-1">

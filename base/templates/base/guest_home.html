@@ -325,17 +325,19 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <a href="{% url 'guest_event_view' rsvp.event.id %}">
                 <div class="card glowing-card mb-3">
                   <div class="row g-0">
-                      <div class="col-md-4">
+                      <div class="col-md-4 h-100">
                         <img src="{{ MEDIA_URL }}{{ rsvp.event.location.gallery }}" class="img-fluid rounded-start" style="object-fit: cover;" alt="...">
                       </div>
-                    <div class="col-md-8">
+                    <div class="col-md-8 h-100">
                       <div class="card-body">
                         <h5 class="card-title">{{ rsvp.event.event_name }}</h5>
                         <p class="card-text">{{ rsvp.event.event_description }}</p>
                         <p class="card-text"><small class="text-body-secondary">Date: {{ rsvp.event.event_date }}</small></p>
+                        <p class="card-text">
+                          {% include 'timer.html' %}
+                        </p>
                       </div>
                     </div>
-                    {% include 'timer.html' %}
                   </div>
                 </div>
               </a>  

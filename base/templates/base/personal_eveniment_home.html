@@ -67,7 +67,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
           <div class="col-lg-4 col-sm-6">
             <div class="card card-hover">
-              {% include 'timer.html' %}
+              <div class="card-body">
+                <h1 class="card-title d-flex align-items-center gap-2">Time left until event start!</h1>
+                {% include 'timer.html' %}
+              </div>
             </div>
           </div>
         </div>             
