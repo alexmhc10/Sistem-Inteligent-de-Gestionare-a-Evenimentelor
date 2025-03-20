@@ -1403,7 +1403,7 @@ def personal_eveniment_home(request):
 
     past_events = Event.objects.filter(event_date__lte = current_date).order_by('event_date')
 
-    upcoming_events = Event.objects.filter(event_date__gte = current_date).order_by('event_date')
+    upcoming_events = Event.objects.filter(event_date__gte = current_date, location__in=location).order_by('event_date')
 
     next_event = upcoming_events.first() if upcoming_events.exists() else None
 
@@ -1466,7 +1466,7 @@ def personal_profile(request):
         elif form_type == 'form2':
             form = LocationEventTypesForm(request.POST, instance=location_owned)
             if form.is_valid():
-                form.save()  # Salvăm în baza de date
+                form.save()
             location_owned.description = request.POST.get('description')
             location_owned.seats_numbers = request.POST.get('number') or 0
             location_owned.save()
@@ -1581,7 +1581,7 @@ def find_user_view(request):
         x.save()
 
         try:
-            res = classify_face(x.photo.path)
+            res = classify_face(x.photo)
             print(f"Rezultatul clasificării: {res}")  # Debugging
             
             if res:
