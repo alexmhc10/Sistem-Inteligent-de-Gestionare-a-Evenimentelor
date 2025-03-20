@@ -317,31 +317,33 @@ data-sidebar-position="fixed" data-header-position="fixed">
       </div>-->
       
       <div class="row mt-4">
-        <div class="col-lg-8">
-              <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-              </div>
-              <a href="{% url 'guest_event_view' rsvp.event.id %}">
-                <div class="card glowing-card mb-3">
-                  <div class="row g-0">
-                      <div class="col-md-4 h-100">
-                        <img src="{{ MEDIA_URL }}{{ rsvp.event.location.gallery }}" class="img-fluid rounded-start" style="object-fit: cover;" alt="...">
-                      </div>
-                    <div class="col-md-8 h-100">
-                      <div class="card-body">
-                        <h5 class="card-title">{{ rsvp.event.event_name }}</h5>
-                        <p class="card-text">{{ rsvp.event.event_description }}</p>
-                        <p class="card-text"><small class="text-body-secondary">Date: {{ rsvp.event.event_date }}</small></p>
-                        <p class="card-text">
-                          {% include 'timer.html' %}
-                        </p>
+          {% if rsvp is not none %}
+          <div class="col-lg-8">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                  <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <a href="{% url 'guest_event_view' rsvp.event.id %}">
+                  <div class="card glowing-card mb-3">
+                    <div class="row g-0">
+                        <div class="col-md-4 h-100">
+                          <img src="{{ MEDIA_URL }}{{ rsvp.event.location.gallery }}" class="img-fluid rounded-start" style="object-fit: cover;" alt="...">
+                        </div>
+                      <div class="col-md-8 h-100">
+                        <div class="card-body">
+                          <h5 class="card-title">{{ rsvp.event.event_name }}</h5>
+                          <p class="card-text">{{ rsvp.event.event_description }}</p>
+                          <p class="card-text"><small class="text-body-secondary">Date: {{ rsvp.event.event_date }}</small></p>
+                          <p class="card-text">
+                            {% include 'timer.html' %}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </a>  
-        </div>
+                </a>  
+          </div>
+          {% endif %}
           <div class="col-lg-4 mb-4">
               <a href="{% url 'guest_profile' %}">
                 <div class="card card-hover" style="max-height: 300px; max-width: 300px;">

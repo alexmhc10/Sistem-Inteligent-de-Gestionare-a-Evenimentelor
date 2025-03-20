@@ -35,6 +35,12 @@ from base.models import Event
 from .models import Location
 from .utils import is_ajax, classify_face
 import base64
+from django.core.files.storage import FileSystemStorage
+import pandas as pd
+from django.utils.text import slugify
+
+
+
 
 
 def locations_list(request):
@@ -69,6 +75,7 @@ def event_list(request):
     events = Event.objects.all()  
     return render(request, 'base/my_events.html', {'events': events})
 
+
 @login_required
 def edit_profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
@@ -93,6 +100,8 @@ def edit_profile(request, username):
 
     return render(request, 'base/organizer_profile.html', {'form': form, 'profile': profile})    
 @login_required
+
+
 def organizer_profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
 
@@ -145,25 +154,72 @@ def delete_event(request, event_id):
 @login_required(login_url='/login')
 def event_builder(request):
     locations = Location.objects.all()
-    if request.method == 'POST':
+    if request.method == 'POST' and request.FILES.get('guest_file'):
         form = EventForm(request.POST)
+
         if form.is_valid():
             event = form.save(commit=False)
             event.organized_by = request.user
             event.save()
             form.save_m2m()
             Notification.objects.create(
-                    user=request.user,
-                    action_type='created_event',
-                    target_object_id=request.user.id,
-                    target_object_name=request.user.username,
-                    target_model='Event'
-                )  
-            return redirect('my_events')  
+                user=request.user,
+                action_type='created_event',
+                target_object_id=request.user.id,
+                target_object_name=request.user.username,
+                target_model='Event'
+            )  
+
+        uploaded_file = request.FILES['guest_file']
+
+        fs = FileSystemStorage()
+        filename = fs.save(uploaded_file.name, uploaded_file)
+        file_path = fs.path(filename)
+
+        if filename.endswith('.csv'):
+            df = pd.read_csv(file_path)
+        elif filename.endswith(('.xls', '.xlsx')):
+            df = pd.read_excel(file_path)
+        else:
+            return render(request, 'event_builder.html', {'error': 'Format de fișier invalid'})
+
+        for _, row in df.iterrows():
+            name = row.get('nume')
+            email = row.get('email')
+            phone = row.get('telefon')
+
+            if name and email:
+                username = name.replace(" ", "")
+                
+                counter=1
+                while User.objects.filter(username=username).exists():
+                    username = f"{username}{counter}"
+                    counter += 1
+
+                user, created = User.objects.get_or_create(username=username, email=email)
+                if created:
+                    user.set_password(phone)
+                    user.save()
+                    Profile.objects.create(user=user, username=username, email=email, password=phone, number=phone, user_type='guest')
+
+                    try:
+                        event = Event.objects.get(id=event.id)
+                    except Event.DoesNotExist:
+                        continue
+
+                    RSVP.objects.create(guest=user, event=event)
+        
+
+
+        
+            
+        return redirect('my_events')  
     else:
         form = EventForm()
+        form_file = UploadFileForm()
 
-    return render(request, 'base/event_builder.html', {'form2': form, 'locations': locations})
+
+    return render(request, 'base/event_builder.html', {'form2': form,'form_file': form_file, 'locations': locations})
 
 
 @login_required(login_url='/login')
@@ -276,7 +332,6 @@ def loginPage(request):
     print("Rendering login page.")
     context = {'page': page}
     return render(request, 'base/login_register.html', context)
-
 
 
 def registerPage(request):
@@ -1670,17 +1725,20 @@ def guest_home(request):
 
     next_rsvp = rsvp.first() if rsvp.exists() else None
     other_rsvp = rsvp[1:] if rsvp.count() > 1 else []
+    
+    next_event = None
+    event_data = []
 
-    next_event = next_rsvp.event
+    if next_rsvp is not None:
+        next_event = next_rsvp.event
 
-    event_data = [
-        {
-            'id': next_event.id,
-            'title': next_event.event_name,
-            'event_date': datetime.combine(next_event.event_date, next_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
-        }
-    ] 
-
+        event_data = [
+            {
+                'id': next_event.id,
+                'title': next_event.event_name,
+                'event_date': datetime.combine(next_event.event_date, next_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+            }
+        ] 
 
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 

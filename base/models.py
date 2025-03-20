@@ -150,6 +150,8 @@ class Guests(models.Model):
     vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)
     state = models.BooleanField(default=False)
+
+  
     
     
 class Menu(models.Model):
