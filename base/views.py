@@ -1598,6 +1598,69 @@ def personal_vizualizare_eveniment(request, pk):
 
 @login_required(login_url='/login')
 @user_is_staff
+def personal_menu(request):
+    profile = Profile.objects.get(user=request.user)
+    menu_items = Menu.objects.all()
+    context = {
+        'profile':profile,
+        'menu_items': menu_items
+    }
+    return render(request, 'base/personal_menu.html', context)
+
+
+def add_food(request):
+    if request.method == "POST":
+        print("Cerere POST primită:", request.POST)  # DEBUG
+
+        name = request.POST.get("name")
+        allergens = request.POST.get("allergens", "")
+        is_vegetarian = request.POST.get("is_vegetarian") == "on"
+        image = request.FILES.get("image")  # Obține fișierul încărcat
+
+        print(f"Date primite: nume={name}, alergeni={allergens}, vegetarian={is_vegetarian}, image={image}")  # DEBUG
+
+        if name:
+            food = Menu.objects.create(
+                item_name=name,
+                allergens=allergens,
+                item_vegan=is_vegetarian,
+                item_picture=image
+            )
+            return JsonResponse({"success": True, "food_id": food.id, "image_url": food.item_picture.url if food.item_picture else None})
+        else:
+            return JsonResponse({"success": False, "error": "Numele este obligatoriu."})
+
+    return JsonResponse({"success": False, "error": "Metodă invalidă (folosește POST)."})
+
+
+def search_food(request):
+    query = request.GET.get("query", "").strip()
+    vegetarian = request.GET.get("vegetarian", "")
+    selected_allergens = request.GET.getlist("allergens")
+
+    foods = Menu.objects.all()
+
+    if query:
+        foods = foods.filter(
+            Q(item_name__icontains=query) |  
+            Q(allergens__icontains=query)  
+        )
+
+    if vegetarian:
+        foods = foods.filter(item_vegan=True)
+
+    if selected_allergens:
+        allergen_filters = Q()
+        for allergen in selected_allergens:
+            allergen_filters |= Q(allergens__icontains=allergen)
+        foods = foods.filter(allergen_filters)
+
+    return render(request, "base/personal_menu.html", {"menu_items": foods, "query": query, "selected_allergens": selected_allergens})
+    
+
+
+@login_required(login_url='/login')
+@user_is_staff
 def personal_aranjament_invitati(request, pk=None):
     events = Event.objects.first()
     context_default = {

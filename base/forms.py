@@ -135,3 +135,25 @@ class LocationEventTypesForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'}) 
+
+
+ALLERGEN_CHOICES = [
+    ("gluten", "Gluten"),
+    ("lactose", "Lactoză"),
+    ("nuts", "Nuci"),
+    ("eggs", "Ouă"),
+    ("fish", "Pește"),
+]
+
+class FoodSearchForm(forms.Form):
+    query = forms.CharField(required=False, label="Caută feluri de mâncare")
+    vegetarian = forms.BooleanField(required=False, label="Doar vegetariene")
+    allergens = forms.MultipleChoiceField(
+        choices=ALLERGEN_CHOICES,
+        required=False,
+        widget=forms.CheckboxSelectMultiple
+    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs.update({'class': 'form-control'}) 

@@ -53,6 +53,8 @@ urlpatterns = [
     # Meniu
     path('menu-items', views.MenuItems, name="menu-items"),
     path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),
+    path("search/", views.search_food, name="search_food"),
+    path('add_food/', views.add_food, name="add_food"),
 
     # Sarcini (Tasks)
     path('add-task/', views.add_task, name='add_task'),
@@ -73,7 +75,9 @@ urlpatterns = [
     path('personal_profile/', views.personal_profile, name='personal_profile'),
     path('upload_images/', views.upload_images, name='upload_images'),
     path("delete-image/<int:image_id>/", views.delete_image, name="delete_image"),
+    path("personal_menu/", views.personal_menu, name="personal_menu"),
     
+
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
     path('guest_profile', views.guest_profile, name='guest_profile'),

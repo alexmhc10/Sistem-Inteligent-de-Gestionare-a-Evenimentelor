@@ -1,0 +1,164 @@
+{% extends 'main.html' %}
+    {% block navbar %}
+    {% endblock %}
+
+{% block content %}   
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+
+    {% include 'sidebar.html' %}
+
+    <div class="body-wrapper">
+
+        {% include 'header.html' %}
+
+        <div class="container-fluid">
+
+            <div class="col-lg-12">
+                <div class="card card-hover">
+                  <div class="card-body">
+                    <h1 class="card-title text-center">
+                      Here you can configure the menu!
+                    </h1>
+                  </div>
+                </div>
+            </div>
+            <hr>
+            <div class="row mt-4">
+                <div class="col-lg-12">
+                    <div class="card card-hover">
+                      <div class="card-body">
+                        <h1 class="card-title text-center">
+                        Search dish                        
+                        </h1>
+                        <form method="GET" action="{% url 'search_food' %}" class="row gy-3 gx-3 align-items-center">
+                            <div class="col-md-4 d-flex flex-column align-items-center">
+                                <label for="search" class="form-label">Seach name</label>
+                                <input type="text" name="query" value="{{ query }}" class="form-control" placeholder="Dish name" />
+                            </div>
+                            <div class="col-md-2 d-flex flex-column align-items-center">
+                                <label>
+                                    <input type="checkbox" class="form-check-input" name="vegetarian" {% if request.GET.vegetarian %}checked{% endif %}> Vegan
+                                </label>
+                            </div>
+                            <div class="col-md-6 d-flex flex-column align-items-center">
+                                <fieldset>
+                                    <legend class="form-control">Choose allergens</legend>
+                                    <label><input type="checkbox" class="form-check-input" name="allergens" value="gluten" {% if "gluten" in selected_allergens %}checked{% endif %}> Gluten</label>
+                                    <label><input type="checkbox" class="form-check-input" name="allergens" value="lactose" {% if "lactose" in selected_allergens %}checked{% endif %}> Lactoză</label>
+                                    <label><input type="checkbox" class="form-check-input" name="allergens" value="nuts" {% if "nuts" in selected_allergens %}checked{% endif %}> Nuci</label>
+                                    <label><input type="checkbox" class="form-check-input" name="allergens" value="eggs" {% if "eggs" in selected_allergens %}checked{% endif %}> Ouă</label>
+                                    <label><input type="checkbox" class="form-check-input" name="allergens" value="fish" {% if "fish" in selected_allergens %}checked{% endif %}> Pește</label>
+                                </fieldset>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" id="applyFilters" class="btn btn-primary">Apply Filters</button>
+                                <a href="{% url 'personal_menu' %}">
+                                    <button type="button" class="btn btn-secondary">Reset</button>
+                                </a>
+                            </div>
+                        </form>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-lg-3">
+                    <div class="card">
+                        <div class="card-body">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFoodModal">
+                                    Add a new dish
+                                </button>
+                            
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="addFoodModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" aria-labelledby="addFoodModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title text-center" id="addFoodModalLabel">Add a new dish to your menu</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Închide"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form method="POST" enctype="multipart/form-data" class="d-flex flex-column" id="addFoodForm">
+                                    {% csrf_token %}
+                                    <label for="name">Name:</label>
+                                    <input type="text" id="name" name="name" class="form-control" required>
+
+                                    <label for="allergens">Write all allergens:</label>
+                                    <input type="text" id="allergens" name="allergens" class="form-control">
+
+                                    <label for="is_vegetarian" class="form-check-label">Vegan</label>
+                                    <input type="checkbox" id="is_vegetarian" class="form-check-input" name="is_vegetarian">
+                                    
+                                    <label for="image">Photo:</label>
+                                    <input type="file" id="image" name="image" class="form-control">
+                                
+                                    <button type="submit" class="btn btn-success mt-2">Add</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <script>
+                    document.getElementById("addFoodForm").addEventListener("submit", function(event) {
+                        event.preventDefault();  // Previne reîncărcarea paginii
+                    
+                        let formData = new FormData(this);
+                    
+                        fetch("{% url 'add_food' %}", {
+                            method: "POST",  // Asigură-te că este POST, nu GET!
+                            body: formData,
+                            headers: {
+                                "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                alert("Fel de mâncare adăugat!");
+                                location.reload(); // Reîncarcă pagina pentru a afișa noul fel de mâncare
+                            } else {
+                                alert("Eroare: " + data.error);
+                            }
+                        })
+                        .catch(error => console.error("Eroare la trimitere:", error));
+                    });
+                    </script>
+                    
+
+                {% for item in menu_items %}
+                <div class="col-lg-3">
+                  <div class="card overflow-hidden hover-img card-hover">
+                    <div class="position-relative">
+                        <img src="{{ MEDIA_URL }}{{ item.item_picture }}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
+                    </div>
+                    <div class="card-body p-4">
+                      <a class="d-block my-4 fs-3 text-dark fw-semibold link-primary" href="">{{ item.item_name }}</a>
+                      <div class="d-flex align-items-center gap-4">
+                        <div class="d-flex align-items-center gap-2">
+                          <i class="ti ti-eye text-dark fs-5"></i>{{ item.allergens|join:", " }}
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if item.item_vegan %}
+                          <i class="ti ti-message-2 text-dark fs-5"></i> vegan
+                            {% else %}
+                          <i class="ti ti-message-2 text-dark fs-5"></i> non-vegan
+
+                            {% endif %}
+                        </div>
+                        <div class="d-flex align-items-center fs-2 ms-auto">
+                          <i class="ti ti-point text-dark"></i>{{ item.cuisine }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
