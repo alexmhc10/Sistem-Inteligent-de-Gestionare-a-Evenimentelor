@@ -85,9 +85,47 @@
                                     <label for="name">Name:</label>
                                     <input type="text" id="name" name="name" class="form-control" required>
 
-                                    <label for="allergens">Write all allergens:</label>
-                                    <input type="text" id="allergens" name="allergens" class="form-control">
-
+                                    <label for="allergens">Choose all allergens:</label>
+                                    <div class="d-flex">
+                                        <div class="btn-group dropend">
+                                            <button type="button" class="btn btn-secondary">
+                                                Split dropend
+                                              </button>
+                                              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <span class="visually-hidden">Toggle Dropend</span>
+                                              </button>
+                                            
+                                            <ul class="dropdown-menu"><div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                                <label class="form-check-label" for="inlineCheckbox1">Lactose</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                                <label class="form-check-label" for="inlineCheckbox2">Soia</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                                                <label class="form-check-label" for="inlineCheckbox3">Fish</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                                <label class="form-check-label" for="inlineCheckbox2">Soia</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                                                <label class="form-check-label" for="inlineCheckbox3">Fish</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                                <label class="form-check-label" for="inlineCheckbox2">Soia</label>
+                                              </div>
+                                              <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="option3">
+                                                <label class="form-check-label" for="inlineCheckbox3">Fish</label>
+                                              </div>
+                                            </ul>
+                                        </div>
+                                    </div>
                                     <label for="is_vegetarian" class="form-check-label">Vegan</label>
                                     <input type="checkbox" id="is_vegetarian" class="form-check-input" name="is_vegetarian">
                                     
@@ -109,10 +147,8 @@
                         
                         let allergensText = document.querySelector("input[name='allergens']").value;
 
-                        // Transformăm textul într-o listă, eliminând spațiile goale
                         let allergensList = allergensText.split(",").map(a => a.trim());
 
-                        // Convertim lista în JSON și o adăugăm în FormData
                         formData.append("allergens", JSON.stringify(allergensList));
 
                         fetch("{% url 'add_food' %}", {
