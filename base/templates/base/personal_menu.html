@@ -103,12 +103,20 @@
                 
                 <script>
                     document.getElementById("addFoodForm").addEventListener("submit", function(event) {
-                        event.preventDefault();  // Previne reîncărcarea paginii
+                        event.preventDefault();
                     
                         let formData = new FormData(this);
-                    
+                        
+                        let allergensText = document.querySelector("input[name='allergens']").value;
+
+                        // Transformăm textul într-o listă, eliminând spațiile goale
+                        let allergensList = allergensText.split(",").map(a => a.trim());
+
+                        // Convertim lista în JSON și o adăugăm în FormData
+                        formData.append("allergens", JSON.stringify(allergensList));
+
                         fetch("{% url 'add_food' %}", {
-                            method: "POST",  // Asigură-te că este POST, nu GET!
+                            method: "POST",
                             body: formData,
                             headers: {
                                 "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]").value
@@ -118,7 +126,7 @@
                         .then(data => {
                             if (data.success) {
                                 alert("Fel de mâncare adăugat!");
-                                location.reload(); // Reîncarcă pagina pentru a afișa noul fel de mâncare
+                                location.reload();
                             } else {
                                 alert("Eroare: " + data.error);
                             }

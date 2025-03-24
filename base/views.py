@@ -1610,30 +1610,33 @@ def personal_menu(request):
 
 def add_food(request):
     if request.method == "POST":
-        print("Cerere POST primită:", request.POST)  # DEBUG
+        print("Cerere POST primită:", request.POST)
 
         name = request.POST.get("name")
-        allergens = request.POST.get("allergens", "")
+        allergens_data = request.POST.get('allergens', '[]')  # Preluăm string-ul JSON
+        allergens_list = json.loads(allergens_data)
         is_vegetarian = request.POST.get("is_vegetarian") == "on"
-        image = request.FILES.get("image")  # Obține fișierul încărcat
+        image = request.FILES.get("image")
 
-        print(f"Date primite: nume={name}, alergeni={allergens}, vegetarian={is_vegetarian}, image={image}")  # DEBUG
+        print(f"Date primite: nume={name}, alergeni={allergens_list}, vegetarian={is_vegetarian}, image={image}")
 
         if name:
             food = Menu.objects.create(
                 item_name=name,
-                allergens=allergens,
+                allergens=allergens_list,
                 item_vegan=is_vegetarian,
                 item_picture=image
             )
             return JsonResponse({"success": True, "food_id": food.id, "image_url": food.item_picture.url if food.item_picture else None})
         else:
-            return JsonResponse({"success": False, "error": "Numele este obligatoriu."})
+            return JsonResponse({"success": False, "error": "Name is mandatory."})
 
-    return JsonResponse({"success": False, "error": "Metodă invalidă (folosește POST)."})
+    return JsonResponse({"success": False, "error": "Error"})
 
 
 def search_food(request):
+    profile = Profile.objects.get(user=request.user)
+
     query = request.GET.get("query", "").strip()
     vegetarian = request.GET.get("vegetarian", "")
     selected_allergens = request.GET.getlist("allergens")
@@ -1655,7 +1658,13 @@ def search_food(request):
             allergen_filters |= Q(allergens__icontains=allergen)
         foods = foods.filter(allergen_filters)
 
-    return render(request, "base/personal_menu.html", {"menu_items": foods, "query": query, "selected_allergens": selected_allergens})
+    context = {
+        "menu_items": foods,
+        "query": query,
+        "selected_allergens": selected_allergens,
+        "profile": profile,
+    }
+    return render(request, "base/personal_menu.html", context)
     
 
 
