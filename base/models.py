@@ -166,6 +166,13 @@ class Menu(models.Model):
         return self.item_name    
 
 
+class Allergen(models.Model):
+    name = models.CharField(max_length=80)
+    added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    def __str__(self):
+        return self.name  
+
+
 class Event(models.Model):
     location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     event_name = models.CharField(max_length=100)

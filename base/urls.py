@@ -55,6 +55,7 @@ urlpatterns = [
     path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),
     path("search/", views.search_food, name="search_food"),
     path('add_food/', views.add_food, name="add_food"),
+    path('add_allergen/', views.add_allergen, name="add_allergen"),
 
     # Sarcini (Tasks)
     path('add-task/', views.add_task, name='add_task'),

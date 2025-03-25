@@ -37,10 +37,7 @@
           </a>
         {% endif %}               
         <div class="close-btn d-xl-none d-block sidebartoggler fs-8 cursor-pointer" id="sidebarCollapse">
-          <a class="nav-icon-hover">
-          <i class="bi bi-x-lg"></i>        
-
-          </a>
+            <button type="button" class="btn-close h5" aria-label="Close"></button>
         </div>
       </div>
       <!-- Sidebar navigation-->
@@ -79,12 +76,23 @@
                 <span class="hide-menu">Profile</span>
               </a>
             </li>
+            <li class="nav-small-cap">
+              <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
+              <span class="hide-menu">About events</span>
+            </li>
+            <li class="sidebar-item">
+              {% if profile.user_type == 'staff' %}
+                <a class="sidebar-link ps-4" href="{% url 'personal_menu' %}" aria-expanded="false">
+                  <i class="bi bi-cup-straw"></i>                
+                  <span class="hide-menu">Menus</span>
+                  {% endif %}
+                  
+              </a>
+            </li>
           {% endif %}
         </ul>
       </nav>
-      <!-- End Sidebar navigation -->
     </div>
-    <!-- End Sidebar scroll-->
   </aside>
 
 {% endblock %}

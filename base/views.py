@@ -1453,7 +1453,8 @@ def personal_eveniment_home(request):
     print("Events:", events)
 
     profiles = Profile.objects.get(user=request.user)
-
+    print(profiles.user_type)
+    
     current_date = datetime.today()
 
     past_events = Event.objects.filter(event_date__lte = current_date).order_by('event_date')
@@ -1601,11 +1602,26 @@ def personal_vizualizare_eveniment(request, pk):
 def personal_menu(request):
     profile = Profile.objects.get(user=request.user)
     menu_items = Menu.objects.all()
+    allergens = Allergen.objects.all()
     context = {
         'profile':profile,
-        'menu_items': menu_items
+        'menu_items': menu_items,
+        'allergens': allergens
     }
     return render(request, 'base/personal_menu.html', context)
+
+
+def add_allergen(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        allergen_name = data.get("allergen_name")
+
+        if allergen_name:
+            Allergen.objects.create(name=allergen_name, added_by=request.user)
+            return JsonResponse({"success": True})
+    
+    return JsonResponse({"success": False})
+
 
 
 def add_food(request):
@@ -1613,7 +1629,7 @@ def add_food(request):
         print("Cerere POST primită:", request.POST)
 
         name = request.POST.get("name")
-        allergens_data = request.POST.get('allergens', '[]')  # Preluăm string-ul JSON
+        allergens_data = request.POST.get('allergens', '[]')
         allergens_list = json.loads(allergens_data)
         is_vegetarian = request.POST.get("is_vegetarian") == "on"
         image = request.FILES.get("image")
@@ -1636,10 +1652,12 @@ def add_food(request):
 
 def search_food(request):
     profile = Profile.objects.get(user=request.user)
+    allergens_db = Allergen.objects.all()
 
     query = request.GET.get("query", "").strip()
     vegetarian = request.GET.get("vegetarian", "")
     selected_allergens = request.GET.getlist("allergens")
+    
 
     foods = Menu.objects.all()
 
@@ -1663,6 +1681,7 @@ def search_food(request):
         "query": query,
         "selected_allergens": selected_allergens,
         "profile": profile,
+        "allergens": allergens_db
     }
     return render(request, "base/personal_menu.html", context)
     
