@@ -19,21 +19,40 @@
         <div class="card-body p-5">
             <h2 class="text-center text-gradient mb-4">{{ event.event_name }}</h2>
 
+      <!-- Categories and Types -->
+<div class="row mb-3">
+    <div class="col-sm-3 fw-bold text-secondary">🎟️ Types:</div>
+    <div class="col-sm-9">
+        {% if event.types.all %}
+            <ul>
+                {% for type in event.types.all %}
+                    <li>{{ type.name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <span class="text-muted">No types specified</span>
+        {% endif %}
+    </div>
+</div>
+
+
+            <!-- Date and Time -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">📅 Date:</div>
                 <div class="col-sm-9">{{ event.event_date }}</div>
             </div>
-
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">⏰ Time:</div>
                 <div class="col-sm-9">{{ event.event_time }}</div>
             </div>
 
+            <!-- Description -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">📖 Description:</div>
                 <div class="col-sm-9">{{ event.event_description }}</div>
             </div>
 
+            <!-- Location -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">📍 Location:</div>
                 <div class="col-sm-9">
@@ -53,6 +72,48 @@
                 </div>
             </div>
 
+            <!-- Reviews and Ratings -->
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">⭐ Rating:</div>
+                <div class="col-sm-9">
+                    {% if event.average_rating %}
+                        <p>{{ event.average_rating }} / 5 ({{ event.num_reviews }} reviews)</p>
+                    {% else %}
+                        <p>No ratings yet</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Partners and Sponsors -->
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">🤝 Partners & Sponsors:</div>
+                <div class="col-sm-9">
+                    {% for partner in event.partners.all %}
+                        <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" class="img-fluid" style="max-width: 150px;">
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Weather -->
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">🌤️ Weather:</div>
+                <div class="col-sm-9">
+                    {% if event.outdoor %}
+                        <p>Weather forecast for the event day: {{ event.weather_forecast }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Contact -->
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">📞 Contact:</div>
+                <div class="col-sm-9">
+                    <p>Email: <a href="mailto:{{ event.contact_email }}" class="text-primary">{{ event.contact_email }}</a></p>
+                    <p>Phone: <a href="tel:{{ event.contact_phone }}" class="text-primary">{{ event.contact_phone }}</a></p>
+                </div>
+            </div>
+
+            <!-- Edit Button -->
             <div class="d-flex justify-content-center mt-5">
                 <a href="#" class="btn btn-gradient px-5 py-3 rounded-pill shadow-lg">✏️ Edit Event</a>
             </div>
