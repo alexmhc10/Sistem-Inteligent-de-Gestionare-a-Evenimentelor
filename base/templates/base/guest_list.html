@@ -1,12 +1,40 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<h2>Guest List for {{ event.event_name }}</h2>
-<ul>
-    {% for guest in guests %}
-        <li>{{ guest.username }} - {% if guest.status == 'confirmed' %}Confirmed{% else %}Pending{% endif %}</li>
-    {% endfor %}
-</ul>
+<div class="container mt-5">
+    <h2 class="text-center text-primary mb-4">Guest List for {{ event.event_name }}</h2>
 
-<a href="{% url 'my_events' %}" class="btn btn-secondary">Back to My Events</a>
+    <div class="card shadow-lg border-0">
+        <div class="card-body p-4">
+            {% if guests %}
+                <ul class="list-group">
+                    {% for guest in guests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span class="fw-bold">{{ guest.username }}</span>
+                            {% if guest.status == 'confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted text-center">No guests added yet.</p>
+            {% endif %}
+            
+            <div class="d-flex justify-content-center mt-4">
+                <a href="{% url 'my_events' %}" class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm">Back to My Events</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        border-radius: 8px;
+        margin-bottom: 5px;
+    }
+</style>
+
 {% endblock %}

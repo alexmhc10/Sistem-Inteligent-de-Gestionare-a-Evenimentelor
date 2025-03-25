@@ -71,6 +71,7 @@ def guest_list(request, event_id):
 def event_details(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     return render(request, 'base/event_details.html', {'event': event})
+
 def event_list(request):
     events = Event.objects.all()  
     return render(request, 'base/my_events.html', {'events': events})
@@ -1227,22 +1228,29 @@ def profilePage(request, username):
     return render(request, 'base/profiles.html', {'profile': profile})
 
 def location(request, pk):
-    location = Location.objects.get(name=pk)
+    try:
+        location = Location.objects.get(pk=pk)  # Căutăm locația pe baza id-ului (pk)
+    except Location.DoesNotExist:
+        raise Http404("Location does not exist")  # Aruncăm o eroare dacă locația nu există
+    
     reviews = location.review_set.all()
+    
     if request.method == 'POST':
         review = Review.objects.create(
-            user = request.user,
-            location = location,
-            comment = request.POST.get('comment'),
-            stars = request.POST.get('rating')
+            user=request.user,
+            location=location,
+            comment=request.POST.get('comment'),
+            stars=request.POST.get('rating')
         )
-        return redirect('location', pk=location.name)
+        return redirect('location', pk=location.pk)  # Redirecționăm la pagina locației
+
     star_range = range(1, 6)
     context = {
         'location': location,
         'star_range': star_range,
         'reviews': reviews,
     }
+    
     return render(request, 'base/location.html', context)
 
 
