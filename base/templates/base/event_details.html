@@ -2,19 +2,34 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h2 class="text-center mb-4" style="color: #002B5B;">Event Details</h2>
+    <h2 class="text-center mb-4 text-primary">Event Details</h2>
     
     <div class="card shadow-lg border-light">
         <div class="card-body">
-            <h5 class="card-title" style="color: #2E8B57;">Event Information</h5>
-            <p><strong>Name:</strong> <span style="color: #002B5B;">{{ event.event_name }}</span></p>
-            <p><strong>Date:</strong> <span style="color: #002B5B;">{{ event.event_date }}</span></p>
-            <p><strong>Time:</strong> <span style="color: #002B5B;">{{ event.event_time }}</span></p>
-            <p><strong>Description:</strong> <span style="color: #002B5B;">{{ event.event_description }}</span></p>
-            <p><strong>Location:</strong> <span style="color: #002B5B;">{{ event.location }}</span></p>
-            
+            <h5 class="card-title text-success">Event Information</h5>
+            <dl class="row">
+                <dt class="col-sm-3">Name:</dt>
+                <dd class="col-sm-9 text-primary">{{ event.event_name }}</dd>
+
+                <dt class="col-sm-3">Date:</dt>
+                <dd class="col-sm-9">{{ event.event_date }}</dd>
+
+                <dt class="col-sm-3">Time:</dt>
+                <dd class="col-sm-9">{{ event.event_time }}</dd>
+
+                <dt class="col-sm-3">Description:</dt>
+                <dd class="col-sm-9">{{ event.event_description }}</dd>
+
+                <dt class="col-sm-3">Location:</dt>
+                <dd class="col-sm-9">
+                    <a href="" class="text-decoration-none fw-bold text-primary">
+                        {{ event.location }}
+                    </a>
+                </dd>
+            </dl>
+
             <div class="d-flex justify-content-center mt-4">
-                <a href="#" class="btn btn-primary" style="background-color: #D4AF37; border-color: #D4AF37;">Edit Event</a>
+                <a href="" class="btn btn-warning">Edit Event</a>
             </div>
         </div>
     </div>
