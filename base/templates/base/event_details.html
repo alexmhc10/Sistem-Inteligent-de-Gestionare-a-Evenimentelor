@@ -5,8 +5,8 @@
     
     <!-- Event Image Banner -->
     {% if event.image %}
-        <div class="event-banner position-relative text-center mb-5">
-            <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid rounded shadow-lg">
+        <div class="event-banner position-relative text-center mb-4">
+            <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid rounded shadow-lg event-img">
             <div class="overlay">
                 <h1 class="text-white fw-bold">{{ event.event_name }}</h1>
                 <p class="text-white fst-italic">{{ event.event_date }} | {{ event.event_time }}</p>
@@ -19,22 +19,30 @@
         <div class="card-body p-5">
             <h2 class="text-center text-gradient mb-4">{{ event.event_name }}</h2>
 
-      <!-- Categories and Types -->
-<div class="row mb-3">
-    <div class="col-sm-3 fw-bold text-secondary">🎟️ Types:</div>
-    <div class="col-sm-9">
-        {% if event.types.all %}
-            <ul>
-                {% for type in event.types.all %}
-                    <li>{{ type.name }}</li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <span class="text-muted">No types specified</span>
-        {% endif %}
-    </div>
-</div>
+            <!-- Timeline Section -->
+            <div class="timeline">
+                <div class="timeline-item active">✔ Event Created</div>
+                <div class="timeline-item active">✔ Invitations Sent</div>
+                <div class="timeline-item">⏳ All Participants Ready</div>
+                <div class="timeline-item">🍽 Selecting Food Menus</div>
+                <div class="timeline-item">🎉 Event Day</div>
+            </div>
 
+            <!-- Categories and Types -->
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">🎟️ Types:</div>
+                <div class="col-sm-9">
+                    {% if event.types.all %}
+                        <ul>
+                            {% for type in event.types.all %}
+                                <li>{{ type.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <span class="text-muted">No types specified</span>
+                    {% endif %}
+                </div>
+            </div>
 
             <!-- Date and Time -->
             <div class="row mb-3">
@@ -94,16 +102,6 @@
                 </div>
             </div>
 
-            <!-- Weather -->
-            <div class="row mb-3">
-                <div class="col-sm-3 fw-bold text-secondary">🌤️ Weather:</div>
-                <div class="col-sm-9">
-                    {% if event.outdoor %}
-                        <p>Weather forecast for the event day: {{ event.weather_forecast }}</p>
-                    {% endif %}
-                </div>
-            </div>
-
             <!-- Contact -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">📞 Contact:</div>
@@ -114,7 +112,7 @@
             </div>
 
             <!-- Edit Button -->
-            <div class="d-flex justify-content-center mt-5">
+            <div class="d-flex justify-content-center mt-4">
                 <a href="#" class="btn btn-gradient px-5 py-3 rounded-pill shadow-lg">✏️ Edit Event</a>
             </div>
         </div>
@@ -130,9 +128,9 @@
     }
 
     /* Event Banner */
-    .event-banner img {
+    .event-img {
         width: 100%;
-        max-height: 450px;
+        max-height: 350px; /* Reduced size */
         object-fit: cover;
         border-radius: 15px;
     }
@@ -144,7 +142,7 @@
         transform: translate(-50%, -50%);
         text-align: center;
         background: rgba(0, 0, 0, 0.4);
-        padding: 20px;
+        padding: 15px;
         border-radius: 12px;
         backdrop-filter: blur(10px);
     }
@@ -157,14 +155,60 @@
         border: 1px solid rgba(255, 255, 255, 0.2);
     }
 
-    /* Gradient Text */
-    .text-gradient {
-        background: linear-gradient(45deg, #B08A2E, #D4AF37);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    /* Timeline */
+    .timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin-bottom: 25px;
+        position: relative;
     }
 
-    /* Gradient Button */
+    .timeline-item {
+        flex: 1;
+        text-align: center;
+        font-weight: bold;
+        padding: 10px;
+        position: relative;
+    }
+
+    .timeline-item::before {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        background: #ccc;
+        border-radius: 50%;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+    .timeline-item.active::before {
+        background: #28a745;
+    }
+
+    /* Animation */
+    .timeline::after {
+        content: "";
+        position: absolute;
+        top: -8px;
+        left: 0;
+        width: 40%;
+        height: 5px;
+        background: #28a745;
+        animation: fillTimeline 2s linear forwards;
+    }
+
+    @keyframes fillTimeline {
+        0% { width: 0; }
+        100% { width: 40%; }
+    }
+
+    /* Edit Button */
     .btn-gradient {
         background: linear-gradient(45deg, #B08A2E, #D4AF37);
         color: white;
@@ -178,28 +222,6 @@
         transform: scale(1.05);
     }
 
-    /* Location Image Hover Effect */
-    .location-image {
-        height: 220px;
-        width: auto;
-        border-radius: 12px;
-        transition: transform 0.3s;
-    }
-
-    .location-image:hover {
-        transform: scale(1.05);
-    }
-
-    /* Responsive Adjustments */
-    @media (max-width: 768px) {
-        .event-banner img {
-            max-height: 300px;
-        }
-
-        .location-image {
-            height: 180px;
-        }
-    }
 </style>
 
 {% endblock %}
