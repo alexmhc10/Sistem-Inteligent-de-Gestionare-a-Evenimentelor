@@ -1649,6 +1649,7 @@ def add_food(request):
     if request.method == "POST":
         print("Cerere POST primită:", request.POST)
 
+        location = request.user.location_set.first()
         name = request.POST.get("name")
         allergens_data = request.POST.get('allergens', '[]')
         allergens_list = json.loads(allergens_data)
@@ -1659,6 +1660,7 @@ def add_food(request):
 
         if name:
             food = Menu.objects.create(
+                at_location=location,
                 item_name=name,
                 allergens=allergens_list,
                 item_vegan=is_vegetarian,

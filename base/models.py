@@ -6,6 +6,9 @@ from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime, timedelta
+import os
+from django.conf import settings
+
 
 
 class EventHistory(models.Model):
@@ -152,21 +155,26 @@ class Guests(models.Model):
     state = models.BooleanField(default=False)
     def __str__(self):
         return self.profile.username
+    
 
-  
+def menu_item_upload_path(instance, filename):
+    location_name = instance.at_location.name if instance.at_location else "default"
+    folder_path = os.path.join(settings.MEDIA_ROOT, location_name, "menu_items")
     
-    
+    os.makedirs(folder_path, exist_ok=True)
+
+    return os.path.join(location_name, "menu_items", filename)
+
+
 class Menu(models.Model):
+    at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     item_name = models.CharField(max_length=80)
     item_cuisine = models.CharField(max_length=20)
     item_vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)
-    item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
+    item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
     def __str__(self):
-        return self.item_name    
-    
-
-
+        return f"{self.item_name} at {self.at_location}"
 
 
 class Allergen(models.Model):
