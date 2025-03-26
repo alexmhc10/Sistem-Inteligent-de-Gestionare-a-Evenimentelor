@@ -164,6 +164,9 @@ class Menu(models.Model):
     item_picture = models.ImageField(upload_to='menu_items/', null=True, blank=True)
     def __str__(self):
         return self.item_name    
+    
+
+
 
 
 class Allergen(models.Model):
@@ -204,6 +207,15 @@ class Event(models.Model):
             self.completed = True
             self.save()     
 
+
+class GuestMenu(models.Model):
+    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event")
+    menu_choices = models.ManyToManyField(Menu, blank=True, related_name="guests")
+
+    def __str__(self):
+        return f"Menu Choises - {self.guest} for {self.event}"
+    
 
 class EventNotification(models.Model):
     sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sender")

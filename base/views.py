@@ -1912,6 +1912,11 @@ def guest_event_view(request, pk):
     return render(request,'base/guest_event_view.html', context)
 
 
+# def save_menu(request, event_id):
+
+
+
+
 def get_food_details(request, food_id):
     food = get_object_or_404(Menu, id=food_id)
     return JsonResponse({
