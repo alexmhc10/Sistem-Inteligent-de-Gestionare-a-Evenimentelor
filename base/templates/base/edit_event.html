@@ -1,0 +1,111 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #F8F4E3, #ECE5D8);
+        color: #4A4A4A;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: auto;
+        background: rgba(255, 255, 255, 0.6);
+        backdrop-filter: blur(10px);
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+        text-align: center;
+        color: #B08A2E;
+        font-weight: bold;
+    }
+
+    .form-label {
+        color: #4A4A4A;
+    }
+
+    .form-control {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid #C5B28A;
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #C5B28A, #D4AF37);
+        border: none;
+        color: white;
+        font-weight: bold;
+        border-radius: 8px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 10px rgba(176, 138, 46, 0.4);
+    }
+
+    .btn-secondary {
+        background: #C5B28A;
+        border-color: #B08A2E;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #B08A2E;
+        color: white;
+    }
+</style>
+
+<div class="container mt-5">
+    <h2>Edit Event</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="event_name" class="form-label">Event Name</label>
+            <input type="text" id="event_name" name="event_name" class="form-control" value="{{ event.event_name }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_date" class="form-label">Event Date</label>
+            <input type="date" id="event_date" name="event_date" class="form-control" value="{{ event.event_date }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_time" class="form-label">Event Time</label>
+            <input type="time" id="event_time" name="event_time" class="form-control" value="{{ event.event_time }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_description" class="form-label">Description</label>
+            <textarea id="event_description" name="event_description" class="form-control" rows="4" required>{{ event.event_description }}</textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_location" class="form-label">Location</label>
+            <input type="text" id="event_location" name="event_location" class="form-control" value="{{ event.location }}" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="event_image" class="form-label">Event Image</label>
+            <input type="file" id="event_image" name="event_image" class="form-control">
+            {% if event.image %}
+                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid mt-2" style="max-width: 200px; border-radius: 8px;">
+            {% endif %}
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a href="" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

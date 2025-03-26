@@ -40,7 +40,21 @@ import pandas as pd
 from django.utils.text import slugify
 
 
+def edit_event(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
 
+    if request.method == "POST":
+        form = EventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Event updated successfully!")
+            return redirect('event_detail', event_id=event.id)
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = EventForm(instance=event)
+
+    return render(request, 'base/edit_event.html', {'form': form, 'event': event})
 
 
 def locations_list(request):

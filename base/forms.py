@@ -35,6 +35,10 @@ class TaskForm(forms.ModelForm):
 #     location = forms.ModelChoiceField(queryset=Location.objects.all(), required=True, label='Locație')
 #     budget = forms.DecimalField(max_digits=10, decimal_places=2, required=True, label='Buget estimativ (€)')
 
+from django import forms
+from .models import Event
+from django.contrib.auth.models import User
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
@@ -44,18 +48,19 @@ class EventForm(forms.ModelForm):
             'event_time', 
             'event_description', 
             'location', 
-            'guests'
+            'guests',
+            'organized_by',  # Adăugăm și organized_by
         ]
         widgets = {
             'event_date': forms.DateInput(attrs={'type': 'date'}),
             'event_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
     def clean_organized_by(self):
         user = self.cleaned_data.get('organized_by')
         if user.is_superuser:
             raise forms.ValidationError("Admin-ul nu poate organiza evenimente.")
         return user
-
 
 class UploadFileForm(forms.Form):
     guest_file = forms.FileField(label="Alege un fișier CSV/XLSX")
