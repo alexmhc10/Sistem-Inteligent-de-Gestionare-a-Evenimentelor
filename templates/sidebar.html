@@ -76,12 +76,14 @@
                 <span class="hide-menu">Profile</span>
               </a>
             </li>
-            <li class="nav-small-cap">
-              <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
-              <span class="hide-menu">About events</span>
-            </li>
-            <li class="sidebar-item">
-              {% if profile.user_type == 'staff' %}
+              
+            {% if profile.user_type == 'staff' %}
+
+              <li class="nav-small-cap">
+                <i class="ti ti-dots nav-small-cap-icon fs-6"></i>
+                <span class="hide-menu">About events</span>
+              </li>
+              <li class="sidebar-item">
                 <a class="sidebar-link ps-4" href="{% url 'personal_menu' %}" aria-expanded="false">
                   <i class="bi bi-cup-straw"></i>                
                   <span class="hide-menu">Menus</span>

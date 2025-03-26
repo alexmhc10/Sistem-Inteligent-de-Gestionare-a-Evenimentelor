@@ -1631,7 +1631,6 @@ def add_allergen(request):
     return JsonResponse({"success": False})
 
 
-
 def add_food(request):
     if request.method == "POST":
         print("Cerere POST primită:", request.POST)
@@ -1865,6 +1864,7 @@ def guest_event_view(request, pk):
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
+    menus=Menu.objects.all()
 
     print(rsvp)
 
@@ -1892,9 +1892,20 @@ def guest_event_view(request, pk):
         'profile':profile,
         'preferences':preferences,
         'event_data': json.dumps(event_data),
-        'rsvp':rsvp
+        'rsvp':rsvp,
+        'menus':menus
     }
     return render(request,'base/guest_event_view.html', context)
+
+
+def get_food_details(request, food_id):
+    food = get_object_or_404(Menu, id=food_id)
+    return JsonResponse({
+        "name": food.item_name,
+        "allergens": food.allergens,
+        "type": "Vegan" if food.item_vegan else "Non-Vegan",
+        "image": food.item_picture.url if food.item_picture else "",
+    })
 
 
 @login_required(login_url='/login')

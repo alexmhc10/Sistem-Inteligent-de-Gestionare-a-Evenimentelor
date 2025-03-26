@@ -148,8 +148,52 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         <div class="header d-flex justify-content-center">
                           <h1 class="h1 text-center">Configure the menu for this event</h1>
                         </div>
+                        <div class="d-flex flex-row">
+                          <div class="menus col-lg-6">
+                            <h4 class="h4">Choose appetizer:</h4>
+                            <select name="appetizer" class="form-select" id="foodSelect">
+                              {% for food in menus %}
+                                <option value="{{food.id}}">{{food.item_name}}</option>
+                              {% endfor %}
+                            </select>
+                          </div>
+                          <div id="foodDetails" class="col-lg-6 flex-column" style="display: none;">
+                              <h4 id="foodName"></h4>
+                              <p><strong>Allergens:</strong> <span id="foodAllergens"></span></p>
+                              <p><strong>Vegan:</strong> <span id="foodType"></span></p>
+                              <img id="foodImage" src="" alt="Food Image" style="max-width: 300px; display: none;">
+                          </div>
+                        </div>  
+                      </div>  
+                        <script>
+                          document.getElementById("foodSelect").addEventListener("change", function() {
+                          let foodId = this.value;
+                          if (foodId) {
+                              fetch(`/get_food_details/${foodId}/`)
+                                  .then(response => response.json())
+                                  .then(data => {
+                                      document.getElementById("foodName").innerText = data.name;
+                                      document.getElementById("foodAllergens").innerText = data.allergens.join(", ");
+                                      document.getElementById("foodType").innerText = data.type;
+                                      
+                                      let foodImage = document.getElementById("foodImage");
+                                      if (data.image) {
+                                          foodImage.src = data.image;
+                                          foodImage.style.display = "flex";
+                                      } else {
+                                          foodImage.style.display = "none";
+                                      }
 
-                      </div>
+                                      document.getElementById("foodDetails").style.display = "flex";
+                                  })
+                                  .catch(error => console.error("Eroare:", error));
+                          } else {
+                              document.getElementById("foodDetails").style.display = "none";
+                          }
+                      });
+                        </script>
+
+                      
                   </div>
               </div>
           </div>

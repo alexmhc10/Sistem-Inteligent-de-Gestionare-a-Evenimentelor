@@ -32,18 +32,19 @@
                         Search dish                        
                         </h1>
                         <form method="GET" action="{% url 'search_food' %}" class="row gy-3 gx-3 align-items-center">
-                            <div class="col-md-4 d-flex flex-column align-items-center">
-                                <label for="search" class="form-label">Seach name</label>
+                            <div class="col-md-4 d-flex flex-column">
+                                <label for="search" class="form-label h6">Seach the dish name:</label>
                                 <input type="text" name="query" value="{{ query }}" class="form-control" placeholder="Dish name" />
                             </div>
                             <div class="col-md-2 d-flex flex-column align-items-center">
+                              <h6 class="h6">Check veganism:</h6>
                                 <label>
                                     <input type="checkbox" class="form-check-input" name="vegetarian" {% if request.GET.vegetarian %}checked{% endif %}> Vegan
                                 </label>
                             </div>
                             <div class="col-md-6 d-flex flex-column align-items-center">
+                              <h6 class="h6">Filter for allergens:</h6>
                                 <fieldset>
-                                    <legend class="form-control">Choose allergens</legend>
                                     {% for allergen in allergens %}
                                       <label><input type="checkbox" class="form-check-input" name="allergens" value="{{allergen.name}}" {% if allergen.name in selected_allergens %}checked{% endif %}>{{allergen.name}}</label>
                                     {% endfor %}
@@ -166,7 +167,7 @@
                               <input type="text" class="form-control" id="allergenName" name="allergen" placeholder="Write allergen" style="min-width: 150px;">
                               <button type="submit" class="btn btn-primary ms-2">Add</button>
                             </form> 
-                            <button data-bs-target="#addFoodModal" data-bs-toggle="modal">Back</button>
+                            <button class="btn btn-danger mt-2" data-bs-target="#addFoodModal" data-bs-toggle="modal">Back</button>
                           </div>
                       </div>
 
