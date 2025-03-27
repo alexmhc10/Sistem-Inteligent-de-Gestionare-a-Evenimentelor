@@ -48,7 +48,7 @@
                                 <td>{{ event.guests.count }}</td>
                                 <td>
                                     <a href="{% url 'event_details' event.id %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Details</a>
-                                    <a href="{}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit</a>
+                                    <a href="{% url 'edit_event' event.id %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit</a>
                                 </td>
                             </tr>
                             {% empty %}
