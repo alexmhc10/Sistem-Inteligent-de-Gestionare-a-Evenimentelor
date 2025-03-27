@@ -2,7 +2,14 @@
     {% block navbar %}
     {% endblock %}
 
-{% block content %}   
+{% block content %}  
+<style>
+  .dropdown-toggle::after {
+    display: none !important;
+}
+
+  
+</style> 
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
 
@@ -243,18 +250,39 @@
                     <div class="position-relative">
                         <img src="{{ MEDIA_URL }}{{ item.item_picture }}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="matdash-img">
                     </div>
-                    <div class="card-body p-4">
-                      <a class="d-block fs-3 text-dark fw-semibold link-primary" href="">{{ item.item_name }}</a>
+                    <div class="card-body ps-3 pt-3 pb-3 pe-0">
+                      <div class="d-flex flex-row justify-content-between">
+
+                      <a class="d-block fs-3 m-0 text-dark fw-semibold link-primary" href="">{{ item.item_name }}</a>
+
+                      <a class="dropdown-toggle me-2" href="#" role="button" data-bs-toggle="dropdown" title="Settings" aria-expanded="false">
+                        <i class="bi bi-three-dots-vertical"></i>                      
+                      </a>
+                    
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item edit-food-btn" role="button" data-bs-toggle="modal" data-bs-target="#exampleModal"  data-id="{{ item.id }}">Edit dish</a></li>
+                        <input type="text" class="edit-food-btn" id="foodId" value="{{ item.id }}" hidden>
+                        <li><a class="dropdown-item" href="#">Delete dish</a></li>
+                      </ul>
+                    </div>
+                    
                       <div class="d-flex align-items-center gap-4">
                         <div class="d-flex align-items-center gap-2">
-                          <i class="bi bi-exclamation-lg"></i>{{ item.allergens|join:", " }}
+                          {% if item.allergens.all %}
+                            {% for allergen in item.allergens.all %}
+                                <span class="allergen-badge">{{ allergen.name }}</span>
+                                {% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <span class="no-allergens">No allergens</span>
+                        {% endif %}
+
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             {% if item.item_vegan %}
                           <i class="ti ti-message-2 text-dark fs-5"></i> vegan
                             {% else %}
                           <i class="ti ti-message-2 text-dark fs-5"></i> non-vegan
-
                             {% endif %}
                         </div>
                         <div class="d-flex align-items-center fs-2 ms-auto">
@@ -265,9 +293,205 @@
                   </div>
                 </div>
                 {% endfor %}
-            </div>
+               <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabelTitle">Edit - {{ item.item_name }}</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <form action="" method="POST" id="editFoodForm" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <input type="text" id="foodId" name="foodId" value="" hidden>
+                            <img src="" id="editAvatarImgModal" class="card-img-top" style="max-height: 200px; object-fit: cover;">
 
+                            <div class="row mt-2">
+                              <div class="col-8">
+                                <label for="foodImageUpload" class="form-label">Choose new image:</label>
+                                <input type="file" id="foodImageUpload" class="form-control" accept="image/*">
+                              </div>
+                              <div class="col-4 d-flex justify-content-center">
+                                <button type="button" id="revertImage" class="btn btn-secondary mt-2" style="max-height: 40px;">Revert</button>
+                              </div>
+                            </div>
+                            
+
+                            <label for="foodName" class="text-dark mt-2">Change the name:</label>
+                            <input type="text" class="form-control" id="foodName" placeholder="Name">
+                            <div class="row">
+                              <div class="col-6">
+                                <label for="foodCuisine" class="text-dark">Change the cuisine:</label>
+
+                                <select name="select" class="form-select" id="foodCuisineSelect">
+                                  <option value="" id="foodCuisine"></option>
+                                  <option value="Iberic">Iberic</option>
+                                  <option value="Italienesc">Italienesc</option>
+                                  <option value="Chinezesc">Chinezesc</option>
+                                  <option value="Fara_preferinte">Fara preferinte</option>
+                                  <option value="Oriental">Oriental</option>
+                                </select>
+                              </div>
+                              <div class="col-6">
+                                <label for="foodAllergens" class="text-dark">Vegan:</label>
+                                <input type="checkbox" class="form-check-input" id="foodVegan" placeholder="Allergens">
+                                
+                              </div>  
+                            </div>
+                            <label for="foodAllergens" class="text-dark">Change the allergens:</label>
+                            {% for allergen in allergens %}
+                            <div class="form-check form-check-inline">
+                              <input class="form-check-input" type="checkbox" name="allergensEdit" value="{{allergen.id}}">
+                              <label class="form-check-label" for="inlineCheckbox1">{{allergen.name}}</label>
+                            </div>  
+                          {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                          <button type="submit" class="btn btn-primary">Save changes</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+                <script>
+                  document.addEventListener("DOMContentLoaded", function () {
+                    console.log("DOM fully loaded!");
+                    
+
+                    let initialImageSrc = "";
+
+                    document.body.addEventListener("click", function (event) {
+                        if (event.target.classList.contains("edit-food-btn")) {
+                            let foodId = event.target.getAttribute("data-id");
+                            console.log("Food ID extras:", foodId);
+
+                            if (!foodId || foodId === "null") {
+                                console.error("Eroare: ID-ul este null sau undefined!");
+                                return;
+                            }
+
+                            fetch(`/get_food_details/${foodId}/`)
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log("Răspuns de la server:", data);
+
+                                    document.getElementById("foodId").value = data.id;
+                                    document.getElementById("exampleModalLabelTitle").innerText = "Edit - "+data.name;
+                                    document.getElementById("editAvatarImgModal").src = data.image;
+                                    initialImageSrc = data.image;
+                                    document.getElementById("foodName").value = data.name;
+
+                                    const allergenCheckboxes = document.querySelectorAll('input[name="allergensEdit"]');
+                                    const currentAllergenIds = new Set(data.allergens);
+
+                                    allergenCheckboxes.forEach(checkbox => {
+                                      checkbox.checked = currentAllergenIds.has(parseInt(checkbox.value));
+                                    });
+
+                                    document.getElementById("foodCuisine").value = data.cuisine;
+                                    document.getElementById("foodCuisine").innerText = data.cuisine;
+                                    if (data.type === "Vegan") {
+                                        document.getElementById("foodVegan").checked = true;
+                                    } else {
+                                        document.getElementById("foodVegan").checked = false;
+                                    }           
+                                    document.getElementById("foodVegan").value = data.type;
+                                })
+                                .catch(error => console.error("Eroare la fetch:", error));
+                        }
+                    });
+
+
+                    let imageInput = document.getElementById("foodImageUpload");
+                    let previewImage = document.getElementById("editAvatarImgModal");
+                    let revertButton = document.getElementById("revertImage");
+
+                    imageInput.addEventListener("change", function (event) {
+                        let file = event.target.files[0];
+                        if (file) {
+                            let reader = new FileReader();
+                            reader.onload = function (e) {
+                                previewImage.src = e.target.result;
+                                console.log("New image preview:", previewImage.src);
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    revertButton.addEventListener("click", function () {
+                        if (initialImageSrc) {
+                            previewImage.src = initialImageSrc;
+                            console.log("Reverted to initial image:", initialImageSrc);
+                            imageInput.value = "";
+                        } else {
+                            console.log("No initial image found.");
+                        }
+                    });
+
+
+                    document.getElementById("editFoodForm").addEventListener("submit", function (event) {
+                    event.preventDefault();
+
+                    let foodId = document.getElementById("foodId").value;
+                    let formData = new FormData();
+                    
+                    formData.append("item_name", document.getElementById("foodName").value);
+                    formData.append("item_cuisine", document.getElementById("foodCuisineSelect").value);
+                    formData.append("item_vegan", document.getElementById("foodVegan").checked ? "true" : "false");
+                    
+                    const imageInput = document.getElementById("foodImageUpload");
+                    if (imageInput.files[0]) {
+                        formData.append("item_picture", imageInput.files[0]);
+                    }
+                    
+                    const allergenCheckboxes = document.querySelectorAll('input[name="allergensEdit"]:checked');
+                    allergenCheckboxes.forEach(checkbox => {
+                        formData.append("allergens", checkbox.value);
+                    });
+
+                    fetch(`/update_food/${foodId}/`, {
+                        method: "POST",
+                        body: formData,
+                        headers: { 
+                            "X-CSRFToken": getCSRFToken() 
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            alert("Felul de mâncare a fost actualizat cu succes!");
+                            location.reload();
+                        } else {
+                            alert("Eroare la actualizare: " + (data.error || "Unknown error"));
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Eroare la actualizare:", error);
+                        alert("A apărut o eroare. Verifică consola pentru detalii.");
+                    });
+                });
+
+                  function getCSRFToken() {
+                      return document.cookie.split("; ")
+                          .find(row => row.startsWith("csrftoken="))
+                          ?.split("=")[1];
+                  }
+              });
+
+
+                </script>
+
+            </div>
+            
         </div>
     </div>
 </div>
+
 {% endblock %}

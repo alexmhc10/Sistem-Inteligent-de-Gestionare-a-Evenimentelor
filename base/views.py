@@ -1623,7 +1623,7 @@ def personal_vizualizare_eveniment(request, pk):
 @user_is_staff
 def personal_menu(request):
     profile = Profile.objects.get(user=request.user)
-    menu_items = Menu.objects.all()
+    menu_items = Menu.objects.filter(at_location=request.user.location_set.first())
     allergens = Allergen.objects.all()
     context = {
         'profile':profile,
@@ -1695,8 +1695,8 @@ def search_food(request):
 
     if selected_allergens:
         allergen_filters = Q()
-        for allergen in selected_allergens:
-            allergen_filters |= Q(allergens__icontains=allergen)
+        for allergen_name in selected_allergens:
+            allergen_filters |= Q(allergens__name__icontains=allergen_name)
         foods = foods.filter(allergen_filters)
 
     context = {
@@ -1914,19 +1914,41 @@ def guest_event_view(request, pk):
     return render(request,'base/guest_event_view.html', context)
 
 
-# def save_menu(request, event_id):
-
-
-
-
 def get_food_details(request, food_id):
     food = get_object_or_404(Menu, id=food_id)
     return JsonResponse({
+        "id": food.id,
         "name": food.item_name,
-        "allergens": food.allergens,
+        "allergens": [allergen.id for allergen in food.allergens.all()],
         "type": "Vegan" if food.item_vegan else "Non-Vegan",
         "image": food.item_picture.url if food.item_picture else "",
+        "cuisine": food.item_cuisine
     })
+
+
+def update_food(request, food_id):
+    if request.method == 'POST':
+        try:
+            food = get_object_or_404(Menu, id=food_id)
+            
+            food.item_name = request.POST.get('item_name')
+            food.item_cuisine = request.POST.get('item_cuisine')
+            food.item_vegan = request.POST.get('item_vegan') == 'true'
+            
+            if 'item_picture' in request.FILES:
+                food.item_picture = request.FILES['item_picture']
+        
+            food.save()
+            
+            allergen_ids = request.POST.getlist('allergens')
+            food.allergens.set(allergen_ids)
+            
+            return JsonResponse({'success': True})
+        
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    
+    return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
 @login_required(login_url='/login')
