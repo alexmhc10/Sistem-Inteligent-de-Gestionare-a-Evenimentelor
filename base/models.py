@@ -68,7 +68,7 @@ class Profile(models.Model):
     password = models.CharField(max_length=128) 
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
-    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
+    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True, default="poze_invitati/male.jpg")
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
     age = models.IntegerField(default=20)
@@ -166,22 +166,22 @@ def menu_item_upload_path(instance, filename):
     return os.path.join(location_name, "menu_items", filename)
 
 
-class Menu(models.Model):
-    at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
-    item_name = models.CharField(max_length=80)
-    item_cuisine = models.CharField(max_length=20)
-    item_vegan = models.BooleanField(default=False)
-    allergens = models.JSONField(default=list, blank=True, null=True)
-    item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
-    def __str__(self):
-        return f"{self.item_name} at {self.at_location}"
-
-
 class Allergen(models.Model):
     name = models.CharField(max_length=80)
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         return self.name  
+
+
+class Menu(models.Model):
+    at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
+    item_name = models.CharField(max_length=80)
+    item_cuisine = models.CharField(max_length=20)
+    item_vegan = models.BooleanField(default=False)
+    allergens = models.ManyToManyField(Allergen, blank=True)
+    item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
+    def __str__(self):
+        return f"{self.item_name} at {self.at_location}"
 
 
 class Event(models.Model):

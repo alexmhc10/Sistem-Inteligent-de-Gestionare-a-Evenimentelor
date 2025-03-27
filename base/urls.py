@@ -54,11 +54,11 @@ urlpatterns = [
     # Meniu
     path('menu-items', views.MenuItems, name="menu-items"),
     path('event-menu/<int:event_id>/', views.MenuForEvent, name="event-menu"),
-    path("search/", views.search_food, name="search_food"),
+    path('search/', views.search_food, name="search_food"),
     path('add_food/', views.add_food, name="add_food"),
     path('add_allergen/', views.add_allergen, name="add_allergen"),
-    path("get_food_details/<int:food_id>/", views.get_food_details, name="get_food_details"),
-
+    path('get_food_details/<int:food_id>/', views.get_food_details, name="get_food_details"),
+    path('update_food/<int:food_id>/', views.update_food, name='update_food'),
 
 
     # Sarcini (Tasks)

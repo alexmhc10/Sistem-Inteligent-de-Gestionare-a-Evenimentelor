@@ -186,7 +186,9 @@
                                     <td class="table-column-ps-0">
                                        <a class="d-flex align-items-center" href="{% url 'view_user_admin' profile.username %}">
                                           <div class="avatar avatar-circle">
+                                             {% if profile.photo %}
                                              <img class="avatar-img" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50px;" src="{{ profile.photo.url }}" alt="Image Description">
+                                             {% endif %}
                                           </div>
                                           <div class="ms-3">
                                              <span class="d-block h5 text-inherit mb-0">{{ profile.first_name }} {{ profile.last_name }} <i class="bi-patch-check-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Top endorsed" data-bs-original-title="Top endorsed"></i></span>
@@ -219,7 +221,9 @@
                                      data-last-name="{{ profile.last_name }}"
                                      data-email="{{ profile.email }}"
                                      data-number="{{ profile.number }}"
+                                     {% if profile.photo %}
                                      data-photo="{{ profile.photo.url }}"
+                                     {% endif %}
                                      data-description="{{ profile.description }}">
                                      <i class="bi-pencil-fill me-1"></i> View
                                  </button>
@@ -244,7 +248,9 @@
                                  <td class="table-column-ps-0">
                                     <a class="d-flex align-items-center" href="{% url 'view_user_admin' user.username %}">
                                        <div class="avatar avatar-circle">
+                                          {% if user.profile_set.first.photo %}
                                           <img class="avatar-img" style="width: 50px; height: 50px; object-fit: cover; border-radius: 50px;" src="{{ user.profile_set.first.photo.url }}" alt="Image ">
+                                          {%endif%}
                                        </div>
                                        <div class="ms-3">
                                           <span class="d-block h5 text-inherit mb-0">{{ user.first_name }} {{ user.last_name }} <i class="bi-patch-check-fill text-primary" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Top endorsed" data-bs-original-title="Top endorsed"></i></span>
@@ -278,7 +284,9 @@
                                     data-last-name="{{ user.last_name }}"
                                     data-email="{{ user.email }}"
                                     data-number="{{ user.profile_set.first.number }}"
+                                    {% if user.profile_set.first.photo %}
                                     data-photo="{{ user.profile_set.first.photo.url }}">
+                                    {% endif %}
                                     <i class="bi-pencil-fill me-1"></i> Edit
                                  </button>
                                  </td>
