@@ -40,21 +40,30 @@ import pandas as pd
 from django.utils.text import slugify
 
 
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from .models import Event, Location
+from .forms import EventForm
+
+@login_required
 def edit_event(request, event_id):
     event = get_object_or_404(Event, id=event_id)
 
-    if request.method == "POST":
+    if request.method == 'POST':
         form = EventForm(request.POST, request.FILES, instance=event)
         if form.is_valid():
             form.save()
             messages.success(request, "Event updated successfully!")
-            return redirect('event_detail', event_id=event.id)
+            return redirect('event_details', event_id=event.id)  
         else:
             messages.error(request, "Please correct the errors below.")
     else:
         form = EventForm(instance=event)
 
     return render(request, 'base/edit_event.html', {'form': form, 'event': event})
+
+
 
 
 def locations_list(request):

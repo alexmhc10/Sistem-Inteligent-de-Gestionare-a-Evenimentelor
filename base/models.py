@@ -194,26 +194,31 @@ class Event(models.Model):
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
-    cost = models.DecimalField(max_digits=10, decimal_places=2, default= 3000)
+    cost = models.DecimalField(max_digits=10, decimal_places=2, default=3000)
     updated_at = models.DateTimeField(auto_now=True)
     is_canceled = models.BooleanField(default=False)
     organized_by = models.ForeignKey(
-            User,
-            on_delete=models.CASCADE, 
-            related_name="organized_events",
-            blank=True,
-            null=True
-        )
+        User,
+        on_delete=models.CASCADE, 
+        related_name="organized_events",
+        blank=True,
+        null=True
+    )
+
     def clean(self):
         if self.organized_by and self.organized_by.is_superuser:
             raise ValidationError("Superuser-ul nu poate organiza evenimente.")
+
+        if self.event_date and self.event_date < now().date():
+            raise ValidationError("Data evenimentului nu poate fi în trecut.")
+    
     def __str__(self):
         return self.event_name
 
-    def check_completed(self):
-        if self.event_date <= now().date():
-            self.completed = True
-            self.save()     
+    @property
+    def is_completed(self):
+        """Verifică dacă evenimentul este considerat complet."""
+        return self.event_date <= now().date()
 
 
 class GuestMenu(models.Model):

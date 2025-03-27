@@ -66,46 +66,31 @@
 <div class="container mt-5">
     <h2>Edit Event</h2>
 
+    <!-- Afișează mesajele de succes/eroare -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        
-        <div class="mb-3">
-            <label for="event_name" class="form-label">Event Name</label>
-            <input type="text" id="event_name" name="event_name" class="form-control" value="{{ event.event_name }}" required>
-        </div>
+        {{ form.as_p }}
 
-        <div class="mb-3">
-            <label for="event_date" class="form-label">Event Date</label>
-            <input type="date" id="event_date" name="event_date" class="form-control" value="{{ event.event_date }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_time" class="form-label">Event Time</label>
-            <input type="time" id="event_time" name="event_time" class="form-control" value="{{ event.event_time }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_description" class="form-label">Description</label>
-            <textarea id="event_description" name="event_description" class="form-control" rows="4" required>{{ event.event_description }}</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_location" class="form-label">Location</label>
-            <input type="text" id="event_location" name="event_location" class="form-control" value="{{ event.location }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_image" class="form-label">Event Image</label>
-            <input type="file" id="event_image" name="event_image" class="form-control">
-            {% if event.image %}
-                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid mt-2" style="max-width: 200px; border-radius: 8px;">
-            {% endif %}
-        </div>
+        {% if event.image %}
+            <div class="mb-3">
+                <label class="form-label">Current Event Image</label><br>
+                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid" style="max-width: 200px; border-radius: 8px;">
+            </div>
+        {% endif %}
 
         <div class="d-flex justify-content-between mt-4">
-            <a href="" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'event_details' event.id %}" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
+        
     </form>
 </div>
 {% endblock %}
