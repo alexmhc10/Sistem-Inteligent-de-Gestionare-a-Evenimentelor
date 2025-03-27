@@ -54,11 +54,26 @@ class EventForm(forms.ModelForm):
             'guests',
         ]  
 
-        widgets = {
-            'event_date': forms.DateInput(attrs={'type': 'date'}),
-            'event_time': forms.TimeInput(attrs={'type': 'time'}),
+    widgets = {
+            'event_date': forms.DateInput(attrs={
+                'type': 'date', 
+                'class': 'form-control event-input',  # Adăugăm clasele pentru stilizare
+                'placeholder': 'Select Date'
+            }),
+            'event_time': forms.TimeInput(attrs={
+                'type': 'time', 
+                'class': 'form-control event-input',  # Adăugăm clasele pentru stilizare
+                'placeholder': 'Select Time'
+            }),
+            'event_description': forms.Textarea(attrs={
+                'class': 'form-control event-input',
+                'rows': 4,
+                'placeholder': 'Describe the event'
+            }),
+            'location': forms.Select(attrs={
+                'class': 'form-select event-input',
+            }),
         }
-
 class UploadFileForm(forms.Form):
     guest_file = forms.FileField(label="Alege un fișier CSV/XLSX")
     def __init__(self, *args, **kwargs):

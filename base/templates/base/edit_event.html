@@ -6,8 +6,6 @@
         background: linear-gradient(135deg, #F8F4E3, #ECE5D8);
         color: #4A4A4A;
         font-family: 'Poppins', sans-serif;
-        margin: 0;
-        padding: 0;
     }
 
     .container {
@@ -34,10 +32,10 @@
         font-weight: 600;
         font-size: 1rem;
         margin-bottom: 8px;
+        display: block;
     }
 
-    /* Modernizare câmpuri input */
-    .form-control {
+    .form-control, .form-select {
         background-color: rgba(255, 255, 255, 0.85);
         border: 1px solid #C5B28A;
         border-radius: 12px;
@@ -46,21 +44,15 @@
         color: #4A4A4A;
         width: 100%;
         margin-bottom: 20px;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        transition: all 0.3s ease;
     }
 
-    .form-control:focus {
+    .form-control:focus, .form-select:focus {
         border-color: #D4AF37;
         box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
         outline: none;
     }
 
-    .form-control::placeholder {
-        color: #4A4A4A;
-        opacity: 0.7;
-    }
-
-    /* Stil pentru butoane */
     .btn-primary {
         background: linear-gradient(45deg, #C5B28A, #D4AF37);
         border: none;
@@ -69,10 +61,7 @@
         border-radius: 12px;
         padding: 14px 28px;
         cursor: pointer;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        font-size: 1rem;
-        display: inline-block;
-        text-decoration: none;
+        transition: all 0.3s ease;
     }
 
     .btn-primary:hover {
@@ -82,26 +71,15 @@
 
     .btn-secondary {
         background: #C5B28A;
-        border-color: #B08A2E;
         color: white;
         font-weight: bold;
         padding: 14px 28px;
         border-radius: 12px;
-        text-decoration: none;
         transition: background-color 0.3s ease;
     }
 
     .btn-secondary:hover {
         background: #B08A2E;
-        color: white;
-    }
-
-    .img-fluid {
-        border-radius: 12px;
-        max-width: 250px;
-        margin-top: 15px;
-        border: 1px solid #C5B28A;
-        padding: 8px;
     }
 
     .alert {
@@ -114,18 +92,19 @@
     .alert-success {
         background-color: #D4EFDB;
         color: #4CAF50;
+        border: 1px solid #4CAF50;
     }
 
     .alert-danger {
         background-color: #FFDDDD;
         color: #FF5733;
+        border: 1px solid #FF5733;
     }
 </style>
 
 <div class="container mt-5">
     <h2>Edit Event</h2>
 
-    <!-- Afișează mesajele de succes/eroare -->
     {% if messages %}
         {% for message in messages %}
             <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
@@ -137,22 +116,48 @@
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
-        <!-- Câmpurile de input sunt acum mai moderne cu focus pe stiluri -->
-        {% for field in form %}
-            <div class="form-group">
-                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                {{ field }}
-            </div>
-        {% endfor %}
+        <!-- Event Name -->
+        <div class="mb-4">
+            <label class="form-label">Event Name</label>
+            <input type="text" class="form-control" name="event_name" 
+                   value="{{ form.instance.event_name }}" required>
+        </div>
 
-        {% if event.image %}
-            <div class="mb-3">
-                <label class="form-label">Current Event Image</label><br>
-                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid">
+        <!-- Date and Time -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Event Date</label>
+                <input type="date" class="form-control" name="event_date" 
+                       value="{{ form.instance.event_date|date:'Y-m-d' }}">
             </div>
-        {% endif %}
+            <div class="col-md-6">
+                <label class="form-label">Event Time</label>
+                <input type="time" class="form-control" name="event_time" 
+                       value="{{ form.instance.event_time|time:'H:i' }}">
+            </div>
+        </div>
 
-        <div class="d-flex justify-content-between mt-4">
+        <!-- Description -->
+        <div class="mb-4">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="event_description" 
+                      rows="4" style="resize: none;">{{ form.instance.event_description }}</textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="mb-4">
+            <label class="form-label">Location</label>
+            <select class="form-select" name="location">
+                {% for choice in form.location.field.choices %}
+                    <option value="{{ choice.0 }}" {% if choice.0 == form.instance.location.pk %}selected{% endif %}>
+                        {{ choice.1 }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-5">
             <a href="{% url 'event_details' event.id %}" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
