@@ -1960,6 +1960,19 @@ def update_food(request, food_id):
     return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
 
+def delete_dish(request, dish_id):
+    if request.method == "DELETE":
+        try:
+            dish = Menu.objects.get(id=dish_id)
+            dish.delete()
+            return JsonResponse({"success": True})
+        except Menu.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Dish not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
+
+
 @login_required(login_url='/login')
 @user_is_guest
 def invite_form(request,event_id,guest_id):

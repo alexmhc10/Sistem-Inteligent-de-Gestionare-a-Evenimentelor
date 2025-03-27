@@ -59,7 +59,7 @@ urlpatterns = [
     path('add_allergen/', views.add_allergen, name="add_allergen"),
     path('get_food_details/<int:food_id>/', views.get_food_details, name="get_food_details"),
     path('update_food/<int:food_id>/', views.update_food, name='update_food'),
-
+    path('delete_dish/<int:dish_id>/', views.delete_dish, name='delete_dish'),
 
     # Sarcini (Tasks)
     path('add-task/', views.add_task, name='add_task'),
