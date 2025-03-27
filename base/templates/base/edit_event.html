@@ -6,104 +6,154 @@
         background: linear-gradient(135deg, #F8F4E3, #ECE5D8);
         color: #4A4A4A;
         font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 0;
     }
 
     .container {
         max-width: 800px;
-        margin: auto;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(10px);
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        margin: 60px auto;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(12px);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1);
     }
 
     h2 {
         text-align: center;
         color: #B08A2E;
         font-weight: bold;
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+        text-transform: uppercase;
     }
 
     .form-label {
         color: #4A4A4A;
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 8px;
     }
 
+    /* Modernizare câmpuri input */
     .form-control {
-        background-color: rgba(255, 255, 255, 0.8);
+        background-color: rgba(255, 255, 255, 0.85);
         border: 1px solid #C5B28A;
-        border-radius: 8px;
-        padding: 10px;
+        border-radius: 12px;
+        padding: 14px;
+        font-size: 1rem;
+        color: #4A4A4A;
+        width: 100%;
+        margin-bottom: 20px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
+    .form-control:focus {
+        border-color: #D4AF37;
+        box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        outline: none;
+    }
+
+    .form-control::placeholder {
+        color: #4A4A4A;
+        opacity: 0.7;
+    }
+
+    /* Stil pentru butoane */
     .btn-primary {
         background: linear-gradient(45deg, #C5B28A, #D4AF37);
         border: none;
         color: white;
         font-weight: bold;
-        border-radius: 8px;
-        padding: 10px 20px;
+        border-radius: 12px;
+        padding: 14px 28px;
         cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        font-size: 1rem;
+        display: inline-block;
+        text-decoration: none;
     }
 
     .btn-primary:hover {
         transform: scale(1.05);
-        box-shadow: 0px 4px 10px rgba(176, 138, 46, 0.4);
+        box-shadow: 0px 8px 20px rgba(176, 138, 46, 0.4);
     }
 
     .btn-secondary {
         background: #C5B28A;
         border-color: #B08A2E;
         color: white;
+        font-weight: bold;
+        padding: 14px 28px;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
     }
 
     .btn-secondary:hover {
         background: #B08A2E;
         color: white;
     }
+
+    .img-fluid {
+        border-radius: 12px;
+        max-width: 250px;
+        margin-top: 15px;
+        border: 1px solid #C5B28A;
+        padding: 8px;
+    }
+
+    .alert {
+        padding: 15px;
+        margin-bottom: 25px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+    }
+
+    .alert-success {
+        background-color: #D4EFDB;
+        color: #4CAF50;
+    }
+
+    .alert-danger {
+        background-color: #FFDDDD;
+        color: #FF5733;
+    }
 </style>
 
 <div class="container mt-5">
     <h2>Edit Event</h2>
 
+    <!-- Afișează mesajele de succes/eroare -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         
-        <div class="mb-3">
-            <label for="event_name" class="form-label">Event Name</label>
-            <input type="text" id="event_name" name="event_name" class="form-control" value="{{ event.event_name }}" required>
-        </div>
+        <!-- Câmpurile de input sunt acum mai moderne cu focus pe stiluri -->
+        {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+            </div>
+        {% endfor %}
 
-        <div class="mb-3">
-            <label for="event_date" class="form-label">Event Date</label>
-            <input type="date" id="event_date" name="event_date" class="form-control" value="{{ event.event_date }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_time" class="form-label">Event Time</label>
-            <input type="time" id="event_time" name="event_time" class="form-control" value="{{ event.event_time }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_description" class="form-label">Description</label>
-            <textarea id="event_description" name="event_description" class="form-control" rows="4" required>{{ event.event_description }}</textarea>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_location" class="form-label">Location</label>
-            <input type="text" id="event_location" name="event_location" class="form-control" value="{{ event.location }}" required>
-        </div>
-
-        <div class="mb-3">
-            <label for="event_image" class="form-label">Event Image</label>
-            <input type="file" id="event_image" name="event_image" class="form-control">
-            {% if event.image %}
-                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid mt-2" style="max-width: 200px; border-radius: 8px;">
-            {% endif %}
-        </div>
+        {% if event.image %}
+            <div class="mb-3">
+                <label class="form-label">Current Event Image</label><br>
+                <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid">
+            </div>
+        {% endif %}
 
         <div class="d-flex justify-content-between mt-4">
-            <a href="" class="btn btn-secondary">Cancel</a>
+            <a href="{% url 'event_details' event.id %}" class="btn btn-secondary">Cancel</a>
             <button type="submit" class="btn btn-primary">Save Changes</button>
         </div>
     </form>
