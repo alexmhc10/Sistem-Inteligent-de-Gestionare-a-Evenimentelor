@@ -1695,9 +1695,9 @@ def search_food(request):
 
     if query:
         foods = foods.filter(
-            Q(item_name__icontains=query) |  
-            Q(allergens__icontains=query)  
-        )
+            Q(item_name__icontains=query) |
+            Q(allergens__name__icontains=query)
+        ).distinct()
 
     if vegetarian:
         foods = foods.filter(item_vegan=True)
