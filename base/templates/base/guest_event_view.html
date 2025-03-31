@@ -17,6 +17,21 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <!--  Header Start -->
     {% include 'header.html' %}
 
+    <script>
+      function checkEventStatus() {
+          fetch(`/api/events/${eventId}/status/`)
+              .then(response => response.json())
+              .then(data => {
+                  if (data.status !== currentStatus) {
+                      window.location.reload();
+                  }
+              });
+      }
+
+      // Verifică la fiecare minut
+      setInterval(checkEventStatus, 60000);
+    </script>
+
     <div class="container-sm">
       <div class="row">
         <div class="col-lg-8 offset-lg-2">

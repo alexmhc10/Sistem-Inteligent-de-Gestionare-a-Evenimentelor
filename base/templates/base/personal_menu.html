@@ -225,6 +225,7 @@
                       <a class="dropdown-toggle me-2" href="#" role="button" data-bs-toggle="dropdown" title="Settings" aria-expanded="false">
                         <i class="bi bi-three-dots-vertical"></i>                      
                       </a>
+                      
                     
                       <ul class="dropdown-menu">
                         <li class="d-flex flex-row justify-content-center align-items-center"><a class="dropdown-item edit-food-btn text-primary-emphasis"  data-bs-toggle="modal" data-bs-target="#exampleModal"  data-id="{{ item.id }}"><i class="bi bi-pencil me-2"></i>Edit dish</a></li>
@@ -258,7 +259,7 @@
                                 })
                                 .then(data => {
                                     if (data.success) {
-                                        Swal.fire('Șters!', data.message || 'The dish has been removed.', 'success')
+                                        Swal.fire('Deleted!', data.message || 'The dish has been removed.', 'success')
                                         .then(() => location.reload());
                                     } else {
                                         throw new Error(data.error || 'Unknown error');

@@ -38,7 +38,8 @@ import base64
 from django.core.files.storage import FileSystemStorage
 import pandas as pd
 from django.utils.text import slugify
-
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -1921,6 +1922,12 @@ def guest_event_view(request, pk):
         'menus':menus
     }
     return render(request,'base/guest_event_view.html', context)
+
+
+@api_view(['GET'])
+def event_status(request, event_id):
+    event = Event.objects.get(pk=event_id)
+    return Response({'status': event.status})
 
 
 def get_food_details(request, food_id):

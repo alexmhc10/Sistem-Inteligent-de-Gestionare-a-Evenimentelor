@@ -36,6 +36,7 @@ CSRF_TRUSTED_ORIGINS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'rest_framework',
     'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
