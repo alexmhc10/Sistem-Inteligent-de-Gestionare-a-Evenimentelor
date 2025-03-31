@@ -192,6 +192,7 @@ class Event(models.Model):
     event_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
+    completed = models.BooleanField(default=False) 
 
     @property
     def status(self):
