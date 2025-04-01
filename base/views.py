@@ -1478,10 +1478,10 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
-    location = Location.objects.filter(owner=request.user)
+    location = Location.objects.get(owner=request.user)
     print("Locatie:", location)
 
-    events = Event.objects.filter(location__in=location)
+    events = Event.objects.filter(location=location)
     print("Events:", events)
 
     profiles = Profile.objects.get(user=request.user)
@@ -1491,7 +1491,7 @@ def personal_eveniment_home(request):
 
     past_events = Event.objects.filter(event_date__lte = current_date).order_by('event_date')
 
-    upcoming_events = Event.objects.filter(event_date__gte = current_date, location__in=location).order_by('event_date')
+    upcoming_events = Event.objects.filter(event_date__gte = current_date, location=location).order_by('event_date')
 
     next_event = upcoming_events.first() if upcoming_events.exists() else None
 
@@ -1562,6 +1562,7 @@ def personal_profile(request):
         elif form_type == 'formSocials':
             profile.facebook = request.POST.get('facebook')
             profile.work_link = request.POST.get('website')
+            profile.instagram = request.POST.get('instagram')
             profile.save()
     else:
         form_type = LocationEventTypesForm()
@@ -1754,33 +1755,25 @@ def find_user_view(request):
 
         # print(photo)
         decoded_file = base64.b64decode(str_img)
+        print(decoded_file)
 
         x = Log()
         x.photo.save('upload.png', ContentFile(decoded_file))
         x.save()
 
-        try:
-            res = classify_face(x.photo)
-            print(f"Rezultatul clasificării: {res}")  # Debugging
-            
-            if res:
-                user_exists = User.objects.filter(username=res).exists()
-                print(f"User exists: {user_exists}")  # Debugging
-                
-                if user_exists:
-                    user = User.objects.get(username=res)
-                    profile = Profile.objects.get(user=user)
-                    x.profile = profile
-                    x.save()
-                    return JsonResponse({'success': True})
-                else:
-                    return JsonResponse({'success': False, 'error': 'User not found'})
-            else:
-                return JsonResponse({'success': False, 'error': 'Face recognition failed'})
+        res = classify_face(x.photo.path)
+        if res:
+            user_exists = User.objects.filter(username=res).exists()
+            if user_exists:
+                user = User.objects.get(username=res)
+                profile = Profile.objects.get(user=user)
+                x.profile = profile
+                x.save()
 
-        except Exception as e:
-            print(f"Eroare la clasificare: {e}")
-            return JsonResponse({'success': False, 'error': str(e)})
+                login(request, user)
+                return JsonResponse({'success': True})
+        return JsonResponse({'success': False})
+    
 
     
 

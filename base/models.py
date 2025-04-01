@@ -78,6 +78,7 @@ class Profile(models.Model):
     street = models.CharField(null=True, blank=True,max_length=100)
     zip_code = models.CharField(null=True, blank=True,max_length=10)
     facebook = models.CharField(null=True, blank=True,max_length=100)
+    instagram = models.CharField(null=True, blank=True,max_length=100)
     work_link = models.CharField(null=True, blank=True,max_length=100)
     google_link = models.CharField(null=True, blank=True,max_length=100)
     country = models.CharField(null=True, blank=True,max_length=100)
@@ -192,17 +193,7 @@ class Event(models.Model):
     event_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
-
-    @property
-    def status(self):
-        now = timezone.now()
-        if now < self.event_time - timezone.timedelta(hours=1):
-            return 'upcoming'
-        elif now >= self.event_time - timezone.timedelta(hours=1) and now < self.event_time:
-            return 'ongoing'
-        else:
-            return 'completed'
-        
+    completed = models.BooleanField(default=False) 
     types = models.ManyToManyField(Type, blank=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2, default=3000)
     updated_at = models.DateTimeField(auto_now=True)

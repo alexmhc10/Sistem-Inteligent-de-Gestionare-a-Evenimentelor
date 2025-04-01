@@ -84,7 +84,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-        <video id="video-element" autoplay playsinline></video>
+        <video id="video-element" style="display: none;" autoplay playsinline></video>
         <div id="img-element"></div>
         <div class="d-flex flex-row justify-content-center mb-4 gap-2">
             <button id="capture-btn" class="btn btn-primary">Photo</button>
@@ -145,6 +145,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             if (navigator.mediaDevices.getUserMedia) {
                 navigator.mediaDevices.getUserMedia({video: true})
                 .then((stream) => {
+                    video.style.display = "block";
                     video.srcObject = stream
                     video.play();
                     const {height, width} = stream.getTracks()[0].getSettings()
@@ -152,6 +153,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     captureBtn.addEventListener('click', e=> {
                         e.preventDefault()
                         captureBtn.classList.add('not-visible')
+                        video.style.display = "none";
                         const track = stream.getVideoTracks()[0]
                         const imageCapture = new ImageCapture(track)
                         console.log(imageCapture)
