@@ -1,0 +1,288 @@
+<div class="col-lg-8 offset-lg-2">
+    <div class="card">
+        <div class="card-body d-flex flex-column">
+            {% if event.status == "upcoming" %}
+              <div class="card-title h1 text-center">Checkout the details about the event!</div> 
+            {% elif event.status == "ongoing" %}  
+              <div class="card-title h1 text-center">The event is live!</div> 
+            {% else %}
+              <div class="card-title h1 text-center">Review the details about the event!</div> 
+            {% endif %}
+              <div class="title text-center"><p class="h2 fs-5">{{ event.event_name }}</p></div>             
+        </div>
+    </div>
+    {% if event.status == "upcoming" %}
+    <div class="card">
+        <div class="card-body">
+
+            <div class="image d-flex justify-content-center">
+                <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid" style="max-height: 300px;">
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-lg-6 d-flex flex-column justify-content-center">
+                  <h3 class="text-center gap-2">
+                    Time left until event start!
+                  </h3>
+                  <h1 class="text-center"><i class="bi bi-clock"></i></h1>
+                  {% include 'timer.html' %}
+                </div>
+                <div class="col-lg-6 p-1">
+                    <h3 class="text-center">Location map</h3>
+                    <div class="mapouter" style="flex: 1;">
+                      <div class="gmap_canvas">
+                          <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                            src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                      </div>
+                      <style>
+                          .mapouter {
+                              position: relative;
+                              text-align: right;
+                              width: 100%;
+                          }
+              
+                          .gmap_canvas {
+                              overflow: hidden;
+                              background: none !important;
+                              width: 100%; 
+                              height: 100%; 
+                          }
+              
+                          .gmap_iframe {
+                              width: 100% !important; 
+                              height: 100% !important; 
+                          }
+                      </style>
+                  </div>
+                </div>
+                <div class="col-lg-6 d-flex flex-column justify-content-center text-center" style="min-height: 200px;">
+                    <h3 class="text-center">Preferences</h3>
+                    <div class="row d-flex flex-row">
+                      <div class="col-3 d-flex flex-column text-center">
+                        <i class="bi bi-cup-hot text-center"></i>
+                        <p>Cuisine</p>
+                        <p>{{ preferences.cuisine_preference }}</p>
+                      </div>
+                      <div class="col-3 d-flex flex-column text-center">
+                        <i class="bi bi-flower1"></i>
+                        <p>Vegan</p>
+                        {% if preferences.vegan %}
+                        <i class="bi bi-check-lg"></i>
+                        {% else %}
+                        <i class="bi bi-x-lg"></i>
+                        {% endif %}
+                      </div>
+                      <div class="col-3 d-flex flex-column text-center">
+                        <i class="bi bi-virus"></i>
+                        <p>Alergens</p>
+                        <p>{{ preferences.allergens|join:", " }}</p>
+                      </div>
+                      <div class="col-3 d-flex flex-column text-center">
+                        <i class="bi bi-file-person"></i>
+                        <p>Age</p>
+                        <p>{{ preferences.age }}</p>
+                      </div>
+              
+                    </div>
+                    <div class="flex justify-content-center mt-4">
+                      <a href="{% url 'guest_profile' %}" class="btn btn-primary">Change preferences</a>
+                    </div> 
+                </div>
+                <div class="col-lg-6">
+                    <h3 class="text-center">Attendence status</h3>
+                    <div class="status d-flex flex-row gap-2 align-items-center">
+                      <p class="h2 fs-4">Your current status: </p>
+                      <a href="" class="btn btn-secondary me-auto">{{ rsvp.response }}</a>
+                    </div>
+                    <div class="change-btn mt-4 justify-content-end"></div>
+                      <form action="" method="POST">
+                        {% csrf_token %}
+                        {% if rsvp.response == "Accepted" %}
+                        <button type="submit" name="response" value="Declined" class="btn btn-danger" onclick="confirmPresence(event, 'cancel')">Cancel presence!</button>
+                        {% elif rsvp.response == "Pending" or rsvp.response == "Declined" %}
+                        <button type="submit" name="response" value="Accepted" class="btn btn-warning" onclick="confirmPresence(event, 'confirm')">Confirm presence!</button>
+                        {% endif %}
+                      </form>
+                </div>
+                <script>
+                  function confirmPresence(event, action) {
+                      event.preventDefault();
+
+                      let message = (action === 'confirm') 
+                          ? "Are you sure that you want to atend to the event?"
+                          : "Are you sure that you want to cancel the attendance?";
+                      
+                          Swal.fire({
+                              title: "Confirmation",
+                              text: message,
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Yes",
+                              cancelButtonText: "No",
+                          }).then((result) => {
+                              if (result.isConfirmed) {
+                                  let form = event.target.closest("form");
+                                  let input = document.createElement("input");
+                                  input.type = "hidden";
+                                  input.name = "response";
+                                  input.value = (action === 'confirm') ? "Accepted" : "Declined";
+                                  form.appendChild(input);
+                                  form.submit();
+                              }
+                          });
+                  }
+                </script>
+                <div class="col-lg-12">
+                  <div class="header d-flex justify-content-center">
+                    <h1 class="h1 text-center">Configure the menu for this event</h1>
+                  </div>
+
+                  <div class="row d-flex flex-row mt-4">
+                    <hr>
+                    <div class="menus col-lg-6">
+                      <h4 class="h4">Choose appetizer:</h4>
+                      <select name="appetizer" class="form-select" id="foodSelect">
+                        <option value="">-- see the menu --</option>
+                        {% for food in menus %}
+                          <option value="{{food.id}}">{{food.item_name}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+                    <div id="foodDetails" class="col-lg-6 flex-column" style="display: none;">
+                        <h4 id="foodName"></h4>
+                        <p><strong>Allergens:</strong> <span id="foodAllergens"></span></p>
+                        <p><strong>Vegan:</strong> <span id="foodType"></span></p>
+                        <img id="foodImage" src="" alt="Food Image" style="max-width: 300px;  max-height: 300px; object-fit: cover; display: none;">
+                    </div>
+
+
+                    <div id="step1" class="col-lg-6 flex-column mt-2" style="display: none;">
+                      <hr>
+                      <h4 class="h4">Pick main course</h4>
+                      <select id="mainCourse" class="form-select">
+                          <option value="">-- see the menu --</option>
+                          {% for food in menus %}
+                              <option value="{{ food.id }}">{{ food.item_name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+
+                    <div id="mainCourseDetails" class="col-lg-6 flex-column" style="display: none;">
+                      <h4 id="mainCourseFoodName"></h4>
+                      <p><strong>Allergens:</strong> <span id="mainCourseFoodAllergens"></span></p>
+                      <p><strong>Vegan:</strong> <span id="mainCourseFoodType"></span></p>
+                      <img id="mainCourseFoodImage" src="" alt="Food Image" style="max-width: 300px;  max-height: 300px; object-fit: cover;  display: none;">
+                    </div>
+
+
+                    <div id="step2" class="col-lg-6 flex-column mt-2" style="display: none;">
+                      <hr>
+                      <h4 class="h4">Select desert</h4>
+                      <select id="desertSelect" class="form-select">
+                          <option value="">-- Select the desert --</option>
+                          {% for food in menus %}
+                              <option value="{{ food.id }}">{{ food.item_name }}</option>
+                          {% endfor %}
+                      </select>
+                    </div>
+
+                    <div id="step2Details" class="col-lg-6 flex-column" style="display: none;">
+                      <h4 id="step2FoodName"></h4>
+                      <p><strong>Allergens:</strong> <span id="step2FoodAllergens"></span></p>
+                      <p><strong>Vegan:</strong> <span id="step2FoodType"></span></p>
+                      <img id="step2FoodImage" src="" alt="Food Image" style="max-width: 300px; max-height: 300px; object-fit: cover; display: none;">
+                    </div>
+
+
+                  <div id="step3" class="col-lg-6 flex-column mt-2" style="display: none;">
+                    <hr>
+                      <h4 class="h4">Choose drinks</h4>
+                      <select id="step3Select" class="form-select">
+                          <option value="">-- Select the drink --</option>
+                          {% for food in menus %}
+                              <option value="{{ food.id }}">{{ food.item_name }}</option>
+                          {% endfor %}
+                      </select>
+                  </div>
+
+                  <div id="step3Details" class="col-lg-6 flex-column" style="display: none;">
+                    <h4 id="step3FoodName"></h4>
+                    <p><strong>Allergens:</strong> <span id="step3FoodAllergens"></span></p>
+                    <p><strong>Vegan:</strong> <span id="step3FoodType"></span></p>
+                    <img id="step3FoodImage" src="" alt="Food Image" style="max-width: 300px; max-height: 300px; object-fit: cover; display: none;">
+                  </div>
+
+                  <div id="finalStep" class="col-lg-12 flex-column" style="display: none;">
+                      <h3>You picked:</h3>
+                      <ul>
+                          <li>Appetizer: <span id="chosenAperitiv"></span></li>
+                          <li>Main course: <span id="chosenFelPrincipal"></span></li>
+                          <li>Desert: <span id="chosenDesert"></span></li>
+                          <li>Drinks: <span id="chosenDrinks"></span></li>
+                      </ul>
+                      <button id="confirmSelection" class="btn btn-success">Confirm</button>
+                  </div>
+
+            </div>
+
+                      
+                  </div>  
+                </div>  
+                  <script>
+                    function setupFoodSelection(selectId, detailsContainerId, nameId, allergensId, typeId, imageId, stepId) {
+                    document.getElementById(selectId).addEventListener("change", function() {
+                    let foodId = this.value;
+                    let detailsContainer = document.getElementById(detailsContainerId);
+                    let nameElement = document.getElementById(nameId);
+                    let allergensElement = document.getElementById(allergensId);
+                    let typeElement = document.getElementById(typeId);
+                    let imageElement = document.getElementById(imageId);
+                    let stepElement = document.getElementById(stepId);
+
+                    if (foodId) {
+                        fetch(`/get_food_details/${foodId}/`)
+                            .then(response => response.json())
+                            .then(data => {
+                                nameElement.innerText = data.name;
+                                allergensElement.innerText = data.allergens.join(", ");
+                                typeElement.innerText = data.type;
+
+                                if (data.image) {
+                                    imageElement.src = data.image;
+                                    imageElement.style.display = "flex";
+                                } else {
+                                    imageElement.style.display = "none";
+                                }
+
+                                stepElement.style.display = "flex";
+                                detailsContainer.style.display = "flex";
+                            })
+                            .catch(error => console.error("Eroare:", error));
+                    } else {
+                        detailsContainer.style.display = "none";
+                    }
+                });
+            }
+
+            setupFoodSelection("foodSelect", "foodDetails", "foodName", "foodAllergens", "foodType", "foodImage", "step1");
+            setupFoodSelection("mainCourse", "mainCourseDetails", "mainCourseFoodName", "mainCourseFoodAllergens", "mainCourseFoodType", "mainCourseFoodImage", "step2");
+            setupFoodSelection("desertSelect", "step2Details", "step2FoodName", "step2FoodAllergens", "step2FoodType", "step2FoodImage", "step3");
+            setupFoodSelection("step3Select", "step3Details", "step3FoodName", "step3FoodAllergens", "step3FoodType", "step3FoodImage", "finalStep");
+
+                  </script>
+
+                
+            </div>
+    </div>
+    {% elif event.status == "ongoing" %}  
+    <div class="card">
+      <h1 class="h1">Event live!</h1>
+    </div>
+    {% else %}
+    <div class="card">
+      <h1 class="h1">The event ended!</h1>
+      
+    </div>
+    {% endif %}
+</div>

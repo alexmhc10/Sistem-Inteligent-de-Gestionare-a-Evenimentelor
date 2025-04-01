@@ -87,6 +87,7 @@ urlpatterns = [
     path('guest_home', views.guest_home, name='guest_home'),
     path('guest_profile', views.guest_profile, name='guest_profile'),
     path('guest_event_view/<int:pk>', views.guest_event_view, name='guest_event_view'),
+    path('event_status_api/<int:pk>', views.event_status_api, name='event_status_api'),
 
     #Face_recog
     path('classify/', views.find_user_view, name='classify'),

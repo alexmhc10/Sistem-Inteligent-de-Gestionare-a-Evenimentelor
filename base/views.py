@@ -40,6 +40,7 @@ import pandas as pd
 from django.utils.text import slugify
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.template.loader import render_to_string
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
@@ -1917,10 +1918,27 @@ def guest_event_view(request, pk):
     return render(request,'base/guest_event_view.html', context)
 
 
-@api_view(['GET'])
-def event_status(request, event_id):
-    event = Event.objects.get(pk=event_id)
-    return Response({'status': event.status})
+def event_status_api(request, pk):
+    event = Event.objects.get(id=pk)
+    previous_status = request.GET.get('current_status')
+    rsvp = RSVP.objects.get(event=event, guest=request.user)
+    profile=Profile.objects.get(user=request.user)
+    preferences = Guests.objects.get(profile = profile)
+    menus=Menu.objects.all()
+
+
+    print(event.status)
+    response_data = {
+        'status': event.status,
+        'html': render_to_string('../templates/event_status_content.html', {'event': event,
+        'profile':profile,
+        'preferences':preferences,
+        'rsvp':rsvp,
+        'menus':menus})
+    }
+    
+    return JsonResponse(response_data)
+
 
 
 def get_food_details(request, food_id):

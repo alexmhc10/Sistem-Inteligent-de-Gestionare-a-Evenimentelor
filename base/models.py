@@ -194,20 +194,6 @@ class Event(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     guests = models.ManyToManyField(Guests, related_name='events', blank=True)
     completed = models.BooleanField(default=False) 
-<<<<<<< HEAD
-=======
-
-    @property
-    def status(self):
-        now = timezone.now()
-        if now < self.event_time - timezone.timedelta(hours=1):
-            return 'upcoming'
-        elif now >= self.event_time - timezone.timedelta(hours=1) and now < self.event_time:
-            return 'ongoing'
-        else:
-            return 'completed'
-        
->>>>>>> 6e6c102fe6ea11b023c6431063804fe7f85a99c7
     types = models.ManyToManyField(Type, blank=True)
     cost = models.DecimalField(max_digits=10, decimal_places=2, default=3000)
     updated_at = models.DateTimeField(auto_now=True)
@@ -226,14 +212,27 @@ class Event(models.Model):
 
         if self.event_date and self.event_date < now().date():
             raise ValidationError("Data evenimentului nu poate fi în trecut.")
+        
+    
     
     def __str__(self):
         return self.event_name
 
     @property
     def is_completed(self):
-        """Verifică dacă evenimentul este considerat complet."""
         return self.event_date <= now().date()
+    
+    @property
+    def status(self):
+        now = timezone.now().time()
+        extended_end = (datetime.combine(datetime.today(), self.event_time) + timedelta(hours=12)).time()
+        
+        if now < (datetime.combine(datetime.today(), self.event_time) - timedelta(hours=1)).time():
+            return 'upcoming'
+        elif now >= (datetime.combine(datetime.today(), self.event_time) - timedelta(hours=1)).time() and now < extended_end:
+            return 'ongoing'
+        else:
+            return 'completed'
 
 
 class GuestMenu(models.Model):
