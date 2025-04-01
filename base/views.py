@@ -1886,8 +1886,6 @@ def guest_event_view(request, pk):
     preferences = Guests.objects.get(profile = profile)
     menus=Menu.objects.all()
 
-    print(rsvp)
-
     if request.method == "POST":
         print(request.POST)
         value = request.POST.get("response")
@@ -1928,6 +1926,7 @@ def event_status_api(request, pk):
 
 
     print(event.status)
+    
     response_data = {
         'status': event.status,
         'html': render_to_string('../templates/event_status_content.html', {'event': event,

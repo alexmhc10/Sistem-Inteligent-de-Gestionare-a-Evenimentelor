@@ -213,8 +213,6 @@ class Event(models.Model):
         if self.event_date and self.event_date < now().date():
             raise ValidationError("Data evenimentului nu poate fi în trecut.")
         
-    
-    
     def __str__(self):
         return self.event_name
 
@@ -224,12 +222,16 @@ class Event(models.Model):
     
     @property
     def status(self):
-        now = timezone.now().time()
-        extended_end = (datetime.combine(datetime.today(), self.event_time) + timedelta(hours=12)).time()
-        
-        if now < (datetime.combine(datetime.today(), self.event_time) - timedelta(hours=1)).time():
+        now = timezone.now()
+        print("Now: ",now)
+
+        extended_end = (datetime.combine(self.event_date, self.event_time) + timedelta(hours=12))
+
+        print("Timp schimbare din upvoming in ongoing: ", datetime.combine(self.event_date, self.event_time) - timedelta(hours=1))
+
+        if now < datetime.combine(self.event_date, self.event_time) - timedelta(hours=1):
             return 'upcoming'
-        elif now >= (datetime.combine(datetime.today(), self.event_time) - timedelta(hours=1)).time() and now < extended_end:
+        elif now >= datetime.combine(self.event_date, self.event_time) - timedelta(hours=1) and now < extended_end:
             return 'ongoing'
         else:
             return 'completed'
