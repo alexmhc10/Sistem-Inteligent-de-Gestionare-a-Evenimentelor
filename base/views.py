@@ -1881,6 +1881,7 @@ def guest_home(request):
 def guest_event_view(request, pk):
     
     event=Event.objects.get(id=pk)
+    oragniser_profile = event.organized_by.profile_set.first()
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
@@ -1904,8 +1905,9 @@ def guest_event_view(request, pk):
             'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
         }
     ]
-
+    print(oragniser_profile)
     context={
+        'organiser':oragniser_profile,
         'event':event,
         'profile':profile,
         'preferences':preferences,

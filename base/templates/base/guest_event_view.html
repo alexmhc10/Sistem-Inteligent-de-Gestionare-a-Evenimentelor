@@ -4,6 +4,7 @@
 
 
 {% block content %}
+{% load static %}
 
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
 data-sidebar-position="fixed" data-header-position="fixed">
@@ -17,10 +18,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <!--  Header Start -->
     {% include 'header.html' %}
 
-    <div class="container-sm">
+    <div class="container-md">
       <div class="row" id="event-status" data-event-id="{{ event.id }}" data-current-status="{{ event.status }}">
-        <div class="col-lg-8 offset-lg-2">
-          <div class="card">
+        <div class="col-lg-10 offset-lg-1">
+
+          <div class="card box">
               <div class="card-body d-flex flex-column">
                   {% if event.status == "upcoming" %}
                     <div class="card-title h1 text-center">Checkout the details about the event!</div> 
@@ -296,18 +298,190 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         
                     </div>
             </div>           
-          {% elif event.status == "ongoing" %}  
-            <div class="card">
-              <h1 class="h1">Event live!</h1>
+          {% elif event.status == "ongoing" %}
+          <link rel="stylesheet" href="{% static 'css/output.css' %}">
+
+            <div class="card box">
+              <h1 class="h3 text-center mt-2 mb-2">This is you're custom timeline trough the event!</h1>
+              <div class="container">
+                
+                <div class="timeline">
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        {{event.event_time}}<small>{{event.event_date}}</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-attachment"></i>
+                        <h4>Welcoming message!</h4>
+                        <p>Welcome to {{event.event_name}} event! We hope you have a great time.</p>
+                        <div class="thumbs">
+                          <img class="img-fluid rounded" src="{{MEDIA_URL}}{{organiser.photo}}" alt="Organiser">
+                        </div>
+                        <div class="">
+                          <span class="badge badge-pill">Organiser</span>
+                          <span class="badge badge-pill">{{organiser.username}}</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        {{event.event_time}} <small> event start time!</small> <small>{{event.event_date}}</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-code"></i>
+                        <h4>Arrive at event location!</h4>
+                        <p>
+                          Checkout the map down below for directions.
+                        </p>
+                        <div class="thumbs">
+                          <div class="thumbs">
+                            <div class="mapouter" style="flex: 1;">
+                              <div class="gmap_canvas">
+                                  <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                    src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                              </div>
+                              <style>
+                                  .mapouter {
+                                      position: relative;
+                                      text-align: right;
+                                      width: 100%;
+                                  }
+                      
+                                  .gmap_canvas {
+                                      overflow: hidden;
+                                      background: none !important;
+                                      width: 100%; 
+                                      height: 100%; 
+                                  }
+                      
+                                  .gmap_iframe {
+                                      width: 100% !important; 
+                                      height: 100% !important; 
+                                  }
+                              </style>
+                          </div>
+                        </div>
+                        </div>
+                        <div class="">
+                          <span class="badge badge-pill">Location</span>
+                          <span class="badge badge-pill">{{event.location}}</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        7:25 PM<small>Dec 6</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-turned_in_not"></i>
+                        <h4>Validate your presence!</h4>
+                        <p>Scan your face at the entrance so we know you made it!</p>
+                        <div class="thumbs">
+                          <img class="img-fluid rounded" id="face-id-img" src="{% static 'images/Face.png' %}" alt="Face-id">
+                        </div>
+                        <div>
+                          <span class="badge badge-pill">Pass</span>
+                          <span class="badge badge-pill">Face Recognition</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        3:55 PM<small>Dec 26</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-directions"></i>     
+                        <h4>Your seating!</h4>
+                        <p>Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar, drag &amp; drop and ion slider.</p>
+                        <div>
+                          <span class="badge badge-pill">Profile</span>
+                          <span class="badge badge-pill">Sales</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        5:24 PM<small>Dec 12</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-change_history"></i>
+                        <h4>Your experience!</h4>
+                        <p class="no-margin">Review <a href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop"> your personalised menu </a>, also you will be able to browse the menu available at the location.</p>
+  
+                        <div class="thumbs">
+                        </div>
+                        <div>
+                          <span class="badge badge-pill">Menu</span>
+                          <span class="badge badge-pill">Food</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        8:00 AM<small>Dec 18</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-code"></i>
+                        <h4>Admin Dashboard!</h4>
+                        <p>
+                          Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar.
+                        </p>
+                        <div class="thumbs">
+                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
+                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Maxwell Admin">
+                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Maxwell Admin">
+                        </div>
+                        <div class="">
+                          a<span class="badge badge-pill">Ecommerce</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-time">
+                        7:45PM<small>Dec 21</small>
+                      </div>
+                      <div class="timeline-content">
+                        <i class="icon-attachment"></i>
+                        <h4>Admin Template!</h4>
+                        <p>Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar, drag &amp; drop and ion slider.</p>
+                        <div class="thumbs">
+                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="Maxwell Admin">
+                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Maxwell Admin">
+                        </div>
+                        <div class="">
+                          <span class="badge badge-pill">Orders</span>
+                          <span class="badge badge-pill">Sales</span>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="timeline-row">
+                      <div class="timeline-content">
+                        <p class="m-0">No new anouncements for now...</p>
+                      </div>
+                    </div>
+                
+                  </div>
+                </div>
             </div>
           {% else %}
             <div class="card">
-              <h1 class="h1">The event ended!</h1>              
+              <h1 class="h1">The event ended!</h1> 
+              <input type="file" class="form-control" id="fileInput" accept=".jpg, .jpeg, .png" onchange="previewImage(event)">
+
             </div>
           {% endif %}
       </div>
+      
         <!-- {% include 'event_status_content.html' %} -->
       </div>
+      
       <script>
         function checkEventStatus() {
             const eventElement = document.getElementById('event-status');
@@ -330,6 +504,22 @@ data-sidebar-position="fixed" data-header-position="fixed">
       </div>  
   </div>
         
+</div>
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+       </div>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

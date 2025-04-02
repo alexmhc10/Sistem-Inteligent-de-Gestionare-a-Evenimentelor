@@ -136,13 +136,6 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-
-
-
-
-# Aici ai definit gresit cu "static/" in loc de "/static/"
-# Si fara STATICFILES_DIRS nu iti merge, era in tutorialul de django explicata treaba asta
-
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static'
