@@ -240,6 +240,7 @@ class Event(models.Model):
 class GuestMenu(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event")
+    location_menu = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location_menu", default=None)
     menu_choices = models.ManyToManyField(Menu, blank=True, related_name="guests")
 
     def __str__(self):

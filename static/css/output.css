@@ -93,7 +93,6 @@ main {
 .box {
   border-radius: 1rem;
   box-shadow: 0.125rem 0.25rem 0.25rem 0.5rem oklch(0.1 0.37 315 / 0.25);
-  color: white;
 
   & h1 {
     line-height: 1.1;
@@ -107,7 +106,6 @@ main {
 
 
             body{
-                margin-top:20px;
                 color: #bcd0f7;
             }
             .timeline {

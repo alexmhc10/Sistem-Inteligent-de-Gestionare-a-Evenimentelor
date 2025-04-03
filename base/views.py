@@ -1838,35 +1838,42 @@ def guest_profile(request):
 def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
+    now = timezone.now()
 
-    rsvp = RSVP.objects.filter(guest = request.user)
-
-    next_rsvp = rsvp.first() if rsvp.exists() else None
-    other_rsvp = rsvp[1:] if rsvp.count() > 1 else []
+    guest_profile = Guests.objects.get(profile = profil)
+    confirmed_events = Event.objects.filter(event_date__gte=now, guests=guest_profile).filter(Q(rsvps__response="Accepted") | Q(rsvps__response="Pending")).distinct().order_by('event_date')
     
-    next_event = None
+    print("Evenimente confirmate:", confirmed_events)
+
+    next_confirmed_event = confirmed_events.first() if confirmed_events.exists() else None
+    print("Next confirmed event:", next_confirmed_event)
+
+    if confirmed_events.exists():
+        upcoming_events = confirmed_events[1:]
+    else:
+        upcoming_events = []
+
     event_data = []
 
-    if next_rsvp is not None:
-        next_event = next_rsvp.event
-
+    if next_confirmed_event is not None:
         event_data = [
             {
-                'id': next_event.id,
-                'title': next_event.event_name,
-                'event_date': datetime.combine(next_event.event_date, next_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
+                'id': next_confirmed_event.id,
+                'title': next_confirmed_event.event_name,
+                'event_date': datetime.combine(next_confirmed_event.event_date, next_confirmed_event.event_time).strftime('%Y-%m-%d %H:%M:%S')
             }
-        ] 
+        ]
 
+    print("Evenimente viitoare:", upcoming_events)
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
 
     context = {
         "not_completed": not_completed,
         "preferences": preferences,
         "profile": profil,
-        "rsvp": next_rsvp,
-        "other_rsvp": other_rsvp,
-        "event": next_event,
+        "next_confirmed_event": next_confirmed_event,
+        "upcoming_events": upcoming_events,
+        "event": next_confirmed_event,
         "event_data": json.dumps(event_data)
     }
 
@@ -1916,6 +1923,28 @@ def guest_event_view(request, pk):
         'menus':menus
     }
     return render(request,'base/guest_event_view.html', context)
+
+
+def save_menu_configuration(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            event_menu, created = GuestMenu.objects.update_or_create(
+                user=request.user,
+                defaults={
+                    'starter': data.get('starter'),
+                    'main_course': data.get('main_course'),
+                    'dessert': data.get('dessert'),
+                    'beverage': data.get('beverage'),
+                    'is_complete': all(data.values())
+                }
+            )
+            
+            return JsonResponse({'success': True, 'saved_id': event_menu.id})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Metoda nepermisă'}, status=405)
 
 
 def event_status_api(request, pk):

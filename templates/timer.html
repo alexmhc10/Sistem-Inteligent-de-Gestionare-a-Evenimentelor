@@ -1,5 +1,5 @@
 {% block content %}
-          <div class="event d-flex justify-content-center">
+          <div class="event">
               <p id="countdown-{{ event.id }}"></p>
           </div>
         
@@ -37,6 +37,15 @@
                     countdownElement.innerHTML = timeLeft > 0
                         ? `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
                         : "The event is live!";
+
+                    if(hours < 2 && days < 1 && minutes > 1 && seconds > 1){
+                        countdownElement.style.color = "red";
+                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds` + '<br>' + `The event is about to begin you wont be able to modify your preferences one hour prior to the event!`;
+                    }
+                    if(hours < 1 && days < 1 && minutes > 1 && seconds > 1){
+                        countdownElement.style.color = "red";
+                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds` + '<br>' + `You cant modify your preferences no more!`;
+                    }
                 }
 
                 updateCountdown();

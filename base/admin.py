@@ -1,5 +1,4 @@
 from django.contrib import admin
-from .models import EventHistory
 from .models import *
 
 admin.site.register(EventHistory)
@@ -23,3 +22,4 @@ admin.site.register(RSVP)
 admin.site.register(EventNotification)
 admin.site.register(Log)
 admin.site.register(Allergen)
+admin.site.register(GuestMenu)

@@ -162,6 +162,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
         
                           <div class="row d-flex flex-row mt-4">
                             <hr>
+
+                          <form action="" method="POST" id="menu-configuration">
+                              {% csrf_token %}
                             <div class="menus col-lg-6">
                               <h4 class="h4">Choose appetizer:</h4>
                               <select name="appetizer" class="form-select" id="foodSelect">
@@ -218,81 +221,155 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </div>
         
         
-                          <div id="step3" class="col-lg-6 flex-column mt-2" style="display: none;">
-                            <hr>
-                              <h4 class="h4">Choose drinks</h4>
-                              <select id="step3Select" class="form-select">
-                                  <option value="">-- Select the drink --</option>
-                                  {% for food in menus %}
-                                      <option value="{{ food.id }}">{{ food.item_name }}</option>
-                                  {% endfor %}
-                              </select>
-                          </div>
-        
-                          <div id="step3Details" class="col-lg-6 flex-column" style="display: none;">
-                            <h4 id="step3FoodName"></h4>
-                            <p><strong>Allergens:</strong> <span id="step3FoodAllergens"></span></p>
-                            <p><strong>Vegan:</strong> <span id="step3FoodType"></span></p>
-                            <img id="step3FoodImage" src="" alt="Food Image" style="max-width: 300px; max-height: 300px; object-fit: cover; display: none;">
-                          </div>
-        
-                          <div id="finalStep" class="col-lg-12 flex-column" style="display: none;">
-                              <h3>You picked:</h3>
-                              <ul>
-                                  <li>Appetizer: <span id="chosenAperitiv"></span></li>
-                                  <li>Main course: <span id="chosenFelPrincipal"></span></li>
-                                  <li>Desert: <span id="chosenDesert"></span></li>
-                                  <li>Drinks: <span id="chosenDrinks"></span></li>
-                              </ul>
-                              <button id="confirmSelection" class="btn btn-success">Confirm</button>
-                          </div>
-        
+                            <div id="step3" class="col-lg-6 flex-column mt-2" style="display: none;">
+                              <hr>
+                                <h4 class="h4">Choose drinks</h4>
+                                <select id="step3Select" class="form-select">
+                                    <option value="">-- Select the drink --</option>
+                                    {% for food in menus %}
+                                        <option value="{{ food.id }}">{{ food.item_name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+          
+                            <div id="step3Details" class="col-lg-6 flex-column" style="display: none;">
+                              <h4 id="step3FoodName"></h4>
+                              <p><strong>Allergens:</strong> <span id="step3FoodAllergens"></span></p>
+                              <p><strong>Vegan:</strong> <span id="step3FoodType"></span></p>
+                              <img id="step3FoodImage" src="" alt="Food Image" style="max-width: 300px; max-height: 300px; object-fit: cover; display: none;">
+                            </div>
+          
+                            <div id="finalStep" class="col-lg-12 flex-column" style="display: none;">
+                                <h3>You picked:</h3>
+                                <ul id="selections-list">
+                                    <li>Appetizer: <span id="chosenAperitiv"></span></li>
+                                    <li>Main course: <span id="chosenFelPrincipal"></span></li>
+                                    <li>Desert: <span id="chosenDesert"></span></li>
+                                    <li>Drinks: <span id="chosenDrinks"></span></li>
+                                </ul>
+                                <button type="submit" id="confirmSelection" class="btn btn-success">Confirm</button>
+                            </div>
+                          </form>
                     </div>
         
                               
                           </div>  
-                        </div>  
+                        </div>
+
+                        <script>
+                          document.addEventListener('DOMContentLoaded', function() {
+                            const form = document.getElementById('menu-configuration');
+                            const selects = form.querySelectorAll('select');
+                            const selectionsList = document.getElementById('selections-list');
+
+                            // Restaurare stare salvată
+                            function restoreSelections() {
+                              const savedSelections = JSON.parse(localStorage.getItem('eventMenuSelections')) || {};
+                              selects.forEach(select => {
+                                if (savedSelections[select.name]) {
+                                  select.value = savedSelections[select.name];
+                                }
+                              });
+                              updateSelectionsDisplay();
+                            }
+
+                            // Actualizare afișaj selecții
+                            function updateSelectionsDisplay() {
+                              selectionsList.innerHTML = '';
+                              selects.forEach(select => {
+                                if (select.value) {
+                                  const li = document.createElement('li');
+                                  li.textContent = `${select.name}: ${select.value}`;
+                                  selectionsList.appendChild(li);
+                                }
+                              });
+                            }
+
+                            // Salvare automată la schimbare
+                            selects.forEach(select => {
+                              select.addEventListener('change', function() {
+                                const currentSelections = JSON.parse(localStorage.getItem('eventMenuSelections')) || {};
+                                currentSelections[this.name] = this.value;
+                                localStorage.setItem('eventMenuSelections', JSON.stringify(currentSelections));
+                                updateSelectionsDisplay();
+                              });
+                            });
+
+                            // Trimitere formular
+                            form.addEventListener('submit', function(e) {
+                              e.preventDefault();
+                              
+                              const formData = new FormData(this);
+                              const selections = Object.fromEntries(formData.entries());
+                              
+                              fetch('/save-menu-configuration', {
+                                method: 'POST',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  'X-CSRFToken': getCookie('csrftoken'), // Pentru Django CSRF
+                                },
+                                body: JSON.stringify(selections)
+                              })
+                              .then(response => response.json())
+                              .then(data => {
+                                if (data.success) {
+                                  localStorage.removeItem('eventMenuSelections'); // Șterge starea salvată
+                                  alert('Meniu salvat cu succes!');
+                                }
+                              });
+                            });
+
+                            // Inițializare
+                            restoreSelections();
+                          });
+
+                          // Funcție helper pentru CSRF token (Django)
+                          function getCookie(name) {
+                            // ... implementare obținere cookie CSRF
+                          }
+                        </script>
+
                           <script>
                             function setupFoodSelection(selectId, detailsContainerId, nameId, allergensId, typeId, imageId, stepId) {
-                            document.getElementById(selectId).addEventListener("change", function() {
-                            let foodId = this.value;
-                            let detailsContainer = document.getElementById(detailsContainerId);
-                            let nameElement = document.getElementById(nameId);
-                            let allergensElement = document.getElementById(allergensId);
-                            let typeElement = document.getElementById(typeId);
-                            let imageElement = document.getElementById(imageId);
-                            let stepElement = document.getElementById(stepId);
-        
-                            if (foodId) {
-                                fetch(`/get_food_details/${foodId}/`)
-                                    .then(response => response.json())
-                                    .then(data => {
-                                        nameElement.innerText = data.name;
-                                        allergensElement.innerText = data.allergens.join(", ");
-                                        typeElement.innerText = data.type;
-        
-                                        if (data.image) {
-                                            imageElement.src = data.image;
-                                            imageElement.style.display = "flex";
-                                        } else {
-                                            imageElement.style.display = "none";
-                                        }
-        
-                                        stepElement.style.display = "flex";
-                                        detailsContainer.style.display = "flex";
-                                    })
-                                    .catch(error => console.error("Eroare:", error));
-                            } else {
-                                detailsContainer.style.display = "none";
-                            }
-                        });
-                    }
-        
-                    setupFoodSelection("foodSelect", "foodDetails", "foodName", "foodAllergens", "foodType", "foodImage", "step1");
-                    setupFoodSelection("mainCourse", "mainCourseDetails", "mainCourseFoodName", "mainCourseFoodAllergens", "mainCourseFoodType", "mainCourseFoodImage", "step2");
-                    setupFoodSelection("desertSelect", "step2Details", "step2FoodName", "step2FoodAllergens", "step2FoodType", "step2FoodImage", "step3");
-                    setupFoodSelection("step3Select", "step3Details", "step3FoodName", "step3FoodAllergens", "step3FoodType", "step3FoodImage", "finalStep");
-        
+                              document.getElementById(selectId).addEventListener("change", function() {
+                                let foodId = this.value;
+                                let detailsContainer = document.getElementById(detailsContainerId);
+                                let nameElement = document.getElementById(nameId);
+                                let allergensElement = document.getElementById(allergensId);
+                                let typeElement = document.getElementById(typeId);
+                                let imageElement = document.getElementById(imageId);
+                                let stepElement = document.getElementById(stepId);
+            
+                                if (foodId) {
+                                    fetch(`/get_food_details/${foodId}/`)
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            nameElement.innerText = data.name;
+                                            allergensElement.innerText = data.allergens.join(", ");
+                                            typeElement.innerText = data.type;
+            
+                                            if (data.image) {
+                                                imageElement.src = data.image;
+                                                imageElement.style.display = "flex";
+                                            } else {
+                                                imageElement.style.display = "none";
+                                            }
+            
+                                            stepElement.style.display = "flex";
+                                            detailsContainer.style.display = "flex";
+                                        })
+                                        .catch(error => console.error("Eroare:", error));
+                                } else {
+                                    detailsContainer.style.display = "none";
+                                }
+                            });
+                        }
+            
+                        setupFoodSelection("foodSelect", "foodDetails", "foodName", "foodAllergens", "foodType", "foodImage", "step1");
+                        setupFoodSelection("mainCourse", "mainCourseDetails", "mainCourseFoodName", "mainCourseFoodAllergens", "mainCourseFoodType", "mainCourseFoodImage", "step2");
+                        setupFoodSelection("desertSelect", "step2Details", "step2FoodName", "step2FoodAllergens", "step2FoodType", "step2FoodImage", "step3");
+                        setupFoodSelection("step3Select", "step3Details", "step3FoodName", "step3FoodAllergens", "step3FoodType", "step3FoodImage", "finalStep");
+            
                           </script>
         
                         
@@ -300,7 +377,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>           
           {% elif event.status == "ongoing" %}
           <link rel="stylesheet" href="{% static 'css/output.css' %}">
-
             <div class="card box">
               <h1 class="h3 text-center mt-2 mb-2">This is you're custom timeline trough the event!</h1>
               <div class="container">
@@ -474,7 +550,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
             <div class="card">
               <h1 class="h1">The event ended!</h1> 
               <input type="file" class="form-control" id="fileInput" accept=".jpg, .jpeg, .png" onchange="previewImage(event)">
-
             </div>
           {% endif %}
       </div>
