@@ -8,6 +8,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from datetime import datetime, timedelta
 import os
 from django.conf import settings
+from django.core.validators import MaxValueValidator, MinValueValidator
 
 
 
@@ -391,3 +392,45 @@ class LocationImages(models.Model):
 
     def __str__(self):
         return f"Imagine pentru {self.location.name}"
+
+
+class EventPost(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='posts')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    like_count = models.PositiveIntegerField(default=0)
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+
+    def __str__(self):
+        return f"Post: {self.title} for {self.event.name}"
+
+
+class PostImage(models.Model):
+    post = models.ForeignKey(EventPost, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='post_images/')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+
+class PostLike(models.Model):
+    post = models.ForeignKey(EventPost, on_delete=models.CASCADE, related_name='likes')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('post', 'user')
+
+
+class PostComment(models.Model):
+    post = models.ForeignKey(EventPost, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.author.username} on {self.post.title}"

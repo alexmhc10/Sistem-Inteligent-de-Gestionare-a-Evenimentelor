@@ -5,6 +5,8 @@ from django.contrib.auth.hashers import make_password
 from .models import Task
 from django.contrib.auth.forms import UserChangeForm
 from .models import Profile
+from django.core.validators import FileExtensionValidator
+
 
 class ProfileEditForm(forms.ModelForm):
     class Meta:
@@ -174,3 +176,24 @@ class FoodSearchForm(forms.Form):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'}) 
+
+
+# class EventPostForm(forms.ModelForm):
+#     images = forms.FileField(
+#         widget=forms.ClearableFileInput(attrs={'multiple': True}),
+#         required=False,
+#         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
+#     )
+    
+#     class Meta:
+#         model = EventPost
+#         fields = ['title', 'content']
+#         widgets = {
+#             'content': forms.Textarea(attrs={'rows': 5}),
+#         }
+
+#     def clean_images(self):
+#         images = self.files.getlist('images')
+#         if len(images) > 10:
+#             raise forms.ValidationError("You can upload maximum 10 images.")
+#         return images

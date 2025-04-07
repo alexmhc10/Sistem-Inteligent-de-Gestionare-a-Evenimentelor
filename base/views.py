@@ -1842,9 +1842,10 @@ def guest_home(request):
 
     guest_profile = Guests.objects.get(profile = profil)
     confirmed_events = Event.objects.filter(event_date__gte=now, guests=guest_profile).filter(Q(rsvps__response="Accepted") | Q(rsvps__response="Pending")).distinct().order_by('event_date')
+    past_events = Event.objects.filter(event_date__lt=now, guests=guest_profile, rsvps__response="Accepted").distinct().order_by('event_date')
+    print("past_events:", past_events)
     
     print("Evenimente confirmate:", confirmed_events)
-
     next_confirmed_event = confirmed_events.first() if confirmed_events.exists() else None
     print("Next confirmed event:", next_confirmed_event)
 
@@ -1873,6 +1874,7 @@ def guest_home(request):
         "profile": profil,
         "next_confirmed_event": next_confirmed_event,
         "upcoming_events": upcoming_events,
+        "past_events": past_events,
         "event": next_confirmed_event,
         "event_data": json.dumps(event_data)
     }
