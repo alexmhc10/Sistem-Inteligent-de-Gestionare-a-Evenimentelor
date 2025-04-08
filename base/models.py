@@ -224,11 +224,7 @@ class Event(models.Model):
     @property
     def status(self):
         now = timezone.now()
-        print("Now: ",now)
-
         extended_end = (datetime.combine(self.event_date, self.event_time) + timedelta(hours=12))
-
-        print("Timp schimbare din upvoming in ongoing: ", datetime.combine(self.event_date, self.event_time) - timedelta(hours=1))
 
         if now < datetime.combine(self.event_date, self.event_time) - timedelta(hours=1):
             return 'upcoming'
@@ -402,10 +398,10 @@ class EventPost(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     like_count = models.PositiveIntegerField(default=0)
-    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    rating = models.PositiveIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)],null=True, blank=True)
 
     def __str__(self):
-        return f"Post: {self.title} for {self.event.name}"
+        return f"{self.author}: {self.title} for {self.event.event_name}"
 
 
 class PostImage(models.Model):
@@ -415,6 +411,8 @@ class PostImage(models.Model):
 
     class Meta:
         ordering = ['order']
+    def __str__(self):
+        return f"Image {self.order} for {self.post.title}"
 
 
 class PostLike(models.Model):

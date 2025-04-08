@@ -41,7 +41,7 @@ from django.utils.text import slugify
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.template.loader import render_to_string
-
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -1896,7 +1896,7 @@ def guest_event_view(request, pk):
     preferences = Guests.objects.get(profile = profile)
     menus=Menu.objects.all()
 
-    if request.method == "POST":
+    if request.method == "POST" and request.POST.get("response"):
         print(request.POST)
         value = request.POST.get("response")
         print(value)
@@ -1904,6 +1904,36 @@ def guest_event_view(request, pk):
             rsvp.response = value
             rsvp.save() 
 
+    if request.method == 'POST' and request.POST.get("form_type") == "add_post":
+        print("se executa")
+        form = EventPostForm(request.POST, event=event, user=request.user)
+        if form.is_valid():
+            print("Form valid")
+            try:
+                post = form.save(commit=False)
+                post.event = event
+                post.author = request.user
+                post.save()
+                
+                for i, image in enumerate(request.FILES.getlist('images')):
+                    PostImage.objects.create(
+                        post=post,
+                        image=image,
+                        order=i
+                    )
+                print("Post saved successfully")
+            except Exception as e:
+                print("Error saving post:", e)
+                return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        else:
+            print("Form not valid but sent trimite")
+            print(form.errors)
+    else:
+        form = EventPostForm()
+        print("Form not valid")
+
+    event_posts = EventPost.objects.filter(event=event).order_by('-created_at')
+    guest_posts = EventPost.objects.filter(event=event, author=request.user).order_by('-created_at')
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     print(rsvp)
 
@@ -1914,7 +1944,7 @@ def guest_event_view(request, pk):
             'event_date': datetime.combine(event.event_date, event.event_time).strftime('%Y-%m-%d %H:%M:%S')
         }
     ]
-    print(oragniser_profile)
+
     context={
         'organiser':oragniser_profile,
         'event':event,
@@ -1922,11 +1952,17 @@ def guest_event_view(request, pk):
         'preferences':preferences,
         'event_data': json.dumps(event_data),
         'rsvp':rsvp,
-        'menus':menus
+        'menus':menus,
+        'form': form,
+        'guest_posts': guest_posts,
+        'guest_posts_count': guest_posts.count(),
+        'event_posts': event_posts,
+        'event_posts_count': event_posts.count()
     }
     return render(request,'base/guest_event_view.html', context)
 
 
+@login_required(login_url='/login')
 def save_menu_configuration(request):
     if request.method == 'POST':
         try:
@@ -1947,6 +1983,46 @@ def save_menu_configuration(request):
         except Exception as e:
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
     return JsonResponse({'error': 'Metoda nepermisă'}, status=405)
+
+
+@require_POST
+@login_required(login_url='/login')
+def like_post(request, post_id):
+    post = get_object_or_404(EventPost, id=post_id)
+    like, created = PostLike.objects.get_or_create(post=post, user=request.user)
+    if not created:
+        like.delete()
+    
+    post.like_count = post.likes.count()
+    post.save()
+    return JsonResponse({'likes': post.like_count, 'liked': created})
+
+
+@login_required
+def add_comment(request, post_id):
+    post = get_object_or_404(EventPost, id=post_id)
+    if request.method == 'POST':
+        text = request.POST.get('text')
+        if text:
+            PostComment.objects.create(
+                post=post,
+                author=request.user,
+                text=text
+            )
+    return redirect('guest_event_view', event_id=post.event.id) 
+
+
+def delete_post(request, postId):
+    if request.method == "DELETE":
+        try:
+            post = EventPost.objects.get(id=postId)
+            post.delete()
+            return JsonResponse({"success": True})
+        except Menu.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Post not found"}, status=404)
+        except Exception as e:
+            return JsonResponse({"success": False, "error": str(e)}, status=500)
+    return JsonResponse({"success": False, "error": "Invalid method"}, status=405)
 
 
 def event_status_api(request, pk):

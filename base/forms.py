@@ -178,22 +178,59 @@ class FoodSearchForm(forms.Form):
             field.widget.attrs.update({'class': 'form-control'}) 
 
 
-# class EventPostForm(forms.ModelForm):
-#     images = forms.FileField(
-#         widget=forms.ClearableFileInput(attrs={'multiple': True}),
-#         required=False,
-#         validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png'])]
-#     )
-    
-#     class Meta:
-#         model = EventPost
-#         fields = ['title', 'content']
-#         widgets = {
-#             'content': forms.Textarea(attrs={'rows': 5}),
-#         }
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
 
-#     def clean_images(self):
-#         images = self.files.getlist('images')
-#         if len(images) > 10:
-#             raise forms.ValidationError("You can upload maximum 10 images.")
-#         return images
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("widget", MultipleFileInput())
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single_file_clean = super().clean
+        if isinstance(data, (list, tuple)):
+            result = [single_file_clean(d, initial) for d in data]
+        else:
+            result = single_file_clean(data, initial)
+        return result
+
+class EventPostForm(forms.ModelForm):
+    rating = forms.IntegerField(
+        widget=forms.HiddenInput(),
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
+    images = MultipleFileField(
+        required=False,
+        validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'gif'])],
+        help_text="Select maximum 10 images.",
+    )
+
+    class Meta:
+        model = EventPost
+        fields = ['title', 'content', 'rating']
+        widgets = {
+            'content': forms.Textarea(attrs={
+                'rows': 5,
+                'class': 'form-control',
+                'placeholder': 'Write a message...'
+            }),
+            'title': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Title'
+            })
+        }
+        labels = {
+            'title': 'Title',
+            'content': 'Content'
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.event = kwargs.pop('event', None)
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+    
+    def clean_images(self):
+            images = self.files.getlist('images')
+            if len(images) > 10:
+                raise forms.ValidationError("Puteți încărca maxim 10 imagini.")
+            return images
