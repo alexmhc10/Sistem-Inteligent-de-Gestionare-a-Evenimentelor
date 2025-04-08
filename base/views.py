@@ -1989,6 +1989,7 @@ def save_menu_configuration(request):
 @login_required(login_url='/login')
 def like_post(request, post_id):
     post = get_object_or_404(EventPost, id=post_id)
+    print("Post ID:", post)
     like, created = PostLike.objects.get_or_create(post=post, user=request.user)
     if not created:
         like.delete()
@@ -1998,6 +1999,7 @@ def like_post(request, post_id):
     return JsonResponse({'likes': post.like_count, 'liked': created})
 
 
+@login_required(login_url='/login')
 @login_required
 def add_comment(request, post_id):
     post = get_object_or_404(EventPost, id=post_id)
@@ -2009,9 +2011,10 @@ def add_comment(request, post_id):
                 author=request.user,
                 text=text
             )
-    return redirect('guest_event_view', event_id=post.event.id) 
+    return redirect('guest_event_view', post.event.id) 
 
 
+@login_required(login_url='/login')
 def delete_post(request, postId):
     if request.method == "DELETE":
         try:

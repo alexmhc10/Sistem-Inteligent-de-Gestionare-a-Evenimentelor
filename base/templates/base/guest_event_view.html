@@ -306,14 +306,14 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 method: 'POST',
                                 headers: {
                                   'Content-Type': 'application/json',
-                                  'X-CSRFToken': getCookie('csrftoken'), // Pentru Django CSRF
+                                  'X-CSRFToken': getCookie('csrftoken'), 
                                 },
                                 body: JSON.stringify(selections)
                               })
                               .then(response => response.json())
                               .then(data => {
                                 if (data.success) {
-                                  localStorage.removeItem('eventMenuSelections'); // Șterge starea salvată
+                                  localStorage.removeItem('eventMenuSelections');
                                   alert('Meniu salvat cu succes!');
                                 }
                               });
@@ -628,7 +628,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       </div>
 
                       <div class="mb-3">
-                        <label for="id_images">Imagini (maximum 10)</label>
+                        <label for="id_images">Images (maximum 10)</label>
                         <input type="file" name="images" id="id_images" 
                               class="form-control" multiple
                               accept="image/jpeg, image/png, image/gif">
@@ -810,18 +810,21 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       </div>
                     </div>
                     <div class="timeline-footer">
-                      <a class="m-r-15 text-inverse-lighter"><i class="bi bi-hand-thumbs-up"></i> Like</a>
-                      <a class="m-r-15 text-inverse-lighter ms-1" data-bs-toggle="collapse" href="#collapsePost{{post.id}}" role="button" aria-expanded="false" aria-controls="collapsePost{{post.id}}"><i class="bi bi-chat-dots"></i> Comment</a> 
+                      {% if request.user == post.likes.user %}
+                      <p>Liked</p>
+                      {% endif %}
+                      <a class="m-r-15 text-inverse-lighter like-btn" role="button" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"><i class="bi bi-heart-fill{% if request.user in post.likes.all %} text-danger{%endif%}"></i> Like</a>
+                      <a class="m-r-15 text-inverse-lighter ms-1" data-bs-toggle="collapse" href="#collapsePost{{post.id}}" role="button" aria-expanded="false" aria-controls="collapsePost{{post.id}}"><i class="bi bi-chat-dots-fill"></i> Comment</a> 
                     </div>
                     <div class="collapse" id="collapsePost{{post.id}}">
                       <div class="timeline-comment-box">
                         <div class="user"><img src="{{MEDIA_URL}}{{profile.photo}}"></div>
                         <div class="input">
-                            <form action="">
+                            <form method="POST" class="comment-form">
                               <div class="input-group">
                                   <input type="text" class="form-control rounded-corner me-2" placeholder="Write a comment...">
                                   <span class="input-group-btn p-l-10">
-                                  <button class="btn btn-primary f-s-12 rounded-corner" type="button">Comment</button>
+                                  <button class="f-s-12 rounded-corner" type="submit"><i class="bi bi-send-plus-fill"></i></button>
                                   </span>
                               </div>
                             </form>
@@ -832,6 +835,48 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
               </div>
               {% endfor %}
+              
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  document.body.addEventListener('click', function(event) {
+                      const likeBtn = event.target.closest('.like-btn');
+                      if (!likeBtn) return;
+
+                      const postId = likeBtn.dataset.postId;
+                      
+                      likeBtn.disabled = true;
+                      
+                      fetch(`/like/${postId}`, {
+                          method: 'POST',
+                          headers: {
+                              'X-CSRFToken': '{{ csrf_token }}',
+                              'Content-Type': 'application/json',
+                          },
+                          credentials: 'same-origin'
+                      })
+                  });
+
+                  document.querySelectorAll('.comment-form').forEach(form => {
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const formData = new FormData(this);
+                        
+                        fetch(this.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                            }
+                        })
+                        .then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            }
+                        });
+                    });
+                });
+              });
+              </script>
           {% endif %}
       </div>
       

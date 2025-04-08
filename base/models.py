@@ -422,6 +422,8 @@ class PostLike(models.Model):
 
     class Meta:
         unique_together = ('post', 'user')
+    def __str__(self):
+        return f"{self.user} liked {self.post.title}"
 
 
 class PostComment(models.Model):

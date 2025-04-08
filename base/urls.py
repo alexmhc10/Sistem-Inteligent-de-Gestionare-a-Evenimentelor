@@ -90,10 +90,9 @@ urlpatterns = [
     path('event_status_api/<int:pk>', views.event_status_api, name='event_status_api'),
 
     #Postari
-    path('posts/<int:post_id>/like/', views.like_post, name='like_post'),
-    path('posts/<int:post_id>/comment/', views.add_comment, name='add_comment'),
+    path('like/<int:post_id>', views.like_post, name='like_post'),
+    path('comment/<int:post_id>', views.add_comment, name='add_comment'),
     path('delete_post/<int:postId>/', views.delete_post, name='delete_post'),
-
 
     #Face_recog
     path('classify/', views.find_user_view, name='classify'),
