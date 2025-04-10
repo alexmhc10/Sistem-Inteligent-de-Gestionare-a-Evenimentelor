@@ -575,7 +575,7 @@ def users(request):
         return HttpResponse("Only superusers can approve users.")
     awaiting_profiles = Profile.objects.filter(approved=False)
     waiting_count = Profile.objects.filter(approved=False).count()
-    users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    users = User.objects.filter(is_superuser=False, profile__user_type="organizer").exclude(username="defaultuser")
     error_pas = False
     updated = False
     if request.method == 'POST':
@@ -641,9 +641,9 @@ def users(request):
             else:
                 error_pas = True
     user_profiles = {user: user.profile_set.first() for user in users}
-    profiles = Profile.objects.all()
+    profiles = Profile.objects.filter(user_type="organizer")
     user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
-    non_acc = Profile.objects.filter(approved=False)
+    non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
     context = {
         'notifications':notifications,
@@ -834,7 +834,34 @@ def homeAdmin(request):
     print("Evenimente per luni: ", event_month_count)
     print("Evenimente si loc lor: ", event_locations)
     budget = Budget.objects.first()
+    today = now().date()
+    loc_profit = []
+
+    all_locations = Location.objects.all()
+
+    for loc in all_locations:
+        events_completed = Event.objects.filter(location=loc, completed=True, is_canceled=False)
+        event_count = events_completed.count()
+        total_event_income = sum(event.cost for event in events_completed)
+
+        created_date = loc.created_at.date()
+        months_passed = (today.year - created_date.year) * 12 + (today.month - created_date.month)
+        months_passed = max(months_passed, 0)
+
+        total_maintenance_cost = Decimal(months_passed) * loc.cost
+        profit = total_event_income - total_maintenance_cost
+
+        loc_profit.append({
+            "location": loc,
+            "event_count": event_count,
+            "profit": profit
+        })
+
+    top_locations = sorted(loc_profit, key=lambda x: x["profit"], reverse=True)[:5]
+    print("Cele mai bune loc: ", top_locations)
     context= {
+        'top_locations':top_locations,
+        'loc_profit':loc_profit,
         'budget':budget,
         'event_month_count':json.dumps(event_month_count),
         'location_month_count':json.dumps(location_month_count),

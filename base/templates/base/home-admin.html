@@ -184,32 +184,7 @@
                            </div>
                         </div>
                      </div>
-                     <div class="col-xl-3 col-md-6">
-                        <div class="card card-animate">
-                           <div class="card-body">
-                              <div class="d-flex align-items-center">
-                                 <div class="flex-grow-1 overflow-hidden">
-                                    <p class="text-uppercase fw-medium text-muted text-truncate mb-0"> My Balance</p>
-                                 </div>
-                                 <div class="flex-shrink-0">
-                                    <h5 class="text-muted fs-14 mb-0">
-                                       +0.00 %
-                                    </h5>
-                                 </div>
-                              </div>
-                              <div class="d-flex align-items-end justify-content-between mt-4">
-                                 <div>
-                                    <h4 class="fs-22 fw-semibold ff-secondary mb-4">$<span class="counter-value" data-target="165.89">165.89</span>k </h4>
-                                 </div>
-                                 <div class="avatar-sm flex-shrink-0">
-                                    <span class="avatar-title bg-primary-subtle rounded fs-3">
-                                    <i class="bx bx-wallet text-primary"></i>
-                                    </span>
-                                 </div>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
+                  
                   </div>
                   <div class="row mb-4">
                      <div class="col-xl-6 me-2" style="width: 55%;">
@@ -672,43 +647,42 @@
                               <div class="table-responsive table-card">
                                  <table class="table table-hover table-centered align-middle table-nowrap mb-0">
                                     <tbody>
-                                       {% for location in ev_loc %}
-                                       <tr>
-                                          <td>
-                                             <div class="d-flex align-items-center">
-                                                <div class="avatar-sm bg-light rounded p-1 me-2">
-                                                   <img src="{{ location.gallery.url }}" style="width: 100px;" alt="" class="img-fluid d-block">
-                                                </div>
-                                                <div>
-                                                   <h5 class="fs-14 my-1"><a href="{% url 'admin-view-location' location.name %}" class="text-reset">{{ location.name }}</a></h5>
-                                                   <span class="text-muted">{{ location.created_at.date }}</span>
-                                                </div>
-                                             </div>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 my-1 fw-normal">${{ location.cost }}</h5>
-                                             <span class="text-muted">Price</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 my-1 fw-normal">
-                                                {% for item in events_count %}
-                                                {% if item.name == location.name %}
-                                                {{ item.ev_c }}
-                                                {% endif %}
-                                                {% endfor %}
-                                             </h5>
-                                             <span class="text-muted">Events</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 my-1 fw-normal">Max Guests</h5>
-                                             <span class="text-muted">{{ location.seats_numbers }}</span>
-                                          </td>
-                                          <td>
-                                             <h5 class="fs-14 my-1 fw-normal">$1,798</h5>
-                                             <span class="text-muted">Profit</span>
-                                          </td>
-                                       </tr>
-                                       {% endfor %}
+                                       {% for item in top_locations %}
+<tr>
+   <td>
+      <div class="d-flex align-items-center">
+         <div class="avatar-sm bg-light rounded p-1 me-2">
+            <img src="{{ item.location.gallery.url }}" style="width: 100px;" alt="" class="img-fluid d-block">
+         </div>
+         <div>
+            <h5 class="fs-14 my-1">
+               <a href="{% url 'admin-view-location' item.location.name %}" class="text-reset">
+                  {{ item.location.name }}
+               </a>
+            </h5>
+            <span class="text-muted">{{ item.location.created_at.date }}</span>
+         </div>
+      </div>
+   </td>
+   <td>
+      <h5 class="fs-14 my-1 fw-normal">${{ item.location.cost }}</h5>
+      <span class="text-muted">Monthly Cost</span>
+   </td>
+   <td>
+      <h5 class="fs-14 my-1 fw-normal">{{ item.event_count }}</h5>
+      <span class="text-muted">Events</span>
+   </td>
+   <td>
+      <h5 class="fs-14 my-1 fw-normal">{{ item.location.seats_numbers }}</h5>
+      <span class="text-muted">Max Guests</span>
+   </td>
+   <td>
+      <h5 class="fs-14 my-1 fw-normal">${{ item.profit }}</h5>
+      <span class="text-muted">Profit</span>
+   </td>
+</tr>
+{% endfor %}
+
                                     </tbody>
                                  </table>
                               </div>
