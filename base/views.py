@@ -47,6 +47,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Event, Location
 from .forms import EventForm
+from django.db.models import Avg
 
 @login_required
 def edit_event(request, event_id):
@@ -425,7 +426,8 @@ def admin_locations(request):
             'id':location.id,
             'types':location.types
         })
-    
+    average_ratings = Review.objects.values('location__name').annotate(rating=Avg('stars'))
+    print("Average: ", average_ratings)
     count_organizers = organizers.count()
     filter_date = datetime(2024, 12, 2, 0, 0, 0)
     new_locations_count = sum(1 for location in detailed_locations 
@@ -441,6 +443,7 @@ def admin_locations(request):
         location_count = Location.objects.filter(types=type).count()
         types_with_location_count.append({'type': type.name, 'count': location_count})
     context = {
+        'average_ratings':average_ratings,
         'new_locations_detailed':new_locations_detailed,
         'types_with_location_count':types_with_location_count,
         'organizers':organizers,
@@ -536,6 +539,14 @@ def admin_view_locations(request, name):
     profile = Profile.objects.get(username=location.owner)
     events = Event.objects.filter(location=location)
     detailed_events = []
+    events_completed = Event.objects.filter(location=location, completed=True, is_canceled=False)
+    today = datetime.today()
+    total_event_income = sum(event.cost for event in events_completed)
+    created_date = location.created_at.date()
+    months_passed = (today.year - created_date.year) * 12 + (today.month - created_date.month)
+    months_passed = max(months_passed, 0)
+    total_maintenance_cost = Decimal(months_passed) * location.cost
+    profit = total_event_income - total_maintenance_cost
     for event in events:
         detailed_events.append({
             'organizer':event.organized_by,
@@ -557,6 +568,7 @@ def admin_view_locations(request, name):
     reviews_count = reviews.count()
     print("Reviews",reviews)
     context = {
+        'profit':profit,
         'reviews':reviews,
         'reviews_count':reviews_count,
         'events_count':events_count,
@@ -758,6 +770,13 @@ def homeAdmin(request):
     .annotate(total=Count('id'))
     .order_by('month')
 )
+    profit_by_month = (
+        CompanyProfit.objects
+    .annotate(month=TruncMonth('created_at'))
+    .values('month')
+    .annotate(total=Count('id'))
+    .order_by('month')
+    )
     location_month_count = []
     for entry in locations_by_month:
         month_str = entry['month'].strftime('%m')
@@ -786,6 +805,39 @@ def homeAdmin(request):
         elif month_str == "12":
             month_str = "Dec"
         location_month_count.append(
+            {
+                'month':month_str,
+                'count':entry['total']
+            }
+        )
+    profit_month_count = []
+    for entry in profit_by_month:
+        month_str = entry['month'].strftime('%m')
+        if month_str == "01":
+            month_str = "Jan"
+        elif month_str == "02":
+            month_str = "Feb"
+        elif month_str == "03":
+            month_str = "Mar"
+        elif month_str == "04":
+            month_str = "Apr"
+        elif month_str == "05":
+            month_str = "May"
+        elif month_str == "06":
+            month_str = "Jun"
+        elif month_str == "07":
+            month_str = "Jul"
+        elif month_str == "08":
+            month_str = "Aug"
+        elif month_str == "09":
+            month_str = "Sep"
+        elif month_str == "10":
+            month_str = "Oct"
+        elif month_str == "11":
+            month_str = "Nov"
+        elif month_str == "12":
+            month_str = "Dec"
+        profit_month_count.append(
             {
                 'month':month_str,
                 'count':entry['total']
@@ -865,6 +917,7 @@ def homeAdmin(request):
         'budget':budget,
         'event_month_count':json.dumps(event_month_count),
         'location_month_count':json.dumps(location_month_count),
+        'profit_month_count':json.dumps(profit_month_count),
         'loc_percentage_change':loc_percentage_change,
         'ev_percentage_change':ev_percentage_change,
         'events':events,

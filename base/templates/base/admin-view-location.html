@@ -86,8 +86,8 @@
                             <div class="card-body">
                                 <div class="row gx-lg-5">
                                     <div class="col-xl-4 col-md-8 mx-auto">
-                                        <div class="product-img-slider sticky-side-div">
-                                            <div class="swiper product-thumbnail-slider p-2 rounded bg-light swiper-initialized swiper-horizontal swiper-backface-hidden">
+                                        <div class="location-img-slider sticky-side-div">
+                                            <div class="swiper location-thumbnail-slider p-2 rounded bg-light swiper-initialized swiper-horizontal swiper-backface-hidden">
                                                 <div class="swiper-wrapper" id="swiper-wrapper-cb212816c6bb95c7" aria-live="polite">
                                                     <div class="swiper-slide swiper-slide-active"  role="group" aria-label="1 / 4">
                                                         <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
@@ -106,7 +106,7 @@
                                                 <div style="color:#D4AF37" class="swiper-button-prev material-shadow swiper-button-disabled" tabindex="-1" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-cb212816c6bb95c7" aria-disabled="true"></div>
                                             <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
                                             <!-- end swiper thumbnail slide -->
-                                            <div class="swiper product-nav-slider mt-2 swiper-initialized swiper-horizontal swiper-free-mode swiper-watch-progress swiper-backface-hidden swiper-thumbs">
+                                            <div class="swiper location-nav-slider mt-2 swiper-initialized swiper-horizontal swiper-free-mode swiper-watch-progress swiper-backface-hidden swiper-thumbs">
                                                 <div class="swiper-wrapper" id="swiper-wrapper-9d1b1a3c4affc1068" aria-live="polite" style="transform: translate3d(0px, 0px, 0px);">
                                                     <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 159px; margin-right: 10px;" role="group" aria-label="1 / 4">
                                                         <div class="nav-slide-item">
@@ -158,11 +158,7 @@
                                                         <div class="text-muted">Added at : <span class="text-body fw-medium"> {{ location.created_at }} </span></div>
                                                     </div>
                                                 </div>
-                                                <div class="flex-shrink-0">
-                                                    <div>
-                                                        <a href="apps-ecommerce-add-product.html" class="btn btn-light" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Edit" data-bs-original-title="Edit"><i class="ri-pencil-fill align-bottom"></i></a>
-                                                    </div>
-                                                </div>
+                                                
                                             </div>
 
                                             <div class="d-flex flex-wrap gap-2 align-items-center mt-3">
@@ -192,7 +188,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- end col -->
                                                 <div class="col-lg-3 col-sm-6">
                                                     <div class="p-2 border border-dashed rounded">
                                                         <div class="d-flex align-items-center">
@@ -208,7 +203,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- end col -->
                                                 <div class="col-lg-3 col-sm-6">
                                                     <div class="p-2 border border-dashed rounded">
                                                         <div class="d-flex align-items-center">
@@ -224,7 +218,6 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- end col -->
                                                 <div class="col-lg-3 col-sm-6">
                                                     <div class="p-2 border border-dashed rounded">
                                                         <div class="d-flex align-items-center">
@@ -235,12 +228,11 @@
                                                             </div>
                                                             <div class="flex-grow-1">
                                                                 <p class="text-muted mb-1">Total profit: </p>
-                                                                <h5 class="mb-0">$60,645</h5>
+                                                                <h5 class="mb-0">${{profit}}</h5>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <!-- end col -->
                                             </div>
 
                                             <div class="mt-4 text-muted">
@@ -248,31 +240,8 @@
                                                 <p> {{ location.description }} </p>
                                             </div>
 
-                                            <!-- <div class="row">
-                                                <div class="col-sm-6">
-                                                    <div class="mt-3">
-                                                        <h5 class="fs-14">Features :</h5>
-                                                        <ul class="list-unstyled">
-                                                            <li class="py-1"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> Full Sleeve</li>
-                                                            <li class="py-1"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> Cotton</li>
-                                                            <li class="py-1"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> All Sizes available</li>
-                                                            <li class="py-1"><i class="mdi mdi-circle-medium me-1 text-muted align-middle"></i> 4 Different Color</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <div class="col-sm-6">
-                                                    <div class="mt-3">
-                                                        <h5 class="fs-14">Services :</h5>
-                                                        <ul class="list-unstyled product-desc-list">
-                                                            <li class="py-1">10 Days Replacement</li>
-                                                            <li class="py-1">Cash on Delivery available</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div> -->
-
-
-                                            <div class="product-content mt-5">
+                                           
+                                            <div class="location-content mt-5">
                                                 <h5 class="fs-14 mb-3">Location Description :</h5>
                                                 <nav>
                                                     <ul class="nav nav-tabs nav-tabs-custom nav-success" id="nav-tab" role="tablist">
@@ -321,7 +290,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- product-content -->
 
                                             <div class="mt-5">
                                                 <div>
@@ -541,7 +509,7 @@
 </div>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-    const swiperThumbnail = new Swiper('.product-thumbnail-slider', {
+    const swiperThumbnail = new Swiper('.location-thumbnail-slider', {
         slidesPerView: 1,
         spaceBetween: 10,
         navigation: {
@@ -550,7 +518,7 @@
         },
     });
 
-    const swiperNav = new Swiper('.product-nav-slider', {
+    const swiperNav = new Swiper('.location-nav-slider', {
         slidesPerView: 4,
         spaceBetween: 10,
         freeMode: true,

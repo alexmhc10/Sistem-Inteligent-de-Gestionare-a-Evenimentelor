@@ -932,21 +932,8 @@
    
       const locationMonthCountData = JSON.parse('{{ location_month_count|escapejs }}');
       const eventMonthCountData = JSON.parse('{{ event_month_count|escapejs }}');
-      const profitMonthCountData = [
-    { month: 'Jan', count: 15 },
-    { month: 'Feb', count: 9 },
-    { month: 'Mar', count: -1 },
-    { month: 'Apr', count: 10 },
-    { month: 'May', count: 4 },
-    { month: 'Jun', count: 6 },
-    { month: 'Jul', count: 2 },
-    { month: 'Aug', count: 6 },
-    { month: 'Sep', count: 4 },
-    { month: 'Oct', count: 6 },
-    { month: 'Nov', count: -5 },
-    { month: 'Dec', count: 10 }
-];
-   
+      const profitMonthCountData = JSON.parse('{{ profit_month_count|escapejs }}');
+      console.log("Profit: ", profitMonthCountData);
       const filterDataByMonths = (months, data) => {
           return data.filter(entry => months.includes(entry['month']));
       };
@@ -1022,6 +1009,7 @@
 
 
 </style>
+
 {% endblock content %}
 
 

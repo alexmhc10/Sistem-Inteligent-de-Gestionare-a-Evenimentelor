@@ -255,6 +255,20 @@
                                     aria-labelledby="flush-headingRating" >
                                     <div class="accordion-body text-body">
                                         <div class="d-flex flex-column gap-2 star-filter-check">
+                                         
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox"
+                                                    value="5" id="locationratingRadio4" checked="">
+                                                <label class="form-check-label" for="locationratingRadio4">
+                                                    <span class="text-muted">
+                                                        <span class="star filled">★</span>
+                                                        <span class="star filled">★</span>
+                                                        <span class="star filled">★</span>
+                                                        <span class="star filled">★</span>
+                                                        <span class="star filled">★</span>
+                                                    </span> 5 stars
+                                                </label>
+                                            </div>
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox"
                                                     value="4" id="locationratingRadio4" checked="">
@@ -304,7 +318,20 @@
                                                         <span class="star empty">★</span>
                                                         <span class="star empty">★</span>
                                                         <span class="star empty">★</span>
-                                                    </span> 1
+                                                    </span> 1 star
+                                                </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="0"
+                                                    id="locationratingRadio1">
+                                                <label class="form-check-label" for="locationratingRadio1">
+                                                    <span class="text-muted">
+                                                        <span class="star empty">★</span>
+                                                        <span class="star empty">★</span>
+                                                        <span class="star empty">★</span>
+                                                        <span class="star empty">★</span>
+                                                        <span class="star empty">★</span>
+                                                    </span> 0 stars
                                                 </label>
                                             </div>
                                         </div>
@@ -472,7 +499,11 @@
                                                              <span
                                                                 class="badge bg-light text-body fs-12 fw-medium">
                                                              <span class="star filled">★</span>
-                                                             4.2
+                                                             {% for rating in average_ratings %}
+                                                             {% if rating.location__name == item.name %}
+                                                             {{ rating.rating }}
+                                                             {% endif %}
+                                                             {% endfor %}
                                                              </span>
                                                              </span>
                                                           </td>
