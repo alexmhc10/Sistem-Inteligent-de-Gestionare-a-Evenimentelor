@@ -87,10 +87,17 @@
                 <a class="sidebar-link ps-4" href="{% url 'personal_menu' %}" aria-expanded="false">
                   <i class="bi bi-cup-straw"></i>                
                   <span class="hide-menu">Menus</span>
-                  {% endif %}
-                  
-              </a>
-            </li>
+                </a>
+              </li>
+              <li class="sidebar-item">
+                <a class="sidebar-link btn btn-toggle ps-4" data-bs-toggle="collapse" href="#eventsCollapse" role="button" aria-expanded="false" aria-controls="eventsCollapse">
+                  <i class="bi bi-cup-straw"></i>                
+                  <span class="hide-menu">Past events</span>
+                </a>
+              </li>
+              <ul class="collapse" id="eventsCollapse" data-bs-parent="#sidebarnav">
+              </ul>
+            {% endif %}
           {% endif %}
         </ul>
       </nav>

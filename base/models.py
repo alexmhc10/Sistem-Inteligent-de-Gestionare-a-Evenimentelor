@@ -141,22 +141,6 @@ class Review(models.Model):
     def __str__(self):
         return self.comment[0:20]
 
-
-class Guests(models.Model):
-    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='guest_profile', null=True)
-    GENDER_CHOICES = [
-        ('M', 'Masculin'),
-        ('F', 'Feminin')
-        ]
-    age = models.IntegerField(null=True, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
-    picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
-    cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
-    vegan = models.BooleanField(default=False)
-    allergens = models.JSONField(default=list, blank=True, null=True)
-    state = models.BooleanField(default=False)
-    def __str__(self):
-        return self.profile.username
     
 
 def menu_item_upload_path(instance, filename):
@@ -173,6 +157,23 @@ class Allergen(models.Model):
     added_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     def __str__(self):
         return self.name  
+
+
+class Guests(models.Model):
+    profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='guest_profile', null=True)
+    GENDER_CHOICES = [
+        ('M', 'Masculin'),
+        ('F', 'Feminin')
+        ]
+    age = models.IntegerField(null=True, blank=True)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+    picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
+    cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
+    vegan = models.BooleanField(default=False)
+    allergens = models.ManyToManyField(Allergen, blank=True)
+    state = models.BooleanField(default=False)
+    def __str__(self):
+        return self.profile.username
 
 
 class Menu(models.Model):
@@ -211,8 +212,8 @@ class Event(models.Model):
         if self.organized_by and self.organized_by.is_superuser:
             raise ValidationError("Superuser-ul nu poate organiza evenimente.")
 
-        if self.event_date and self.event_date < now().date():
-            raise ValidationError("Data evenimentului nu poate fi în trecut.")
+        # if self.event_date and self.event_date < now().date():
+        #     raise ValidationError("Data evenimentului nu poate fi în trecut.")
         
     def __str__(self):
         return self.event_name

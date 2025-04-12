@@ -48,6 +48,8 @@ from django.contrib import messages
 from .models import Event, Location
 from .forms import EventForm
 from django.db.models import Avg
+from django.db.models import Exists, OuterRef, Value
+
 
 @login_required
 def edit_event(request, event_id):
@@ -1570,7 +1572,7 @@ def personal_eveniment_home(request):
     
     current_date = datetime.today()
 
-    past_events = Event.objects.filter(event_date__lte = current_date).order_by('event_date')
+    past_events = Event.objects.filter(event_date__lte = current_date, location=location).order_by('event_date')
 
     upcoming_events = Event.objects.filter(event_date__gte = current_date, location=location).order_by('event_date')
 
@@ -1689,7 +1691,8 @@ def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
 
     if event.location.owner != request.user:
-        return redirect(request.META.get('HTTP_REFERER', '/'))
+        messages.error(request, "Acces denied: You cant acces events that are not organised at your location.")
+        return redirect(request.META.get('HTTP_REFERER', '/login/'))
         
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
@@ -1865,6 +1868,7 @@ def guest_profile(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
+    allergens = Allergen.objects.all()
 
     if request.method == "POST":
         if not_completed:
@@ -1877,8 +1881,8 @@ def guest_profile(request):
             preferences.gender = request.POST.get('gender')
             preferences.cuisine_preference = request.POST.get('meniu')
             preferences.vegan = request.POST.get('vegan_check') == '1'
-            preferences.allergens = request.POST.getlist('allergens')
-
+            allergens_ids = request.POST.getlist('allergens')
+            preferences.allergens.set(allergens_ids)
             preferences.save()
             profil.save()
         else:
@@ -1898,7 +1902,8 @@ def guest_profile(request):
             elif form_type == 'form2':
                 preferences.cuisine_preference = request.POST.get('meniu')
                 preferences.vegan = request.POST.get('vegan_check') == '1'
-                preferences.allergens = request.POST.getlist('allergens')
+                allergens_ids = request.POST.getlist('allergens')
+                preferences.allergens.set(allergens_ids)
                 preferences.save()
 
             
@@ -1907,7 +1912,8 @@ def guest_profile(request):
     context = {
         "not_completed": not_completed,
         "preferences": preferences,
-        "profile": profil
+        "profile": profil,
+        "allergens": allergens
     }            
 
     return render(request, 'base/guest_profile.html', context)
@@ -2012,7 +2018,14 @@ def guest_event_view(request, pk):
         form = EventPostForm()
         print("Form not valid")
 
-    event_posts = EventPost.objects.filter(event=event).order_by('-created_at')
+    event_posts = EventPost.objects.filter(event=event).annotate(
+            is_liked=Exists(
+                PostLike.objects.filter(
+                    post=OuterRef('pk'),
+                    user=request.user
+                )
+            )
+        ).order_by('-created_at')
     guest_posts = EventPost.objects.filter(event=event, author=request.user).order_by('-created_at')
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     print(rsvp)

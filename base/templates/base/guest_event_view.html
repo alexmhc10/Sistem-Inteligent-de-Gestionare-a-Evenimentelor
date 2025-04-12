@@ -582,6 +582,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <p>You can create a new post and interact with other users!</p>
               <hr>
 
+              {% if guest_posts_count > 0 %}
+              <a class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="collapse" href="#postCollapse" role="button" aria-expanded="false" aria-controls="postCollapse">
+                Add more posts!
+              </a>
+              <div class="collapse" id="postCollapse">
                 <div class="card mt-4">
                   <div class="card-body">
                     <h3 class="h3">Create a post for - {{ event.event_name }}</h3>
@@ -641,8 +646,70 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </form>
                   </div> 
                 </div>
+              </div>
+              {% else %}
+
+                  <div class="card mt-4">
+                    <div class="card-body">
+                      <h3 class="h3">Create a post for - {{ event.event_name }}</h3>
+                      <form method="post" id="post-form" enctype="multipart/form-data">
+                          {% csrf_token %}
+                          {{ form.non_field_errors }}
+                          
+                          <div class="mb-3">
+                            <label class="form-label">Rating:</label>
+                            <div class="star-rating">
+                              {% for i in "54321" %}
+                              <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}"
+                                    {% if form.rating.value == i %}checked{% endif %}>
+                              <label for="star-{{ i }}" title="{{ i }} stele">★</label>
+                              {% endfor %}
+                              {{ form.rating }}
+                            </div>
+                            {% if form.rating.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.rating.errors.as_text }}
+                            </div>
+                            {% endif %}
+
+                          </div>
+
+                          <div class="mb-3">
+                            {{ form.title.label_tag }}
+                            {{ form.title }}
+                            {% if form.title.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.title.errors.as_text }}
+                            </div>
+                            {% endif %}
+                        </div>
+                          
+                          <div class="mb-3">
+                            {{ form.content.label_tag }}
+                            {{ form.content }}
+                            {% if form.content.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.content.errors.as_text }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                          <label for="id_images">Images (maximum 10)</label>
+                          <input type="file" name="images" id="id_images" 
+                                class="form-control" multiple
+                                accept="image/jpeg, image/png, image/gif">
+                          {{ form.images.errors }}
+                          <div id="image-preview" class="mt-2"></div>
+                        </div>
+                          
+                          <button type="submit" name="form_type" value="add_post" class="btn btn-primary">Create Post</button>
+                          <a href="{% url 'guest_event_view' event.id %}" class="btn btn-danger">Cancel</a>
+                      </form>
+                    </div> 
+                  </div>
+              {% endif %}
                 <script>
-                  
                   document.querySelector('form').addEventListener('submit', function(e) {
                     const files = document.getElementById('id_images').files;
                     if (files.length > 10) {
@@ -813,7 +880,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       {% if request.user == post.likes.user %}
                       <p>Liked</p>
                       {% endif %}
-                      <a class="m-r-15 text-inverse-lighter like-btn" role="button" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"><i class="bi bi-heart-fill{% if request.user in post.likes.all %} text-danger{%endif%}"></i> Like</a>
+                      <a class="m-r-15 text-inverse-lighter like-btn" role="button" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"><i class="bi {% if post.is_liked %}bi-heart-fill text-danger{%else%}bi-heart{%endif%}"></i> Like</a>
                       <a class="m-r-15 text-inverse-lighter ms-1" data-bs-toggle="collapse" href="#collapsePost{{post.id}}" role="button" aria-expanded="false" aria-controls="collapsePost{{post.id}}"><i class="bi bi-chat-dots-fill"></i> Comment</a> 
                     </div>
                     <div class="collapse" id="collapsePost{{post.id}}">
@@ -853,6 +920,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               'Content-Type': 'application/json',
                           },
                           credentials: 'same-origin'
+                      }).then(response => {
+                          if(response.ok) {
+                              window.location.reload();
+                          } else {
+                              throw new Error('Network response was not ok');
+                          }
                       })
                   });
 

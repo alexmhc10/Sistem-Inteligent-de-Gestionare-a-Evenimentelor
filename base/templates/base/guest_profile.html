@@ -402,30 +402,10 @@
                       <h6 class="mb-0">Allergens</h6>
                     </div>
                     <div class="col-sm-5 text-secondary justify-content-evenly">
-                      <div class="form-check form-check-inline">
-                          {% if "Lactoza" in preferences.allergens %}
-                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza" checked>
-                          {% else %}
-                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza">
-                          {% endif %}
-                          <label class="form-check-label text-dark" for="inlineCheckbox2">Lactoza</label>
-                      </div>
-                      <div class="form-check form-check-inline">
-                          {% if "Gluten" in preferences.allergens %}
-                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten" checked>
-                          {% else %}
-                          <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten">
-                          {% endif %}
-                          <label class="form-check-label text-dark" for="inlineCheckbox3">Gluten</label>
-                        </div>
-                      <div class="form-check form-check-inline mb-2">
-                        {% if "Soia" in preferences.allergens %}
-                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia" checked>
-                        {% else %}
-                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia">
-                        {% endif %}
-                        <label class="form-check-label text-dark" for="inlineCheckbox4">Soia</label>
-                      </div>
+                      {% for allergen in allergens %}
+                       <input class="form-check-input" type="checkbox" name="allergens" id="allergen-{{allergen.id}}" value="{{allergen.id}}" {% if allergen in preferences.allergens %}checked{% endif %}>
+                       <label for="allergen-{{allergen.id}}" class="text-dark">{{allergen.name}}</label>
+                      {% endfor %}
                     </div>
                     <div class="col-sm-2">
                       <h6 class="mb-0">Vegan</h6>
