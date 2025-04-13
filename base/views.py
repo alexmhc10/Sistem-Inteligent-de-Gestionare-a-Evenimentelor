@@ -401,7 +401,8 @@ def approve_user(request, pk):
         return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
     return render(request, 'base/approve_user.html', {'profile': profile})
 
-
+from django.db.models import Avg, Value, FloatField
+from django.db.models.functions import Coalesce
 @login_required(login_url='login')
 def admin_locations(request):
     if not request.user.is_superuser:
@@ -428,7 +429,9 @@ def admin_locations(request):
             'id':location.id,
             'types':location.types
         })
-    average_ratings = Review.objects.values('location__name').annotate(rating=Avg('stars'))
+    average_ratings = Location.objects.annotate(
+    rating=Coalesce(Avg('review__stars'), Value(0), output_field=FloatField())
+).values('name', 'rating')
     print("Average: ", average_ratings)
     count_organizers = organizers.count()
     filter_date = datetime(2024, 12, 2, 0, 0, 0)
@@ -569,8 +572,10 @@ def admin_view_locations(request, name):
     reviews = Review.objects.filter(location=location)
     reviews_count = reviews.count()
     print("Reviews",reviews)
+    loc_images = LocationImages.objects.filter(location=location)
     context = {
         'profit':profit,
+        'loc_images':loc_images,
         'reviews':reviews,
         'reviews_count':reviews_count,
         'events_count':events_count,

@@ -78,7 +78,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- end page title -->
 
                 <div class="row">
                     <div class="col-lg-12">
@@ -92,20 +91,15 @@
                                                     <div class="swiper-slide swiper-slide-active"  role="group" aria-label="1 / 4">
                                                         <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
                                                     </div>
-                                                    <div class="swiper-slide swiper-slide-next" role="group" aria-label="2 / 4">
-                                                        <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
+                                                    {% for image in loc_images %}
+                                                    <div class="swiper-slide swiper-slide-active" role="group" aria-label="{{ forloop.counter|add:1 }} / {{ loc_images|length }}">
+                                                        <img src="{{ image.image.url }}" alt="" class="img-fluid d-block">
                                                     </div>
-                                                    <div class="swiper-slide"  role="group" aria-label="3 / 4">
-                                                        <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
-                                                    </div>
-                                                    <div class="swiper-slide" role="group" aria-label="4 / 4" >
-                                                        <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
-                                                    </div>
+                                                {% endfor %}                                                
                                                 </div>
                                                 <div style="color:#D4AF37" class="swiper-button-next material-shadow" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-cb212816c6bb95c7" aria-disabled="false"></div>
                                                 <div style="color:#D4AF37" class="swiper-button-prev material-shadow swiper-button-disabled" tabindex="-1" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-cb212816c6bb95c7" aria-disabled="true"></div>
                                             <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
-                                            <!-- end swiper thumbnail slide -->
                                             <div class="swiper location-nav-slider mt-2 swiper-initialized swiper-horizontal swiper-free-mode swiper-watch-progress swiper-backface-hidden swiper-thumbs">
                                                 <div class="swiper-wrapper" id="swiper-wrapper-9d1b1a3c4affc1068" aria-live="polite" style="transform: translate3d(0px, 0px, 0px);">
                                                     <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 159px; margin-right: 10px;" role="group" aria-label="1 / 4">
@@ -113,27 +107,17 @@
                                                             <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
                                                         </div>
                                                     </div>
-                                                    <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-next" style="width: 159px; margin-right: 10px;" role="group" aria-label="2 / 4">
-                                                        <div class="nav-slide-item">
-                                                            <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
-                                                        </div>
-                                                    </div>
-                                                    <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible" style="width: 159px; margin-right: 10px;" role="group" aria-label="3 / 4">
-                                                        <div class="nav-slide-item">
-                                                            <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
-                                                        </div>
-                                                    </div>
-                                                    <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible" role="group" aria-label="4 / 4" style="width: 159px; margin-right: 10px;">
-                                                        <div class="nav-slide-item">
-                                                            <img src=" {{ location.gallery.url }} " alt="" class="img-fluid d-block">
-                                                        </div>
+                                                    {% for image in loc_images %}
+                                                   <div class="swiper-slide swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 159px; margin-right: 10px;" role="group" aria-label="{{ forloop.counter|add:1 }} / {{ loc_images|length }}">
+                                                    <div class="nav-slide-item">
+                                                        <img src=" {{ image.image.url }} " alt="" class="img-fluid d-block">
                                                     </div>
                                                 </div>
+                                                {% endfor %}
+                                                </div>
                                             <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span></div>
-                                            <!-- end swiper nav slide -->
                                         </div>
                                     </div>
-                                    <!-- end col -->
 
                                     <div class="col-xl-8">
                                         <div class="mt-xl-0 mt-5">

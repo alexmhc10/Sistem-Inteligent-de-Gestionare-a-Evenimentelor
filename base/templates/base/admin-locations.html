@@ -500,7 +500,7 @@
                                                                 class="badge bg-light text-body fs-12 fw-medium">
                                                              <span class="star filled">★</span>
                                                              {% for rating in average_ratings %}
-                                                             {% if rating.location__name == item.name %}
+                                                             {% if rating.name == item.name %}
                                                              {{ rating.rating }}
                                                              {% endif %}
                                                              {% endfor %}
