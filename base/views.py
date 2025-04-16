@@ -92,9 +92,14 @@ def home_organizer(request):
 
 @login_required
 def guest_list(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    guests = event.guests.all() 
-    return render(request, 'base/guest_list.html', {'event': event, 'guests': guests})
+    event = get_object_or_404(
+        Event.objects.prefetch_related('guests__profile'),  
+        id=event_id
+    )
+    return render(request, 'base/guest_list.html', {
+        'event': event,
+        'guests': event.guests.all()  
+    })
 
 def event_details(request, event_id):
     event = get_object_or_404(Event, id=event_id)
