@@ -1,32 +1,104 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<style>
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    height: 100%;
+    perspective: 1000px;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+}
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.flip-card-front {
+    z-index: 2;
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+/* Aliniere pe înălțime */
+.dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+}
+
+.dashboard-row > div {
+    display: flex;
+    flex-direction: column;
+}
+
+.full-height-card {
+    flex-grow: 1;
+    height: 100%;
+}
+</style>
+
 <div class="container-fluid mt-4 px-3">
     <h1 class="mb-4" style="color: #002B5B;">Organizer Dashboard</h1>
 
-    <div class="row">
+    <div class="row dashboard-row">
         <!-- profile -->
-        <div class="col-md-3">
-            <div class="card" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
-                <div class="card-body">
-                    {% if request.user.profile_set.first.photo %}
-                        <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture" class="img-fluid rounded-circle mb-3">
-                    {% else %}
-                        <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
-                    {% endif %}
-                    <h5 class="card-title">Your Profile</h5>
-                    <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
-                    <p><strong>Email:</strong> {{ request.user.email }}</p>
-                    <p><strong>Events Organized:</strong> 15</p>
-                    <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
-                    <a href="{% url 'edit_profile' username=request.user.username %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit Profile</a>
+        <div class="col-md-3 mb-3">
+            <div class="flip-card full-height-card">
+                <div class="flip-card-inner">
+                    <!-- Fața cardului -->
+                    <div class="flip-card-front card" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
+                        <div class="card-body">
+                            {% if request.user.profile_set.first.photo %}
+                            <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture"
+                                 class="img-fluid rounded-circle mb-3"
+                                 style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                            <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
+                            {% endif %}
+                            <h5 class="card-title">Your Profile</h5>
+                            <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                            <p><strong>Email:</strong> {{ request.user.email }}</p>
+                            <p><strong>Events Organized:</strong> 15</p>
+                            <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Spatele cardului -->
+                    <div class="flip-card-back card" style="background-color: #D4AF37; color: white; border-radius: 8px;">
+                        <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                            <h5 class="card-title">Statistici rapide</h5>
+                            <p>⭐ Rating mediu: 4.8</p>
+                            <p>📍 Evenimente în 3 orașe</p>
+                            <p>📅 Ultimul eveniment: 10.04.2025</p>
+                            <p>💬 Feedback pozitiv: 95%</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
 
-        <div class="col-md-6">
-            <div class="card" style="background-color: #FAF9F6; color: #002B5B; border-radius: 8px; height: 100%;">
+        <!-- upcoming events -->
+        <div class="col-md-6 mb-3">
+            <div class="card full-height-card" style="background-color: #FAF9F6; color: #002B5B; border-radius: 8px;">
                 <div class="card-body">
                     <h5 class="card-title">Upcoming Events</h5>
                     <table class="table table-striped" style="border-radius: 8px; border-color: #ECECEC;">
@@ -47,8 +119,10 @@
                                 <td>{{ event.location }}</td>
                                 <td>{{ event.guests.count }}</td>
                                 <td>
-                                    <a href="{% url 'event_details' event.id %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Details</a>
-                                    <a href="{% url 'edit_event' event.id %}" class="btn" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit</a>
+                                    <a href="{% url 'event_details' event.id %}" class="btn"
+                                       style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Details</a>
+                                    <a href="{% url 'edit_event' event.id %}" class="btn"
+                                       style="background-color: #D4AF37; color: #FAF9F6; border-radius: 5px;">Edit</a>
                                 </td>
                             </tr>
                             {% empty %}
@@ -63,29 +137,31 @@
         </div>
 
         <!-- stats -->
-        <div class="col-md-3">
-            <div class="card" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
-                <div class="card-body">
-                    <h5 class="card-title">Organized Events</h5>
-                    <p class="card-text display-4">{{ total_events }}</p>
+        <div class="col-md-3 mb-3">
+            <div class="d-flex flex-column justify-content-between full-height-card">
+                <div class="card" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Organized Events</h5>
+                        <p class="card-text display-4">{{ total_events }}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="card mt-3" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
-                <div class="card-body">
-                    <h5 class="card-title">Registered Participants</h5>
-                    <p class="card-text display-4">{{ total_participants }}</p>
+                <div class="card mt-3" style="background-color: #D4AF37; color: #FAF9F6; border-radius: 8px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Registered Participants</h5>
+                        <p class="card-text display-4">{{ total_participants }}</p>
+                    </div>
                 </div>
-            </div>
-            <div class="card mt-3" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
-                <div class="card-body">
-                    <h5 class="card-title">Acceptance Rate</h5>
-                    <p class="card-text display-4">{{ acceptance_rate }}%</p>
+                <div class="card mt-3" style="background-color: #ECECEC; color: #002B5B; border-radius: 8px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Acceptance Rate</h5>
+                        <p class="card-text display-4">{{ acceptance_rate }}%</p>
+                    </div>
                 </div>
-            </div>
-            <div class="card mt-3" style="background-color: #FAF9F6; color: #D4AF37; border-radius: 8px;">
-                <div class="card-body">
-                    <h5 class="card-title">Average Feedback</h5>
-                    <p class="card-text display-4">{{ average_feedback }} ⭐</p>
+                <div class="card mt-3" style="background-color: #FAF9F6; color: #D4AF37; border-radius: 8px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Average Feedback</h5>
+                        <p class="card-text display-4">{{ average_feedback }} ⭐</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,7 +169,10 @@
 
     <!-- create event button -->
     <div class="text-center mb-4">
-        <a href="" class="btn" style="background-color: #D4AF37; color: #FAF9F6; font-size: 1.2rem; padding: 10px 20px; border-radius: 8px;">+ Create a New Event</a>
+        <a href="" class="btn"
+           style="background-color: #D4AF37; color: #FAF9F6; font-size: 1.2rem; padding: 10px 20px; border-radius: 8px;">
+            + Create a New Event
+        </a>
     </div>
 </div>
 {% endblock %}
