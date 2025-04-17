@@ -18,7 +18,9 @@
                         <p><strong>Location:</strong> {{ location.location }}</p>
                         <p><strong>Number of seats:</strong> {{ location.seats_numbers }}</p>
                         <p><strong>Cost:</strong> {{ location.cost }} RON</p>
-                        <a href="#" class="btn btn-primary">View Details</a>
+                        <a href="{% url 'location' location.pk %}" class="btn btn-primary">
+                            View Details
+                        </a>
                     </div>
                 </div>
             </div>

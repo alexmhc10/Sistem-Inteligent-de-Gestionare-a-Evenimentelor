@@ -44,7 +44,7 @@
             {% endif %}
             
             <div class="d-flex justify-content-center mt-4">
-                <a href="{% url 'my_events' %}" class="btn btn-secondary px-4 py-2 rounded-pill shadow-sm">
+                <a href="{% url 'my_events' %}" class="btn btn-gradient px-5 py-3 rounded-pill shadow-lg">
                     <i class="fas fa-arrow-left me-2"></i>Back to events
                 </a>
             </div>
@@ -64,6 +64,20 @@
     .badge {
         font-size: 0.75rem;
         font-weight: normal;
+    }
+
+    .btn-gradient {
+        background: linear-gradient(45deg, #B08A2E, #D4AF37);
+        color: white;
+        font-weight: bold;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: none;
+    }
+    .btn-gradient:hover {
+        background: linear-gradient(45deg, #C5B28A, #D4AF37);
+        transform: scale(1.05);
+        color: white;
     }
 </style>
 {% endblock %}
