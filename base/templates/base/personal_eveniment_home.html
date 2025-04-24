@@ -155,17 +155,19 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <div class="card-body">
                   <h1 class="card-title d-flex align-items-center gap-2" data-bs-toggle="collapse" href="#completedEventsCollapse" role="button" aria-expanded="false" aria-controls="completedEventsCollapse">
                       Completed events!
-                  </h1>
+                   <span class="badge text-bg-primary">{{ past_events_count }}</span>
+
+                    </h1>
               </div>
           </div>
         </div>
         <div class="collapse" id="completedEventsCollapse">
           <div class="row d-flex flex-row">
-          {% for event in past_events %}
+          {% for event in past_events %}  
           <div class="col-lg-4">
             <div class="card overflow-hidden hover-img card-hover">
               <div class="position-relative">
-                <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
+                <a href="{% url 'completed_event' event.id %}">
                   <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
                 </a>
                 <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ next_event.event_time }}</span>

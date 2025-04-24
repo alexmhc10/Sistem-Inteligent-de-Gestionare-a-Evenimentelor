@@ -1583,12 +1583,15 @@ def personal_eveniment_home(request):
     current_date = datetime.today()
 
     past_events = Event.objects.filter(event_date__lte = current_date, location=location).order_by('event_date')
-
+    print("Evente din trecut", past_events)
+    
     upcoming_events = Event.objects.filter(event_date__gte = current_date, location=location).order_by('event_date')
 
     next_event = upcoming_events.first() if upcoming_events.exists() else None
+    print("Primul event urmator", next_event)
 
     remaining_events = upcoming_events[1:] if upcoming_events.count() > 1 else []
+    print("Eventuri ramase", remaining_events)
 
     if next_event:
         next_event_data = [
@@ -1616,6 +1619,7 @@ def personal_eveniment_home(request):
     context = {
         'events': events,
         'past_events': past_events,
+        'past_events_count': past_events.count(),
         'event_data': json.dumps(next_event_data),
         'remaining_events_data': remaining_events_data,
         'event': next_event,
@@ -1722,6 +1726,18 @@ def personal_vizualizare_eveniment(request, pk):
         'profile': profile
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
+
+
+@login_required(login_url='/login')
+@user_is_staff
+def completed_event(request, pk):
+    event = Event.objects.get(id=pk)
+
+    if event is not None:
+        context = {
+            'event':event
+        }
+    return render(request, 'base/completed_event.html', context)
 
 
 @login_required(login_url='/login')

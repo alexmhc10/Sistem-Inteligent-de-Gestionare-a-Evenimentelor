@@ -81,6 +81,7 @@ urlpatterns = [
     path('upload_images/', views.upload_images, name='upload_images'),
     path("delete-image/<int:image_id>/", views.delete_image, name="delete_image"),
     path("personal_menu/", views.personal_menu, name="personal_menu"),
+    path("completed_event/<int:pk>", views.completed_event, name='completed_event'),
     
 
     #Guest
