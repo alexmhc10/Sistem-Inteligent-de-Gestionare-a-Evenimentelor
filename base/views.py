@@ -79,12 +79,14 @@ def locations_list(request):
 @login_required
 def home_organizer(request):
     events = Event.objects.all()
-    upcoming_events = events.filter(event_date__gte=timezone.now())
+    upcoming_events = events.filter(event_date__gte=timezone.now()).order_by('event_date')
+
     context = {
         'total_events': events.count(),
         'total_participants': sum(event.guests.count() for event in events),
         'acceptance_rate': 85,  
-        'average_feedback': 4.7,  
+        'average_feedback': 4.7,
+        'today_date': datetime.now().strftime('%B %d, %Y'), 
         'upcoming_events': upcoming_events
     }
     return render(request, 'base/home-organizer.html', context)
