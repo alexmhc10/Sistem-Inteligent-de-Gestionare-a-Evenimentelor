@@ -49,6 +49,20 @@ from .models import Event, Location
 from .forms import EventForm
 from django.db.models import Avg
 from django.db.models import Exists, OuterRef, Value
+from .models import EventNotification
+from django.views import View
+
+class NotificationView(View):
+    def get(self, request):
+        # Filtrăm notificările pentru utilizatorul conectat
+        notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')  # Ordonați după dată, cele mai recente primele
+        
+        # Poți filtra și notificările necitite, dacă dorești
+        unread_notifications = notifications.filter(is_read=False)
+        
+        return render(request, 'home-organizer.html', {
+            'notifications': notifications,  # Trimiți notificările în template
+        })
 
 
 @login_required
@@ -76,18 +90,35 @@ def locations_list(request):
     return render(request, 'base/locations_list.html', {'locations': locations})
 
 
-@login_required
 def home_organizer(request):
     events = Event.objects.all()
     upcoming_events = events.filter(event_date__gte=timezone.now()).order_by('event_date')
+    
+    # Get all notifications (both read and unread) for the user
+    notifications = EventNotification.objects.filter(
+        receiver=request.user
+    ).order_by('-timestamp').select_related('sender', 'event')[:10]  # Show last 10
+    
+    # Identify and mark unread notifications
+    unread_notifications = [n for n in notifications if not n.is_read]
+    if unread_notifications:
+        # Create list of IDs to update
+        unread_ids = [n.id for n in unread_notifications]
+        # Bulk update to mark as read
+        EventNotification.objects.filter(id__in=unread_ids).update(is_read=True)
+        # Update our queryset to reflect the change
+        for notification in notifications:
+            if not notification.is_read:
+                notification.is_read = True
 
     context = {
         'total_events': events.count(),
         'total_participants': sum(event.guests.count() for event in events),
-        'acceptance_rate': 85,  
+        'acceptance_rate': 85,
         'average_feedback': 4.7,
-        'today_date': datetime.now().strftime('%B %d, %Y'), 
-        'upcoming_events': upcoming_events
+        'today_date': datetime.now().strftime('%B %d, %Y'),
+        'upcoming_events': upcoming_events,
+        'notifications': notifications,
     }
     return render(request, 'base/home-organizer.html', context)
 
