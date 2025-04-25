@@ -1,6 +1,9 @@
 {% extends 'main.html' %}
 {% load static %}
-
+<style>.form-step {
+    transition: all 1s ease-in-out;
+}
+</style>
 {% block content %}
     <div class="event_builder container mt-4">
         <h3 class="text-center mb-4">Create a New Event</h3>
@@ -40,10 +43,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-6">
-                        <label for="event_date" class="form-label">Event Date</label>
-                        <input type="date" id="event_date" name="event_date" class="form-control" required readonly>
-                    </div>
+
                     <div class="col-md-6">
                         <label for="event_time" class="form-label">Event Time</label>
                         <input type="time" id="event_time" name="event_time" class="form-control" required>
@@ -171,5 +171,64 @@
                 document.getElementById("guest_email").value = "";
             }
         }
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('eventForm');
+
+    form.addEventListener('submit', function (e) {
+        let errors = [];
+
+        // Data evenimentului
+        const eventDate = document.getElementById('event_calendar').value;
+        const today = new Date().toISOString().split('T')[0];
+        if (!eventDate || eventDate < today) {
+            errors.push("Please select a valid future date.");
+        }
+
+        // Nume eveniment
+        const eventName = document.getElementById('event_name').value.trim();
+        if (eventName.length < 3) {
+            errors.push("Event name must be at least 3 characters long.");
+        }
+
+        // Ora
+        const eventTime = document.getElementById('event_time').value;
+        if (!eventTime) {
+            errors.push("Please select an event time.");
+        }
+
+        // Descriere
+        const description = document.getElementById('event_description').value.trim();
+        if (description.length < 10) {
+            errors.push("Description must be at least 10 characters.");
+        }
+
+        // Locație
+        const location = document.getElementById('location').value;
+        if (!location) {
+            errors.push("Please select a location.");
+        }
+
+        // Tip eveniment
+        const eventType = document.getElementById('event_type').value;
+        if (!eventType) {
+            errors.push("Please select an event type.");
+        }
+
+        // Cost
+        const cost = document.getElementById('cost').value;
+        if (!cost || parseFloat(cost) < 0) {
+            errors.push("Please enter a valid cost (0 or more).");
+        }
+
+
+        if (errors.length > 0) {
+            e.preventDefault();
+            alert("Form errors:\n\n" + errors.join("\n"));
+        }
+    });
+});
     </script>
 {% endblock %}
