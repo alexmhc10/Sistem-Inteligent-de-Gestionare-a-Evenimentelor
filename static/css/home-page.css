@@ -1,0 +1,256 @@
+#logo-home{
+    width:100px;
+    height: 50px;
+    object-fit: cover;
+  }
+  #account a{
+    padding:10px;
+    border-radius:5px;
+  }
+  #login{
+    background: rgb(245, 242, 242);
+    color:darkmagenta;
+  }
+  #register{
+    background:black;
+    color:white;
+    margin-left:20px;
+  }
+  *{
+    font-weight:500;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+  }
+  .img-container{
+    max-width: 100%;
+    position: relative;
+    text-align: center;
+  }
+  .img-container img{
+    width: 100%;
+    height:90vh;
+    object-fit: cover;
+    filter: brightness(40%)
+  }
+  .centered {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .centered h3{
+    color:azure
+  }
+  .centered2 {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .centered2 h1{
+    color:azure;
+    font-weight: 300;
+  }
+  .centered3 {
+    position: absolute;
+    top: 35%;
+    margin-top:55px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  .centered3 h4{
+    color:azure;
+    font-weight: 300;
+  }
+  .custom-row {
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+  }
+  .custom-row h4{
+    font-weight: 500;
+  }
+  *:after, *:before{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+  }
+  .custom-row h4:after {
+    content: "";
+    position: absolute;
+    background-color: rgb(109, 106, 106); 
+    height: 3px;
+    width: 0; 
+    left: 0;
+    bottom: -10px;
+    transition: width 0.3s ease, background-color 0.3s ease; 
+  }
+  
+  .custom-row h4 {
+    cursor: pointer;
+    position: relative;
+    padding-bottom: 10px;
+  }
+  
+  .custom-row h4.active:after {
+    background-color: azure; 
+    width: 105%; 
+  }
+  .centered4 {
+    position: absolute;
+    top: 43%;
+    margin-top:100px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30%;
+  }
+  
+  .input-wrapper {
+    width: 100%;
+    position: relative;
+    text-align: center;
+  }
+  .input-wrapper i {
+    position: absolute;
+    left: 35.4%;
+    transform: translateY(90%) ;
+    color: gray;
+  }
+  .input-wrapper input {
+    padding: 10px;
+    padding-left: 35px;
+    width: 30%;
+    border-radius: 5px;
+    border: none;
+  }
+  
+  .input-wrapper button {
+    padding: 10px;
+    padding-top: 5px;
+    height: 85%;
+    background-color: black !important;
+    color: white;
+    position: absolute;
+    top: 3px;
+    right: 35.2%; 
+    border-radius: 5px !important;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 1370px) {
+    .input-wrapper {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+  
+    .input-wrapper button {
+      position: static; 
+      margin-top:5px; 
+      width: 60%;
+      height: auto; 
+      right: 0; 
+    }
+  
+    .input-wrapper input {
+      width: 60%;
+    }
+    .input-wrapper i {
+      transform: translateY(-130%);
+      left: 21%;
+    }
+  }
+  .functions-list {
+    list-style-type: none;
+    flex: 1;
+    padding-left: 10% !important;
+  }
+  .functions-list li{
+    margin: 25px;
+    margin-bottom:40px;
+    color:gray;
+    cursor:pointer;
+  }
+  .functions-list li h4{
+    font-weight: 550;
+  }
+  .functions-list li h4.active{
+    color:black;
+  }
+  .info-div{
+    width: 100%;
+    background: rgb(238, 232, 213);
+    color:rgb(214, 137, 21);
+    padding:25px;
+    border-radius: 5px;
+  }
+  .info-div h5{
+    margin-bottom:20px;
+  }
+  .info-div a{
+    text-decoration: none;
+    background:rgb(47, 47, 134);
+    color:rgb(235, 171, 76);
+    padding:15px;
+    border-radius: 5px;
+  }
+  .info-div a span{
+    font-size:25px;
+    padding-top: 15px !important;
+  }
+  
+  @keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+  }
+  @keyframes slideRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+  }
+  
+  @keyframes slideUp {
+    from {
+        transform: translateY(-10px);
+    }
+    to {
+        transform: translateY(20px);
+    }
+  }
+  
+  .info-div {
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+  
+  .slide-down {
+    animation-name: slideDown;
+  }
+  
+  .slide-up {
+    animation-name: slideUp;
+  }
+  .info-picture{
+    animation-duration: 0.5s;
+    animation-timing-function: ease-in-out;
+  }
+  .slide-right {
+    animation-name: slideRight;
+  }
+  
