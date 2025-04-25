@@ -15,140 +15,149 @@
     transition: width 0.4s ease;
     font-weight: bold;
 }
-
+    .tooltip-inner {
+        background-color: #D4AF37;
+        color: #fff;
+        font-size: 14px;
+    }
+    .tooltip-arrow {
+        border-top-color: #D4AF37;
+    }
 </style>
 {% block content %}
-    <div class="event_builder container mt-4">
-        <h3 class="text-center mb-4">Create a New Event</h3>
-        <div class="progress mb-3">
-            <div class="progress-bar bg-warning" id="progressBar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"></div>
-          </div>
-          
-
-        {% if form2.errors %}
-            <div class="alert alert-danger">
-                <strong>Errors:</strong>
-                <ul>
-                    {% for field, errors in form2.errors.items %}
-                        <li>{{ field }}: {{ errors|join:", " }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
-
-        <form id="eventForm" method="POST" action="" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <!-- Calendar Step -->
-            <div class="form-step card p-4" id="step0">
-                <h4>Select Event Date</h4>
-                <div class="mb-3">
-                    <label for="event_calendar" class="form-label">Choose a date for your event</label>
-                    <input type="date" id="event_calendar" name="event_calendar" class="form-control" required>
-                </div>
-                <div class="form-step-buttons mt-3">
-                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)">Next</button>
-                </div>
-            </div>
-
-            <!-- Event Details -->
-            <div class="form-step card p-4" id="step1" style="display:none;">
-                <h4>Event Details</h4>
-                <div class="mb-3">
-                    <label for="event_name" class="form-label">Event Name</label>
-                    <input type="text" id="event_name" name="event_name" class="form-control" placeholder="Enter event name" required>
-                </div>
-
-                <div class="row">
-
-                    <div class="col-md-6">
-                        <label for="event_time" class="form-label">Event Time</label>
-                        <input type="time" id="event_time" name="event_time" class="form-control" required>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="event_description" class="form-label">Event Description</label>
-                    <textarea id="event_description" name="event_description" class="form-control" placeholder="Add a short description" rows="4" required></textarea>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <label for="location" class="form-label">Location</label>
-                        <select id="location" name="location" class="form-select" required>
-                            {% for location in locations %}
-                                <option value="{{ location.id }}">{{ location.name }}</option>
-                            {% empty %}
-                                <option value="">No locations available</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="event_type" class="form-label">Event Type</label>
-                        <select id="event_type" name="event_type" class="form-select" required>
-                            <option value="Wedding">Wedding</option>
-                            <option value="Birthday">Birthday</option>
-                            <option value="Banquet">Banquet</option>
-                            <option value="Party">Party</option>
-                            <option value="Adventist Gathering">Adventist Gathering</option>
-                            <option value="Sabbath">Sabbath</option>
-                            <option value="Church">Church</option>
-                            <option value="Celebration">Celebration</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="cost" class="form-label">Cost</label>
-                    <input type="number" id="cost" name="cost" class="form-control" placeholder="Estimated cost" min="0" required>
-                </div>
-
-                <div class="form-step-buttons mt-3 d-flex justify-content-between">
-                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(0)">Back</button>
-                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(2)">Next</button>
-                </div>
-            </div>
-
-            <div class="form-step card p-4 mt-4" id="step2" style="display:none;">
-                <h4 class="mb-3">Guests</h4>
-
-                <div class="card p-3">
-                    <div class="row mb-2">
-                        <div class="col-md-4">
-                            <label for="guest_name">Name:</label>
-                            <input type="text" id="guest_name" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="guest_phone">Telephone:</label>
-                            <input type="text" id="guest_phone" class="form-control">
-                        </div>
-                        <div class="col-md-4">
-                            <label for="guest_email">Email:</label>
-                            <input type="email" id="guest_email" class="form-control">
-                        </div>
-                    </div>
-                    <button type="button" class="btn btn-warning" onclick="addGuest()">Add Guest</button>
-                </div>
-
-                <div class="mt-3">
-                    <ul id="guest_list" class="list-group"></ul>
-                </div>
-
-                <div class="mt-3">
-                    <label><strong>Import guests from file:</strong></label>
-                        {{ form_file.as_p }}
-                    <small class="text-muted">Se acceptă doar fișiere Excel (.xls, .xlsx)</small>
-                </div>
-
-                <!-- Navigation Buttons -->
-                <div class="form-step-buttons mt-3 d-flex justify-content-between">
-                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(1)">Back</button>
-                    <button type="submit" class="btn" style="background-color: #D4AF37; color: white;">Save Event</button>
-                </div>
-            </div>
-        </form>
+<div class="event_builder container mt-4">
+    <h3 class="text-center mb-4">Create a New Event</h3>
+    <div class="progress mb-3">
+        <div class="progress-bar bg-warning" id="progressBar" style="width: 50%"></div>
     </div>
 
+    {% if form2.errors %}
+        <div class="alert alert-danger">
+            <strong>Errors:</strong>
+            <ul>
+                {% for field, errors in form2.errors.items %}
+                    <li>{{ field }}: {{ errors|join:", " }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <form id="eventForm" method="POST" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Calendar Step -->
+        <div class="form-step card p-4" id="step0">
+            <h4>Select Event Date</h4>
+            <div class="mb-3">
+                <label for="event_calendar" class="form-label">Choose a date for your event</label>
+                <input type="date" id="event_calendar" name="event_calendar" class="form-control" required
+                    placeholder="Select the event date">
+                <span class="tooltiptext">Select the event's date. Only future dates are allowed.</span>
+            </div>
+            <div class="form-step-buttons mt-3">
+                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)" 
+                        data-bs-toggle="tooltip" title="Go to the next step!">Next</button>
+            </div>
+        </div>
+
+        <!-- Event details -->
+        <div class="form-step card p-4" id="step1" style="display:none;">
+            <h4>Event Details</h4>
+            <div class="mb-3">
+                <label for="event_name" class="form-label" data-bs-toggle="tooltip" title="Enter a descriptive name for the event">Event Name</label>
+                <input type="text" id="event_name" name="event_name" class="form-control" placeholder="Enter event name"
+                    required>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="event_time" class="form-label" data-bs-toggle="tooltip" title="Specify the time of the event">Event Time</label>
+                    <input type="time" id="event_time" name="event_time" class="form-control" required
+                        placeholder="Enter event time">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="event_description" class="form-label" data-bs-toggle="tooltip" title="Provide a brief description of the event">Event Description</label>
+                <textarea id="event_description" name="event_description" class="form-control" placeholder="Add a short description" rows="4" required></textarea>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="location" class="form-label" data-bs-toggle="tooltip" title="Choose the location for your event">Location</label>
+                    <select id="location" name="location" class="form-select" required>
+                        {% for location in locations %}
+                            <option value="{{ location.id }}">{{ location.name }}</option>
+                        {% empty %}
+                            <option value="">No locations available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="event_type" class="form-label" data-bs-toggle="tooltip" title="Select the type of event">Event Type</label>
+                    <select id="event_type" name="event_type" class="form-select" required>
+                        <option value="Wedding">Wedding</option>
+                        <option value="Birthday">Birthday</option>
+                        <option value="Banquet">Banquet</option>
+                        <option value="Party">Party</option>
+                        <option value="Adventist Gathering">Adventist Gathering</option>
+                        <option value="Sabbath">Sabbath</option>
+                        <option value="Church">Church</option>
+                        <option value="Celebration">Celebration</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="cost" class="form-label" data-bs-toggle="tooltip" title="Enter the estimated cost of the event">Cost</label>
+                <input type="number" id="cost" name="cost" class="form-control" placeholder="Estimated cost" min="0" required>
+            </div>
+
+            <div class="form-step-buttons mt-3 d-flex justify-content-between">
+                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(0)">Back</button>
+                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(2)">Next</button>
+            </div>
+        </div>
+
+        <div class="form-step card p-4 mt-4" id="step2" style="display:none;">
+            <h4 class="mb-3">Guests</h4>
+
+            <div class="card p-3">
+                <div class="row mb-2">
+                    <div class="col-md-4">
+                        <label for="guest_name">Name:</label>
+                        <input type="text" id="guest_name" class="form-control" placeholder="Enter guest's name">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="guest_phone">Telephone:</label>
+                        <input type="text" id="guest_phone" class="form-control" placeholder="Enter guest's phone number">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="guest_email">Email:</label>
+                        <input type="email" id="guest_email" class="form-control" placeholder="Enter guest's email address">
+                    </div>
+                </div>
+                <button type="button" class="btn btn-warning" onclick="addGuest()">Add Guest</button>
+            </div>
+
+            <div class="mt-3">
+                <ul id="guest_list" class="list-group"></ul>
+            </div>
+
+            <div class="mt-3">
+                <label><strong>Import guests from file:</strong></label>
+                    {{ form_file.as_p }}
+                <small class="text-muted">Se acceptă doar fișiere Excel (.xls, .xlsx)</small>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="form-step-buttons mt-3 d-flex justify-content-between">
+                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(1)">Back</button>
+                <button type="submit" class="btn" style="background-color: #D4AF37; color: white;">Save Event</button>
+            </div>
+        </div>
+    </form>
+</div>
     <script>
         // Validare dată calendar
         document.getElementById('event_calendar').addEventListener('change', function () {
