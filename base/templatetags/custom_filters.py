@@ -15,3 +15,8 @@ def get_item(dictionary, key):
 @register.filter(name='replace')
 def replace(value, arg):
     return value.replace("_", " ") if isinstance(value, str) else value
+
+
+@register.filter
+def get_item(dictionary, key):
+    return dictionary.get(key)

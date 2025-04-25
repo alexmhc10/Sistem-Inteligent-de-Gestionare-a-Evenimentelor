@@ -483,7 +483,7 @@ def admin_locations(request):
     types_with_location_count = []
     types = Type.objects.all()
     for type in types:
-        location_count = Location.objects.filter(types=type).count()
+        location_count = Location.objects.filter(types=type,owner__in=organizer_users).count()
         types_with_location_count.append({'type': type.name, 'count': location_count})
     context = {
         'average_ratings':average_ratings,
@@ -531,17 +531,27 @@ def admin_events(request):
             'guest_count': guest_count,
             'organized_by':event.organized_by
         })
+    today_date = today.date()
+    today_time = today.strftime("%H:%M:%S")
     detailed_incompleted_events = []
     finished_count = 0
     cancelled_count = 0
     for item in detailed_events:
-        if item['completed'] == True:
+        if item['completed'] or item['event_date'] < today_date :
             finished_count += 1
         elif item['cancelled'] == True:
             cancelled_count += 1
             detailed_incompleted_events.append(item)
-    today_date = today.date()
-    today_time = today.strftime("%H:%M:%S")
+
+
+    
+
+    for item in detailed_events:
+        print(item['event_date'], today_date)
+        if item['event_date'] < today_date:
+            print("Da")
+        else:
+            print("NU")
     context = {
         'cancelled_count':cancelled_count,
         'today_date':today_date,
@@ -609,9 +619,30 @@ def admin_view_locations(request, name):
     events_count = events.count()
     reviews = Review.objects.filter(location=location)
     reviews_count = reviews.count()
-    print("Reviews",reviews)
     loc_images = LocationImages.objects.filter(location=location)
+    average_rating = reviews.aggregate(avg=Avg('stars'))['avg'] or 0
+    average_rating = round(float(average_rating), 1)
+    print("rating: ", average_rating)
+    ratings = Review.objects.filter(location=location).values('stars').annotate(count=Count('stars'))
+    rating_counts = {i: 0 for i in range(1, 6)}
+    total_reviews = 0
+
+    for item in ratings:
+        rating_counts[item['stars']] = item['count']
+        total_reviews += item['count']
+
+    rating_percentages = {
+    i: (rating_counts[i] / total_reviews) * 100 if total_reviews else 0
+    for i in range(1, 6)
+}
+    print("Counts: ", rating_counts)
+    print("Percentage: ", rating_percentages)
+    stars = range(1, 6)
     context = {
+        "rating_counts": rating_counts,
+        "rating_percentages": rating_percentages,
+        'stars':stars,
+        'average_rating':average_rating,
         'profit':profit,
         'loc_images':loc_images,
         'reviews':reviews,
