@@ -1,62 +1,299 @@
+
 {% extends 'main.html' %}
 {% block content %}
 {% block navbar %}
 {% endblock navbar %}
-
-{% include 'base/home-navbar.html' %}
-
-<div class="lower-container">
-    <div class="browse-container">
-        {% include 'base/browse_component.html' %}
-    </div>
-    
-    <div class="locations-container" id="locations-section">
-        <h5>
-            {% if location_count == 1 %}
-                Only one location available
-            {% elif location_count == 0 %}
-                No location matches the criteria
-            {% else %}
-                There are {{ location_count }} available locations
-            {% endif %}
-        </h5>
-        {% if request.user.is_authenticated %}
-            <a href="{% url 'add_location' %}">Add Location</a>
-        {% endif %}
-        <br><br>
-        <div>
-            {% if request.path == '/' %}
-                <form action="{% url 'home' %}" method="GET">
-                    <input type="text" name="q" placeholder="Search for Locations..." />
-                </form>
-                <hr>
-            {% endif %}
-            {% include 'base/feed_component.html' %}
+  <nav style="padding:0;" class="navbar navbar-expand-lg pb-2 pt-1 ">
+        <div class="container-fluid">
+            <a href="#"><img src="{{ MEDIA_URL }}home_images/Logo2.jpeg" alt="" width="85" height="60"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse pb-1" id="navbarText">
+                <ul class="navbar-nav me-auto mb-2 ms-3 mb-lg-0">
+                    <li class="nav-item me-2">
+              <a class="nav-link " href="#" id="organizingToolsLink">ORGANIZING TOOLS </a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="#" id="ourOrganizersLink">OUR ORGANIZERS</a>
+                    </li>
+                    <li class="nav-item me-2">
+                        <a class="nav-link" href="#" id="availableLocationsLink">AVAILABLE LOCATIONS</a>
+                    </li>
+                </ul>
+                <span id="account" class="navbar-text ms-3" >
+                    <a href="{% url 'login' %}" id="login" style="text-decoration: none;">Login</a>
+                    <a href="{% url 'register' %}" id="register" style="text-decoration: none;">Register</a>
+                </span>
+            </div>
+        </div>
+    </nav>
+    <div class="img-container">
+        <img src="{{ MEDIA_URL }}home_images/w1.jpg" id="wedding1" alt="">
+        <img src="{{ MEDIA_URL }}home_images/w2.jpg" id="wedding2" alt="" style="display: none;">
+        <img src="{{ MEDIA_URL }}home_images/w3.jpg" id="wedding3" alt="" style="display: none;">
+        <div class="centers">
+          <div class="centered"><h3>Simple. Organized. Stress-Free.</h3></div>
+        <div class="centered2"><h1>How would you like to start planning?</h1></div>
+        <div class="centered3">
+            <div class="custom-row">
+                <h4 id="guestcount">Guest Count</h4>
+                <h4 id="budget">Event Budget</h4>
+                <h4 id="organizer">Search For An Organizer</h4>
+            </div>
+        </div>
+        <div class="centered4" style="width: 100%;">
+            <div class="input-group mb-3">
+                <div class="input-wrapper" id="wrapper1">
+                  <i class="fa-solid fa-people-group"></i>
+                    <input type="number" placeholder="What's Your Guest Count?">
+                    <button>
+                        Start Planning Your Event!
+                    </button>
+                </div>
+                <div class="input-wrapper" id="wrapper2"style="display: none;">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                    <input type="number" placeholder="What's Your Event Budget?">
+                    <button>
+                        Start Planning Your Event!
+                    </button>
+                </div>
+                <div class="input-wrapper" id="wrapper3"style="display: none;">
+                    <i class="fa-solid fa-person-walking-luggage"></i>
+                    <input type="text" placeholder="Search An Organizer's Name">
+                    <button>
+                        Start Planning Your Event!
+                    </button>
+                </div>
+            </div>
+        </div>
         </div>
     </div>
-</div>
+    <div class="tools-container mb-5">
+        <div class="d-flex justify-content-center">
+            <div>
+                <h1 class="mt-4 text-center" id="guestsh1">Managed Guests list</h1>
+                <h1 class="mt-4 text-center" id="faceh1" style="display: none;">Face Recognition</h1>
+                <h1 class="mt-4 text-center" id="menuh1" style="display: none;">Custom Generated Menus</h1>
+                <h1 class="mt-4 text-center" id="seath1" style="display: none;">Smart Seat Planner</h1>
+                <div class="d-flex align-items-center justify-content-center">
+                    <div class="row" style="max-width: 100%;">
+                        <ul class="functions-list" >
+                            <li><h4 id="guests-function" class="active"><i class="fa-solid fa-users-line"></i> Managed Guests List</h4>
+                            <div id="infoguests" class="info-div text-start mt-2">
+                                <h5>Easily manage and track event guests with a centralized system. Keep all invitee details, RSVPs, and preferences organized for a seamless experience.</h5>
+                                <a href="" class="mt-4">Add Your Guests <span>&#x2197</span></a>
+                            </div>
+                            </li>
+                            <li><h4 id="recognition-function"><i class="fa-solid fa-users-viewfinder"></i> Face Recognition</h4>
+                                <div id="infoface" class="info-div  text-start mt-2" style="display: none;">
+                                    <h5> Quickly identify guests upon arrival using advanced facial recognition. Enhance security, streamline check-ins, and offer a personalized welcome.</h5>
+                                    <a href="" class="mt-4">See How This Works <span>&#x2197</span></a>
+                                </div></li>
+                            <li><h4 id="menu-function"><img style="width: 30px;" src="{{ MEDIA_URL }}home_images/restaurant.png" alt=""> Custom Generated Menus  </h4>
+                                <div id="infomenu" class="info-div  text-start mt-2" style="display: none;">
+                                    <h5>Automatically generate personalized menus based on guest preferences. Take into account allergies, dietary restrictions, and favorite dishes for a tailored dining experience.</h5>
+                                    <a href="" class="mt-4">See A Menu <span>&#x2197</span></a>
+                                </div></li>
+                            <li><h4 id="seat-function"><img style="width: 30px;" src="{{ MEDIA_URL }}home_images/round-table.png" alt=""> Smart Seat Planner</h4>
+                                <div id="infoseat" class="info-div  text-start mt-2" style="display: none;">
+                                    <h5>Optimize seating arrangements to encourage meaningful interactions. Ensure guests are comfortably placed based on relationships, preferences, and event dynamics.</h5>
+                                    <a href="" class="mt-4">Explore This Function <span>&#x2197</span></a>
+                                </div> </li>
+                        </ul>
+                        <img src="{{ MEDIA_URL }}home_images/guests.jpg" class="info-picture" id="picture1" style="margin-top:0%; margin-right: 5%; width:40%; height: auto;" alt="">
+                        <img src="{{ MEDIA_URL }}home_images/face.jpg" class="info-picture" id="picture2" style="display: none; margin-top:2%; margin-right: 5%; width:35%; height: 95%;" alt="">
+                        <img src="{{ MEDIA_URL }}home_images/menu.jpg" class="info-picture" id="picture3" style="display: none; margin-top:2%; margin-right: 5%; width:35%; height: 95%;" alt="">
+                        <img src="{{ MEDIA_URL }}home_images/seats.jpg" class="info-picture" id="picture4" style="display: none; margin-top:2%; margin-right: 5%; width:35%; height: 95%;" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>        
+        
+    </div>
+    <script>
+        window.addEventListener('resize', function() {
+    var picture = document.getElementById('picture1');
+    if (window.innerWidth <= 475) {
+        picture.style.display = 'none';
+    } else {
+        picture.style.display = 'block';
+    }
+});
 
-<script>
-    function scrollToLocations() {
-        const locationsSection = document.getElementById('locations-section');
-        if (locationsSection) {
-            locationsSection.scrollIntoView({ behavior: 'smooth' });
+if (window.innerWidth <= 475) {
+    document.getElementById('picture1').style.display = 'none';
+}
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script>
+        document.querySelectorAll('.custom-row h4').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.custom-row h4').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    function SwapImage(event) {
+    event.preventDefault();
+    console.log("Funcția SwapImage a fost apelată!");
+
+    let img1 = document.getElementById("wedding1");
+    let img2 = document.getElementById("wedding2");
+    let img3 = document.getElementById("wedding3");
+    let wrap1 = document.getElementById("wrapper1")
+    let wrap2 = document.getElementById("wrapper2")
+    let wrap3 = document.getElementById("wrapper3")
+
+
+
+    img1.style.display = "none";
+    img2.style.display = "none";
+    img3.style.display = "none";
+    wrap1.style.display = "none"
+    wrap2.style.display = "none"
+    wrap3.style.display = "none"
+    let screenWidth = window.innerWidth;
+    if (event.target.id === "guestcount") {
+        img1.style.display = "block";
+        if( screenWidth <= 1370){
+            wrap1.style.display = "flex";
+        }
+        else{
+            wrap1.style.display = "block";
+        }
+    } else if (event.target.id === "organizer") {
+        img2.style.display = "block";
+        if( screenWidth <= 1370){
+            wrap3.style.display = "flex";
+        }
+        else{
+            wrap3.style.display = "block";
+        }
+    } else if (event.target.id === "budget") {
+        img3.style.display = "block";
+        if( screenWidth <= 1370){
+            wrap2.style.display = "flex";
+        }
+        else{
+            wrap2.style.display = "block";
         }
     }
-</script>
+}
 
-{% endblock content %}
 
-{% block javascript %}
-<script>
-    function scrollToBottom() {
-        const container = document.getElementById('chat-area');
-        if (container) {
-            container.scrollTop = container.scrollHeight;
-        } else {
-            console.error("Container '.message-area' not found!");
+function SwapContent(event){
+    let h1 = document.getElementById("guestsh1");
+    let h2 = document.getElementById("faceh1");
+    let h3 = document.getElementById("menuh1");
+    let h4 = document.getElementById("seath1");
+    let d1 = document.getElementById("infoguests");
+    let d2 = document.getElementById("infoface");
+    let d3 = document.getElementById("infomenu");
+    let d4 = document.getElementById("infoseat");
+    let p1 = document.getElementById("picture1");
+    let p2 = document.getElementById("picture2");
+    let p3 = document.getElementById("picture3");
+    let p4 = document.getElementById("picture4");
+    h1.style.display = "none";
+    h2.style.display = "none";
+    h3.style.display = "none";
+    h4.style.display = "none";
+    d1.style.display = "none";
+    d2.style.display = "none";
+    d3.style.display = "none";
+    d4.style.display = "none";
+    p1.style.display = "none";
+    p2.style.display = "none";
+    p3.style.display = "none";
+    p4.style.display = "none";
+
+    d1.classList.remove('slide-down', 'slide-up');
+    d2.classList.remove('slide-down', 'slide-up');
+    d3.classList.remove('slide-down', 'slide-up');
+    d4.classList.remove('slide-down', 'slide-up');
+    let screenWidth = window.innerWidth;
+    if (event.target.id == "guests-function") {
+        h1.style.display = "block";
+        d1.style.display = "block";
+        if( screenWidth <= 475){
+            p1.style.display = "none";
         }
+        else{
+            p1.style.display = "block";
+        }
+        setTimeout(() => {
+            d1.classList.add('slide-down');
+        }, 10);
+        setTimeout(() => {
+            p1.classList.add('slide-right');
+        }, 10);
     }
-    document.addEventListener('DOMContentLoaded', scrollToBottom);
-</script>
+    else if (event.target.id == "recognition-function") {
+        h2.style.display = "block";
+        d2.style.display = "block";
+        if( screenWidth <= 475){
+            p2.style.display = "none";
+        }
+        else{
+            p2.style.display = "block";
+        }
+        setTimeout(() => {
+            d2.classList.add('slide-down');
+        }, 10);
+        setTimeout(() => {
+            p2.classList.add('slide-right');
+        }, 10);
+    }
+    else if (event.target.id == "menu-function") {
+        h3.style.display = "block";
+        d3.style.display = "block";
+        if( screenWidth <= 475){
+            p3.style.display = "none";
+        }
+        else{
+            p3.style.display = "block";
+        }
+        setTimeout(() => {
+            d3.classList.add('slide-down');
+        }, 10);
+        setTimeout(() => {
+            p3.classList.add('slide-right');
+        }, 10);
+    }
+    else {
+        h4.style.display = "block";
+        d4.style.display = "block";
+        if( screenWidth <= 475){
+            p4.style.display = "none";
+        }
+        else{
+            p4.style.display = "block";
+        }
+        setTimeout(() => {
+            d4.classList.add('slide-down');
+        }, 10);
+        setTimeout(() => {
+            p4.classList.add('slide-right');
+        }, 10);
+    }
+}
+
+document.querySelectorAll('.functions-list h4').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.functions-list h4').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+document.getElementById("guestcount").addEventListener("click", SwapImage);
+document.getElementById("organizer").addEventListener("click", SwapImage);
+document.getElementById("budget").addEventListener("click", SwapImage);
+
+document.getElementById("guests-function").addEventListener("click", SwapContent);
+document.getElementById("recognition-function").addEventListener("click", SwapContent);
+document.getElementById("menu-function").addEventListener("click", SwapContent);
+document.getElementById("seat-function").addEventListener("click", SwapContent);
+
+    </script>
 {% endblock %}

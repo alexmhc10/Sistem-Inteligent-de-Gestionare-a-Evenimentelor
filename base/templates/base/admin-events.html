@@ -198,14 +198,13 @@
                                                         </div>
                                                     </th>
                                                     <th class="sort" data-sort="id">Event ID <i class="bi bi-sort"></i></th>
-<th class="sort" data-sort="event_organizer">Organizer <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort asc" data-sort="event_name">Event Name <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort" data-sort="date">Event Date and Time <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort" data-sort="amount">Guests <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort" data-sort="payment">Event's Price <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort" data-sort="status">Status <i class="bi bi-sort-down-alt"></i></th>
-<th class="sort" data-sort="city">Action <i class="bi bi-sort-down-alt"></i></th>
-
+                                                    <th class="sort" data-sort="event_organizer">Organizer <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort asc" data-sort="event_name">Event Name <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort" data-sort="date">Event Date and Time <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort" data-sort="amount">Guests <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort" data-sort="payment">Event's Price <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort" data-sort="status">Status <i class="bi bi-sort-down-alt"></i></th>
+                                                    <th class="sort" data-sort="city">Action <i class="bi bi-sort-down-alt"></i></th>
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all">
@@ -223,17 +222,14 @@
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
                                                             {% if item.cancelled %}
-    <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-{% elif item.event_date > today_date%}
-    <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-{% elif item.completed %}
-    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-{% elif item.event_date == today_date and item.event_time > today_time %}
-    <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
-{% endif %}
-
-                                                        
-
+                                                            <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+                                                        {% elif item.event_date > today_date %}
+                                                            <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
+                                                        {% elif item.event_date < today_date %}
+                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
+                                                        {% elif item.event_date == today_date %}
+                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
+                                                        {% endif %}
                                                             <td>
                                                                 <ul class="list-inline hstack gap-2 mb-0">
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
@@ -354,7 +350,7 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if  item.completed %}
+                                                    {% if  item.completed or item.event_date < today_date %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">

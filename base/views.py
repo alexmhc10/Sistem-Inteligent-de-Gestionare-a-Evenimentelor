@@ -49,6 +49,20 @@ from .models import Event, Location
 from .forms import EventForm
 from django.db.models import Avg
 from django.db.models import Exists, OuterRef, Value
+from .models import EventNotification
+from django.views import View
+
+class NotificationView(View):
+    def get(self, request):
+        # Filtrăm notificările pentru utilizatorul conectat
+        notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')  # Ordonați după dată, cele mai recente primele
+        
+        # Poți filtra și notificările necitite, dacă dorești
+        unread_notifications = notifications.filter(is_read=False)
+        
+        return render(request, 'home-organizer.html', {
+            'notifications': notifications,  # Trimiți notificările în template
+        })
 
 
 @login_required
@@ -76,16 +90,35 @@ def locations_list(request):
     return render(request, 'base/locations_list.html', {'locations': locations})
 
 
-@login_required
 def home_organizer(request):
     events = Event.objects.all()
-    upcoming_events = events.filter(event_date__gte=timezone.now())
+    upcoming_events = events.filter(event_date__gte=timezone.now()).order_by('event_date')
+    
+    # Get all notifications (both read and unread) for the user
+    notifications = EventNotification.objects.filter(
+        receiver=request.user
+    ).order_by('-timestamp').select_related('sender', 'event')[:10]  # Show last 10
+    
+    # Identify and mark unread notifications
+    unread_notifications = [n for n in notifications if not n.is_read]
+    if unread_notifications:
+        # Create list of IDs to update
+        unread_ids = [n.id for n in unread_notifications]
+        # Bulk update to mark as read
+        EventNotification.objects.filter(id__in=unread_ids).update(is_read=True)
+        # Update our queryset to reflect the change
+        for notification in notifications:
+            if not notification.is_read:
+                notification.is_read = True
+
     context = {
         'total_events': events.count(),
         'total_participants': sum(event.guests.count() for event in events),
-        'acceptance_rate': 85,  
-        'average_feedback': 4.7,  
-        'upcoming_events': upcoming_events
+        'acceptance_rate': 85,
+        'average_feedback': 4.7,
+        'today_date': datetime.now().strftime('%B %d, %Y'),
+        'upcoming_events': upcoming_events,
+        'notifications': notifications,
     }
     return render(request, 'base/home-organizer.html', context)
 
@@ -450,7 +483,7 @@ def admin_locations(request):
     types_with_location_count = []
     types = Type.objects.all()
     for type in types:
-        location_count = Location.objects.filter(types=type).count()
+        location_count = Location.objects.filter(types=type,owner__in=organizer_users).count()
         types_with_location_count.append({'type': type.name, 'count': location_count})
     context = {
         'average_ratings':average_ratings,
@@ -498,17 +531,27 @@ def admin_events(request):
             'guest_count': guest_count,
             'organized_by':event.organized_by
         })
+    today_date = today.date()
+    today_time = today.strftime("%H:%M:%S")
     detailed_incompleted_events = []
     finished_count = 0
     cancelled_count = 0
     for item in detailed_events:
-        if item['completed'] == True:
+        if item['completed'] or item['event_date'] < today_date :
             finished_count += 1
         elif item['cancelled'] == True:
             cancelled_count += 1
             detailed_incompleted_events.append(item)
-    today_date = today.date()
-    today_time = today.strftime("%H:%M:%S")
+
+
+    
+
+    for item in detailed_events:
+        print(item['event_date'], today_date)
+        if item['event_date'] < today_date:
+            print("Da")
+        else:
+            print("NU")
     context = {
         'cancelled_count':cancelled_count,
         'today_date':today_date,
@@ -576,9 +619,30 @@ def admin_view_locations(request, name):
     events_count = events.count()
     reviews = Review.objects.filter(location=location)
     reviews_count = reviews.count()
-    print("Reviews",reviews)
     loc_images = LocationImages.objects.filter(location=location)
+    average_rating = reviews.aggregate(avg=Avg('stars'))['avg'] or 0
+    average_rating = round(float(average_rating), 1)
+    print("rating: ", average_rating)
+    ratings = Review.objects.filter(location=location).values('stars').annotate(count=Count('stars'))
+    rating_counts = {i: 0 for i in range(1, 6)}
+    total_reviews = 0
+
+    for item in ratings:
+        rating_counts[item['stars']] = item['count']
+        total_reviews += item['count']
+
+    rating_percentages = {
+    i: (rating_counts[i] / total_reviews) * 100 if total_reviews else 0
+    for i in range(1, 6)
+}
+    print("Counts: ", rating_counts)
+    print("Percentage: ", rating_percentages)
+    stars = range(1, 6)
     context = {
+        "rating_counts": rating_counts,
+        "rating_percentages": rating_percentages,
+        'stars':stars,
+        'average_rating':average_rating,
         'profit':profit,
         'loc_images':loc_images,
         'reviews':reviews,

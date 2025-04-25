@@ -2,316 +2,567 @@
 
 {% block content %}
 <style>
+    .notifications-list {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.unread-notification {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+}
+
+.notification-item {
+    transition: all 0.3s ease;
+}
+
+.notification-item:hover {
+    background-color: rgba(212, 175, 55, 0.2) !important;
+    transform: translateX(5px);
+}
+    .tabs-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+}
+
+.tab-button {
+    background-color: var(--neutral-gray);
+    color: var(--primary-dark);
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+.tab-button.active {
+    background-color: var(--primary-dark);
+    color: white;
+}
+
+.tab-button:hover {
+    transform: scale(1.05);
+    background-color: var(--primary-gold);
+    color: white;
+}
+
+.tab-button::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-gold);
+    left: 0;
+    bottom: 0;
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+    transform-origin: left;
+}
+.tab-button.active::after {
+    transform: scaleX(1);
+}
+
+    * {
+      box-sizing: border-box;
+    }
+  
+    body {
+      background-color: #fafafa;
+      font-family: 'Roboto', sans-serif;
+      color: #363b41;
+    }
+  
+    .container {
+      margin: 100px auto;
+      width: 809px;
+    }
+  
+    .light {
+      background-color: #fff;
+    }
+    .calendar {
+  width: 370px;
+  background: linear-gradient(145deg, #F8F4E3, #ECE5D8);
+  box-shadow: 0px 0px 35px -16px rgba(0, 0, 0, 0.3);
+  font-family: 'Roboto', sans-serif;
+  padding: 20px 30px;
+  color: #4A4A4A;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+}
+
+.calendar_header {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+}
+
+.header_title {
+  color: #B08A2E;
+  font-size: 24px;
+  margin: 0;
+}
+
+.header_copy {
+  color: #C5B28A;
+  font-size: 16px;
+}
+
+.calendar_plan {
+  margin: 20px 0 30px;
+}
+
+.cl_plan {
+  background-image: linear-gradient(-222deg, #C5B28A, #D4AF37);
+  box-shadow: 0px 0px 52px -18px rgba(0, 0, 0, 0.2);
+  padding: 30px;
+  color: #fff;
+  border-radius: 12px;
+}
+
+.cl_title {
+  font-size: 14px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: bold;
+}
+
+.cl_copy {
+  font-size: 20px;
+  margin: 10px 0 0;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.cl_add {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #D4AF37;
+  cursor: pointer;
+  margin-left: 65px;
+  padding: 11px 13px;
+  box-shadow: 0 2px 10px rgba(212, 175, 55, 0.3);
+  transition: transform 0.2s ease-in-out;
+}
+
+.cl_add:hover {
+  transform: scale(1.1);
+}
+
+.calendar_events {
+  color: #4A4A4A;
+}
+
+.ce_title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #B08A2E;
+  margin-bottom: 10px;
+}
+
+.event_item {
+  margin: 15px 0;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.event_item:hover {
+  background: linear-gradient(145deg, #C5B28A, #D4AF37);
+  color: #fff;
+}
+
+.event_item:hover .ei_Dot {
+  background-color: #fff;
+}
+
+.event_item:hover .ei_Copy,
+.event_item:hover .ei_Title {
+  color: #fff;
+}
+
+.ei_Dot {
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  background-color: #C5B28A;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.dot_active {
+  background-color: #D4AF37;
+}
+
+.ei_Title {
+  display: inline-block;
+  color: #4A4A4A;
+  font-weight: 500;
+}
+
+.ei_Copy {
+  font-size: 12px;
+  margin-left: 27px;
+  color: #4A4A4A;
+}
+
     :root {
-        --primary-dark: #002B5B;
-        --primary-gold: #D4AF37;
-        --background-light: #FAF9F6;
-        --neutral-gray: #ECECEC;
+      --primary-dark: #002B5B;
+      --primary-gold: #D4AF37;
+      --background-light: #FAF9F6;
+      --neutral-gray: #ECECEC;
     }
-
+  
     .button {
-        --border_radius: 9999px;
-        --transtion: 0.3s ease-in-out;
-        --offset: 2px;
-
-        cursor: pointer;
-        position: relative;
-        margin: 2rem auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0.5rem;
-        padding: 1.5rem 3rem;
-        background-color: transparent;
-        border: none;
-        border-radius: var(--border_radius);
-        transform: scale(calc(1 + (var(--active, 0) * 0.1)));
-        transition: transform var(--transtion);
+      --border-radius: 9999px;
+      --transition: 0.3s ease-in-out;
+      --offset: 2px;
+  
+      cursor: pointer;
+      position: relative;
+      margin: 2rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 1.5rem 3rem;
+      background-color: transparent;
+      border: none;
+      border-radius: var(--border-radius);
+      transform: scale(calc(1 + (var(--active, 0) * 0.1)));
+      transition: transform var(--transition);
     }
-
+  
     .button::before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        background-color: var(--primary-dark);
-        border-radius: var(--border_radius);
-        box-shadow: inset 0 0.5px var(--neutral-gray), 
-                    inset 0 -1px 2px 0 rgba(0,0,0,0.2),
-                    0px 4px 10px -4px hsla(0 0% 0% / calc(1 - var(--active, 0))),
-                    0 0 0 calc(var(--active, 0) * 0.375rem) var(--primary-gold);
-        transition: all var(--transtion);
-        z-index: 0;
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background-color: var(--primary-dark);
+      border-radius: var(--border-radius);
+      box-shadow: 
+        inset 0 0.5px var(--neutral-gray), 
+        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.2),
+        0px 4px 10px -4px hsla(0, 0%, 0%, calc(1 - var(--active, 0))),
+        0 0 0 calc(var(--active, 0) * 0.375rem) var(--primary-gold);
+      transition: all var(--transition);
+      z-index: 0;
     }
-
+  
     .button::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 100%;
-        background-color: var(--primary-gold);
-        background-image: radial-gradient(
-            at 51% 89%,
-            hsl(45, 100%, 75%) 0px,
-            transparent 50%
-        ),
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      background-color: var(--primary-gold);
+      background-image: 
+        radial-gradient(at 51% 89%, hsl(45, 100%, 75%) 0px, transparent 50%),
         radial-gradient(at 100% 100%, hsl(45, 100%, 60%) 0px, transparent 50%),
         radial-gradient(at 22% 91%, hsl(45, 100%, 60%) 0px, transparent 50%);
-        opacity: var(--active, 0);
-        border-radius: var(--border_radius);
-        transition: opacity var(--transtion);
-        z-index: 2;
+      opacity: var(--active, 0);
+      border-radius: var(--border-radius);
+      transition: opacity var(--transition);
+      z-index: 2;
     }
-
+  
     .button:is(:hover, :focus-visible) {
-        --active: 1;
+      --active: 1;
     }
-
+  
     .button:active {
-        transform: scale(1);
+      transform: scale(1);
     }
-
+  
     .button .dots_border {
-        --size_border: calc(100% + 2px);
-        overflow: hidden;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: var(--size_border);
-        height: var(--size_border);
-        background-color: transparent;
-        border-radius: var(--border_radius);
-        z-index: -10;
+      --size-border: calc(100% + 2px);
+      overflow: hidden;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: var(--size-border);
+      height: var(--size-border);
+      background-color: transparent;
+      border-radius: var(--border-radius);
+      z-index: -10;
     }
-
+  
     .button .dots_border::before {
-        content: "";
-        position: absolute;
-        top: 30%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100%;
-        height: 2rem;
-        background-color: white;
-        mask: linear-gradient(transparent 0%, white 120%);
-        animation: rotate 2s linear infinite;
+      content: "";
+      position: absolute;
+      top: 30%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 2rem;
+      background-color: white;
+      mask: linear-gradient(transparent 0%, white 120%);
+      animation: rotate 2s linear infinite;
     }
-
+  
     @keyframes rotate {
-        to { transform: rotate(360deg); }
+      to {
+        transform: rotate(360deg);
+      }
     }
-
+  
     .button .sparkle {
-        position: relative;
-        z-index: 10;
-        width: 1.75rem;
+      position: relative;
+      z-index: 10;
+      width: 1.75rem;
     }
-
+  
     .button .sparkle .path {
-        fill: currentColor;
-        stroke: currentColor;
-        transform-origin: center;
-        color: var(--neutral-gray);
-        transition: color 0.3s ease;
+      fill: currentColor;
+      stroke: currentColor;
+      transform-origin: center;
+      color: var(--neutral-gray);
+      transition: color 0.3s ease;
     }
-
+  
     .button:hover .sparkle .path {
-        color: var(--primary-dark);
+      color: var(--primary-dark);
     }
-
+  
     .button .text_button {
-        position: relative;
-        z-index: 10;
-        background-image: linear-gradient(
-            90deg,
-            var(--neutral-gray) 0%,
-            hsla(0 0% 100% / var(--active, 0)) 120%
-        );
-        background-clip: text;
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: transparent;
+      position: relative;
+      z-index: 10;
+      background-image: linear-gradient(90deg, var(--neutral-gray) 0%, hsla(0, 0%, 100%, var(--active, 0)) 120%);
+      background-clip: text;
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: transparent;
     }
-
-    /* Stilurile existente pentru restul componenteților */
+  
+    /* Flip Card */
     .flip-card {
-        background-color: transparent;
-        width: 100%;
-        height: 100%;
-        perspective: 1000px;
+      background-color: transparent;
+      width: 100%;
+      height: 100%;
+      perspective: 1000px;
     }
-
+  
     .flip-card-inner {
-        position: relative;
-        width: 100%;
-        height: 100%;
-        transition: transform 0.8s;
-        transform-style: preserve-3d;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
     }
-
+  
     .flip-card:hover .flip-card-inner {
-        transform: rotateY(180deg);
+      transform: rotateY(180deg);
     }
-
+  
     .flip-card-front, .flip-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
-        border-radius: 8px;
-        overflow: hidden;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+      overflow: hidden;
     }
-
+  
     .flip-card-front {
-        z-index: 2;
+      z-index: 2;
     }
-
+  
     .flip-card-back {
-        transform: rotateY(180deg);
+      transform: rotateY(180deg);
     }
-
+    /* MODIFICARE */
+    .flip-card-front.card {
+    background-color: var(--neutral-gray);
+    color: var(--primary-dark);
+    border-radius: 8px;
+    height: 350px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.card-body {
+    padding: 20px; 
+    flex-grow: 1;
+}
     .dashboard-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: stretch;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
     }
-
+  
     .dashboard-row > div {
-        display: flex;
-        flex-direction: column;
+      display: flex;
+      flex-direction: column;
     }
-
+  
     .full-height-card {
-        flex-grow: 1;
-        height: 100%;
+      flex-grow: 1;
+      height: 100%;
     }
-
+  
     .create-event-wrapper {
-        display: flex;
-        justify-content: center;
-        width: 100%;
-        padding: 2rem 0;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      padding: 2rem 0;
     }
-</style>
+  </style>
+  
 
 <div class="container-fluid mt-4 px-3">
     <h1 class="mb-4 text-center" style="color: var(--primary-dark);">Organizer Dashboard</h1>
 
     <div class="row dashboard-row">
         <!-- profile -->
-        <div class="col-md-3 mb-3">
-            <div class="flip-card full-height-card">
-                <div class="flip-card-inner">
-                    <div class="flip-card-front card d-flex justify-content-center align-items-center text-center" 
-                         style="background-color: var(--neutral-gray); color: var(--primary-dark); border-radius: 8px;">
-                        <div class="card-body">
-                            {% if request.user.profile_set.first.photo %}
-                            <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture"
-                                 class="img-fluid rounded-circle mb-3"
-                                 style="width: 200px; height: 200px; object-fit: cover;">
-                            {% else %}
-                            <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
-                            {% endif %}
-                            <h5 class="card-title">Your Profile</h5>
-                            <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
-                            <p><strong>Email:</strong> {{ request.user.email }}</p>
-                            <p><strong>Events Organized:</strong> 15</p>
-                            <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
-                        </div>
-                    </div>
+        <div class="col-md-3 mb-3 d-flex align-items-stretch">
+          <div class="flip-card full-height-card w-100" style="height: 600px;">
+              <div class="flip-card-inner" style="height: 100%;"> <!-- Înălțime 100% pe inner -->
+                  <div class="flip-card-front card d-flex justify-content-center align-items-center text-center" 
+                       style="background-color: var(--neutral-gray); color: var(--primary-dark); border-radius: 8px; height: 100%;"> <!-- Înălțime 100% pe front -->
+                      <div class="card-body">
+                          {% if request.user.profile_set.first.photo %}
+                          <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture"
+                               class="img-fluid rounded-circle mb-3"
+                               style="width: 200px; height: 200px; object-fit: cover;">
+                          {% else %}
+                          <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
+                          {% endif %}
+                          <h5 class="card-title">Your Profile</h5>
+                          <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
+                          <p><strong>Email:</strong> {{ request.user.email }}</p>
+                          <p><strong>Events Organized:</strong> 15</p>
+                          <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
+                      </div>
+                  </div>
+      
+                  <div class="flip-card-back card" style="background-color: var(--primary-gold); color: white; border-radius: 8px; height: 100%;"> <!-- Înălțime 100% pe back -->
+                      <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
+                          <h5 class="card-title">Statistici rapide</h5>
+                          <p>⭐ Rating mediu: 4.8</p>
+                          <p>📍 Evenimente în 3 orașe</p>
+                          <p>📅 Ultimul eveniment: 10.04.2025</p>
+                          <p>💬 Feedback pozitiv: 95%</p>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
 
-                    <div class="flip-card-back card" style="background-color: var(--primary-gold); color: white; border-radius: 8px;">
-                        <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
-                            <h5 class="card-title">Statistici rapide</h5>
-                            <p>⭐ Rating mediu: 4.8</p>
-                            <p>📍 Evenimente în 3 orașe</p>
-                            <p>📅 Ultimul eveniment: 10.04.2025</p>
-                            <p>💬 Feedback pozitiv: 95%</p>
-                        </div>
-                    </div>
+        <!-- tabs -->
+        <div class="col-md-6 mb-3 d-flex align-items-stretch">
+            <div class="card full-height-card w-100" style="background-color: var(--background-light); color: var(--primary-dark); border-radius: 8px;">
+                <div class="tabs-container mb-3 d-flex justify-content-center">
+                    <button class="tab-button active" data-tab="1">Notifications</button>
+                    <button class="tab-button" data-tab="2">2</button>
+                    <button class="tab-button" data-tab="3">3</button>
+                </div>
+                <div class="tab-content" data-tab="1" id="tab1">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                      <h2 class="mb-0">Notifications</h2>
+                      <span class="badge bg-primary">
+                          {{ notifications|length }} total
+                      </span>
+                  </div>
+                  
+                  <div class="notifications-container" style="max-height: 500px; overflow-y: auto;">
+                      {% for notification in notifications %}
+                      <div class="notification-card mb-3 p-3 rounded {% if not notification.is_read %}unread{% endif %}"
+                           style="background-color: #f8f9fa; border-left: 4px solid {% if not notification.is_read %}#D4AF37{% else %}#6c757d{% endif %};">
+                          <div class="d-flex justify-content-between">
+                              <div class="d-flex align-items-start">
+                                  {% if notification.sender.profile.photo %}
+                                  <img src="{{ notification.sender.profile.photo.url }}" 
+                                       class="rounded-circle me-3" 
+                                       width="40" height="40" 
+                                       alt="{{ notification.sender.get_full_name }}"
+                                       onerror="this.style.display='none'">
+                                  {% endif %}
+                                  <div>
+                                      <h6 class="mb-1">
+                                          <strong>{{ notification.sender.get_full_name|default:notification.sender.username }}</strong>
+                                          {% if notification.event %}
+                                          <span class="text-muted">• {{ notification.event.title }}</span>
+                                          {% endif %}
+                                      </h6>
+                                      <p class="mb-1">{{ notification.message }}</p>
+                                      <small class="text-muted">
+                                          {{ notification.timestamp|timesince }} ago
+                                          {% if not notification.is_read %}
+                                          <span class="badge bg-warning text-dark ms-2">New</span>
+                                          {% endif %}
+                                      </small>
+                                  </div>
+                              </div>
+                              {% if notification.event %}
+                              
+                              {% endif %}
+                          </div>
+                      </div>
+                      {% empty %}
+                      <div class="text-center py-4 text-muted">
+                          <i class="fas fa-bell-slash fa-2x mb-2"></i>
+                          <p>No notifications yet</p>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
+                <div class="tab-content" data-tab="2" style="display: none;">
+                    <h5 class="card-title text-center">Tab 2 Content</h5>
+                    <p></p>
+                </div>
+                <div class="tab-content" data-tab="3" style="display: none;">
+                    <h5 class="card-title text-center">Tab 3 Content</h5>
+                    <p></p>
                 </div>
             </div>
         </div>
 
-        <!-- upcoming events -->
-        <div class="col-md-6 mb-3">
-            <div class="card full-height-card" style="background-color: var(--background-light); color: var(--primary-dark); border-radius: 8px;">
-                <div class="card-body">
-                    <h5 class="card-title">Upcoming Events</h5>
-                    <table class="table table-striped" style="border-radius: 8px; border-color: var(--neutral-gray);">
-                        <thead>
-                            <tr style="background-color: var(--neutral-gray);">
-                                <th style="color: var(--primary-dark);">Name</th>
-                                <th style="color: var(--primary-dark);">Date</th>
-                                <th style="color: var(--primary-dark);">Location</th>
-                                <th style="color: var(--primary-dark);">Participants</th>
-                                <th style="color: var(--primary-dark);">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for event in upcoming_events %}
-                            <tr>
-                                <td>{{ event.event_name }}</td>
-                                <td>{{ event.event_date }}</td>
-                                <td>{{ event.location }}</td>
-                                <td>{{ event.guests.count }}</td>
-                                <td>
-                                    <a href="{% url 'event_details' event.id %}" class="btn"
-                                       style="background-color: var(--primary-gold); color: var(--background-light); border-radius: 5px;">Details</a>
-                                    <a href="{% url 'edit_event' event.id %}" class="btn"
-                                       style="background-color: var(--primary-gold); color: var(--background-light); border-radius: 5px;">Edit</a>
-                                </td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center">No upcoming events</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+        <!-- calendar -->
+<div class="col-md-3 mb-3 d-flex align-items-stretch">
+  <div class="calendar light w-100" style="height: 600px;"> <!-- Înălțime mărită aici -->
+      <div class="calendar_header" style="height: 20%;"> <!-- Înălțime ajustată pentru header -->
+          <h1 class="header_title">Welcome Back</h1>
+          <p class="header_copy">Calendar Plan</p>
+      </div>
+      <div class="calendar_plan" style="height: 30%;"> <!-- Înălțime ajustată pentru planul zilei -->
+          <div class="cl_plan">
+              <div class="cl_title">Today</div>
+              <div class="cl_copy">{{ today_date }}</div> <!-- Poți folosi Django template tag aici -->
+              <div class="cl_add">
+                  <i class="fas fa-plus"></i>
+              </div>
+          </div>
+      </div>
+      <div class="calendar_events" style="height: 50%; overflow-y: auto;"> <!-- Înălțime ajustată pentru evenimente -->
+          <p class="ce_title">Upcoming Events</p>
+          {% for event in upcoming_events %}
+          <div class="event_item">
+              <div class="ei_Dot {% if forloop.first %}dot_active{% endif %}"></div>
+              <div class="ei_Title">{{ event.time }}</div>
+              <div class="ei_Copy">{{ event.title }}</div>
+          </div>
+          {% endfor %}
+      </div>
+  </div>
+</div>
 
-        <!-- stats -->
-        <div class="col-md-3 mb-3">
-            <div class="d-flex flex-column justify-content-between full-height-card">
-                <div class="card" style="background-color: var(--primary-gold); color: var(--background-light); border-radius: 8px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Organized Events</h5>
-                        <p class="card-text display-4">{{ total_events }}</p>
-                    </div>
-                </div>
-                <div class="card mt-3" style="background-color: var(--primary-gold); color: var(--background-light); border-radius: 8px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Registered Participants</h5>
-                        <p class="card-text display-4">{{ total_participants }}</p>
-                    </div>
-                </div>
-                <div class="card mt-3" style="background-color: var(--neutral-gray); color: var(--primary-dark); border-radius: 8px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Acceptance Rate</h5>
-                        <p class="card-text display-4">{{ acceptance_rate }}%</p>
-                    </div>
-                </div>
-                <div class="card mt-3" style="background-color: var(--background-light); color: var(--primary-gold); border-radius: 8px;">
-                    <div class="card-body">
-                        <h5 class="card-title">Average Feedback</h5>
-                        <p class="card-text display-4">{{ average_feedback }} ⭐</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <!-- create-->
+    <!-- create -->
     <div class="create-event-wrapper" style="margin-top: -70px; margin-bottom: 20px;">
         <a href="{% url 'event_builder' %}" class="button">
             <div class="dots_border"></div>
@@ -323,6 +574,22 @@
             <span class="text_button">Create a New Event</span>
         </a>
     </div>
-
 </div>
+<script>
+    document.querySelectorAll('.tab-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const tab = button.dataset.tab;
+  
+       
+        document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+  
+        
+        document.querySelectorAll('.tab-content').forEach(content => {
+          content.style.display = content.dataset.tab === tab ? 'block' : 'none';
+        });
+      });
+    });
+  </script>
+  
 {% endblock %}

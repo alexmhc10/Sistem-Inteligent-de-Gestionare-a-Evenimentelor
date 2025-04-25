@@ -19,8 +19,20 @@
         <form id="eventForm" method="POST" action="" enctype="multipart/form-data">
             {% csrf_token %}
 
+            <!-- Calendar Step -->
+            <div class="form-step card p-4" id="step0">
+                <h4>Select Event Date</h4>
+                <div class="mb-3">
+                    <label for="event_calendar" class="form-label">Choose a date for your event</label>
+                    <input type="date" id="event_calendar" name="event_calendar" class="form-control" required>
+                </div>
+                <div class="form-step-buttons mt-3">
+                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)">Next</button>
+                </div>
+            </div>
+
             <!-- Event Details -->
-            <div class="form-step card p-4" id="step1">
+            <div class="form-step card p-4" id="step1" style="display:none;">
                 <h4>Event Details</h4>
                 <div class="mb-3">
                     <label for="event_name" class="form-label">Event Name</label>
@@ -30,7 +42,7 @@
                 <div class="row">
                     <div class="col-md-6">
                         <label for="event_date" class="form-label">Event Date</label>
-                        <input type="date" id="event_date" name="event_date" class="form-control" required>
+                        <input type="date" id="event_date" name="event_date" class="form-control" required readonly>
                     </div>
                     <div class="col-md-6">
                         <label for="event_time" class="form-label">Event Time</label>
@@ -74,7 +86,8 @@
                     <input type="number" id="cost" name="cost" class="form-control" placeholder="Estimated cost" min="0" required>
                 </div>
 
-                <div class="form-step-buttons mt-3">
+                <div class="form-step-buttons mt-3 d-flex justify-content-between">
+                    <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(0)">Back</button>
                     <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(2)">Next</button>
                 </div>
             </div>
@@ -120,6 +133,12 @@
     </div>
 
     <script>
+        // Initialize the event date from calendar selection
+        document.getElementById('event_calendar').addEventListener('change', function() {
+            const selectedDate = this.value;
+            document.getElementById('event_date').value = selectedDate;
+        });
+
         function nextStep(step) {
             document.querySelectorAll('.form-step').forEach(function(stepDiv) {
                 stepDiv.style.display = 'none';
