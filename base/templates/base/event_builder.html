@@ -3,10 +3,27 @@
 <style>.form-step {
     transition: all 1s ease-in-out;
 }
+
+.progress {
+    height: 16px;
+    background-color: #ECE5D8;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    transition: width 0.4s ease;
+    font-weight: bold;
+}
+
 </style>
 {% block content %}
     <div class="event_builder container mt-4">
         <h3 class="text-center mb-4">Create a New Event</h3>
+        <div class="progress mb-3">
+            <div class="progress-bar bg-warning" id="progressBar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          
 
         {% if form2.errors %}
             <div class="alert alert-danger">
@@ -133,102 +150,80 @@
     </div>
 
     <script>
-        // Initialize the event date from calendar selection
-        document.getElementById('event_calendar').addEventListener('change', function() {
-            const selectedDate = this.value;
-            document.getElementById('event_date').value = selectedDate;
+        // Validare dată calendar
+        document.getElementById('event_calendar').addEventListener('change', function () {
+            const today = new Date().toISOString().split('T')[0];
+            if (this.value < today) {
+                alert("Please select a future date.");
+                this.value = '';
+            }
         });
 
+        // Trecere între pași și actualizare progres
         function nextStep(step) {
-            document.querySelectorAll('.form-step').forEach(function(stepDiv) {
-                stepDiv.style.display = 'none';
-            });
+            document.querySelectorAll('.form-step').forEach(div => div.style.display = 'none');
             document.getElementById('step' + step).style.display = 'block';
+
+            const bar = document.getElementById('progressBar');
+            let width = '0%';
+            if (step === 1) width = '50%';
+            else if (step === 2) width = '75%';
+            bar.style.width = width;
+            bar.setAttribute('aria-valuenow', width);
         }
 
         function prevStep(step) {
-            document.querySelectorAll('.form-step').forEach(function(stepDiv) {
-                stepDiv.style.display = 'none';
-            });
-            document.getElementById('step' + step).style.display = 'block';
+            nextStep(step);
         }
 
-        function addGuest() {
-            let name = document.getElementById("guest_name").value;
-            let phone = document.getElementById("guest_phone").value;
-            let email = document.getElementById("guest_email").value;
-
-            if (name && phone && email) {
-                let list = document.getElementById("guest_list");
-                let li = document.createElement("li");
-                li.classList.add("list-group-item");
-                li.innerHTML = `<strong>${name}</strong> - ${phone} - ${email}`;
-                list.appendChild(li);
-
-                // Clear fields after adding
-                document.getElementById("guest_name").value = "";
-                document.getElementById("guest_phone").value = "";
-                document.getElementById("guest_email").value = "";
-            }
-        }
-
-
-
+        // Validare completă la submit
         document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('eventForm');
+            const form = document.getElementById('eventForm');
 
-    form.addEventListener('submit', function (e) {
-        let errors = [];
+            form.addEventListener('submit', function (e) {
+                let errors = [];
 
-        // Data evenimentului
-        const eventDate = document.getElementById('event_calendar').value;
-        const today = new Date().toISOString().split('T')[0];
-        if (!eventDate || eventDate < today) {
-            errors.push("Please select a valid future date.");
-        }
+                const eventDate = document.getElementById('event_calendar').value;
+                const today = new Date().toISOString().split('T')[0];
+                if (!eventDate || eventDate < today) {
+                    errors.push("Please select a valid future date.");
+                }
 
-        // Nume eveniment
-        const eventName = document.getElementById('event_name').value.trim();
-        if (eventName.length < 3) {
-            errors.push("Event name must be at least 3 characters long.");
-        }
+                const eventName = document.getElementById('event_name').value.trim();
+                if (eventName.length < 3) {
+                    errors.push("Event name must be at least 3 characters long.");
+                }
 
-        // Ora
-        const eventTime = document.getElementById('event_time').value;
-        if (!eventTime) {
-            errors.push("Please select an event time.");
-        }
+                const eventTime = document.getElementById('event_time').value;
+                if (!eventTime) {
+                    errors.push("Please select an event time.");
+                }
 
-        // Descriere
-        const description = document.getElementById('event_description').value.trim();
-        if (description.length < 10) {
-            errors.push("Description must be at least 10 characters.");
-        }
+                const description = document.getElementById('event_description').value.trim();
+                if (description.length < 10) {
+                    errors.push("Description must be at least 10 characters.");
+                }
 
-        // Locație
-        const location = document.getElementById('location').value;
-        if (!location) {
-            errors.push("Please select a location.");
-        }
+                const location = document.getElementById('location').value;
+                if (!location) {
+                    errors.push("Please select a location.");
+                }
 
-        // Tip eveniment
-        const eventType = document.getElementById('event_type').value;
-        if (!eventType) {
-            errors.push("Please select an event type.");
-        }
+                const eventType = document.getElementById('event_type').value;
+                if (!eventType) {
+                    errors.push("Please select an event type.");
+                }
 
-        // Cost
-        const cost = document.getElementById('cost').value;
-        if (!cost || parseFloat(cost) < 0) {
-            errors.push("Please enter a valid cost (0 or more).");
-        }
+                const cost = document.getElementById('cost').value;
+                if (!cost || parseFloat(cost) < 0) {
+                    errors.push("Please enter a valid cost (0 or more).");
+                }
 
-
-        if (errors.length > 0) {
-            e.preventDefault();
-            alert("Form errors:\n\n" + errors.join("\n"));
-        }
-    });
-});
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert("Form errors:\n\n" + errors.join("\n"));
+                }
+            });
+        });
     </script>
 {% endblock %}
