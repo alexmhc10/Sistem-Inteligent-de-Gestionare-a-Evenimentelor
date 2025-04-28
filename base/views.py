@@ -1771,6 +1771,11 @@ def personal_vizualizare_eveniment(request, pk):
     if event.location.owner != request.user:
         messages.error(request, "Acces denied: You cant acces events that are not organised at your location.")
         return redirect(request.META.get('HTTP_REFERER', '/login/'))
+    
+    if event.status == "completed":
+        messages.error(request, "This event is completed!.")
+        return redirect('completed_event', pk)
+
         
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
@@ -1796,10 +1801,12 @@ def personal_vizualizare_eveniment(request, pk):
 @user_is_staff
 def completed_event(request, pk):
     event = Event.objects.get(id=pk)
+    profile = Profile.objects.get(user=request.user)
 
     if event is not None:
         context = {
-            'event':event
+            'event':event,
+            'profile': profile
         }
     return render(request, 'base/completed_event.html', context)
 
