@@ -166,7 +166,7 @@
 
                   <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
                     <label for="age">Age:</label>
-                    <input type="text" class="form-control" id="age" name="age" required>
+                    <input type="number" class="form-control" id="age" name="age" required>
                   </div>
 
                   <div class="d-grid gap-2 d-md-flex justify-content-evenly align-items-center mt-2">
@@ -207,7 +207,7 @@
                     Scrie numele complet al priteninilor cu care vei veni la eveniment
                 </textarea> -->
                 <label for="meniu">Menu:</label>
-                <select id="meniu" class="form-select" name="meniu" required>
+                <select id="meniu" class="form-select" name="meniuSet" required>
                     <option value="Iberic">Iberic</option>
                     <option value="Italienesc">Italian</option>
                     <option value="Chinezesc" selected>Chinese</option>
@@ -217,21 +217,17 @@
                     <h4>Are you vegan?</h4>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
-                        <label class="form-check-label" for="inlineCheckbox1">Da</label>
+                        <label class="form-check-label" for="inlineCheckbox1">Yes</label>
                     </div>
                     <h4>Are you allergic?</h4>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox2" value="Lactoza">
-                        <label class="form-check-label" for="inlineCheckbox2">Lactoz</label>
-                    </div>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox3" value="Gluten">
-                        <label class="form-check-label" for="inlineCheckbox3">Gluten</label>
-                    </div>
-                    <div class="form-check form-check-inline mb-2">
-                        <input class="form-check-input" type="checkbox" name="allergens" id="inlineCheckbox4" value="Soia">
-                        <label class="form-check-label" for="inlineCheckbox4">Soia</label>
-                    </div>
+                    <div class="d-flex flex-row flex-wrap">
+                      {% for allergen in allergens %}
+                        <div class="form-check form-check-inline">
+                          <input class="form-check-input" id="allergen{{allergen.name}}" type="checkbox" name="allergensSet" value="{{allergen.id}}">
+                          <label class="form-check-label" for="allergen{{allergen.name}}">{{allergen.name}}</label>
+                      </div>
+                      {% endfor %}
+                  </div>
                   <div class="d-grid gap-2 d-md-flex justify-content-between">
                     <button type="button" id="back-2" class="btn btn-outline-dark">Back</button>
                     <button type="button" id="continue-2" class="btn btn-outline-success">Finalise</button>

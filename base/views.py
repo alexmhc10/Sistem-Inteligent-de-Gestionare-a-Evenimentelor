@@ -1847,27 +1847,31 @@ def add_allergen(request):
     return JsonResponse({"success": False})
 
 
+@login_required(login_url='/login')
+@user_is_staff
 def add_food(request):
     if request.method == "POST":
         print("Cerere POST primită:", request.POST)
 
         location = request.user.location_set.first()
         name = request.POST.get("name")
-        allergens_data = request.POST.get('allergens', '[]')
-        allergens_list = json.loads(allergens_data)
+        allergens_data = request.POST.getlist('allergens')
         is_vegetarian = request.POST.get("is_vegetarian") == "on"
         image = request.FILES.get("image")
 
-        print(f"Date primite: nume={name}, alergeni={allergens_list}, vegetarian={is_vegetarian}, image={image}")
+        print(f"Date primite: nume={name}, alergeni={allergens_data}, vegetarian={is_vegetarian}, image={image}")
 
         if name:
             food = Menu.objects.create(
                 at_location=location,
                 item_name=name,
-                allergens=allergens_list,
                 item_vegan=is_vegetarian,
                 item_picture=image
             )
+
+            allergens_id = [int(id) for id in allergens_data]
+            allergens = Allergen.objects.filter(id__in=allergens_id)
+            food.allergens.set(allergens)
             return JsonResponse({"success": True, "food_id": food.id, "image_url": food.item_picture.url if food.item_picture else None})
         else:
             return JsonResponse({"success": False, "error": "Name is mandatory."})
@@ -1979,19 +1983,68 @@ def guest_profile(request):
 
     if request.method == "POST":
         if not_completed:
-            preferences.state = True
-            profil.first_name = request.POST.get('firstname')
-            profil.last_name = request.POST.get('lastname')
-            profil.email = request.POST.get('email')
-            profil.age = request.POST.get('age')
-            profil.photo = request.FILES.get('photo')
-            preferences.gender = request.POST.get('gender')
-            preferences.cuisine_preference = request.POST.get('meniu')
-            preferences.vegan = request.POST.get('vegan_check') == '1'
-            allergens_ids = request.POST.getlist('allergens')
-            preferences.allergens.set(allergens_ids)
-            preferences.save()
-            profil.save()
+            try:
+                required_fields = {
+                    'firstname': "Firstname is mandatory",
+                    'lastname': "lastname is mandatory",
+                    'email': "Email is mandatory",
+                    'age': "Age is mandatory",
+                    'gender': "Gender is mandatory",
+                    'meniuSet': "Menu is mandatory"
+                }
+                
+                errors = {}
+                for field, error_msg in required_fields.items():
+                    if not request.POST.get(field):
+                        errors[field] = error_msg
+                
+                email = request.POST.get('email')
+                
+                age = request.POST.get('age')
+                if age:
+                    try:
+                        age = int(age)
+                        if age < 1 or age > 120:
+                            errors['age'] = "Vârsta trebuie să fie între 1 și 120"
+                    except ValueError:
+                        errors['age'] = "Vârsta trebuie să fie un număr"
+                
+                if errors:
+                    for field, error in errors.items():
+                        messages.error(request, error)
+                    return redirect('guest_profile')
+                
+                profil = request.user.profile_set.first()
+                profil.first_name = request.POST.get('firstname')
+                profil.last_name = request.POST.get('lastname')
+                profil.email = request.POST.get('email')
+                profil.age = request.POST.get('age')
+                
+                if 'photo' in request.FILES:
+                    profil.photo = request.FILES['photo']
+                
+                preferences = profil.guest_profile
+                preferences.gender = request.POST.get('gender')
+                preferences.cuisine_preference = request.POST.get('meniuSet')
+                preferences.vegan = request.POST.get('vegan_check') == '1'
+                
+                selected_allergens = request.POST.getlist('allergensSet')
+                selected_allergens_ids = [int(id) for id in selected_allergens if id.isdigit()]
+                allergens = Allergen.objects.filter(id__in=selected_allergens_ids)
+                preferences.allergens.set(allergens)
+                
+                preferences.state = True
+
+
+                profil.save()
+                preferences.save()
+                
+                messages.success(request, "Profilul a fost actualizat cu succes!")
+                return redirect('guest_profile')
+                
+            except Exception as e:
+                messages.error(request, f"A apărut o eroare: {str(e)}")
+                return redirect('guest_profile')
         else:
             form_type = request.POST.get('form_type')
             if form_type == 'form1':
