@@ -1800,8 +1800,18 @@ def personal_vizualizare_eveniment(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def completed_event(request, pk):
-    event = Event.objects.get(id=pk)
+    try:
+        event = Event.objects.get(id=pk)
+    except Event.DoesNotExist:
+        messages.error(request, "We couln't find this event")
+        return redirect(request.META.get('HTTP_REFERER', '/personal_eveniment_home'))
+
+    
     profile = Profile.objects.get(user=request.user)
+
+    if event.location.owner != request.user:
+        messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
+        return redirect(request.META.get('HTTP_REFERER', '/login/'))
 
     if event is not None:
         context = {

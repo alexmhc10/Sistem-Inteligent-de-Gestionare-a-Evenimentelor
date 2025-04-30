@@ -55,6 +55,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
       </div>
       <hr>
       <div class="row">
+          {% if event %}
+
           <div class="col-lg-5 col-sm-6">
               <div class="card card-hover">
                   <div class="card-body">
@@ -65,12 +67,19 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   </div>
             </div>
           </div>
-          {% if event %}
           <div class="col-lg-4 col-sm-6">
             <div class="card card-hover">
               <div class="card-body">
                 <h1 class="card-title d-flex align-items-center gap-2">Time left until event start!</h1>
                 {% include 'timer.html' %}
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="col">
+            <div class="card card-hover">
+              <div class="card-body p-2">
+                <h3 class="m-0 ms-2">- No upcoming event for now! -</h3>
               </div>
             </div>
           </div>
@@ -111,6 +120,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
           {% endif %}
 
+          {% if remaining_events %}
           <div class="col-lg-12">
             <div class="card card-hover">
                 <div class="card-body">
@@ -120,6 +130,15 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
           </div>
+          {% else %}
+          <div class="col">
+            <div class="card card-hover">
+              <div class="card-body p-2">
+               <h3 class="m-0 ms-2">- No more upcoming events -</h3>
+              </div>
+            </div>
+          </div>
+          {% endif %}
           <div class="row">
             {% for event in remaining_events %}         
             <div class="col-lg-4">
@@ -150,17 +169,27 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
             {% endfor %}
         </div>
-        <div class="col-lg-12">
-          <div class="card card-hover">
-              <div class="card-body">
-                  <h1 class="card-title d-flex align-items-center gap-2" data-bs-toggle="collapse" href="#completedEventsCollapse" role="button" aria-expanded="false" aria-controls="completedEventsCollapse">
-                      Completed events!
-                   <span class="badge text-bg-primary">{{ past_events_count }}</span>
+        {% if past_events %}
+          <div class="col-lg-12">
+            <div class="card card-hover">
+                <div class="card-body">
+                    <h1 class="card-title d-flex align-items-center gap-2 h3" data-bs-toggle="collapse" href="#completedEventsCollapse" role="button" aria-expanded="false" aria-controls="completedEventsCollapse">
+                        Completed events!
+                    <span class="badge text-bg-primary">{{ past_events_count }}</span>
 
-                    </h1>
-              </div>
+                      </h1>
+                </div>
+            </div>
+          </div>
+        {% else %}
+        <div class="col">
+          <div class="card card-hover">
+            <div class="card-body p-2 ms-2">
+             <h3 class="p-0">- No completed events -</h3>
+            </div>
           </div>
         </div>
+        {% endif %}
         <div class="collapse" id="completedEventsCollapse">
           <div class="row d-flex flex-row">
           {% for event in past_events %}  
