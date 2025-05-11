@@ -35,7 +35,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <div class="container-fluid">
         <div class="row">
 
-        <div class="col-lg-8">
+        <div class="col-lg-6">
             <div class="row d-flex flex-column flex-wrap">
                 <div class="col-lg-12">
                     <div class="card">
@@ -68,10 +68,29 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>    
         </div>
         
-        <div class="col-lg-4">
+        <div class="col-lg-3">
             <div class="card">
                 <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" class="card-img" style="max-height: 300px; object-fit: cover;">
                 <div class="card-img-overlay"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-3">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title">Send a notification</h1>
+                    <form action="{% url 'send_notification' %}" method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="hidden" name="event_id" value="{{ event.id }}">
+                        <label for="receiver">To:</label>
+                        <select class="form-control mb-2" name="receiver" id="receiver">
+                            <option value="organizer">The organiser</option>
+                            <option value="everyone">Organiser and guests</option>
+                        </select>
+                        <textarea class="form-control mb-2" name="message" id="message" cols="30" rows="5"></textarea>
+                        <button type="submit" name="submit" class="btn btn-primary">Send</button>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -287,24 +306,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div> -->
-        <div class="col-lg-4 offset-lg-4">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="card-title">Send a notification</h1>
-                    <form action="{% url 'send_notification' %}" method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <input type="hidden" name="event_id" value="{{ event.id }}">
-                        <label for="receiver">To:</label>
-                        <select class="form-control mb-2" name="receiver" id="receiver">
-                            <option value="organizer">The organiser</option>
-                            <option value="everyone">Organiser and guests</option>
-                        </select>
-                        <textarea class="form-control mb-2" name="message" id="message" cols="30" rows="5"></textarea>
-                        <button type="submit" name="submit" class="btn btn-primary">Send</button>
-                    </form>
-                </div>
-            </div>
-        </div>
+        
     </div>
     </div>
     </div>

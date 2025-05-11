@@ -1726,10 +1726,10 @@ def personal_profile(request):
             profile.instagram = request.POST.get('instagram')
             profile.save()
     else:
-        form_type = LocationEventTypesForm()
+        form_type = LocationEventTypesForm(instance=location_owned)
 
 
-    form_types = LocationEventTypesForm()
+    form_types = LocationEventTypesForm(instance=location_owned)
     location_owned = Location.objects.filter(owner=request.user).first()
     profile = Profile.objects.filter(user = location_owned.owner).first()
 
@@ -1979,7 +1979,6 @@ def guest_profile(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
-    allergens = Allergen.objects.all()
 
     if request.method == "POST":
         if not_completed:
@@ -2062,13 +2061,16 @@ def guest_profile(request):
             elif form_type == 'form2':
                 preferences.cuisine_preference = request.POST.get('meniu')
                 preferences.vegan = request.POST.get('vegan_check') == '1'
-                allergens_ids = request.POST.getlist('allergens')
-                preferences.allergens.set(allergens_ids)
+                selected_allergens = request.POST.getlist('allergens')
+                selected_allergens_ids = [int(id) for id in selected_allergens if id.isdigit()]
+                allergens = Allergen.objects.filter(id__in=selected_allergens_ids)
+                preferences.allergens.set(allergens)
                 preferences.save()
 
             
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
-    
+    allergens = Allergen.objects.all()
+
     context = {
         "not_completed": not_completed,
         "preferences": preferences,

@@ -1,4 +1,3 @@
-# yourapp/management/commands/check_incomplete_profiles.py
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -16,12 +15,10 @@ class Command(BaseCommand):
             profile__is_complete=False
         )
 
-        # Pentru fiecare eveniment, verifică invitații
         for event in Event.objects.filter(
-            date__gte=timezone.now(),  # evenimente viitoare
-            date__lte=timezone.now() + timedelta(days=7)  # în următoarele 7 zile
+            date__gte=timezone.now(),
+            date__lte=timezone.now() + timedelta(days=7)
         ):
-            # Obține invitații care nu au completat profilul
             incomplete_invitees = event.invitees.filter(
                 profile__is_complete=False
             )

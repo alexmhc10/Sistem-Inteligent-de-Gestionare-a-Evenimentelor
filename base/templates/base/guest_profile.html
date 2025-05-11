@@ -399,7 +399,7 @@
                     </div>
                     <div class="col-sm-5 text-secondary justify-content-evenly">
                       {% for allergen in allergens %}
-                       <input class="form-check-input" type="checkbox" name="allergens" id="allergen-{{allergen.id}}" value="{{allergen.id}}" {% if allergen in preferences.allergens %}checked{% endif %}>
+                       <input class="form-check-input" type="checkbox" name="allergens" id="allergen-{{allergen.id}}" value="{{allergen.id}}" {% if allergen in preferences.allergens.all %}checked{% endif %}>
                        <label for="allergen-{{allergen.id}}" class="text-dark">{{allergen.name}}</label>
                       {% endfor %}
                     </div>

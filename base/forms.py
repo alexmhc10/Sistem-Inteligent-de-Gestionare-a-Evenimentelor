@@ -76,6 +76,8 @@ class EventForm(forms.ModelForm):
                 'class': 'form-select event-input',
             }),
         }
+
+
 class UploadFileForm(forms.Form):
     guest_file = forms.FileField(label="Alege un fișier CSV/XLSX")
     def __init__(self, *args, **kwargs):
@@ -154,6 +156,9 @@ class LocationEventTypesForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
             field.widget.attrs.update({'class': 'form-control'}) 
+
+        if self.instance and self.instance.pk:
+            self.fields['types'].initial = self.instance.types.all()
 
 
 ALLERGEN_CHOICES = [
