@@ -170,33 +170,70 @@
         </div>
 <!-- Modal Bootstrap pentru import invitați -->
 <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="importModalLabel">Import Guests with Account</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <h5>List of Guests with Accounts:</h5>
-        <ul class="list-group">
-          {% for guest in guests %}
-            <li class="list-group-item">
-              {{ guest.username }} - {{ guest.email }}
-            </li>
-          {% empty %}
-            <li class="list-group-item">No guests found with accounts.</li>
-          {% endfor %}
-        </ul>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-      </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importModalLabel">Import Guests with Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h5>List of Guests with Accounts:</h5>
+                <ul class="list-group">
+                    {% for guest in guests %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>{{ guest.username }} - {{ guest.email }}</span>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-warning" onclick="selectGuest('{{ guest.username }}', '{{ guest.email }}', this)">Select</button>
+                                <span class="text-danger ms-2 d-none">This user has been selected already</span>
+                            </div>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No guests found with accounts.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 
-    </form>
+
+</div>
+
+<script>
+    function selectGuest(username, email, button) {
+        const guestList = document.getElementById('guest_list');
+        const existingGuests = Array.from(guestList.children).map(item => item.textContent.trim());
+
+        // Check if the guest is already in the list
+        if (!existingGuests.includes(`${username} - ${email}`)) {
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item';
+            listItem.textContent = `${username} - ${email}`;
+            guestList.appendChild(listItem);
+        } else {
+            const errorMessage = button.nextElementSibling;
+            errorMessage.classList.remove('d-none');
+        }
+    }
+    function selectGuest(username, email) {
+        const guestList = document.getElementById('guest_list');
+        const existingGuests = Array.from(guestList.children).map(item => item.textContent);
+
+        // Check if the guest is already in the list
+        if (!existingGuests.includes(`${username} - ${email}`)) {
+            const listItem = document.createElement('li');
+            listItem.className = 'list-group-item';
+            listItem.textContent = `${username} - ${email}`;
+            guestList.appendChild(listItem);
+        } else {
+            alert("This guest is already selected.");
+        }
+    }
+</script>
 </div>
     <script>
         // Validare dată calendar
