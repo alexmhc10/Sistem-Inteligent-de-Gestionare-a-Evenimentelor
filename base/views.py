@@ -218,9 +218,10 @@ def delete_event(request, event_id):
     return redirect('my_events') 
 
 
-@login_required(login_url='/login')
 def event_builder(request):
     locations = Location.objects.all()
+
+    # Verificăm dacă există un fișier de invitați încărcat
     if request.method == 'POST' and request.FILES.get('guest_file'):
         form = EventForm(request.POST)
 
@@ -238,18 +239,25 @@ def event_builder(request):
             )  
 
         uploaded_file = request.FILES['guest_file']
-
         fs = FileSystemStorage()
         filename = fs.save(uploaded_file.name, uploaded_file)
         file_path = fs.path(filename)
 
         if filename.endswith('.csv'):
-            df = pd.read_csv(file_path)
+            try:
+                df = pd.read_csv(file_path)
+            except Exception as e:
+                return render(request, 'event_builder.html', {'error': f"Fișierul CSV nu poate fi citit: {e}"})
         elif filename.endswith(('.xls', '.xlsx')):
-            df = pd.read_excel(file_path)
+            try:
+                df = pd.read_excel(file_path)
+            except Exception as e:
+                return render(request, 'event_builder.html', {'error': f"Fișierul Excel nu poate fi citit: {e}"})
         else:
             return render(request, 'event_builder.html', {'error': 'Format de fișier invalid'})
 
+        # Procesăm invitații din fișier
+        invited_guests = []  # Vom salva invitații care vor fi adăugați
         for _, row in df.iterrows():
             name = row.get('nume')
             email = row.get('email')
@@ -258,35 +266,46 @@ def event_builder(request):
             if name and email:
                 username = name.replace(" ", "")
                 
-                counter=1
+                counter = 1
                 while User.objects.filter(username=username).exists():
                     username = f"{username}{counter}"
                     counter += 1
 
+                # Creăm sau găsim utilizatorul
                 user, created = User.objects.get_or_create(username=username, email=email)
                 if created:
-                    user.set_password(phone)
+                    user.set_password(phone)  # Folosim telefonul ca parolă
                     user.save()
                     Profile.objects.create(user=user, username=username, email=email, password=phone, number=phone, user_type='guest')
 
-                    try:
-                        event = Event.objects.get(id=event.id)
-                    except Event.DoesNotExist:
-                        continue
+                # Legăm invitatul la eveniment
+                try:
+                    event = Event.objects.get(id=event.id)
+                except Event.DoesNotExist:
+                    continue
 
-                    RSVP.objects.create(guest=user, event=event)
-        
+                invited_guests.append(RSVP(guest=user, event=event))
 
+        if invited_guests:
+            RSVP.objects.bulk_create(invited_guests)
 
-        
-            
-        return redirect('my_events')  
+        return redirect('my_events')
+
     else:
         form = EventForm()
         form_file = UploadFileForm()
 
+    # Obținem invitații deja înregistrați ca "guest" pentru a-i afișa în modal
+    existing_guests = Profile.objects.filter(user_type='guest')
+    guests_with_accounts = [profile.user for profile in existing_guests]  # Userii invitați
 
-    return render(request, 'base/event_builder.html', {'form2': form,'form_file': form_file, 'locations': locations})
+    return render(request, 'base/event_builder.html', {
+        'form': form,
+        'locations': locations,
+        'guests': guests_with_accounts,
+        'form_file': form_file,
+    })
+
 
 
 @login_required(login_url='/login')

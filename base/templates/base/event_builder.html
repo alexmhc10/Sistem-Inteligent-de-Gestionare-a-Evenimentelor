@@ -142,10 +142,25 @@
             </div>
 
             <div class="mt-3">
-                <label><strong>Import guests from file:</strong></label>
-                    {{ form_file.as_p }}
-                <small class="text-muted">Se acceptă doar fișiere Excel (.xls, .xlsx)</small>
-            </div>
+    <label><strong>Import guests from file:</strong></label>
+    {{ form_file.as_p }}
+    <small class="text-muted">
+        Only Excel files are accepted (.xls, .xlsx).<br>
+        <strong>Only guests who do not have an account on the platform will be imported.</strong>
+    </small>
+
+
+    <hr class="my-4">
+
+<h5>Import Guests With Account</h5>
+<p>You can import registered users as guests.</p>
+
+<!-- Butonul care deschide fereastra -->
+<button type="button" class="btn" style="background-color: #D4AF37; color: white;" data-bs-toggle="modal" data-bs-target="#importModal">
+    Import Guests with Account
+</button>
+
+</div>
 
             <!-- Navigation Buttons -->
             <div class="form-step-buttons mt-3 d-flex justify-content-between">
@@ -153,6 +168,34 @@
                 <button type="submit" class="btn" style="background-color: #D4AF37; color: white;">Save Event</button>
             </div>
         </div>
+<!-- Modal Bootstrap pentru import invitați -->
+<div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="importModalLabel">Import Guests with Account</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h5>List of Guests with Accounts:</h5>
+        <ul class="list-group">
+          {% for guest in guests %}
+            <li class="list-group-item">
+              {{ guest.username }} - {{ guest.email }}
+            </li>
+          {% empty %}
+            <li class="list-group-item">No guests found with accounts.</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
     </form>
 </div>
     <script>
