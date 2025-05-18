@@ -534,21 +534,21 @@
 
         <!-- calendar -->
 <div class="col-md-3 mb-3 d-flex align-items-stretch">
-  <div class="calendar light w-100" style="height: 600px;"> <!-- Înălțime mărită aici -->
-      <div class="calendar_header" style="height: 20%;"> <!-- Înălțime ajustată pentru header -->
+  <div class="calendar light w-100" style="height: 600px;"> 
+      <div class="calendar_header" style="height: 20%;"> 
           <h1 class="header_title">Welcome Back</h1>
           <p class="header_copy">Calendar Plan</p>
       </div>
-      <div class="calendar_plan" style="height: 30%;"> <!-- Înălțime ajustată pentru planul zilei -->
+      <div class="calendar_plan" style="height: 30%;"> 
           <div class="cl_plan">
               <div class="cl_title">Today</div>
-              <div class="cl_copy">{{ today_date }}</div> <!-- Poți folosi Django template tag aici -->
-              <div class="cl_add">
+              <div class="cl_copy">{{ today_date }}</div> 
+              <a href="{% url 'event_builder' %}" class="cl_add" title="Create new event">
                   <i class="fas fa-plus"></i>
-              </div>
+              </a>
           </div>
       </div>
-      <div class="calendar_events" style="height: 50%; overflow-y: auto;"> <!-- Înălțime ajustată pentru evenimente -->
+      <div class="calendar_events" style="height: 50%; overflow-y: auto;"> 
           <p class="ce_title">Upcoming Events</p>
           {% for event in upcoming_events %}
           <div class="event_item">
@@ -560,7 +560,6 @@
       </div>
   </div>
 </div>
-
 
     <!-- create -->
     <div class="create-event-wrapper" style="margin-top: -70px; margin-bottom: 20px;">
