@@ -1490,6 +1490,8 @@ def addLocation(request):
         if form.is_valid():
             location = form.save(commit=False)
             location.owner = request.user
+            location.save()  
+
             Notification.objects.create(
                 user=request.user,
                 action_type='created_location',
@@ -1497,22 +1499,22 @@ def addLocation(request):
                 target_object_name=location.name,
                 target_model='Location'
             ) 
-            location.save()
 
-            custom_types = form.cleaned_data.get('custom_types')
-            if custom_types:  
+            custom_types = form.cleaned_data.get('custom_types') or []
+            if custom_types:
                 for type_name in custom_types:
-                    type_instance, created = Type.objects.get_or_create(name=type_name.strip()) 
-                    if type_instance not in location.types.all(): 
-                        location.types.add(type_instance) 
+                    type_instance, _ = Type.objects.get_or_create(name=type_name.strip()) 
+                    location.types.add(type_instance)
             else:
                 selected_types = form.cleaned_data.get('types')
                 for type_instance in selected_types:
-                    if type_instance not in location.types.all():  
-                        location.types.add(type_instance)  
+                    location.types.add(type_instance)
 
-        print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
-        return redirect('home')
+            print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
+            return redirect('home')
+        else:
+            print(form.errors)  # Debug invalid form
+
     context = {
         'form': form,
         'types': types
