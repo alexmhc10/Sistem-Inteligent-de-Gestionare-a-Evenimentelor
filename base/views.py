@@ -336,10 +336,35 @@ def delete_task(request, task_id):
     task.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-@login_required(login_url='/login')
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+#my events
+@login_required(login_url='login')
 def my_events(request):
-    events = Event.objects.filter(is_canceled=False)
-    return render(request, 'base/my_events.html', {'events': events})
+    events = Event.objects.filter(organized_by=request.user)
+
+    search_query = request.GET.get('search', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+
+    if search_query:
+        events = events.filter(event_name__icontains=search_query)
+
+    if status_filter:
+        if status_filter == 'active':
+           
+            events = events.filter(is_canceled=False, status__in=['upcoming', 'ongoing'])
+        elif status_filter == 'inactive':
+            events = events.filter(is_canceled=True)
+
+    events = events.order_by('-event_date')
+
+    # paginare
+    paginator = Paginator(events, 10)  # 10 evenimente pe pagină
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'base/my_events.html', {'events': page_obj})
+
 
 # def task_manager_view(request):
 #     if request.method == 'POST':
