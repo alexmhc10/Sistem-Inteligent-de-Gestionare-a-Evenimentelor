@@ -466,89 +466,89 @@
         <!-- tabs -->
         <div class="col-md-6 mb-3 d-flex align-items-stretch">
             <div class="card full-height-card w-100" style="background-color: var(--background-light); color: var(--primary-dark); border-radius: 8px;">
-                <div class="tabs-container mb-3 d-flex justify-content-center">
-                    <button class="tab-button active" data-tab="1">Notifications</button>
-                    <button class="tab-button" data-tab="2">2</button>
-                    <button class="tab-button" data-tab="3">3</button>
+          <div class="tabs-container mb-3 d-flex justify-content-center">
+              <button class="tab-button active" data-tab="1">Notifications</button>
+              <button class="tab-button" data-tab="2">2</button>
+              <button class="tab-button" data-tab="3">3</button>
+          </div>
+          <div class="tab-content" data-tab="1" id="tab1">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="mb-0">Notifications</h2>
+                <span class="badge bg-primary">
+              {{ notifications|length }} total
+                </span>
+            </div>
+            
+            <div class="notifications-container" style="max-height: 500px; overflow-y: auto;">
+                {% for notification in notifications %}
+                <div class="notification-card mb-3 p-3 rounded {% if not notification.is_read %}unread{% endif %}"
+               style="background-color: #f8f9fa; border-left: 4px solid {% if not notification.is_read %}#D4AF37{% else %}#6c757d{% endif %};">
+              <div class="d-flex justify-content-between">
+                  <div class="d-flex align-items-start">
+                {% if notification.sender.profile_set.first.photo %}
+                <img src="{{ notification.sender.profile_set.first.photo.url }}" 
+                     class="rounded-circle me-3" 
+                     width="40" height="40" 
+                     alt="{{ notification.sender.get_full_name }}"
+                     onerror="this.style.display='none'">
+                {% endif %}
+                <div>
+                    <h6 class="mb-1">
+                  <strong>{{ notification.sender.get_full_name|default:notification.sender.username }}</strong>
+                  {% if notification.event %}
+                  <span class="text-muted">• {{ notification.event.title }}</span>
+                  {% endif %}
+                    </h6>
+                    <p class="mb-1">{{ notification.message }}</p>
+                    <small class="text-muted">
+                  {{ notification.timestamp|timesince }} ago
+                  {% if not notification.is_read %}
+                  <span class="badge bg-warning text-dark ms-2">New</span>
+                  {% endif %}
+                    </small>
                 </div>
-                <div class="tab-content" data-tab="1" id="tab1">
-                  <div class="d-flex justify-content-between align-items-center mb-3">
-                      <h2 class="mb-0">Notifications</h2>
-                      <span class="badge bg-primary">
-                          {{ notifications|length }} total
-                      </span>
                   </div>
+                  {% if notification.event %}
                   
-                  <div class="notifications-container" style="max-height: 500px; overflow-y: auto;">
-                      {% for notification in notifications %}
-                      <div class="notification-card mb-3 p-3 rounded {% if not notification.is_read %}unread{% endif %}"
-                           style="background-color: #f8f9fa; border-left: 4px solid {% if not notification.is_read %}#D4AF37{% else %}#6c757d{% endif %};">
-                          <div class="d-flex justify-content-between">
-                              <div class="d-flex align-items-start">
-                                  {% if notification.sender.profile.photo %}
-                                  <img src="{{ notification.sender.profile.photo.url }}" 
-                                       class="rounded-circle me-3" 
-                                       width="40" height="40" 
-                                       alt="{{ notification.sender.get_full_name }}"
-                                       onerror="this.style.display='none'">
-                                  {% endif %}
-                                  <div>
-                                      <h6 class="mb-1">
-                                          <strong>{{ notification.sender.get_full_name|default:notification.sender.username }}</strong>
-                                          {% if notification.event %}
-                                          <span class="text-muted">• {{ notification.event.title }}</span>
-                                          {% endif %}
-                                      </h6>
-                                      <p class="mb-1">{{ notification.message }}</p>
-                                      <small class="text-muted">
-                                          {{ notification.timestamp|timesince }} ago
-                                          {% if not notification.is_read %}
-                                          <span class="badge bg-warning text-dark ms-2">New</span>
-                                          {% endif %}
-                                      </small>
-                                  </div>
-                              </div>
-                              {% if notification.event %}
-                              
-                              {% endif %}
-                          </div>
-                      </div>
-                      {% empty %}
-                      <div class="text-center py-4 text-muted">
-                          <i class="fas fa-bell-slash fa-2x mb-2"></i>
-                          <p>No notifications yet</p>
-                      </div>
-                      {% endfor %}
-                  </div>
+                  {% endif %}
               </div>
-                <div class="tab-content" data-tab="2" style="display: none;">
-                    <h5 class="card-title text-center">Tab 2 Content</h5>
-                    <p></p>
                 </div>
-                <div class="tab-content" data-tab="3" style="display: none;">
-                    <h5 class="card-title text-center">Tab 3 Content</h5>
-                    <p></p>
+                {% empty %}
+                <div class="text-center py-4 text-muted">
+              <i class="fas fa-bell-slash fa-2x mb-2"></i>
+              <p>No notifications yet</p>
                 </div>
+                {% endfor %}
+            </div>
+              </div>
+          <div class="tab-content" data-tab="2" style="display: none;">
+              <h5 class="card-title text-center">Tab 2 Content</h5>
+              <p></p>
+          </div>
+          <div class="tab-content" data-tab="3" style="display: none;">
+              <h5 class="card-title text-center">Tab 3 Content</h5>
+              <p></p>
+          </div>
             </div>
         </div>
 
         <!-- calendar -->
 <div class="col-md-3 mb-3 d-flex align-items-stretch">
-  <div class="calendar light w-100" style="height: 600px;"> <!-- Înălțime mărită aici -->
-      <div class="calendar_header" style="height: 20%;"> <!-- Înălțime ajustată pentru header -->
+  <div class="calendar light w-100" style="height: 600px;"> 
+      <div class="calendar_header" style="height: 20%;"> 
           <h1 class="header_title">Welcome Back</h1>
           <p class="header_copy">Calendar Plan</p>
       </div>
-      <div class="calendar_plan" style="height: 30%;"> <!-- Înălțime ajustată pentru planul zilei -->
+      <div class="calendar_plan" style="height: 30%;"> 
           <div class="cl_plan">
               <div class="cl_title">Today</div>
-              <div class="cl_copy">{{ today_date }}</div> <!-- Poți folosi Django template tag aici -->
-              <div class="cl_add">
+              <div class="cl_copy">{{ today_date }}</div> 
+              <a href="{% url 'event_builder' %}" class="cl_add" title="Create new event">
                   <i class="fas fa-plus"></i>
-              </div>
+              </a>
           </div>
       </div>
-      <div class="calendar_events" style="height: 50%; overflow-y: auto;"> <!-- Înălțime ajustată pentru evenimente -->
+      <div class="calendar_events" style="height: 50%; overflow-y: auto;"> 
           <p class="ce_title">Upcoming Events</p>
           {% for event in upcoming_events %}
           <div class="event_item">
@@ -560,7 +560,6 @@
       </div>
   </div>
 </div>
-
 
     <!-- create -->
     <div class="create-event-wrapper" style="margin-top: -70px; margin-bottom: 20px;">

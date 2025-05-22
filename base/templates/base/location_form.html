@@ -2,53 +2,49 @@
 
 {% block content %}
 
+<h2 class="text-center" style="color: #D4AF37; margin-bottom: 30px;">Add Location form</h2>
 
 <form class="location-form" action="" method="POST" enctype="multipart/form-data">
 
 {% csrf_token %}
 
     <div class="form_group">
-        <label for="location_name">Location name</label>
+        <label for="location_name" style="color: #D4AF37;">Location name</label>
         {{ form.name }}
     </div>
 
     <div class="form_group">
-        <label for="location_description">Location Description</label>
+        <label for="location_description" style="color: #D4AF37;">Location Description</label>
         {{ form.description }}
     </div>
 
-
     <div class="form_group">
-        <label for="location_gallery">Location Pictures</label>
+        <label for="location_gallery" style="color: #D4AF37;">Location Pictures</label>
         {{ form.gallery }}
     </div>
 
     <div class="form_group">
-        <label for="location_location">Location:</label>
+        <label for="location_location" style="color: #D4AF37;">Location:</label>
         {{ form.location }}
     </div>
 
      <div class="form_group">
-        <label for="id_types">Location's Accepted Events</label>
+        <label for="id_types" style="color: #D4AF37;">Location's Accepted Events</label>
         {{ form.types }}  
     </div>
 
     <div class="form_group">
-        <label for="id_custom_types">Or write the types separated by commas</label>
+        <label for="id_custom_types" style="color: #D4AF37;">Or write the types separated by commas</label>
         {{ form.custom_types }}
     </div>
 
-    
-
     <div class="form_group">
-        <label for="location_seats_numbers">Maximum Number of guests</label>
+        <label for="location_seats_numbers" style="color: #D4AF37;">Maximum Number of guests</label>
         {{ form.seats_numbers }}
     </div>
 </div>
-<input type="submit" value="Submit">
-
+<input type="submit" value="Submit" style="background-color: #D4AF37; color: white; padding: 10px 20px; border-radius: 5px; border: none;">
 
 </form>
-
 
 {% endblock content %}

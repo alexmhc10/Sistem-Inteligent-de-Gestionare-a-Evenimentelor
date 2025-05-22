@@ -218,9 +218,10 @@ def delete_event(request, event_id):
     return redirect('my_events') 
 
 
-@login_required(login_url='/login')
 def event_builder(request):
     locations = Location.objects.all()
+
+    # Verificăm dacă există un fișier de invitați încărcat
     if request.method == 'POST' and request.FILES.get('guest_file'):
         form = EventForm(request.POST)
 
@@ -238,18 +239,25 @@ def event_builder(request):
             )  
 
         uploaded_file = request.FILES['guest_file']
-
         fs = FileSystemStorage()
         filename = fs.save(uploaded_file.name, uploaded_file)
         file_path = fs.path(filename)
 
         if filename.endswith('.csv'):
-            df = pd.read_csv(file_path)
+            try:
+                df = pd.read_csv(file_path)
+            except Exception as e:
+                return render(request, 'event_builder.html', {'error': f"Fișierul CSV nu poate fi citit: {e}"})
         elif filename.endswith(('.xls', '.xlsx')):
-            df = pd.read_excel(file_path)
+            try:
+                df = pd.read_excel(file_path)
+            except Exception as e:
+                return render(request, 'event_builder.html', {'error': f"Fișierul Excel nu poate fi citit: {e}"})
         else:
             return render(request, 'event_builder.html', {'error': 'Format de fișier invalid'})
 
+        # Procesăm invitații din fișier
+        invited_guests = []  # Vom salva invitații care vor fi adăugați
         for _, row in df.iterrows():
             name = row.get('nume')
             email = row.get('email')
@@ -258,35 +266,46 @@ def event_builder(request):
             if name and email:
                 username = name.replace(" ", "")
                 
-                counter=1
+                counter = 1
                 while User.objects.filter(username=username).exists():
                     username = f"{username}{counter}"
                     counter += 1
 
+                # Creăm sau găsim utilizatorul
                 user, created = User.objects.get_or_create(username=username, email=email)
                 if created:
-                    user.set_password(phone)
+                    user.set_password(phone)  # Folosim telefonul ca parolă
                     user.save()
                     Profile.objects.create(user=user, username=username, email=email, password=phone, number=phone, user_type='guest')
 
-                    try:
-                        event = Event.objects.get(id=event.id)
-                    except Event.DoesNotExist:
-                        continue
+                # Legăm invitatul la eveniment
+                try:
+                    event = Event.objects.get(id=event.id)
+                except Event.DoesNotExist:
+                    continue
 
-                    RSVP.objects.create(guest=user, event=event)
-        
+                invited_guests.append(RSVP(guest=user, event=event))
 
+        if invited_guests:
+            RSVP.objects.bulk_create(invited_guests)
 
-        
-            
-        return redirect('my_events')  
+        return redirect('my_events')
+
     else:
         form = EventForm()
         form_file = UploadFileForm()
 
+    # Obținem invitații deja înregistrați ca "guest" pentru a-i afișa în modal
+    existing_guests = Profile.objects.filter(user_type='guest')
+    guests_with_accounts = [profile.user for profile in existing_guests]  # Userii invitați
 
-    return render(request, 'base/event_builder.html', {'form2': form,'form_file': form_file, 'locations': locations})
+    return render(request, 'base/event_builder.html', {
+        'form': form,
+        'locations': locations,
+        'guests': guests_with_accounts,
+        'form_file': form_file,
+    })
+
 
 
 @login_required(login_url='/login')
@@ -317,10 +336,35 @@ def delete_task(request, task_id):
     task.delete()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-@login_required(login_url='/login')
+from django.core.paginator import Paginator
+from django.contrib.auth.decorators import login_required
+#my events
+@login_required(login_url='login')
 def my_events(request):
-    events = Event.objects.filter(is_canceled=False)
-    return render(request, 'base/my_events.html', {'events': events})
+    events = Event.objects.filter(organized_by=request.user)
+
+    search_query = request.GET.get('search', '').strip()
+    status_filter = request.GET.get('status', '').strip()
+
+    if search_query:
+        events = events.filter(event_name__icontains=search_query)
+
+    if status_filter:
+        if status_filter == 'active':
+           
+            events = events.filter(is_canceled=False, status__in=['upcoming', 'ongoing'])
+        elif status_filter == 'inactive':
+            events = events.filter(is_canceled=True)
+
+    events = events.order_by('-event_date')
+
+    # paginare
+    paginator = Paginator(events, 10)  # 10 evenimente pe pagină
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'base/my_events.html', {'events': page_obj})
+
 
 # def task_manager_view(request):
 #     if request.method == 'POST':
@@ -1446,6 +1490,8 @@ def addLocation(request):
         if form.is_valid():
             location = form.save(commit=False)
             location.owner = request.user
+            location.save()  
+
             Notification.objects.create(
                 user=request.user,
                 action_type='created_location',
@@ -1453,22 +1499,22 @@ def addLocation(request):
                 target_object_name=location.name,
                 target_model='Location'
             ) 
-            location.save()
 
-            custom_types = form.cleaned_data.get('custom_types')
-            if custom_types:  
+            custom_types = form.cleaned_data.get('custom_types') or []
+            if custom_types:
                 for type_name in custom_types:
-                    type_instance, created = Type.objects.get_or_create(name=type_name.strip()) 
-                    if type_instance not in location.types.all(): 
-                        location.types.add(type_instance) 
+                    type_instance, _ = Type.objects.get_or_create(name=type_name.strip()) 
+                    location.types.add(type_instance)
             else:
                 selected_types = form.cleaned_data.get('types')
                 for type_instance in selected_types:
-                    if type_instance not in location.types.all():  
-                        location.types.add(type_instance)  
+                    location.types.add(type_instance)
 
-        print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
-        return redirect('home')
+            print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
+            return redirect('home')
+        else:
+            print(form.errors)  # Debug invalid form
+
     context = {
         'form': form,
         'types': types
