@@ -1808,6 +1808,8 @@ def completed_event(request, pk):
 
     
     profile = Profile.objects.get(user=request.user)
+    rspv = RSVP.objects.filter(event = event)
+
 
     if event.location.owner != request.user:
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
@@ -1816,7 +1818,8 @@ def completed_event(request, pk):
     if event is not None:
         context = {
             'event':event,
-            'profile': profile
+            'profile': profile,
+            'rspv': rspv
         }
     return render(request, 'base/completed_event.html', context)
 

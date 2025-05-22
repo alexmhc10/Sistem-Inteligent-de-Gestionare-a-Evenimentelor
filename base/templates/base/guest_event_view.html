@@ -98,7 +98,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <div class="col-3 d-flex flex-column text-center">
                                 <i class="bi bi-virus"></i>
                                 <p>Alergens</p>
+                                {% if preferences.allergens %}
                                 <p>{{ preferences.allergens|join:", " }}</p>
+                                {% else %}
+                                <p>No</p>
+                                {% endif %}
                               </div>
                               <div class="col-3 d-flex flex-column text-center">
                                 <i class="bi bi-file-person"></i>

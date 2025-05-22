@@ -43,80 +43,56 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
         </div>
         <div class="col-lg-8">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">View by page title and screen class</h5>
-              <div class="table-responsive">
-                <table class="table text-nowrap align-middle mb-0">
-                  <thead>
-                    <tr class="border-2 border-bottom border-primary border-0"> 
-                      <th scope="col" class="ps-0">Page Title</th>
-                      <th scope="col" >Link</th>
-                      <th scope="col" class="text-center">Pageviews</th>
-                      <th scope="col" class="text-center">Page Value</th>
-                    </tr>
-                  </thead>
-                  <tbody class="table-group-divider">
-                    <tr>
-                      <th scope="row" class="ps-0 fw-medium">
-                        <span class="table-link1 text-truncate d-block">Welcome to our
-                          website</span>
-                      </th>
-                      <td>
-                        <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/index.html</a>
-                      </td>
-                      <td class="text-center fw-medium">18,456</td>
-                      <td class="text-center fw-medium">$2.40</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" class="ps-0 fw-medium">
-                        <span class="table-link1 text-truncate d-block">Modern Admin
-                          Dashboard Template</span>
-                      </th>
-                      <td>
-                        <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/dashboard</a>
-                      </td>
-                      <td class="text-center fw-medium">17,452</td>
-                      <td class="text-center fw-medium">$0.97</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" class="ps-0 fw-medium">
-                        <span class="table-link1 text-truncate d-block">Explore our
-                          product catalog</span>
-                      </th>
-                      <td>
-                        <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/product-checkout</a>
-                      </td>
-                      <td class="text-center fw-medium">12,180</td>
-                      <td class="text-center fw-medium">$7,50</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" class="ps-0 fw-medium">
-                        <span class="table-link1 text-truncate d-block">Comprehensive
-                          User Guide</span>
-                      </th>
-                      <td>
-                        <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/docs</a>
-                      </td>
-                      <td class="text-center fw-medium">800</td>
-                      <td class="text-center fw-medium">$5,50</td>
-                    </tr>
-                    <tr>
-                      <th scope="row" class="ps-0 fw-medium border-0">
-                        <span class="table-link1 text-truncate d-block">Check out our
-                          services</span>
-                      </th>
-                      <td class="border-0">
-                        <a href="javascript:void(0)" class="link-primary text-dark fw-medium d-block">/services</a>
-                      </td>
-                      <td class="text-center fw-medium border-0">1300</td>
-                      <td class="text-center fw-medium border-0">$2,15</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+           <div class="card">
+                    <div class="card-body">
+                        <div class="header d-flex flex-row justify-content-between">
+                          <h5 class="card-title">Guest list</h5>
+                          <form action="" class="d-flex flex-row">
+                            <input type="text" class="form-control me-2" name="searchGuest" id="" placeholder="Guest name">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                          </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table text-nowrap align-middle mb-0">
+                            <thead>
+                                <tr class="border-2 border-bottom border-primary justify-content-center border-0">
+                                    <th scope="col" class="ps-0 text-center">Id</th>
+                                    <th scope="col" class="text-center">Photo</th>
+                                    <th scope="col" class="ps-0 text-center">Full name</th>
+                                    <th scope="col" class="text-center">Status</th>
+                                    <th scope="col" class="text-center">Arriving time</th>
+                                    <th scope="col" class="text-center">Gender</th>
+                                    <th scope="col" class="text-center">Cuisine preference</th>
+                                    <th scope="col" class="text-center">Vegan</th>
+                                    <th scope="col" class="text-center">Allergens</th>
+                                    <th scope="col" class="text-center">Table no.</th>
+                                </tr>
+                            </thead>
+                            <tbody class="table-group-divider">
+                                {% for response in rspv %}
+                                <tr>
+                                    <td class="ps-0 fw-medium"><span>{{ forloop.counter }}.</span></td>
+                                    <td class="text-center fw-medium"><img src="{{MEDIA_URL}}{{ response.guest.profile_set.all.0.photo }}" class="rounded-circle" width="35" height="35"></td>
+                                    <td><span>{{ response.guest.profile_set.all.0.first_name }}</span></td>
+                                    <td class="text-center fw-medium"><span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span></td>
+                                    <td class="text-center fw-medium">22:31</td>
+                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.gender }}</td>
+                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.cuisine_preference }}</td>
+                                    {% if response.guest.profile_set.all.0.guest_profile.vegan %}
+                                    <td class="text-center fw-medium">Yes</td>
+                                    {% else %}
+                                    <td class="text-center fw-medium">No</td>
+                                    {% endif %}
+                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.allergens|join:", " }}</td>
+                                    <td class="text-center fw-medium">Table x</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
         </div>
         <div class="col-lg-4">
           <div class="card">
@@ -177,93 +153,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
           </div>
         </div>
-        <div class="col-lg-4">
-          <div class="card overflow-hidden hover-img">
-            <div class="position-relative">
-              <a href="javascript:void(0)">
-                <img src="../assets/images/blog/blog-img1.jpg" class="card-img-top" alt="matdash-img">
-              </a>
-              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">2
-                min Read</span>
-              <img src="../assets/images/profile/user-3.jpg" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-            </div>
-            <div class="card-body p-4">
-              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">Social</span>
-              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">As yen tumbles, gadget-loving
-                Japan goes
-                for secondhand iPhones</a>
-              <div class="d-flex align-items-center gap-4">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-eye text-dark fs-5"></i>9,125
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-message-2 text-dark fs-5"></i>3
-                </div>
-                <div class="d-flex align-items-center fs-2 ms-auto">
-                  <i class="ti ti-point text-dark"></i>Mon, Dec 19
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card overflow-hidden hover-img">
-            <div class="position-relative">
-              <a href="javascript:void(0)">
-                <img src="../assets/images/blog/blog-img2.jpg" class="card-img-top" alt="matdash-img">
-              </a>
-              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">2
-                min Read</span>
-              <img src="../assets/images/profile/user-2.jpg" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-            </div>
-            <div class="card-body p-4">
-              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">Gadget</span>
-              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">Intel loses bid to revive
-                antitrust case
-                against patent foe Fortress</a>
-              <div class="d-flex align-items-center gap-4">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-eye text-dark fs-5"></i>4,150
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-message-2 text-dark fs-5"></i>38
-                </div>
-                <div class="d-flex align-items-center fs-2 ms-auto">
-                  <i class="ti ti-point text-dark"></i>Sun, Dec 18
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card overflow-hidden hover-img">
-            <div class="position-relative">
-              <a href="javascript:void(0)">
-                <img src="../assets/images/blog/blog-img3.jpg" class="card-img-top" alt="matdash-img">
-              </a>
-              <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">2
-                min Read</span>
-              <img src="../assets/images/profile/user-3.jpg" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" width="40" height="40" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">
-            </div>
-            <div class="card-body p-4">
-              <span class="badge text-bg-light fs-2 py-1 px-2 lh-sm  mt-3">Health</span>
-              <a class="d-block my-4 fs-5 text-dark fw-semibold link-primary" href="">COVID outbreak deepens as more
-                lockdowns
-                loom in China</a>
-              <div class="d-flex align-items-center gap-4">
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-eye text-dark fs-5"></i>9,480
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                  <i class="ti ti-message-2 text-dark fs-5"></i>12
-                </div>
-                <div class="d-flex align-items-center fs-2 ms-auto">
-                  <i class="ti ti-point text-dark"></i>Sat, Dec 17
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
       </div>
     </div>
   </div>
