@@ -85,9 +85,40 @@ def edit_event(request, event_id):
 
 
 
+from django.db.models import Q
+
 def locations_list(request):
     locations = Location.objects.all()
-    return render(request, 'base/locations_list.html', {'locations': locations})
+
+    # Obținem parametrii din query string
+    search = request.GET.get('search', '').strip()
+    min_seats = request.GET.get('min_seats', '').strip()
+    max_price = request.GET.get('max_price', '').strip()
+
+    # Aplicăm filtrele
+    if search:
+        locations = locations.filter(name__icontains=search)
+
+    if min_seats:
+        try:
+            locations = locations.filter(seats_numbers__gte=int(min_seats))
+        except ValueError:
+            pass  # ignori inputuri invalide
+
+    if max_price:
+        try:
+            locations = locations.filter(cost__lte=float(max_price))
+        except ValueError:
+            pass
+
+    context = {
+        'locations': locations,
+        'search': search,
+        'min_seats': min_seats,
+        'max_price': max_price
+    }
+    return render(request, 'base/locations_list.html', context)
+
 
 
 def home_organizer(request):
@@ -351,10 +382,12 @@ def my_events(request):
 
     if status_filter:
         if status_filter == 'active':
-           
-            events = events.filter(is_canceled=False, status__in=['upcoming', 'ongoing'])
+            events = events.filter(is_canceled=False, completed=False)
         elif status_filter == 'inactive':
             events = events.filter(is_canceled=True)
+        elif status_filter == 'completed':
+            events = events.filter(completed=True)
+
 
     events = events.order_by('-event_date')
 
