@@ -219,6 +219,10 @@
       --primary-gold: #D4AF37;
       --background-light: #FAF9F6;
       --neutral-gray: #ECECEC;
+      --card-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --border-radius: 12px;
+      --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #C5B28A 100%);
     }
   
     .button {
@@ -354,14 +358,22 @@
       width: 100%;
       height: 100%;
       perspective: 1000px;
+      border-radius: var(--border-radius);
     }
   
     .flip-card-inner {
       position: relative;
       width: 100%;
       height: 100%;
-      transition: transform 0.8s;
+      text-align: center;
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
       transform-style: preserve-3d;
+      border-radius: var(--border-radius);
+    }
+  
+    .card.full-height-card:hover {
+      transform: none;
+      box-shadow: var(--card-shadow);
     }
   
     .flip-card:hover .flip-card-inner {
@@ -372,32 +384,96 @@
       position: absolute;
       width: 100%;
       height: 100%;
+      -webkit-backface-visibility: hidden;
       backface-visibility: hidden;
-      border-radius: 8px;
+      border-radius: var(--border-radius);
       overflow: hidden;
     }
   
     .flip-card-front {
-      z-index: 2;
+      background: linear-gradient(145deg, #ffffff, #f5f5f5);
+      box-shadow: var(--card-shadow);
     }
   
     .flip-card-back {
+      background: var(--gold-gradient);
+      color: white;
       transform: rotateY(180deg);
+      box-shadow: var(--card-shadow);
     }
-    /* MODIFICARE */
-    .flip-card-front.card {
-    background-color: var(--neutral-gray);
-    color: var(--primary-dark);
-    border-radius: 8px;
-    height: 350px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-.card-body {
-    padding: 20px; 
-    flex-grow: 1;
-}
+  
+    /* Profile Image Container */
+    .profile-image-container {
+      position: relative;
+      width: 180px;
+      height: 180px;
+      margin: 1.5rem auto;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 4px solid var(--primary-gold);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  
+    .profile-image-container:hover {
+      transform: scale(1.05);
+    }
+  
+    .profile-image-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+  
+    .profile-image-container:hover img {
+      transform: scale(1.1);
+    }
+  
+    /* Profile Info Styling */
+    .profile-info {
+      padding: 1rem;
+    }
+  
+    .profile-info h5 {
+      color: var(--primary-dark);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+  
+    .profile-info p {
+      color: #666;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+  
+    .profile-info strong {
+      color: var(--primary-dark);
+    }
+  
+    /* Back Card Content */
+    .profile-stats {
+      padding: 2rem;
+    }
+  
+    .profile-stats h5 {
+      color: white;
+      margin-bottom: 2rem;
+      font-weight: 600;
+    }
+  
+    .stat-item {
+      margin-bottom: 1.5rem;
+      font-size: 1.1rem;
+      opacity: 0.9;
+    }
+  
+    .stat-item:hover {
+      opacity: 1;
+      transform: translateX(5px);
+      transition: all 0.3s ease;
+    }
+  
     .dashboard-row {
       display: flex;
       flex-wrap: wrap;
@@ -420,6 +496,284 @@
       width: 100%;
       padding: 2rem 0;
     }
+
+    /* Adăugăm stiluri noi pentru containere */
+    .card.full-height-card {
+        height: 600px;
+        overflow: hidden;
+    }
+
+    .tab-content {
+        height: calc(100% - 60px);
+        overflow-y: auto;
+    }
+
+    .analytics-container {
+        height: 100%;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    .analytics-container .row {
+        margin-right: 0;
+        margin-left: 0;
+    }
+
+    .analytics-container .card {
+        margin-bottom: 1rem;
+    }
+
+    .event-management-container {
+        height: 100%;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    /* Ajustăm înălțimea graficelor */
+    .categories-chart, .performance-chart {
+        height: 180px !important;
+    }
+
+    /* Ajustăm cardurile de statistici */
+    .analytics-container .card.bg-light {
+        height: 100px;
+    }
+
+    .notifications-container {
+        height: calc(100% - 60px);
+        overflow-y: auto;
+        padding-right: 10px;
+    }
+
+    /* Adăugăm scrollbar personalizat */
+    .analytics-container::-webkit-scrollbar,
+    .event-management-container::-webkit-scrollbar,
+    .notifications-container::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .analytics-container::-webkit-scrollbar-track,
+    .event-management-container::-webkit-scrollbar-track,
+    .notifications-container::-webkit-scrollbar-track {
+        background: var(--neutral-gray);
+        border-radius: 3px;
+    }
+
+    .analytics-container::-webkit-scrollbar-thumb,
+    .event-management-container::-webkit-scrollbar-thumb,
+    .notifications-container::-webkit-scrollbar-thumb {
+        background: var(--primary-gold);
+        border-radius: 3px;
+    }
+
+    /* Card Styles */
+    .card {
+        border: none;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        transition: var(--transition-smooth);
+        background: white;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Profile Card Styles */
+    .flip-card-front.card, .flip-card-back.card {
+        background: linear-gradient(145deg, #ffffff, #f5f5f5);
+        border-radius: var(--border-radius);
+    }
+
+    .flip-card-back.card {
+        background: var(--gold-gradient);
+    }
+
+    .profile-image-container {
+        position: relative;
+        width: 200px;
+        height: 200px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border: 4px solid var(--primary-gold);
+    }
+
+    /* Tab Styles */
+    .tabs-container {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        margin-bottom: 2rem;
+        padding: 0 15px;
+    }
+
+    .tab-button {
+        background: linear-gradient(145deg, #ffffff, #f5f5f5);
+        color: var(--primary-dark);
+        border: none;
+        padding: 12px 25px;
+        border-radius: var(--border-radius);
+        cursor: pointer;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .tab-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .tab-button.active {
+        background: var(--gold-gradient);
+        color: white;
+    }
+
+    /* Analytics Cards */
+    .analytics-card {
+        background: linear-gradient(145deg, #ffffff, #f5f5f5);
+        border-radius: var(--border-radius);
+        padding: 20px;
+        text-align: center;
+        transition: var(--transition-smooth);
+    }
+
+    .analytics-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .analytics-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        color: var(--primary-dark);
+        margin: 10px 0;
+    }
+
+    /* Event Management Cards */
+    .event-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 15px;
+        transition: var(--transition-smooth);
+        border-left: 4px solid var(--primary-gold);
+    }
+
+    .event-card:hover {
+        transform: translateX(10px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .event-button {
+        padding: 8px 15px;
+        border-radius: 20px;
+        border: none;
+        background: var(--gold-gradient);
+        color: white;
+        font-weight: 500;
+        transition: var(--transition-smooth);
+    }
+
+    .event-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Notification Cards */
+    .notification-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 15px;
+        margin-bottom: 15px;
+        transition: var(--transition-smooth);
+        border-left: 4px solid var(--primary-gold);
+    }
+
+    .notification-card:hover {
+        transform: translateX(10px);
+        box-shadow: var(--card-shadow);
+    }
+
+    .notification-card.unread {
+        background: linear-gradient(145deg, #fff9e6, #fff5d6);
+    }
+
+    /* Progress Bar */
+    .progress {
+        height: 8px !important;
+        border-radius: 4px;
+        background-color: var(--neutral-gray);
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        background: var(--gold-gradient);
+        transition: width 1s ease-in-out;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--neutral-gray);
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--gold-gradient);
+        border-radius: 4px;
+    }
+
+    /* Container heights */
+    .card.full-height-card {
+        height: 600px;
+        overflow: hidden;
+    }
+
+    .tab-content {
+        height: calc(100% - 60px);
+        overflow-y: auto;
+        padding: 20px;
+    }
+
+    /* Chart containers */
+    .chart-container {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: var(--card-shadow);
+    }
+
+    .chart-title {
+        color: var(--primary-dark);
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .tabs-container {
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            width: 100%;
+        }
+    }
   </style>
   
 
@@ -430,32 +784,41 @@
         <!-- profile -->
         <div class="col-md-3 mb-3 d-flex align-items-stretch">
           <div class="flip-card full-height-card w-100" style="height: 600px;">
-              <div class="flip-card-inner" style="height: 100%;"> <!-- Înălțime 100% pe inner -->
-                  <div class="flip-card-front card d-flex justify-content-center align-items-center text-center" 
-                       style="background-color: var(--neutral-gray); color: var(--primary-dark); border-radius: 8px; height: 100%;"> <!-- Înălțime 100% pe front -->
-                      <div class="card-body">
+              <div class="flip-card-inner">
+                  <div class="flip-card-front">
+                      <div class="profile-info">
                           {% if request.user.profile_set.first.photo %}
-                          <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture"
-                               class="img-fluid rounded-circle mb-3"
-                               style="width: 200px; height: 200px; object-fit: cover;">
+                          <div class="profile-image-container">
+                              <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture">
+                          </div>
                           {% else %}
-                          <img src="" alt="default pic" class="img-fluid rounded-circle mb-3">
+                          <div class="profile-image-container">
+                              <img src="" alt="Default Profile Picture">
+                          </div>
                           {% endif %}
-                          <h5 class="card-title">Your Profile</h5>
+                          <h5>Your Profile</h5>
                           <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
                           <p><strong>Email:</strong> {{ request.user.email }}</p>
                           <p><strong>Events Organized:</strong> 15</p>
                           <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
                       </div>
                   </div>
-      
-                  <div class="flip-card-back card" style="background-color: var(--primary-gold); color: white; border-radius: 8px; height: 100%;"> <!-- Înălțime 100% pe back -->
-                      <div class="card-body d-flex flex-column justify-content-center align-items-center text-center">
-                          <h5 class="card-title">Statistici rapide</h5>
-                          <p>⭐ Rating mediu: 4.8</p>
-                          <p>📍 Evenimente în 3 orașe</p>
-                          <p>📅 Ultimul eveniment: 10.04.2025</p>
-                          <p>💬 Feedback pozitiv: 95%</p>
+
+                  <div class="flip-card-back">
+                      <div class="profile-stats">
+                          <h5>Quick Stats</h5>
+                          <div class="stat-item">
+                              ⭐ Rating mediu: 4.8
+                          </div>
+                          <div class="stat-item">
+                              �� Evenimente în 3 orașe
+                          </div>
+                          <div class="stat-item">
+                              📅 Ultimul eveniment: 10.04.2025
+                          </div>
+                          <div class="stat-item">
+                              💬 Feedback pozitiv: 95%
+                          </div>
                       </div>
                   </div>
               </div>
@@ -468,8 +831,8 @@
             <div class="card full-height-card w-100" style="background-color: var(--background-light); color: var(--primary-dark); border-radius: 8px;">
           <div class="tabs-container mb-3 d-flex justify-content-center">
               <button class="tab-button active" data-tab="1">Notifications</button>
-              <button class="tab-button" data-tab="2">2</button>
-              <button class="tab-button" data-tab="3">3</button>
+              <button class="tab-button" data-tab="2">Event Analytics</button>
+              <button class="tab-button" data-tab="3">Event Management</button>
           </div>
           <div class="tab-content" data-tab="1" id="tab1">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -522,12 +885,90 @@
             </div>
               </div>
           <div class="tab-content" data-tab="2" style="display: none;">
-              <h5 class="card-title text-center">Tab 2 Content</h5>
-              <p></p>
+              <div class="analytics-container p-3">
+                  <h5 class="card-title mb-4">Event Analytics</h5>
+                  
+                  <!-- Analytics Summary Cards -->
+                  <div class="row mb-4">
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Total Events</h6>
+                              <div class="analytics-number">{{ total_events }}</div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Total Participants</h6>
+                              <div class="analytics-number">{{ total_participants }}</div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Avg. Rating</h6>
+                              <div class="analytics-number">{{ average_rating|default:"N/A" }}</div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <!-- Popular Categories -->
+                  <div class="chart-container">
+                      <h6 class="chart-title">Popular Categories</h6>
+                      <div class="categories-chart">
+                          <!-- Chart will be rendered here -->
+                      </div>
+                  </div>
+
+                  <!-- Recent Performance -->
+                  <div class="chart-container">
+                      <h6 class="chart-title">Recent Performance</h6>
+                      <div class="performance-chart">
+                          <!-- Chart will be rendered here -->
+                      </div>
+                  </div>
+              </div>
           </div>
           <div class="tab-content" data-tab="3" style="display: none;">
-              <h5 class="card-title text-center">Tab 3 Content</h5>
-              <p></p>
+              <div class="event-management-container p-3">
+                  <div class="d-flex justify-content-between align-items-center mb-4">
+                      <h5 class="card-title mb-0">Event Management</h5>
+                      <div class="filters">
+                          <select class="form-select form-select-sm">
+                              <option value="">All Status</option>
+                              <option value="draft">Draft</option>
+                              <option value="published">Published</option>
+                              <option value="completed">Completed</option>
+                          </select>
+                      </div>
+                  </div>
+
+                  <div class="events-list" style="max-height: 500px; overflow-y: auto;">
+                      {% for event in events %}
+                      <div class="event-card">
+                          <div class="d-flex justify-content-between align-items-center">
+                              <div>
+                                  <h6 class="mb-1">{{ event.title }}</h6>
+                                  <small class="text-muted">
+                                      {{ event.date }} • {{ event.participants_count }} participants
+                                  </small>
+                              </div>
+                              <div class="event-actions">
+                                  <button class="event-button">Edit</button>
+                                  <button class="event-button">Registrations</button>
+                                  <button class="event-button">Duplicate</button>
+                              </div>
+                          </div>
+                          <div class="progress mt-2">
+                              <div class="progress-bar" role="progressbar" style="width: {{ event.completion_percentage }}%"></div>
+                          </div>
+                      </div>
+                      {% empty %}
+                      <div class="text-center py-4 text-muted">
+                          <i class="fas fa-calendar-times fa-2x mb-2"></i>
+                          <p>No events found</p>
+                      </div>
+                      {% endfor %}
+                  </div>
+              </div>
           </div>
             </div>
         </div>
