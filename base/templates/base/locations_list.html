@@ -1,31 +1,75 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h2 class="text-center">Available Locations</h2>
-    <div class="row">
+<style>
+    .text-gold {
+    color: #B08A2E;
+}
+
+.btn-outline-gold {
+    border: 1px solid #D4AF37;
+    color: #D4AF37;
+    background-color: transparent;
+    transition: all 0.3s ease-in-out;
+}
+
+.btn-outline-gold:hover {
+    background-color: #D4AF37;
+    color: white;
+    border-color: #D4AF37;
+}
+
+</style>
+<div class="container py-5">
+    <h2 class="text-center mb-4 text-gold">Available Locations</h2>
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <input type="text" name="search" class="form-control" placeholder="Search by name..." value="{{ search }}">
+    </div>
+    <div class="col-md-3">
+        <input type="number" name="min_seats" class="form-control" placeholder="Min seats" value="{{ min_seats }}">
+    </div>
+    <div class="col-md-3">
+        <input type="number" name="max_price" class="form-control" placeholder="Max price (RON)" value="{{ max_price }}">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-outline-dark w-100">Filter</button>
+    </div>
+</form>
+
+    <div class="row g-4">
         {% for location in locations %}
-            <div class="col-md-4">
-                <div class="card mb-4">
+            <div class="col-md-6 col-lg-4">
+                <div class="card shadow-lg border-0 h-100 rounded-4">
                     {% if location.gallery %}
-                        <img src="{{ location.gallery.url }}" class="card-img-top" alt="{{ location.name }}">
+                        <img src="{{ location.gallery.url }}" class="card-img-top rounded-top-4" alt="{{ location.name }}">
                     {% else %}
-                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="Placeholder">
+                        <img src="https://via.placeholder.com/400x250?text=No+Image" class="card-img-top rounded-top-4" alt="Placeholder">
                     {% endif %}
-                    <div class="card-body">
-                        <h5 class="card-title">{{ location.name }}</h5>
-                        <p class="card-text">{{ location.description|truncatechars:100 }}</p>
-                        <p><strong>Location:</strong> {{ location.location }}</p>
-                        <p><strong>Number of seats:</strong> {{ location.seats_numbers }}</p>
-                        <p><strong>Cost:</strong> {{ location.cost }} RON</p>
-                        <a href="{% url 'location' location.pk %}" class="btn btn-primary">
-                            View Details
-                        </a>
+                    
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title text-gold">{{ location.name }}</h5>
+                        <p class="card-text text-muted mb-2">{{ location.description|truncatechars:100 }}</p>
+                        
+                        <ul class="list-unstyled small text-secondary mb-3">
+                            <li><i class="bi bi-geo-alt-fill me-1"></i><strong>Location:</strong> {{ location.location }}</li>
+                            <li><i class="bi bi-person-fill me-1"></i><strong>Seats:</strong> {{ location.seats_numbers }}</li>
+                            <li><i class="bi bi-currency-exchange me-1"></i><strong>Cost:</strong> {{ location.cost }} RON</li>
+                            <li><i class="bi bi-telephone-fill me-1"></i><strong>Contact:</strong> {{ location.number }}</li>
+                        </ul>
+
+                        <div class="mt-auto">
+                            <a href="{% url 'location' location.pk %}" class="btn btn-outline-gold w-100 rounded-pill">
+                                View Details
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         {% empty %}
-            <p class="text-center">Currently, there are no available locations.</p>
+            <div class="col-12 text-center">
+                <p class="fs-5 text-muted">Currently, there are no available locations.</p>
+            </div>
         {% endfor %}
     </div>
 </div>

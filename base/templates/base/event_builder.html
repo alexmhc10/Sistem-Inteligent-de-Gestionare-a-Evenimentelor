@@ -1,7 +1,129 @@
 {% extends 'main.html' %}
 {% load static %}
-<style>.form-step {
+
+{% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+<style>
+.form-step {
     transition: all 1s ease-in-out;
+}
+
+/* Calendar styling */
+.flatpickr-calendar {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border: none;
+    width: 300px;
+    font-family: 'Inter', sans-serif;
+}
+
+.flatpickr-months {
+    background: white;
+    padding: 15px 0 5px 0;
+    margin: 0;
+}
+
+.flatpickr-month {
+    height: auto;
+}
+
+.flatpickr-current-month {
+    padding: 0 !important;
+    height: auto;
+}
+
+.flatpickr-current-month .cur-month,
+.numInput.cur-year {
+    color: #333;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.flatpickr-weekdays {
+    margin: 10px 0;
+}
+
+.flatpickr-weekday {
+    color: #666;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.flatpickr-day {
+    border-radius: 50%;
+    height: 36px;
+    line-height: 36px;
+    margin: 2px;
+    color: #333;
+    font-weight: 400;
+    border: 1px solid transparent;
+}
+
+.flatpickr-day:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--primary-gold);
+}
+
+.flatpickr-day.selected {
+    background: var(--primary-gold) !important;
+    border-color: var(--primary-gold) !important;
+    color: white !important;
+}
+
+.flatpickr-day.today {
+    border: 1px solid var(--primary-gold);
+    color: var(--primary-gold);
+}
+
+.flatpickr-prev-month,
+.flatpickr-next-month {
+    padding: 5px;
+}
+
+.flatpickr-prev-month svg,
+.flatpickr-next-month svg {
+    fill: #666;
+}
+
+.flatpickr-prev-month:hover svg,
+.flatpickr-next-month:hover svg {
+    fill: var(--primary-gold);
+}
+
+/* Input styling */
+.date-input-container {
+    position: relative;
+    max-width: 300px;
+    margin: 0 auto;
+}
+
+.date-input-container input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #333;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.date-input-container input:hover {
+    border-color: var(--primary-gold);
+}
+
+.date-input-container input:focus {
+    outline: none;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+/* Eliminăm display-ul suplimentar al datei selectate pentru un design mai simplu */
+.selected-date-display {
+    display: none !important;
 }
 
 .progress {
@@ -24,7 +146,7 @@
         border-top-color: #D4AF37;
     }
 </style>
-{% block content %}
+
 <div class="event_builder container mt-4">
     <h3 class="text-center mb-4">Create a New Event</h3>
     <div class="progress mb-3">
@@ -47,16 +169,15 @@
 
         <!-- Calendar Step -->
         <div class="form-step card p-4" id="step0">
-            <h4>Select Event Date</h4>
-            <div class="mb-3">
-                <label for="event_calendar" class="form-label">Choose a date for your event</label>
-                <input type="date" id="event_calendar" name="event_calendar" class="form-control" required
-                    placeholder="Select the event date">
-                <span class="tooltiptext">Select the event's date. Only future dates are allowed.</span>
+            <h4 class="mb-4">Select Event Date</h4>
+            <div class="date-input-container">
+                <input type="text" id="event_calendar" name="event_calendar" class="form-control" required
+                    placeholder="Click to select date" readonly>
             </div>
-            <div class="form-step-buttons mt-3">
-                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)" 
-                        data-bs-toggle="tooltip" title="Go to the next step!">Next</button>
+            <div class="form-step-buttons mt-4">
+                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)">
+                    Next <i class="fas fa-arrow-right ms-2"></i>
+                </button>
             </div>
         </div>
 
@@ -203,7 +324,41 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script>
+    // Initialize calendar
+    flatpickr("#event_calendar", {
+        dateFormat: "Y-m-d",
+        minDate: "today",
+        animate: true,
+        disableMobile: true,
+        onChange: function(selectedDates, dateStr) {
+            if (selectedDates.length > 0) {
+                const today = new Date().toISOString().split('T')[0];
+                if (dateStr < today) {
+                    alert("Please select a future date.");
+                    this.clear();
+                    return;
+                }
+
+                const date = selectedDates[0];
+                const dayName = date.toLocaleDateString('en-US', { weekday: 'long' });
+                const fullDate = date.toLocaleDateString('en-US', { 
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                const displayElement = document.querySelector('.selected-date-display');
+                displayElement.querySelector('.day').textContent = dayName;
+                displayElement.querySelector('.full-date').textContent = fullDate;
+                displayElement.classList.add('active');
+            } else {
+                document.querySelector('.selected-date-display').classList.remove('active');
+            }
+        }
+    });
+
     function selectGuest(username, email, button) {
         const guestList = document.getElementById('guest_list');
         const existingGuests = Array.from(guestList.children).map(item => item.textContent.trim());
@@ -219,97 +374,72 @@
             errorMessage.classList.remove('d-none');
         }
     }
-    function selectGuest(username, email) {
-        const guestList = document.getElementById('guest_list');
-        const existingGuests = Array.from(guestList.children).map(item => item.textContent);
 
-        // Check if the guest is already in the list
-        if (!existingGuests.includes(`${username} - ${email}`)) {
-            const listItem = document.createElement('li');
-            listItem.className = 'list-group-item';
-            listItem.textContent = `${username} - ${email}`;
-            guestList.appendChild(listItem);
-        } else {
-            alert("This guest is already selected.");
-        }
+    // Trecere între pași și actualizare progres
+    function nextStep(step) {
+        document.querySelectorAll('.form-step').forEach(div => div.style.display = 'none');
+        document.getElementById('step' + step).style.display = 'block';
+
+        const bar = document.getElementById('progressBar');
+        let width = '0%';
+        if (step === 1) width = '50%';
+        else if (step === 2) width = '75%';
+        bar.style.width = width;
+        bar.setAttribute('aria-valuenow', width);
     }
-</script>
-</div>
-    <script>
-        // Validare dată calendar
-        document.getElementById('event_calendar').addEventListener('change', function () {
+
+    function prevStep(step) {
+        nextStep(step);
+    }
+
+    // Validare completă la submit
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('eventForm');
+
+        form.addEventListener('submit', function (e) {
+            let errors = [];
+
+            const eventDate = document.getElementById('event_calendar').value;
             const today = new Date().toISOString().split('T')[0];
-            if (this.value < today) {
-                alert("Please select a future date.");
-                this.value = '';
+            if (!eventDate || eventDate < today) {
+                errors.push("Please select a valid future date.");
+            }
+
+            const eventName = document.getElementById('event_name').value.trim();
+            if (eventName.length < 3) {
+                errors.push("Event name must be at least 3 characters long.");
+            }
+
+            const eventTime = document.getElementById('event_time').value;
+            if (!eventTime) {
+                errors.push("Please select an event time.");
+            }
+
+            const description = document.getElementById('event_description').value.trim();
+            if (description.length < 10) {
+                errors.push("Description must be at least 10 characters.");
+            }
+
+            const location = document.getElementById('location').value;
+            if (!location) {
+                errors.push("Please select a location.");
+            }
+
+            const eventType = document.getElementById('event_type').value;
+            if (!eventType) {
+                errors.push("Please select an event type.");
+            }
+
+            const cost = document.getElementById('cost').value;
+            if (!cost || parseFloat(cost) < 0) {
+                errors.push("Please enter a valid cost (0 or more).");
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert("Form errors:\n\n" + errors.join("\n"));
             }
         });
-
-        // Trecere între pași și actualizare progres
-        function nextStep(step) {
-            document.querySelectorAll('.form-step').forEach(div => div.style.display = 'none');
-            document.getElementById('step' + step).style.display = 'block';
-
-            const bar = document.getElementById('progressBar');
-            let width = '0%';
-            if (step === 1) width = '50%';
-            else if (step === 2) width = '75%';
-            bar.style.width = width;
-            bar.setAttribute('aria-valuenow', width);
-        }
-
-        function prevStep(step) {
-            nextStep(step);
-        }
-
-        // Validare completă la submit
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('eventForm');
-
-            form.addEventListener('submit', function (e) {
-                let errors = [];
-
-                const eventDate = document.getElementById('event_calendar').value;
-                const today = new Date().toISOString().split('T')[0];
-                if (!eventDate || eventDate < today) {
-                    errors.push("Please select a valid future date.");
-                }
-
-                const eventName = document.getElementById('event_name').value.trim();
-                if (eventName.length < 3) {
-                    errors.push("Event name must be at least 3 characters long.");
-                }
-
-                const eventTime = document.getElementById('event_time').value;
-                if (!eventTime) {
-                    errors.push("Please select an event time.");
-                }
-
-                const description = document.getElementById('event_description').value.trim();
-                if (description.length < 10) {
-                    errors.push("Description must be at least 10 characters.");
-                }
-
-                const location = document.getElementById('location').value;
-                if (!location) {
-                    errors.push("Please select a location.");
-                }
-
-                const eventType = document.getElementById('event_type').value;
-                if (!eventType) {
-                    errors.push("Please select an event type.");
-                }
-
-                const cost = document.getElementById('cost').value;
-                if (!cost || parseFloat(cost) < 0) {
-                    errors.push("Please enter a valid cost (0 or more).");
-                }
-
-                if (errors.length > 0) {
-                    e.preventDefault();
-                    alert("Form errors:\n\n" + errors.join("\n"));
-                }
-            });
-        });
-    </script>
+    });
+</script>
 {% endblock %}
