@@ -327,10 +327,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             restoreSelections();
                           });
 
-                          // Funcție helper pentru CSRF token (Django)
-                          function getCookie(name) {
-                            // ... implementare obținere cookie CSRF
-                          }
                         </script>
 
                           <script>
@@ -871,7 +867,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       <div class="stats-right">
                         <span class="fa-stack fa-fw stats-icon">
                           </span>
-                          <span class="stats-text">{{post.like_count}} likes</span>
+                          <span class="stats-text" id="like-count-{{post.id}}">{{post.like_count}} likes</span>
                         <span class="fa-stack fa-fw stats-icon">
                           </span>
                           <span class="stats-text">{{post.comments.count}} comments</span>
@@ -925,13 +921,27 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           },
                           credentials: 'same-origin'
                       }).then(response => {
-                          if(response.ok) {
-                              window.location.reload();
-                          } else {
+                          if(!response.ok) {
                               throw new Error('Network response was not ok');
                           }
+                          return response.json();
                       })
-                  });
+                      .then(data => {
+                          const likeBtn = document.querySelector(`#like-btn-${postId}`);
+                          const likeCount = document.querySelector(`#like-count-${postId}`);
+                          const icon = likeBtn.querySelector('i');
+
+                           if (data.liked) {
+                              icon.className = 'bi bi-heart-fill text-danger';
+                          } else {
+                              icon.className = 'bi bi-heart';
+                          }
+                          likeCount.textContent = `${data.likes} likes`;
+                      })
+                      .catch(error => {
+                        console.error('Error: ', error);
+                      })
+                    });
 
                   document.querySelectorAll('.comment-form').forEach(form => {
                     form.addEventListener('submit', function(e) {

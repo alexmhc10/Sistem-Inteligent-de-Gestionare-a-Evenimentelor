@@ -108,8 +108,49 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div class="d-flex flex-row justify-content-center mb-4 gap-2">
             <button id="capture-btn" class="btn btn-primary">Photo</button>
             <button id="reload-btn" class="btn btn-secondary">Retry</button>  
-            <button class="btn btn-primary" id="launch_camera">Scan guests</button>
+            <button class="btn btn-primary scan" id="launch_camera">Scan guests</button>
         </div>
+
+        <script>
+
+        $(".scan").click(function () {
+            const eventId = "{{ event.id }}"; 
+            $.ajax({
+                url: `/scan/${eventId}/`,  // event_id în URL
+                type: "POST",
+                data: {
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    console.log("Scan success:", response);
+                }
+            });
+        });
+
+        </script>
+
+        <!-- <video id="video" autoplay></video> -->
+
+
+
+        <!-- <script>
+            $(".scan").click(function () {
+                const eventId = "{{event.id}}";
+                $.ajax({
+                    url: `/scan/${eventId}/`, 
+                    type: "POST",
+                    data: {
+                        csrfmiddlewaretoken: '{{ csrf_token }}'
+                    },
+                     success: function(response) {
+                        console.log("Success", response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error AJAX:", xhr.responseText);
+                    }
+                });
+            });
+        </script> -->
 
         <div class="col-lg-12">
             <div class="d-flex">
@@ -117,7 +158,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
         </div>
 
-        <script>
+        <!-- <script>
 
         // document.getElementById("launch_camera").addEventListener("click", function() {
         //         navigator.mediaDevices.getUserMedia({ video: true })
@@ -222,7 +263,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             }
         });
 
-        </script>
+        </script> -->
 
         <div class="col-lg-12">
                 <div class="card">
@@ -314,12 +355,5 @@ data-sidebar-position="fixed" data-header-position="fixed">
 {% endblock content %}
 
 {% block javascript %}
-<script>
 
-    const instance = new mdb.Datatable(document.getElementById('datatable'), data)
-
-document.getElementById('datatable-search-input').addEventListener('input', (e) => {
-  instance.search(e.target.value);
-});
-</script>
 {% endblock javascript %}

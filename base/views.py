@@ -51,6 +51,13 @@ from django.db.models import Avg
 from django.db.models import Exists, OuterRef, Value
 from .models import EventNotification
 from django.views import View
+import face_recognition as face_recognition
+import cv2
+import winsound
+import numpy as np
+from django.views.decorators.csrf import csrf_exempt
+from PIL import Image
+
 
 class NotificationView(View):
     def get(self, request):
@@ -2017,7 +2024,193 @@ def find_user_view(request):
                 login(request, user)
                 return JsonResponse({'success': True})
         return JsonResponse({'success': False})
-    
+
+
+KNOWN_ENCODINGS = []
+KNOWN_NAMES = []
+
+def load_known_faces():
+    global KNOWN_ENCODINGS, KNOWN_NAMES
+    KNOWN_ENCODINGS = []
+    KNOWN_NAMES = []
+    profiles = Profile.objects.filter(user_type="guest")
+    for profile in profiles:
+        if not profile.photo:
+            continue
+        try:
+            person_image = face_recognition.load_image_file(profile.photo.path)
+            encodings = face_recognition.face_encodings(person_image)
+            if encodings:
+                KNOWN_ENCODINGS.append(encodings[0])
+                KNOWN_NAMES.append(profile.username)
+        except Exception as e:
+            print(f"Eroare la {profile.username}: {e}")
+
+load_known_faces()
+
+# def scan(request):
+#     if request.method == "POST":
+#         image_file = request.FILES.get('image')
+#         event_id = request.POST.get('event_id')
+
+#         if not image_file or not event_id:
+#             return JsonResponse({'error': 'Missing data'}, status=400)
+
+#         event = get_object_or_404(Event, id=event_id)
+
+#         image_bytes = image_file.read()
+#         np_arr = np.frombuffer(image_bytes, np.uint8)
+#         bgr_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+#         rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
+
+#         if rgb_image is None or len(rgb_image.shape) != 3 or rgb_image.shape[2] != 3:
+#             print("EROARE: Imaginea NU este RGB valid (3 canale)")
+#             return HttpResponse("Imagine invalidă", status=400)
+
+#         try:
+#             face_locations = face_recognition.face_locations(rgb_image)
+#             face_encodings = face_recognition.face_encodings(rgb_image, face_locations)
+#         except Exception as e:
+#             print("Error: ", e)
+#             return JsonResponse({'error': 'Face recognition failed'}, status=500)
+
+
+#         known_face_encodings = []
+#         known_face_names = []
+
+#         profiles = Profile.objects.filter(user_type="guest")
+#         for profile in profiles:
+#             if not profile.photo:
+#                 continue
+#             try:
+#                 person_image = face_recognition.load_image_file(profile.photo.path)
+#                 encodings = face_recognition.face_encodings(person_image)
+#                 if encodings:
+#                     known_face_encodings.append(encodings[0])
+#                     known_face_names.append(profile.username)
+#             except Exception as e:
+#                 continue  # Ignoră erorile la imaginile corupte
+
+#         for face_encoding in face_encodings:
+#             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+#             if True in matches:
+#                 best_match_index = np.argmin(face_recognition.face_distance(known_face_encodings, face_encoding))
+#                 name = known_face_names[best_match_index]
+#                 profile = Profile.objects.get(username=name)
+
+#                 if not Log.objects.filter(profile=profile, event=event).exists():
+#                     Log.objects.create(profile=profile, event=event, created=now())
+
+#         return JsonResponse({'status': 'processed', 'faces_detected': len(face_encodings)})
+
+
+
+@csrf_exempt
+def scan(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+
+    known_face_encodings = []
+    known_face_names = []
+
+    print("📥 Încărcare profile...")
+    profiles = Profile.objects.filter(user_type="guest")
+    for profile in profiles:
+        if not profile.photo:
+            continue
+
+        try:
+            image_path = profile.photo.path
+            image = face_recognition.load_image_file(image_path)
+            encodings = face_recognition.face_encodings(image)
+
+            if not encodings:
+                print(f"⚠️ Nicio față detectată în poza pentru {profile.username}")
+                continue
+
+            print(f"✅ Față detectată pentru {profile.username}")
+            known_face_encodings.append(encodings[0])
+            known_face_names.append(profile.username)
+
+        except Exception as e:
+            print(f"❌ Eroare la {profile.username}: {e}")
+            continue
+
+    if not known_face_encodings:
+        return HttpResponse("⚠️ Nicio față validă nu a fost găsită în profilurile utilizatorilor.")
+
+    print("📸 Pornire cameră...")
+    video_capture = cv2.VideoCapture(0)
+    if not video_capture.isOpened():
+        return HttpResponse("❌ Eroare: Camera nu a putut fi pornită.")
+
+    face_locations = []
+    face_encodings = []
+    face_names = []
+    process_this_frame = True
+
+    try:
+        while True:
+            ret, frame = video_capture.read()
+            if not ret:
+                print("⚠️ Nu s-a putut citi de la cameră.")
+                break
+
+            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+            rgb_small_frame = small_frame[:, :, ::-1]
+
+            if process_this_frame:
+                face_locations = face_recognition.face_locations(rgb_small_frame)
+                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+
+                face_names = []
+                for face_encoding in face_encodings:
+                    name = "Unknown"
+                    try:
+                        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+                        best_match_index = np.argmin(face_distances)
+
+                        if face_distances.size > 0 and face_distances[best_match_index] < 0.6:
+                            name = known_face_names[best_match_index]
+
+                            profile = Profile.objects.get(username=name)
+                            already_logged = Log.objects.filter(profile=profile, event=event).exists()
+                            if not already_logged:
+                                Log.objects.create(profile=profile, event=event, created=now())
+                                print(f"✅ {name} a fost marcat ca prezent.")
+                    except Exception as e:
+                        print(f"❌ Eroare la compararea feței detectate: {e}")
+
+                    face_names.append(name)  # ✅ Corect: doar o singură dată
+
+            process_this_frame = not process_this_frame
+
+            for (top, right, bottom, left), name in zip(face_locations, face_names):
+                top *= 4
+                right *= 4
+                bottom *= 4
+                left *= 4
+
+                cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+                font = cv2.FONT_HERSHEY_DUPLEX
+                cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.6, (255, 255, 255), 1)
+
+            cv2.imshow('Scanare facială', frame)
+
+            if cv2.waitKey(1) & 0xFF == 13:  # Enter
+                break
+
+    except Exception as e:
+        print(f"❌ Eroare în timpul rulării: {e}")
+        return HttpResponse(f"Eroare în timpul scanării: {e}")
+
+    finally:
+        print("📴 Oprire cameră și închidere ferestre.")
+        video_capture.release()
+        cv2.destroyAllWindows()
+
+    return HttpResponse("✅ Scanare completă.")
 
     
 
