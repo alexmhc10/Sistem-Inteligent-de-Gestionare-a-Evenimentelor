@@ -279,11 +279,11 @@
                     }
                     </script>
                       <div class="d-flex align-items-center gap-4">
-                        <div class="d-flex align-items-center gap-2">
+                        <div class="d-flex align-items-center">
                           {% if item.allergens.all %}
                             {% for allergen in item.allergens.all %}
-                                <span class="allergen-badge">{{ allergen.name }}</span>
-                                {% if not forloop.last %}, {% endif %}
+                                <span class="allergen-badge">{{ allergen.name }} </span>
+                                {% if not forloop.last %},{% endif %}
                             {% endfor %}
                         {% else %}
                             <span class="no-allergens">No allergens</span>

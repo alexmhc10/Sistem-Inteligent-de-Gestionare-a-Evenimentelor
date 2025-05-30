@@ -90,16 +90,20 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 <i class="bi bi-flower1"></i>
                                 <p>Vegan</p>
                                 {% if preferences.vegan %}
+                                <p>Yes</p>
                                 <i class="bi bi-check-lg"></i>
                                 {% else %}
+                                <p>No</p>
                                 <i class="bi bi-x-lg"></i>
                                 {% endif %}
                               </div>
                               <div class="col-3 d-flex flex-column text-center">
                                 <i class="bi bi-virus"></i>
                                 <p>Alergens</p>
-                                {% if preferences.allergens %}
-                                <p>{{ preferences.allergens|join:", " }}</p>
+                                {% if preferences.allergens.all %}
+                                    {% for allergen in preferences.allergens.all %}
+                                        {{ allergen.name }}{% if not forloop.last %}, {% endif %}
+                                    {% endfor %}
                                 {% else %}
                                 <p>No</p>
                                 {% endif %}
@@ -164,11 +168,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             <h1 class="h1 text-center">Configure the menu for this event</h1>
                           </div>
         
-                          <div class="row d-flex flex-row mt-4">
                             <hr>
 
                           <form action="" method="POST" id="menu-configuration">
                               {% csrf_token %}
+                          <div class="row d-flex flex-row mt-4">
+
                             <div class="menus col-lg-6">
                               <h4 class="h4">Choose appetizer:</h4>
                               <select name="appetizer" class="form-select" id="foodSelect">
@@ -253,8 +258,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 </ul>
                                 <button type="submit" id="confirmSelection" class="btn btn-success">Confirm</button>
                             </div>
+                          </div>
                           </form>
-                    </div>
         
                               
                           </div>  
