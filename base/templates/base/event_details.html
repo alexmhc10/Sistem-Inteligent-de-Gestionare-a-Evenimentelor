@@ -83,24 +83,106 @@
                 </div>
             </div>
 
-            <!-- Table Arrangement Section -->
-            {% if event.status == 'upcoming' or event.status == 'ongoing' %}
-                {% if event.location and event.guests.exists %}
-                    <div class="row mb-3">
-                        <div class="col-12">
-                            <h3 class="text-center mb-4">🍽 Table Arrangement</h3>
-                            {% if not event.guests.exists or not event.location.tables.exists %}
-                                <a href="{% url 'populate_test_data' event.id %}" class="btn btn-warning mb-2">
-                                    <i class="fas fa-database"></i> Populează Date Test
-                                </a>
-                                <br>
-                            {% endif %}
-                            <a href="{% url 'test_table_arrangement' event.id %}" class="btn btn-gradient">
-                                <i class="fas fa-chair"></i> Testează Aranjament Mese
-                            </a>
+            <!-- Table Arrangement Visualization -->
+            {% if event.location and event.location.tables.exists %}
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow-lg border-0 glass-effect">
+                        <div class="card-header bg-transparent border-0">
+                            <h3 class="text-center mb-0">Aranjament Mese</h3>
+                        </div>
+                        <div class="card-body">
+                            <!-- Room Layout -->
+                            <div class="room-layout mb-4" style="position: relative; min-height: 400px; background: #f8f9fa; border-radius: 10px;">
+                                {% for table in event.location.tables.all %}
+                                <div class="table-container" 
+                                     style="position: absolute; 
+                                            left: {{ table.position_x }}%; 
+                                            top: {{ table.position_y }}%; 
+                                            transform: translate(-50%, -50%);"
+                                     data-table-id="{{ table.id }}"
+                                     data-bs-toggle="tooltip"
+                                     data-bs-placement="top"
+                                     title="Masă {{ table.table_number }} ({{ table.capacity }} locuri)">
+                                    <div class="table-shape {% if table.shape == 'round' %}rounded-circle{% elif table.shape == 'square' %}rounded{% endif %}"
+                                         style="width: 80px; 
+                                                height: 80px; 
+                                                background: {% if table.is_reserved %}#ffd700{% else %}#28a745{% endif %}; 
+                                                display: flex; 
+                                                align-items: center; 
+                                                justify-content: center;
+                                                cursor: pointer;
+                                                transition: all 0.3s ease;">
+                                        <span class="table-number" style="color: white; font-weight: bold;">{{ table.table_number }}</span>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <!-- Table Statistics -->
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Utilizare Mese</h5>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: {{ stats.table_utilization }}%;" 
+                                                     aria-valuenow="{{ stats.table_utilization }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ stats.table_utilization }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Grupuri Aranjate</h5>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-success" role="progressbar" 
+                                                     style="width: {% widthratio stats.groups_arranged stats.total_groups 100 %}%;" 
+                                                     aria-valuenow="{% widthratio stats.groups_arranged stats.total_groups 100 %}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ stats.groups_arranged }}/{{ stats.total_groups }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card bg-light">
+                                        <div class="card-body text-center">
+                                            <h5 class="card-title">Coerență Grupuri</h5>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar bg-info" role="progressbar" 
+                                                     style="width: {{ stats.group_cohesion|floatformat:2 }}%;" 
+                                                     aria-valuenow="{{ stats.group_cohesion|floatformat:2 }}" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    {{ stats.group_cohesion|floatformat:2 }}%
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                {% endif %}
+                </div>
+            </div>
+
+            <!-- Table Arrangement Actions -->
+            <div class="row mb-4">
+                <div class="col-12 text-center">
+                    <a href="{% url 'test_table_arrangement' event.id %}" class="btn btn-primary btn-lg">
+                        <i class="bi bi-grid-3x3-gap"></i> Testează Aranjament Mese
+                    </a>
+                </div>
+            </div>
             {% endif %}
 
             <!-- Reviews and Posts -->
@@ -119,6 +201,99 @@
             {% endif %}
         </div>
     </div>
+</div>
+
+<!-- Detalii masă (fără modal Bootstrap, doar div fix, stilizat modern) -->
+<style>
+#tableDetailsPanel {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(30, 34, 90, 0.25);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInPanel 0.3s;
+}
+@keyframes fadeInPanel {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+#tableDetailsPanel .details-card {
+  background: #fff;
+  border-radius: 18px;
+  max-width: 700px;
+  width: 95vw;
+  margin: 40px auto;
+  padding: 32px 24px 24px 24px;
+  box-shadow: 0 8px 32px rgba(30,34,90,0.18);
+  position: relative;
+  animation: fadeInPanel 0.3s;
+}
+#closeTableDetailsPanel {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  font-size: 2rem;
+  color: #6c757d;
+  background: none;
+  border: none;
+  transition: color 0.2s;
+  z-index: 10;
+}
+#closeTableDetailsPanel:hover {
+  color: #dc3545;
+  background: #f8d7da;
+  border-radius: 50%;
+}
+#panelTableNumber {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #1e225a;
+}
+#panelTableBody table {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8f9fa;
+  margin-bottom: 0;
+}
+#panelTableBody thead th {
+  position: sticky;
+  top: 0;
+  background: #e9ecef;
+  color: #1e225a;
+  font-weight: 600;
+  font-size: 1.1rem;
+  z-index: 1;
+}
+#panelTableBody td, #panelTableBody th {
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+}
+#panelTableBody tr:nth-child(even) {
+  background: #f1f3f7;
+}
+#panelTableBody tr:hover {
+  background: #e2e6ea;
+}
+@media (max-width: 600px) {
+  #tableDetailsPanel .details-card { padding: 12px 2vw; }
+  #panelTableNumber { font-size: 1.2rem; }
+  #panelTableBody th, #panelTableBody td { font-size: 0.95rem; }
+}
+</style>
+<div id="tableDetailsPanel">
+  <div class="details-card">
+    <button id="closeTableDetailsPanel" title="Închide">&times;</button>
+    <div id="panelTableNumber">Masa #</div>
+    <div id="panelTableBody">
+      <p class="text-center text-muted">Se încarcă detaliile invitaților...</p>
+    </div>
+  </div>
 </div>
 
 <style>
@@ -195,5 +370,79 @@
         background: linear-gradient(45deg, #B8860B, #D4AF37);
         color: white;
     }
+    .room-layout {
+        background-image: linear-gradient(rgba(0,0,0,0.1) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(0,0,0,0.1) 1px, transparent 1px);
+        background-size: 20px 20px;
+    }
+    .table-container:hover .table-shape {
+        transform: scale(1.1);
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .progress {
+        background-color: #e9ecef;
+        border-radius: 10px;
+    }
+    .progress-bar {
+        transition: width 0.6s ease;
+    }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
+        });
+
+        // Table click handler
+        document.querySelectorAll('.table-container').forEach(function(table) {
+            table.addEventListener('click', function() {
+                var tableId = this.dataset.tableId;
+                var tableNumber = this.querySelector('.table-number').textContent;
+                var eventId = "{{ event.id }}";
+                console.log('CLICK MASA', tableId, eventId);
+                // Update panel title
+                document.getElementById('panelTableNumber').textContent = 'Masa ' + tableNumber;
+                // Fetch table details via AJAX
+                fetch('/api/table-details/' + tableId + '/?event_id=' + eventId)
+                    .then(response => { console.log("fetch răspuns status:", response.status); if (!response.ok) { throw new Error("HTTP error, status " + response.status); } return response.json(); })
+                    .then(data => {
+                        console.log("fetch răspuns:", data);
+                        var panelBody = document.getElementById('panelTableBody');
+                        panelBody.innerHTML = '';
+                        if (data.guests && data.guests.length === 0) {
+                            panelBody.innerHTML = '<p>Nu există invitați la această masă.</p>';
+                        } else {
+                            var table = document.createElement('table');
+                            table.className = 'table table-hover';
+                            var thead = document.createElement('thead');
+                            thead.innerHTML = '<tr><th>Loc</th><th>Invitat</th><th>Grup</th><th>Status</th></tr>';
+                            var tbody = document.createElement('tbody');
+                            data.guests.forEach(function(guest, index) {
+                                var tr = document.createElement('tr');
+                                tr.innerHTML = '<td>' + (index + 1) + '</td><td>' + guest.name + '</td><td>' + (guest.group || '–') + '</td><td>' + (guest.status || '–') + '</td>';
+                                tbody.appendChild(tr);
+                            });
+                            table.appendChild(thead);
+                            table.appendChild(tbody);
+                            panelBody.appendChild(table);
+                        }
+                        document.getElementById('tableDetailsPanel').style.display = 'flex';
+                    })
+                    .catch(error => {
+                        console.error("fetch eroare:", error);
+                        document.getElementById('panelTableBody').innerHTML = '<p>Eroare la încărcarea invitaților.</p>';
+                        document.getElementById('tableDetailsPanel').style.display = 'flex';
+                    });
+            });
+        });
+
+        // Close panel handler
+        document.getElementById('closeTableDetailsPanel').onclick = function() {
+            document.getElementById('tableDetailsPanel').style.display = 'none';
+        };
+    });
+</script>
 {% endblock %}
