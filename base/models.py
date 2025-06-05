@@ -436,3 +436,84 @@ class PostComment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.author.username} on {self.post.title}"
+
+
+class Table(models.Model):
+    SHAPE_CHOICES = [
+        ('round', 'Round'),
+        ('rectangle', 'Rectangle'),
+        ('square', 'Square')
+    ]
+    
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='tables')
+    table_number = models.IntegerField()
+    capacity = models.IntegerField(help_text="Number of seats at this table")
+    shape = models.CharField(max_length=20, choices=SHAPE_CHOICES, default='round')
+    position_x = models.IntegerField(help_text="X position in the room layout")
+    position_y = models.IntegerField(help_text="Y position in the room layout")
+    is_reserved = models.BooleanField(default=False, help_text="Reserved for special groups (e.g., bride and groom)")
+    notes = models.TextField(blank=True, null=True, help_text="Additional notes about the table")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['table_number']
+        unique_together = ['location', 'table_number']
+
+    def __str__(self):
+        return f"Table {self.table_number} at {self.location.name}"
+
+
+class TableGroup(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='table_groups')
+    name = models.CharField(max_length=100, help_text="Name of the group (e.g., 'Bride's Family', 'Groom's Colleagues')")
+    guests = models.ManyToManyField(Guests, related_name='table_groups')
+    preferred_tables = models.ManyToManyField(Table, blank=True, related_name='preferred_by_groups')
+    notes = models.TextField(blank=True, null=True, help_text="Special notes about this group")
+    priority = models.IntegerField(default=0, help_text="Higher number means higher priority in table assignment")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-priority', 'name']
+
+    def __str__(self):
+        return f"{self.name} for {self.event.event_name}"
+
+
+class TableArrangement(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('rejected', 'Rejected')
+    ]
+
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='table_arrangements')
+    guest = models.ForeignKey(Guests, on_delete=models.CASCADE, related_name='table_arrangements')
+    table = models.ForeignKey(Table, on_delete=models.CASCADE, related_name='arrangements')
+    seat_number = models.IntegerField(help_text="Specific seat number at the table")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    special_requirements = models.TextField(blank=True, null=True, help_text="Any special requirements for this guest")
+    is_priority = models.BooleanField(default=False, help_text="Whether this guest has priority seating")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['table__table_number', 'seat_number']
+        unique_together = ['event', 'guest']  # One guest can only be assigned to one table per event
+
+    def __str__(self):
+        return f"{self.guest} at Table {self.table.table_number} (Seat {self.seat_number})"
+
+
+class TableArrangementLog(models.Model):
+    """Model to track changes in table arrangements"""
+    arrangement = models.ForeignKey(TableArrangement, on_delete=models.CASCADE, related_name='logs')
+    previous_table = models.ForeignKey(Table, on_delete=models.SET_NULL, null=True, related_name='previous_arrangements')
+    previous_seat = models.IntegerField(null=True)
+    reason = models.TextField(help_text="Reason for the change")
+    changed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Log for {self.arrangement} - {self.created_at}"

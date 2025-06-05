@@ -57,6 +57,7 @@ import winsound
 import numpy as np
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
+from .table_arrangement_algorithm import TableArrangementAlgorithm
 
 
 class NotificationView(View):
@@ -2081,68 +2082,11 @@ def load_known_faces():
 
 load_known_faces()
 
-# def scan(request):
-#     if request.method == "POST":
-#         image_file = request.FILES.get('image')
-#         event_id = request.POST.get('event_id')
-
-#         if not image_file or not event_id:
-#             return JsonResponse({'error': 'Missing data'}, status=400)
-
-#         event = get_object_or_404(Event, id=event_id)
-
-#         image_bytes = image_file.read()
-#         np_arr = np.frombuffer(image_bytes, np.uint8)
-#         bgr_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-
-#         rgb_image = cv2.cvtColor(bgr_image, cv2.COLOR_BGR2RGB)
-
-#         if rgb_image is None or len(rgb_image.shape) != 3 or rgb_image.shape[2] != 3:
-#             print("EROARE: Imaginea NU este RGB valid (3 canale)")
-#             return HttpResponse("Imagine invalidă", status=400)
-
-#         try:
-#             face_locations = face_recognition.face_locations(rgb_image)
-#             face_encodings = face_recognition.face_encodings(rgb_image, face_locations)
-#         except Exception as e:
-#             print("Error: ", e)
-#             return JsonResponse({'error': 'Face recognition failed'}, status=500)
-
-
-#         known_face_encodings = []
-#         known_face_names = []
-
-#         profiles = Profile.objects.filter(user_type="guest")
-#         for profile in profiles:
-#             if not profile.photo:
-#                 continue
-#             try:
-#                 person_image = face_recognition.load_image_file(profile.photo.path)
-#                 encodings = face_recognition.face_encodings(person_image)
-#                 if encodings:
-#                     known_face_encodings.append(encodings[0])
-#                     known_face_names.append(profile.username)
-#             except Exception as e:
-#                 continue  # Ignoră erorile la imaginile corupte
-
-#         for face_encoding in face_encodings:
-#             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-#             if True in matches:
-#                 best_match_index = np.argmin(face_recognition.face_distance(known_face_encodings, face_encoding))
-#                 name = known_face_names[best_match_index]
-#                 profile = Profile.objects.get(username=name)
-
-#                 if not Log.objects.filter(profile=profile, event=event).exists():
-#                     Log.objects.create(profile=profile, event=event, created=now())
-
-#         return JsonResponse({'status': 'processed', 'faces_detected': len(face_encodings)})
-
-
-
 @csrf_exempt
 def scan(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-
+    print(f"DEBUG: Event găsit: {event.event_name}")
+    
     known_face_encodings = []
     known_face_names = []
 
@@ -2737,4 +2681,248 @@ def mark_notifications_as_read(request):
 #         'profiles': profiles,
 #         'messages': messages
 #     })
+
+
+@login_required(login_url='/login')
+@user_is_organizer
+def test_table_arrangement(request, event_id):
+    """View pentru testarea algoritmului de aranjare la mese"""
+    print("DEBUG: Începe test_table_arrangement")
+    print(f"DEBUG: Event ID: {event_id}")
+    print(f"DEBUG: User: {request.user}")
+    
+    try:
+        event = get_object_or_404(Event, id=event_id)
+        print(f"DEBUG: Event găsit: {event.event_name}")
+        
+        # Verifică dacă utilizatorul este organizatorul evenimentului
+        if event.organized_by != request.user:
+            messages.error(request, "Nu aveți permisiunea de a testa aranjamentul!")
+            return redirect('event_details', event_id=event.id)
+        
+        # Verifică dacă evenimentul are locație și invitați
+        if not event.location:
+            messages.error(request, "Evenimentul nu are o locație asociată!")
+            return redirect('event_details', event_id=event.id)
+        
+        if not event.guests.exists():
+            messages.error(request, "Nu există invitați pentru acest eveniment!")
+            return redirect('event_details', event_id=event.id)
+
+        # Verifică dacă există mese în locație
+        tables = Table.objects.filter(location=event.location)
+        if not tables.exists():
+            messages.error(request, "Nu există mese configurate în această locație!")
+            return redirect('event_details', event_id=event.id)
+
+        # Șterge aranjamentele existente pentru a începe cu un aranjament nou
+        TableArrangement.objects.filter(event=event).delete()
+        
+        # Inițializează algoritmul
+        algorithm = TableArrangementAlgorithm(event)
+        
+        # Generează aranjamentul
+        arrangements = algorithm.generate_arrangement()
+        
+        if not arrangements:
+            messages.error(request, "Nu s-a putut genera un aranjament valid!")
+            return redirect('event_details', event_id=event.id)
+
+        # Salvează aranjamentele în baza de date
+        for arrangement in arrangements:
+            arrangement.save()
+            print(f"DEBUG: Salvat aranjament: {arrangement}")
+        
+        # Obține statisticile aranjamentului
+        stats = algorithm.get_arrangement_statistics()
+        print(f"DEBUG: Statistici calculate: {stats}")
+        
+        # Grupează aranjamentele pe mese pentru afișare
+        table_arrangements = {}
+        for arrangement in arrangements:
+            if arrangement.table not in table_arrangements:
+                table_arrangements[arrangement.table] = []
+            table_arrangements[arrangement.table].append(arrangement)
+
+        context = {
+            'event': event,
+            'table_arrangements': table_arrangements,
+            'stats': stats,
+            'tables': tables,
+        }
+        
+        return render(request, 'base/test_table_arrangement.html', context)
+        
+    except Exception as e:
+        print(f"DEBUG: Eroare neașteptată: {str(e)}")
+        messages.error(request, f"A apărut o eroare: {str(e)}")
+        return redirect('event_details', event_id=event_id)
+
+@require_POST
+def confirm_table_arrangement(request, event_id):
+    """Endpoint pentru confirmarea aranjamentului la mese"""
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Actualizează statusul aranjamentelor la 'confirmed'
+    TableArrangement.objects.filter(
+        event=event,
+        status='pending'
+    ).update(status='confirmed')
+    
+    # Adaugă mesajul în sesiune pentru a fi afișat pe pagina de test
+    messages.success(request, "Aranjamentul la mese a fost confirmat cu succes!")
+    
+    # Redirecționează înapoi la pagina de test
+    return redirect('test_table_arrangement', event_id=event.id)
+
+@require_POST
+def reset_table_arrangement(request, event_id):
+    """Endpoint pentru resetarea aranjamentului la mese"""
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Șterge toate aranjamentele existente
+    TableArrangement.objects.filter(event=event).delete()
+    
+    # Adaugă mesajul în sesiune pentru a fi afișat pe pagina de test
+    messages.success(request, "Aranjamentul la mese a fost resetat!")
+    
+    # Redirecționează înapoi la pagina de test
+    return redirect('test_table_arrangement', event_id=event.id)
+
+@login_required(login_url='/login')
+@user_is_organizer
+def populate_test_data(request, event_id):
+    """Populează datele de test pentru aranjamentul la mese"""
+    event = get_object_or_404(Event, id=event_id)
+    
+    # Verifică dacă utilizatorul este organizatorul evenimentului
+    if event.organized_by != request.user:
+        messages.error(request, "Nu aveți permisiunea de a popula datele de test!")
+        return redirect('event_details', event_id=event.id)
+    
+    if not event.location:
+        messages.error(request, "Evenimentul nu are o locație asociată!")
+        return redirect('event_details', event_id=event.id)
+
+    # 1. Creează mesele în locație dacă nu există
+    if not Table.objects.filter(location=event.location).exists():
+        tables_data = [
+            {'table_number': 1, 'capacity': 8, 'shape': 'round', 'position_x': 100, 'position_y': 100, 'is_reserved': True},
+            {'table_number': 2, 'capacity': 8, 'shape': 'round', 'position_x': 300, 'position_y': 100, 'is_reserved': False},
+            {'table_number': 3, 'capacity': 8, 'shape': 'round', 'position_x': 500, 'position_y': 100, 'is_reserved': False},
+            {'table_number': 4, 'capacity': 6, 'shape': 'rectangle', 'position_x': 100, 'position_y': 300, 'is_reserved': False},
+            {'table_number': 5, 'capacity': 6, 'shape': 'rectangle', 'position_x': 300, 'position_y': 300, 'is_reserved': False},
+            {'table_number': 6, 'capacity': 6, 'shape': 'rectangle', 'position_x': 500, 'position_y': 300, 'is_reserved': False},
+        ]
+        
+        for table_data in tables_data:
+            Table.objects.create(location=event.location, **table_data)
+        
+        messages.success(request, "Au fost create 6 mese în locație!")
+
+    # 2. Creează invitați de test dacă nu există
+    if not event.guests.exists():
+        guests_data = [
+            # Familia miresei
+            {'username': 'maria.popescu', 'first_name': 'Maria', 'last_name': 'Popescu', 'email': 'maria@test.com', 'gender': 'F', 'age': 45},
+            {'username': 'ion.popescu', 'first_name': 'Ion', 'last_name': 'Popescu', 'email': 'ion@test.com', 'gender': 'M', 'age': 48},
+            {'username': 'elena.popescu', 'first_name': 'Elena', 'last_name': 'Popescu', 'email': 'elena@test.com', 'gender': 'F', 'age': 42},
+            {'username': 'vasile.popescu', 'first_name': 'Vasile', 'last_name': 'Popescu', 'email': 'vasile@test.com', 'gender': 'M', 'age': 40},
+            
+            # Familia mirelui
+            {'username': 'andrei.ionescu', 'first_name': 'Andrei', 'last_name': 'Ionescu', 'email': 'andrei@test.com', 'gender': 'M', 'age': 46},
+            {'username': 'ana.ionescu', 'first_name': 'Ana', 'last_name': 'Ionescu', 'email': 'ana@test.com', 'gender': 'F', 'age': 44},
+            {'username': 'mihai.ionescu', 'first_name': 'Mihai', 'last_name': 'Ionescu', 'email': 'mihai@test.com', 'gender': 'M', 'age': 41},
+            {'username': 'laura.ionescu', 'first_name': 'Laura', 'last_name': 'Ionescu', 'email': 'laura@test.com', 'gender': 'F', 'age': 39},
+            
+            # Prieteni comuni
+            {'username': 'alexandru.constantin', 'first_name': 'Alexandru', 'last_name': 'Constantin', 'email': 'alex@test.com', 'gender': 'M', 'age': 35},
+            {'username': 'diana.constantin', 'first_name': 'Diana', 'last_name': 'Constantin', 'email': 'diana@test.com', 'gender': 'F', 'age': 33},
+            {'username': 'cristian.radu', 'first_name': 'Cristian', 'last_name': 'Radu', 'email': 'cristi@test.com', 'gender': 'M', 'age': 36},
+            {'username': 'simona.radu', 'first_name': 'Simona', 'last_name': 'Radu', 'email': 'simona@test.com', 'gender': 'F', 'age': 34},
+            
+            # Colegi de la serviciu
+            {'username': 'george.marin', 'first_name': 'George', 'last_name': 'Marin', 'email': 'george@test.com', 'gender': 'M', 'age': 38},
+            {'username': 'andreea.marin', 'first_name': 'Andreea', 'last_name': 'Marin', 'email': 'andreea@test.com', 'gender': 'F', 'age': 36},
+            {'username': 'bogdan.dumitrescu', 'first_name': 'Bogdan', 'last_name': 'Dumitrescu', 'email': 'bogdan@test.com', 'gender': 'M', 'age': 37},
+            {'username': 'raluca.dumitrescu', 'first_name': 'Raluca', 'last_name': 'Dumitrescu', 'email': 'raluca@test.com', 'gender': 'F', 'age': 35},
+            
+            # Vecini
+            {'username': 'florin.stoica', 'first_name': 'Florin', 'last_name': 'Stoica', 'email': 'florin@test.com', 'gender': 'M', 'age': 50},
+            {'username': 'gabriela.stoica', 'first_name': 'Gabriela', 'last_name': 'Stoica', 'email': 'gabi@test.com', 'gender': 'F', 'age': 48},
+            {'username': 'marian.neagu', 'first_name': 'Marian', 'last_name': 'Neagu', 'email': 'marian@test.com', 'gender': 'M', 'age': 52},
+            {'username': 'luminita.neagu', 'first_name': 'Luminita', 'last_name': 'Neagu', 'email': 'lumi@test.com', 'gender': 'F', 'age': 50},
+            
+            # Prieteni din facultate
+            {'username': 'stefan.munteanu', 'first_name': 'Stefan', 'last_name': 'Munteanu', 'email': 'stefan@test.com', 'gender': 'M', 'age': 32},
+            {'username': 'ioana.munteanu', 'first_name': 'Ioana', 'last_name': 'Munteanu', 'email': 'ioana@test.com', 'gender': 'F', 'age': 30},
+            {'username': 'adrian.gheorghe', 'first_name': 'Adrian', 'last_name': 'Gheorghe', 'email': 'adrian@test.com', 'gender': 'M', 'age': 31},
+            {'username': 'cristina.gheorghe', 'first_name': 'Cristina', 'last_name': 'Gheorghe', 'email': 'cristina@test.com', 'gender': 'F', 'age': 29},
+        ]
+        
+        for guest_data in guests_data:
+            # Creează profilul
+            profile = Profile.objects.create(
+                username=guest_data['username'],
+                email=guest_data['email'],
+                first_name=guest_data['first_name'],
+                last_name=guest_data['last_name'],
+                password=make_password('test123'),  # Parolă default pentru toți invitații
+                user_type='guest',
+                approved=True
+            )
+            
+            # Creează invitatul
+            guest = Guests.objects.create(
+                profile=profile,
+                gender=guest_data['gender'],
+                age=guest_data['age']
+            )
+            
+            # Adaugă invitatul la eveniment
+            event.guests.add(guest)
+        
+        messages.success(request, "Au fost adăugați 24 de invitați de test!")
+
+    # 3. Creează grupuri de invitați
+    if not TableGroup.objects.filter(event=event).exists():
+        # Grupul familiei miresei
+        bride_family = TableGroup.objects.create(
+            event=event,
+            name="Familia Miresei",
+            priority=3,
+            notes="Familia apropriată a miresei"
+        )
+        bride_family.guests.add(*event.guests.filter(profile__last_name='Popescu'))
+        
+        # Grupul familiei mirelui
+        groom_family = TableGroup.objects.create(
+            event=event,
+            name="Familia Mirelui",
+            priority=3,
+            notes="Familia apropriată a mirelui"
+        )
+        groom_family.guests.add(*event.guests.filter(profile__last_name='Ionescu'))
+        
+        # Grupul prietenilor comuni
+        common_friends = TableGroup.objects.create(
+            event=event,
+            name="Prieteni Comuni",
+            priority=2,
+            notes="Prieteni apropiați ai cuplului"
+        )
+        common_friends.guests.add(*event.guests.filter(profile__last_name__in=['Constantin', 'Radu']))
+        
+        # Grupul colegilor
+        colleagues = TableGroup.objects.create(
+            event=event,
+            name="Colegi de la Serviciu",
+            priority=1,
+            notes="Colegi de la serviciu"
+        )
+        colleagues.guests.add(*event.guests.filter(profile__last_name__in=['Marin', 'Dumitrescu']))
+        
+        messages.success(request, "Au fost create 4 grupuri de invitați!")
+
+    return redirect('test_table_arrangement', event_id=event.id)
 

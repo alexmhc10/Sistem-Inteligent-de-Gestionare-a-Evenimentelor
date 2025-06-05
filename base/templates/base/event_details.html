@@ -2,18 +2,6 @@
 
 {% block content %}
 <div class="container mt-5">
-
-    <!-- Event Image Banner -->
-    {% if event.image %}
-    <div class="event-banner position-relative text-center mb-4">
-        <img src="{{ event.image.url }}" alt="Event Image" class="img-fluid rounded shadow-lg event-img">
-        <div class="overlay">
-            <h1 class="text-white fw-bold">{{ event.event_name }}</h1>
-            <p class="text-white fst-italic">{{ event.event_date }} | {{ event.event_time }}</p>
-        </div>
-    </div>
-    {% endif %}
-
     <!-- Event Details Card -->
     <div class="card shadow-lg border-0 glass-effect">
         <div class="card-body p-5">
@@ -80,108 +68,55 @@
                 </div>
             </div>
 
-            <!-- Table Arrangement Section (only for active events) -->
-            {% if event.status == 'upcoming' or event.status == 'ongoing' %}
+            <!-- Debug Info -->
             <div class="row mb-3">
-                <div class="col-sm-3 fw-bold text-secondary">🍽️ Aranjare la mese:</div>
-                <div class="col-sm-9">
-                    <div class="card glass-effect">
-                        <div class="card-body">
-                            <h5 class="card-title text-center mb-3">Aranjare la mese</h5>
-                            <p class="text-center text-muted">Secțiunea de aranjare la mese va fi disponibilă în curând.</p>
-                            <div class="text-center">
-                                <button class="btn btn-gradient" disabled>
-                                    <i class="bi bi-table"></i> Aranjare la mese (în curând)
-                                </button>
-                            </div>
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <h5>Debug Info:</h5>
+                        <p>Event Status: {{ event.status }}</p>
+                        <p>Is Upcoming: {% if event.status == 'upcoming' %}Yes{% else %}No{% endif %}</p>
+                        <p>Is Ongoing: {% if event.status == 'ongoing' %}Yes{% else %}No{% endif %}</p>
+                        <p>Has Location: {% if event.location %}Yes{% else %}No{% endif %}</p>
+                        <p>Has Guests: {% if event.guests.exists %}Yes ({{ event.guests.count }} guests){% else %}No{% endif %}</p>
+                        <p>Has Tables: {% if event.location.tables.exists %}Yes ({{ event.location.tables.count }} tables){% else %}No{% endif %}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table Arrangement Section -->
+            {% if event.status == 'upcoming' or event.status == 'ongoing' %}
+                {% if event.location and event.guests.exists %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h3 class="text-center mb-4">🍽 Table Arrangement</h3>
+                            {% if not event.guests.exists or not event.location.tables.exists %}
+                                <a href="{% url 'populate_test_data' event.id %}" class="btn btn-warning mb-2">
+                                    <i class="fas fa-database"></i> Populează Date Test
+                                </a>
+                                <br>
+                            {% endif %}
+                            <a href="{% url 'test_table_arrangement' event.id %}" class="btn btn-gradient">
+                                <i class="fas fa-chair"></i> Testează Aranjament Mese
+                            </a>
                         </div>
                     </div>
-                </div>
-            </div>
+                {% endif %}
             {% endif %}
 
-            <!-- Reviews and Ratings -->
-            <div class="row mb-3">
-                <div class="col-sm-3 fw-bold text-secondary">⭐ Rating:</div>
-                <div class="col-sm-9">
-                    {% if event.average_rating %}
-                    <p>{{ event.average_rating }} / 5 ({{ event.num_reviews }} reviews)</p>
-                    {% else %}
-                    <p>No ratings yet</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <!-- Partners and Sponsors -->
-            <div class="row mb-3">
-                <div class="col-sm-3 fw-bold text-secondary">🤝 Partners & Sponsors:</div>
-                <div class="col-sm-9">
-                    {% for partner in event.partners.all %}
-                    <img src="{{ partner.logo.url }}" alt="{{ partner.name }}" class="img-fluid" style="max-width: 150px;">
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Contact -->
-            <div class="row mb-3">
-                <div class="col-sm-3 fw-bold text-secondary">📞 Contact:</div>
-                <div class="col-sm-9">
-                    <p>Email: <a href="mailto:{{ event.contact_email }}" class="text-primary">{{ event.contact_email }}</a></p>
-                    <p>Phone: <a href="tel:{{ event.contact_phone }}" class="text-primary">{{ event.contact_phone }}</a></p>
-                </div>
-            </div>
-
+            <!-- Reviews and Posts -->
             <hr class="my-5">
-
             <h3 class="text-center mb-4">📝 Reviews & Posts</h3>
-
             {% if event.posts.all %}
-            {% for post in event.posts.all %}
-            <div class="card shadow-sm mb-4 p-4">
-                <h5 class="fw-bold">{{ post.title }}</h5>
-                <p class="mb-1 text-muted">by {{ post.author.username }} on {{ post.created_at|date:"d M Y" }}</p>
-
-                {% if post.rating %}
-                <p>⭐ {{ post.rating }} / 5</p>
-                {% endif %}
-
-                <p>{{ post.content }}</p>
-
-                <!-- Poze asociate -->
-                {% if post.images.all %}
-                <div class="row mb-2">
-                    {% for image in post.images.all %}
-                    <div class="col-md-3 mb-2">
-                        <img src="{{ image.image.url }}" class="img-fluid rounded shadow-sm" alt="Post Image {{ forloop.counter }}">
-                    </div>
-                    {% endfor %}
+                {% for post in event.posts.all %}
+                <div class="card shadow-sm mb-4 p-4">
+                    <h5 class="fw-bold">{{ post.title }}</h5>
+                    <p class="mb-1 text-muted">by {{ post.author.username }} on {{ post.created_at|date:"d M Y" }}</p>
+                    <p>{{ post.content }}</p>
                 </div>
-                {% endif %}
-
-                <!-- Comentarii la postare -->
-                {% if post.comments.all %}
-                <div class="mt-3">
-                    <h6>💬 Comments:</h6>
-                    <ul class="list-unstyled">
-                        {% for comment in post.comments.all %}
-                        <li class="border-start ps-3 mb-2">
-                            <strong>{{ comment.author.username }}:</strong> {{ comment.text }} <br>
-                            <small class="text-muted">{{ comment.created_at|timesince }} ago</small>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                {% endif %}
-            </div>
-            {% endfor %}
+                {% endfor %}
             {% else %}
-            <p class="text-center text-muted">No reviews yet for this event.</p>
+                <p class="text-center text-muted">No posts yet</p>
             {% endif %}
-
-            <!-- Edit Button -->
-            <div class="d-flex justify-content-center mt-4">
-                <a href="{% url 'edit_event' event.id %}" class="btn btn-gradient px-5 py-3 rounded-pill shadow-lg">✏️ Edit Event</a>
-            </div>
         </div>
     </div>
 </div>
@@ -190,23 +125,6 @@
     body {
         background: linear-gradient(135deg, #F8F4E3, #ECE5D8);
         color: #4A4A4A;
-    }
-    .event-img {
-        width: 100%;
-        max-height: 350px;
-        object-fit: cover;
-        border-radius: 15px;
-    }
-    .overlay {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        text-align: center;
-        background: rgba(0, 0, 0, 0.4);
-        padding: 15px;
-        border-radius: 12px;
-        backdrop-filter: blur(10px);
     }
     .glass-effect {
         background: rgba(255, 255, 255, 0.3);
@@ -259,16 +177,23 @@
         0% { width: 0; }
         100% { width: 40%; }
     }
+    .location-image {
+        max-height: 200px;
+        object-fit: cover;
+    }
     .btn-gradient {
-        background: linear-gradient(45deg, #B08A2E, #D4AF37);
+        background: linear-gradient(45deg, #D4AF37, #B8860B);
         color: white;
-        font-weight: bold;
-        transition: all 0.3s ease-in-out;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+        margin: 5px;
     }
     .btn-gradient:hover {
-        background: linear-gradient(45deg, #C5B28A, #D4AF37);
-        transform: scale(1.05);
+        background: linear-gradient(45deg, #B8860B, #D4AF37);
+        color: white;
     }
 </style>
 {% endblock %}
