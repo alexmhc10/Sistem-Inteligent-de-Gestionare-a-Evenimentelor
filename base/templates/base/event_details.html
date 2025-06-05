@@ -80,6 +80,26 @@
                 </div>
             </div>
 
+            <!-- Table Arrangement Section (only for active events) -->
+            {% if event.status == 'upcoming' or event.status == 'ongoing' %}
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">🍽️ Aranjare la mese:</div>
+                <div class="col-sm-9">
+                    <div class="card glass-effect">
+                        <div class="card-body">
+                            <h5 class="card-title text-center mb-3">Aranjare la mese</h5>
+                            <p class="text-center text-muted">Secțiunea de aranjare la mese va fi disponibilă în curând.</p>
+                            <div class="text-center">
+                                <button class="btn btn-gradient" disabled>
+                                    <i class="bi bi-table"></i> Aranjare la mese (în curând)
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Reviews and Ratings -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">⭐ Rating:</div>

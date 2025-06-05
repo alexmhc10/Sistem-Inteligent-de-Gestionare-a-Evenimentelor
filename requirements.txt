@@ -20,7 +20,7 @@ Django==5.1.2
 django-allauth==65.2.0
 django-cleanup==9.0.0
 django-extensions==3.2.3
-django-htmx==1.21.0
+django-htmx==1.23.0
 hyperlink==21.0.0
 idna==3.10
 incremental==24.7.2
@@ -38,3 +38,12 @@ txaio==23.1.1
 typing-extensions==4.12.2
 tzdata==2024.2
 zope.interface==7.1.1
+django-crispy-forms
+django-environ
+python-decouple
+django-widget-tweaks
+django-filter
+django-cors-headers
+djangorestframework
+device-detector
+opencv-python
