@@ -570,6 +570,11 @@ def admin_locations(request):
     for type in types:
         location_count = Location.objects.filter(types=type,owner__in=organizer_users).count()
         types_with_location_count.append({'type': type.name, 'count': location_count})
+    if request.method == 'POST':
+        location_id = request.POST.get('location_id')
+        del_loc = Location.objects.filter(id=location_id)
+        del_loc.delete()
+        return redirect('admin-locations')
     context = {
         'average_ratings':average_ratings,
         'new_locations_detailed':new_locations_detailed,
@@ -813,6 +818,13 @@ def users(request):
                     error_pas = True
             else:
                 error_pas = True
+        if nr_form == "form_4":
+            id = request.POST.get('user_id')
+            print("ID de sters: ", id)
+            user = User.objects.filter(id=id)
+            user.delete()
+            return redirect('users')
+
     user_profiles = {user: user.profile_set.first() for user in users}
     profiles = Profile.objects.filter(user_type="organizer")
     user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
