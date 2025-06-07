@@ -64,7 +64,7 @@ class Location(models.Model):
 
 
 class Profile(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='profile')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     username = models.CharField(max_length=150, unique=True)
     password = models.CharField(max_length=128) 
     email = models.EmailField()
