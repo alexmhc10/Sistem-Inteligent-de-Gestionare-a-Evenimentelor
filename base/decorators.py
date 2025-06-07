@@ -4,7 +4,7 @@ from django.contrib import messages
 
 def user_is_organizer(view_func):
     def wrapper(request, *args, **kwargs):
-        profile = request.user.profile_set.first()
+        profile = request.user.profile.first()
         if request.user.is_authenticated and profile:
             if profile.user_type == 'organizer':  
                 return view_func(request, *args, **kwargs)
@@ -14,7 +14,7 @@ def user_is_organizer(view_func):
 
 def user_is_staff(view_func):
     def wrapper(request, *args, **kwargs):
-        profile = request.user.profile_set.first()
+        profile = request.user.profile.first()
         if request.user.is_authenticated and profile:
             if profile.user_type == 'staff':
                 return view_func(request, *args, **kwargs)
@@ -24,7 +24,7 @@ def user_is_staff(view_func):
 
 def user_is_guest(view_func):
     def wrapper(request, *args, **kwargs):
-        profile = request.user.profile_set.first()
+        profile = request.user.profile.first()
         if request.user.is_authenticated and profile:
             if profile.user_type == 'guest':
                 return view_func(request, *args, **kwargs)

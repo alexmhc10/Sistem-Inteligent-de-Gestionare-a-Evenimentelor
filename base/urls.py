@@ -96,8 +96,9 @@ urlpatterns = [
 
     #Postari
     path('like/<int:post_id>', views.like_post, name='like_post'),
-    path('comment/<int:post_id>', views.add_comment, name='add_comment'),
+    path('comment/<int:post_id>/', views.add_comment, name='add_comment'),    
     path('delete_post/<int:postId>/', views.delete_post, name='delete_post'),
+    path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 
     #Face_recog
     path('scan/<int:event_id>/', views.scan, name='scan'),

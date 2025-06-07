@@ -457,7 +457,7 @@ def loginPage(request):
 
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            profile = user.profile_set.first()
+            profile = user.profile.first()
             print("Tip: ", profile.user_type)
             print("Profil logat: ", profile)
             print(f"Authentication successful for user: {user.username}")
@@ -764,7 +764,7 @@ def users(request):
                 user = User.objects.get(id=id)
             except User.DoesNotExist:
                 return HttpResponse("User not found.")
-            profile = user.profile_set.first() 
+            profile = user.profile.first() 
             picture = request.FILES.get('profile_picture')
             first_name = request.POST.get('editFirstNameModal')
             last_name = request.POST.get('editLastNameModal')
@@ -825,7 +825,7 @@ def users(request):
             user.delete()
             return redirect('users')
 
-    user_profiles = {user: user.profile_set.first() for user in users}
+    user_profiles = {user: user.profile.first() for user in users}
     profiles = Profile.objects.filter(user_type="organizer")
     user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
@@ -1196,7 +1196,7 @@ def admin_settings(request):
     error_pas = False
     ip_address = request.META.get('REMOTE_ADDR', '')
     user = request.user
-    profile = user.profile_set.first()
+    profile = user.profile.first()
     if request.method == 'POST':
         form_type = request.POST.get('form_type', '')
         if form_type == 'form_1':
@@ -2244,7 +2244,7 @@ def guest_profile(request):
                         messages.error(request, error)
                     return redirect('guest_profile')
                 
-                profil = request.user.profile_set.first()
+                profil = request.user.profile.first()
                 profil.first_name = request.POST.get('firstname')
                 profil.last_name = request.POST.get('lastname')
                 profil.email = request.POST.get('email')
@@ -2369,7 +2369,7 @@ def guest_home(request):
 def guest_event_view(request, pk):
     
     event=Event.objects.get(id=pk)
-    oragniser_profile = event.organized_by.profile_set.first()
+    oragniser_profile = event.organized_by.profile.first()
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
@@ -2485,8 +2485,8 @@ def like_post(request, post_id):
     return JsonResponse({'likes': post.like_count, 'liked': created})
 
 
+@require_POST
 @login_required(login_url='/login')
-@login_required
 def add_comment(request, post_id):
     post = get_object_or_404(EventPost, id=post_id)
     if request.method == 'POST':
@@ -2498,6 +2498,17 @@ def add_comment(request, post_id):
                 text=text
             )
     return redirect('guest_event_view', post.event.id) 
+
+
+@require_POST
+@login_required
+def delete_comment(request, comment_id):
+    comment = get_object_or_404(PostComment, id=comment_id)
+
+    if request.user == comment.author:
+        comment.delete()
+        return JsonResponse({'success': True})
+    return JsonResponse({'success': False, 'error': 'Not authorized'}, status=403)
 
 
 @login_required(login_url='/login')
