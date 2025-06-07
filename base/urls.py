@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
+from .views import table_details_api
 
 urlpatterns = [
     # Paginile principale și autentificare
@@ -114,5 +115,6 @@ urlpatterns = [
     path('edit-profile/<str:username>/', views.edit_profile, name='edit_profile'),
     path('organizer-profile/<str:username>/', views.organizer_profile, name='organizer-profile'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
-    path('organizer-events', views.organizer_events, name='organizer_events')
+    path('organizer-events', views.organizer_events, name='organizer_events'),
+    path('api/table-details/<int:table_id>/', table_details_api, name='table-details-api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

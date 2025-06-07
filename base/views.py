@@ -58,6 +58,7 @@ import numpy as np
 from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 from .table_arrangement_algorithm import TableArrangementAlgorithm
+from django.views.decorators.http import require_GET
 
 
 class NotificationView(View):
@@ -2948,4 +2949,33 @@ def populate_test_data(request, event_id):
         messages.success(request, "Au fost create 4 grupuri de invitați!")
 
     return redirect('test_table_arrangement', event_id=event.id)
+
+@require_GET
+@login_required
+def table_details_api(request, table_id):
+    event_id = request.GET.get('event_id')
+    if not event_id:
+        return JsonResponse({'error': 'Missing event_id'}, status=400)
+    try:
+        table = Table.objects.get(id=table_id)
+        event = Event.objects.get(id=event_id)
+    except (Table.DoesNotExist, Event.DoesNotExist):
+        return JsonResponse({'error': 'Table or event not found'}, status=404)
+
+    arrangements = TableArrangement.objects.filter(table=table, event=event).order_by('seat_number')
+    guests = []
+    for arrangement in arrangements:
+        guest = arrangement.guest
+        profile = getattr(guest, 'profile', None)
+        name = None
+        if profile:
+            first_name = getattr(profile, 'first_name', '')
+            last_name = getattr(profile, 'last_name', '')
+            name = f"{first_name} {last_name}".strip() or getattr(profile, 'username', '')
+        guests.append({
+            'name': name or str(guest),
+            'group': ', '.join([g.name for g in getattr(guest, 'table_groups', []).all()]) if hasattr(guest, 'table_groups') else None,
+            'status': arrangement.status,
+        })
+    return JsonResponse({'guests': guests})
 
