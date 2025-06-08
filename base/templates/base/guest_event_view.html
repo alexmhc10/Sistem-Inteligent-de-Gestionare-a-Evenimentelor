@@ -750,8 +750,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="card-body">
                   <div class="timeline-body mt-4">
                     <div class="timeline-header">
-                      <span class="userimage"><img src="{{MEDIA_URL}}{{post.author.profile.all.0.photo}}" alt=""></span>
-                      <span class="username"><a href="javascript:;">{{post.author.profile.all.0.username}}</a> <small></small></span>
+                      <span class="userimage"><img src="{{MEDIA_URL}}{{post.author.profile_set.all.0.photo}}" alt=""></span>
+                      <span class="username"><a href="javascript:;">{{post.author.profile_set.all.0.username}}</a> <small></small></span>
                       {% if  post.author == request.user %}
                       <span class="pull-right text-danger"><a role="button" onclick="confirmDeleteDish({{ post.id }})">Delete post <i class="bi bi-trash"></i></a></span>
                       {% endif %}
@@ -892,7 +892,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       {% if post.comments.all %}
                         {% for comment in post.comments.all %}
                         <div class="timeline-comment-box" data-comment-id="{{ comment.id }}" id="comment-{{ comment.id }}" style="background-color: white;">
-                          <div class="user"><img src="{{ MEDIA_URL }}{{ comment.author.profile.all.0.photo }}"></div>
+                          <div class="user"><img src="{{ MEDIA_URL }}{{ comment.author.profile_set.all.0.photo }}"></div>
                             <div class="comment_elements d-flex flex-row justify-content-center align-items-center">
                               <p class="flex-grow-1 ms-4">{{ comment.text }}</p>
                               <p class="me-2">{{ comment.created_at }}</p>

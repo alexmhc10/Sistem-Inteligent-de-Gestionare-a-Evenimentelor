@@ -1938,7 +1938,7 @@ def completed_event(request, pk):
 @user_is_staff
 def personal_menu(request):
     profile = Profile.objects.get(user=request.user)
-    menu_items = Menu.objects.filter(at_location=request.user.location_set.first())
+    menu_items = Menu.objects.all()
     allergens = Allergen.objects.all()
     context = {
         'profile':profile,
@@ -2380,7 +2380,7 @@ def guest_home(request):
 def guest_event_view(request, pk):
     
     event=Event.objects.get(id=pk)
-    oragniser_profile = event.organized_by.profile.first()
+    oragniser_profile = event.organized_by.profile_set.first()
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)

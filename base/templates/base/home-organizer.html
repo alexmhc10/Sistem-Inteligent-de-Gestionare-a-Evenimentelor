@@ -857,7 +857,7 @@
                 {% endif %}
                 <div>
                     <h6 class="mb-1">
-                  <strong>{{ notification.sender.get_full_name|default:notification.sender.username }}</strong>
+                  <strong>{{ notification.sender.username }}</strong>
                   {% if notification.event %}
                   <span class="text-muted">• {{ notification.event.title }}</span>
                   {% endif %}
