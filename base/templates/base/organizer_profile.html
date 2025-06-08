@@ -208,6 +208,153 @@
     .btn-cancel:hover {
         transform: translateY(-2px);
     }
+
+    /* Stiluri pentru secțiunea de review-uri */
+    .reviews-summary {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .average-rating {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stars {
+        display: flex;
+        gap: 5px;
+    }
+
+    .star {
+        color: #ddd;
+        font-size: 24px;
+    }
+
+    .star.filled {
+        color: #ffc107;
+    }
+
+    .rating-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .total-reviews {
+        color: #666;
+        font-size: 16px;
+    }
+
+    .review-form {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .review-form input[type="text"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+
+    .rating {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .rating input {
+        display: none;
+    }
+
+    .rating label {
+        cursor: pointer;
+        font-size: 30px;
+        color: #ddd;
+        transition: color 0.2s;
+    }
+
+    .rating label:hover,
+    .rating label:hover ~ label,
+    .rating input:checked ~ label {
+        color: #ffc107;
+    }
+
+    .review-form button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+
+    .review-form button:hover {
+        background: #0056b3;
+    }
+
+    .reviews-list {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .review-item {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .review-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .reviewer-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 16px;
+    }
+
+    .review-date {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .review-stars {
+        margin-bottom: 10px;
+    }
+
+    .review-comment {
+        color: #444;
+        line-height: 1.5;
+        font-size: 15px;
+    }
+
+    .no-reviews {
+        text-align: center;
+        color: #666;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        font-style: italic;
+    }
 </style>
 
 <div class="profile-container">
@@ -274,6 +421,66 @@
                             <i class="fab fa-google"></i>
                             Google
                         </a>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-star"></i>
+                        Reviews
+                    </h3>
+                    <div class="reviews-summary">
+                        <div class="average-rating">
+                            <div class="stars">
+                                {% for i in star_range %}
+                                    {% if i <= average_rating %}
+                                        <span class="star filled">★</span>
+                                    {% else %}
+                                        <span class="star">★</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <span class="rating-value">{{ average_rating|floatformat:1 }}</span>
+                            <span class="total-reviews">({{ reviews.count }} reviews)</span>
+                        </div>
+                    </div>
+                    {% if user.is_authenticated and user != profile.user %}
+                    <div class="review-form">
+                        <form action="" method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="comment" placeholder="Write a review..." required/>
+                            <div class="rating">
+                                <input type="radio" name="rating" id="r5" value="5"><label for="r5">★</label>
+                                <input type="radio" name="rating" id="r4" value="4"><label for="r4">★</label>
+                                <input type="radio" name="rating" id="r3" value="3"><label for="r3">★</label>
+                                <input type="radio" name="rating" id="r2" value="2"><label for="r2">★</label>
+                                <input type="radio" name="rating" id="r1" value="1"><label for="r1">★</label>
+                            </div>
+                            <button type="submit">Add Review</button>
+                        </form>
+                    </div>
+                    {% endif %}
+                    <div class="reviews-list">
+                        {% for review in reviews %}
+                        <div class="review-item">
+                            <div class="review-header">
+                                <span class="reviewer-name">{{ review.user.username }}</span>
+                                <span class="review-date">{{ review.created_at|date:"d M, Y" }}</span>
+                            </div>
+                            <div class="review-stars">
+                                {% for i in star_range %}
+                                    {% if i <= review.stars %}
+                                        <span class="star filled">★</span>
+                                    {% else %}
+                                        <span class="star">★</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="review-comment">{{ review.comment }}</div>
+                        </div>
+                        {% empty %}
+                        <p class="no-reviews">No reviews yet.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

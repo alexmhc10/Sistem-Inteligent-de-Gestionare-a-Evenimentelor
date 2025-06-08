@@ -209,25 +209,35 @@ def edit_profile(request, username):
 @login_required
 
 
+@login_required
 def organizer_profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
+    reviews = Review.objects.filter(organizer=profile.user).order_by('-created_at')
+    average_rating = reviews.aggregate(models.Avg('stars'))['stars__avg'] or 0
+    star_range = range(1, 6)
 
     if request.method == 'POST':
         form = ProfileEditForm(request.POST, request.FILES, instance=profile)
         if form.is_valid():
             form.save()
             Notification.objects.create(
-                    user=request.user,
-                    action_type='updated_profile',
-                    target_object_id=request.user.id,
-                    target_object_name=request.user.username,
-                    target_model='Profile'
-                )
-            return redirect('organizer-profile', username=profile.user.username)  
+                user=request.user,
+                action_type='updated_profile',
+                target_object_id=request.user.id,
+                target_object_name=request.user.username,
+                target_model='Profile'
+            )
+            return redirect('organizer-profile', username=profile.user.username)
     else:
         form = ProfileForm(instance=profile)
 
-    return render(request, 'base/organizer_profile.html', {'profile': profile, 'form': form})
+    return render(request, 'base/organizer_profile.html', {
+        'profile': profile,
+        'form': form,
+        'reviews': reviews,
+        'average_rating': average_rating,
+        'star_range': star_range
+    })
 
 
 
@@ -2978,4 +2988,36 @@ def table_details_api(request, table_id):
             'status': arrangement.status,
         })
     return JsonResponse({'guests': guests})
+
+# Adaug review-uri de test pentru organizatorul 'Emhasce'
+def populate_reviews_for_emhasce():
+    try:
+        organizer = User.objects.get(username='Emhasce')
+        # Obținem primii 3 utilizatori din baza de date (excluzând organizatorul)
+        reviewers = User.objects.exclude(username='Emhasce')[:3]
+        
+        if reviewers.exists():
+            reviews = [
+                {'user': reviewers[0], 'comment': 'Great organizer! Very professional and attentive to details.', 'stars': 5},
+                {'user': reviewers[1], 'comment': 'Amazing experience! Everything was perfectly organized.', 'stars': 5},
+                {'user': reviewers[2], 'comment': 'Excellent service and communication throughout the event.', 'stars': 4},
+            ]
+            
+            for review_data in reviews:
+                Review.objects.get_or_create(
+                    user=review_data['user'],
+                    organizer=organizer,
+                    defaults={
+                        'comment': review_data['comment'],
+                        'stars': review_data['stars'],
+                        'created_at': timezone.now()
+                    }
+                )
+    except User.DoesNotExist:
+        print("Organizer 'Emhasce' not found in the database.")
+    except Exception as e:
+        print(f"Error populating reviews: {str(e)}")
+
+# Apelăm funcția pentru a popula review-urile
+populate_reviews_for_emhasce()
 

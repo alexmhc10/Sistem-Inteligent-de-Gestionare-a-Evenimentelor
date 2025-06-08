@@ -133,10 +133,12 @@ class DeviceAccess(models.Model):
 
 
 class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) 
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer_reviews')
     comment = models.TextField()
     stars = models.IntegerField(choices=[(i, f"{i} stele") for i in range(1, 6)], default=5)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.comment[0:20]
