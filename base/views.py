@@ -59,6 +59,8 @@ from django.views.decorators.csrf import csrf_exempt
 from PIL import Image
 from .table_arrangement_algorithm import TableArrangementAlgorithm
 from django.views.decorators.http import require_GET
+from django.forms import modelformset_factory
+
 
 
 class NotificationView(View):
@@ -1804,12 +1806,16 @@ def personal_eveniment_home(request):
     return render(request, 'base/personal_eveniment_home.html', context)
 
 
+TableFormSet = modelformset_factory(Table, form=TableForm, extra=1, can_delete=True)
+
 @login_required(login_url='/login')
 @user_is_staff
 def personal_profile(request):
     location_owned = Location.objects.filter(owner=request.user).first()
+    print(location_owned)
     profile = Profile.objects.get(user = request.user)
     location_images = LocationImages.objects.filter(location=location_owned)
+
 
     if request.method == 'POST':
         form_type = request.POST.get('form_type')
@@ -1835,10 +1841,19 @@ def personal_profile(request):
             profile.work_link = request.POST.get('website')
             profile.instagram = request.POST.get('instagram')
             profile.save()
+        
+        elif form_type == 'formTable':
+            formset = TableFormSet(request.POST)
+            if formset.is_valid():
+                tables = formset.save(commit=False)
+                for table in tables:
+                    table.location = location_owned
+                    table.save()
     else:
         form_type = LocationEventTypesForm(instance=location_owned)
+        formset = TableFormSet(queryset=Table.objects.none())
 
-
+    formset = TableFormSet(queryset=Table.objects.none())
     form_types = LocationEventTypesForm(instance=location_owned)
     location_owned = Location.objects.filter(owner=request.user).first()
     profile = Profile.objects.filter(user = location_owned.owner).first()
@@ -1847,9 +1862,19 @@ def personal_profile(request):
         'location_data':location_owned,
         'profile':profile,
         'location_images':location_images,
-        'form': form_types
+        'form': form_types,
+        'formset': formset
     }
     return render(request, 'base/personal_profile.html', context)
+
+
+@login_required
+def get_tables_for_location(request, location_id):
+    tables_location = Location.objects.get(id=location_id)
+    tables = Table.objects.filter(location=tables_location).values(
+        'id', 'table_number', 'capacity', 'shape', 'notes'
+    )
+    return JsonResponse(list(tables), safe=False)
 
 
 @login_required(login_url='/login')
@@ -3020,4 +3045,6 @@ def populate_reviews_for_emhasce():
 
 # Apelăm funcția pentru a popula review-urile
 populate_reviews_for_emhasce()
+
+
 

@@ -239,3 +239,15 @@ class EventPostForm(forms.ModelForm):
             if len(images) > 10:
                 raise forms.ValidationError("Puteți încărca maxim 10 imagini.")
             return images
+
+
+class TableForm(forms.ModelForm):
+    class Meta:
+        model = Table
+        exclude = ['location']
+
+    def __init__(self, *args, **kwargs):
+        
+        super(TableForm, self).__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs['class'] = 'form-control'

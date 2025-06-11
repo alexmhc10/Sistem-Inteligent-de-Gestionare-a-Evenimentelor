@@ -219,7 +219,158 @@
               </div>
             </div>
             </div>
-            
+            <div class="display-tables">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="header d-flex flex-row justify-content-between">
+                          <h5 class="card-title">Tables list</h5>
+                          <form action="" class="d-flex flex-row">
+                            <input type="text" class="form-control me-2" name="searchGuest" id="" placeholder="Table number">
+                            <button class="btn btn-primary" type="submit">Search</button>
+                          </form>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table text-nowrap align-middle mb-0" id="table-table" data-location-id="{{location_data.id}}">
+                              <thead>
+                                  <tr class="border-2 border-bottom border-primary justify-content-center border-0">
+                                      <th scope="col" class="ps-0 text-center">No</th>
+                                      <th scope="col" class="text-center">Capacity</th>
+                                      <th scope="col" class="ps-0 text-center">Shape</th>
+                                      <th scope="col" class="text-center">Notes</th>
+                              </thead>
+                              <tbody class="table-group-divider">
+                                  <tr class="table-row-table" data-id="">
+                                      <td class="ps-0 fw-medium"></td>
+                                      <td class="text-center fw-medium"></td>
+                                      <td class="text-center fw-medium"></td>
+                                      <td class="text-center fw-medium"></td>
+                                      <td class="text-center fw-medium"></td>
+                                  </tr>
+                              </tbody>
+
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+             <script>
+                function loadTables(locationId) {
+                  fetch(`/tables/${locationId}`)
+                    .then(response => {
+                      if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                      }
+                      return response.json();
+                    })
+                    .then(data => {
+                      const tbody = document.querySelector('.table-group-divider');
+                      tbody.innerHTML = '';
+
+                      data.forEach((table, index) => {
+                        const row = document.createElement('tr');
+                        row.classList.add('table-row-table');
+                        row.dataset.id = table.id;
+
+                        row.innerHTML = `
+                          <td class="ps-0 fw-medium text-center">${table.table_number}</td>
+                          <td class="text-center fw-medium">${table.capacity}</td>
+                          <td class="text-center fw-medium">${table.shape.charAt(0).toUpperCase() + table.shape.slice(1)}</td>
+                          <td class="text-center fw-medium">${table.notes || '—'}</td>
+                        `;
+
+                        tbody.appendChild(row);
+                      });
+                    })
+                    .catch(error => {
+                      console.error('Error fetching table data:', error);
+                    });
+                }
+
+                document.addEventListener('DOMContentLoaded', () => {
+                  const locationId = document.getElementById("table-table").dataset.locationId;
+                  loadTables(locationId);
+                });
+              </script>
+
+            </div>
+
+            <h2>Configure your table layout at: {{ location_data.name }}</h2>
+
+            <form method="post" id="table-form">
+              {% csrf_token %}
+              {{ formset.management_form }}
+
+              <div id="table-list">
+                {% for form in formset %}
+                  <div class="form-row border p-3 mb-3 rounded bg-light">
+                    {% for field in form.visible_fields %}
+                      <div class="row mb-2">
+                        <div class="col-md-4 fw-bold">
+                          {{ field.label_tag }}
+                        </div>
+                        <div class="col-md-8">
+                          {{ field }}
+                          {% if field.errors %}
+                            <div class="text-danger small">{{ field.errors }}</div>
+                          {% endif %}
+                        </div>
+                      </div>
+                    {% endfor %}
+                    <div class="text-end">
+                      <button type="button" class="btn btn-danger remove-row">Șterge masa</button>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+
+              <button type="button" class="btn btn-secondary" id="add-row">Adaugă masă</button>
+              <button type="submit" class="btn btn-primary" name="form_type" value="formTable">Salvează configurația</button>
+            </form>
+
+
+            <script>
+              let formIndex = {{ formset.total_form_count }};
+              const tableBody = document.querySelector('#table-list tbody');
+              const emptyForm = `{{ formset.empty_form.as_p|escapejs }}`;
+
+              document.getElementById('add-row').addEventListener('click', function () {
+                const newRow = document.createElement('tr');
+                newRow.classList.add('form-row');
+                newRow.innerHTML = emptyForm.replace(/__prefix__/g, formIndex);
+
+                // transformăm în celule de tabel
+                const cells = Array.from(newRow.querySelectorAll('p')).map(p => {
+                  const td = document.createElement('td');
+                  td.innerHTML = p.innerHTML;
+                  return td;
+                });
+                cells.push(createDeleteCell());
+                newRow.innerHTML = '';
+                cells.forEach(cell => newRow.appendChild(cell));
+                tableBody.appendChild(newRow);
+
+                formIndex++;
+                document.getElementById('id_form-TOTAL_FORMS').value = formIndex;
+              });
+
+              function createDeleteCell() {
+                const td = document.createElement('td');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-danger remove-row';
+                btn.textContent = 'Șterge';
+                btn.onclick = () => btn.closest('tr').remove();
+                td.appendChild(btn);
+                return td;
+              }
+
+              document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-row')) {
+                  e.target.closest('tr').remove();
+                }
+              });
+            </script>
+
             <div class="col-lg-12">
                 <div class="card">
                   <div class="card-body">

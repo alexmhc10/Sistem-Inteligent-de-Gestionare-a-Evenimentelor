@@ -88,6 +88,8 @@ urlpatterns = [
     path("personal_menu/", views.personal_menu, name="personal_menu"),
     path("completed_event/<int:pk>", views.completed_event, name='completed_event'),
     
+    #Personal sistem mese
+    path('tables/<int:location_id>', views.get_tables_for_location, name='tables'),
 
     #Guest
     path('guest_home', views.guest_home, name='guest_home'),
