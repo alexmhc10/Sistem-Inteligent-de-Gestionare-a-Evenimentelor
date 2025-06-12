@@ -2286,9 +2286,6 @@ def guest_profile(request):
                 profil.email = request.POST.get('email')
                 profil.age = request.POST.get('age')
                 
-                if 'photo' in request.FILES:
-                    profil.photo = request.FILES['photo']
-                
                 preferences = profil.guest_profile
                 preferences.gender = request.POST.get('gender')
                 preferences.cuisine_preference = request.POST.get('meniuSet')
@@ -2317,9 +2314,7 @@ def guest_profile(request):
                 profil.first_name = request.POST.get('firstname')
                 profil.last_name = request.POST.get('lastname')
                 profil.user.email = request.POST.get('email')
-                profil.email = request.POST.get('email') 
-                if 'photo' in request.FILES:
-                    profil.photo = request.FILES.get('photo')
+                profil.email = request.POST.get('email')
                 profil.number = request.POST.get('number')
 
                 profil.save()
@@ -2346,6 +2341,19 @@ def guest_profile(request):
     }            
 
     return render(request, 'base/guest_profile.html', context)
+
+
+@require_POST
+@login_required
+def update_profile_picture(request):
+    profile = request.user.profile_set.first()
+    print("Profilul:", profile)
+    image = request.FILES.get('image')
+    if image:
+        profile.photo = image
+        profile.save()
+        return JsonResponse({'success': True, 'image_url': profile.photo.url})
+    return JsonResponse({'success': False, 'error': 'No image'})
 
 
 @login_required(login_url='/login')
@@ -2389,7 +2397,9 @@ def guest_home(request):
         "profile": profil,
         "next_confirmed_event": next_confirmed_event,
         "upcoming_events": upcoming_events,
+        "upcoming_events_count": upcoming_events.count(),
         "past_events": past_events,
+        "past_events_count": past_events.count(),
         "event": next_confirmed_event,
         "event_data": json.dumps(event_data)
     }

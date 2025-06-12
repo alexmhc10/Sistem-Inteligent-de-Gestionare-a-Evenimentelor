@@ -96,6 +96,7 @@ urlpatterns = [
     path('guest_profile', views.guest_profile, name='guest_profile'),
     path('guest_event_view/<int:pk>', views.guest_event_view, name='guest_event_view'),
     path('event_status_api/<int:pk>', views.event_status_api, name='event_status_api'),
+    path('update_profile_picture/', views.update_profile_picture, name='update_profile_picture'),
 
     #Postari
     path('like/<int:post_id>', views.like_post, name='like_post'),
