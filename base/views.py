@@ -2131,111 +2131,111 @@ def load_known_faces():
 load_known_faces()
 
 @csrf_exempt
-def scan(request, event_id):
-    event = get_object_or_404(Event, id=event_id)
-    print(f"DEBUG: Event găsit: {event.event_name}")
+# def scan(request, event_id):
+#     event = get_object_or_404(Event, id=event_id)
+#     print(f"DEBUG: Event găsit: {event.event_name}")
     
-    known_face_encodings = []
-    known_face_names = []
+#     known_face_encodings = []
+#     known_face_names = []
 
-    print("📥 Încărcare profile...")
-    profiles = Profile.objects.filter(user_type="guest")
-    for profile in profiles:
-        if not profile.photo:
-            continue
+#     print("📥 Încărcare profile...")
+#     profiles = Profile.objects.filter(user_type="guest")
+#     for profile in profiles:
+#         if not profile.photo:
+#             continue
 
-        try:
-            image_path = profile.photo.path
-            image = face_recognition.load_image_file(image_path)
-            encodings = face_recognition.face_encodings(image)
+#         try:
+#             image_path = profile.photo.path
+#             image = face_recognition.load_image_file(image_path)
+#             encodings = face_recognition.face_encodings(image)
 
-            if not encodings:
-                print(f"⚠️ Nicio față detectată în poza pentru {profile.username}")
-                continue
+#             if not encodings:
+#                 print(f"⚠️ Nicio față detectată în poza pentru {profile.username}")
+#                 continue
 
-            print(f"✅ Față detectată pentru {profile.username}")
-            known_face_encodings.append(encodings[0])
-            known_face_names.append(profile.username)
+#             print(f"✅ Față detectată pentru {profile.username}")
+#             known_face_encodings.append(encodings[0])
+#             known_face_names.append(profile.username)
 
-        except Exception as e:
-            print(f"❌ Eroare la {profile.username}: {e}")
-            continue
+#         except Exception as e:
+#             print(f"❌ Eroare la {profile.username}: {e}")
+#             continue
 
-    if not known_face_encodings:
-        return HttpResponse("⚠️ Nicio față validă nu a fost găsită în profilurile utilizatorilor.")
+#     if not known_face_encodings:
+#         return HttpResponse("⚠️ Nicio față validă nu a fost găsită în profilurile utilizatorilor.")
 
-    print("📸 Pornire cameră...")
-    video_capture = cv2.VideoCapture(0)
-    if not video_capture.isOpened():
-        return HttpResponse("❌ Eroare: Camera nu a putut fi pornită.")
+#     print("📸 Pornire cameră...")
+#     video_capture = cv2.VideoCapture(0)
+#     if not video_capture.isOpened():
+#         return HttpResponse("❌ Eroare: Camera nu a putut fi pornită.")
 
-    face_locations = []
-    face_encodings = []
-    face_names = []
-    process_this_frame = True
+#     face_locations = []
+#     face_encodings = []
+#     face_names = []
+#     process_this_frame = True
 
-    try:
-        while True:
-            ret, frame = video_capture.read()
-            if not ret:
-                print("⚠️ Nu s-a putut citi de la cameră.")
-                break
+#     try:
+#         while True:
+#             ret, frame = video_capture.read()
+#             if not ret:
+#                 print("⚠️ Nu s-a putut citi de la cameră.")
+#                 break
 
-            small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-            rgb_small_frame = small_frame[:, :, ::-1]
+#             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
+#             rgb_small_frame = small_frame[:, :, ::-1]
 
-            if process_this_frame:
-                face_locations = face_recognition.face_locations(rgb_small_frame)
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+#             if process_this_frame:
+#                 face_locations = face_recognition.face_locations(rgb_small_frame)
+#                 face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
 
-                face_names = []
-                for face_encoding in face_encodings:
-                    name = "Unknown"
-                    try:
-                        face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
-                        best_match_index = np.argmin(face_distances)
+#                 face_names = []
+#                 for face_encoding in face_encodings:
+#                     name = "Unknown"
+#                     try:
+#                         face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+#                         best_match_index = np.argmin(face_distances)
 
-                        if face_distances.size > 0 and face_distances[best_match_index] < 0.6:
-                            name = known_face_names[best_match_index]
+#                         if face_distances.size > 0 and face_distances[best_match_index] < 0.6:
+#                             name = known_face_names[best_match_index]
 
-                            profile = Profile.objects.get(username=name)
-                            already_logged = Log.objects.filter(profile=profile, event=event).exists()
-                            if not already_logged:
-                                Log.objects.create(profile=profile, event=event, created=now())
-                                print(f"✅ {name} a fost marcat ca prezent.")
-                    except Exception as e:
-                        print(f"❌ Eroare la compararea feței detectate: {e}")
+#                             profile = Profile.objects.get(username=name)
+#                             already_logged = Log.objects.filter(profile=profile, event=event).exists()
+#                             if not already_logged:
+#                                 Log.objects.create(profile=profile, event=event, created=now())
+#                                 print(f"✅ {name} a fost marcat ca prezent.")
+#                     except Exception as e:
+#                         print(f"❌ Eroare la compararea feței detectate: {e}")
 
-                    face_names.append(name)  # ✅ Corect: doar o singură dată
+#                     face_names.append(name)  # ✅ Corect: doar o singură dată
 
-            process_this_frame = not process_this_frame
+#             process_this_frame = not process_this_frame
 
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
+#             for (top, right, bottom, left), name in zip(face_locations, face_names):
+#                 top *= 4
+#                 right *= 4
+#                 bottom *= 4
+#                 left *= 4
 
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.6, (255, 255, 255), 1)
+#                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
+#                 cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 255, 0), cv2.FILLED)
+#                 font = cv2.FONT_HERSHEY_DUPLEX
+#                 cv2.putText(frame, name, (left + 6, bottom - 6), font, 0.6, (255, 255, 255), 1)
 
-            cv2.imshow('Scanare facială', frame)
+#             cv2.imshow('Scanare facială', frame)
 
-            if cv2.waitKey(1) & 0xFF == 13:  # Enter
-                break
+#             if cv2.waitKey(1) & 0xFF == 13:  # Enter
+#                 break
 
-    except Exception as e:
-        print(f"❌ Eroare în timpul rulării: {e}")
-        return HttpResponse(f"Eroare în timpul scanării: {e}")
+#     except Exception as e:
+#         print(f"❌ Eroare în timpul rulării: {e}")
+#         return HttpResponse(f"Eroare în timpul scanării: {e}")
 
-    finally:
-        print("📴 Oprire cameră și închidere ferestre.")
-        video_capture.release()
-        cv2.destroyAllWindows()
+#     finally:
+#         print("📴 Oprire cameră și închidere ferestre.")
+#         video_capture.release()
+#         cv2.destroyAllWindows()
 
-    return HttpResponse("✅ Scanare completă.")
+#     return HttpResponse("✅ Scanare completă.")
 
     
 
@@ -2420,6 +2420,10 @@ def guest_event_view(request, pk):
     profile=Profile.objects.get(user=request.user)
     preferences = Guests.objects.get(profile = profile)
     menus=Menu.objects.all()
+    appetizers = Menu.objects.filter(category='appetizer')
+    main_courses = Menu.objects.filter(category='main')
+    desserts = Menu.objects.filter(category='dessert')
+    drinks = Menu.objects.filter(category='drink')
 
     if request.method == "POST" and request.POST.get("response"):
         print(request.POST)
@@ -2485,6 +2489,10 @@ def guest_event_view(request, pk):
         'event_data': json.dumps(event_data),
         'rsvp':rsvp,
         'menus':menus,
+        'appetizers': appetizers,
+        'main_courses': main_courses,
+        'desserts': desserts,
+        'drinks': drinks,
         'form': form,
         'guest_posts': guest_posts,
         'guest_posts_count': guest_posts.count(),
@@ -2492,6 +2500,52 @@ def guest_event_view(request, pk):
         'event_posts_count': event_posts.count()
     }
     return render(request,'base/guest_event_view.html', context)
+
+
+@login_required
+def generate_menu(request):
+    guest = request.user.profile_set.first().guest_profile
+    print("Guest profile:", guest)
+    preferred_region = guest.cuisine_preference
+    guest_allergens = guest.allergens.all()
+
+    safe_dishes = Menu.objects.exclude(allergens__in=guest_allergens).distinct()
+
+    menu = {}
+    messages = []
+    categories = ['appetizer', 'main', 'dessert', 'drink']
+
+    for category in categories:
+
+        regional_dishes = safe_dishes.filter(category=category, item_cuisine=preferred_region)
+        
+        if regional_dishes.exists():
+            selected = regional_dishes[:3]
+        else:
+            messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
+
+            other_dishes = safe_dishes.filter(category=category)
+            if other_dishes.exists():
+                selected = other_dishes[:3]
+            else:
+                messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
+                selected = []
+
+        menu[category] = [
+            {
+                'id': dish.id,
+                'name': dish.item_name,
+                'region': dish.item_cuisine,
+                'category': dish.category,
+                'image': dish.item_picture.url if dish.item_picture else "",
+                'allergens': [allergen.name for allergen in dish.allergens.all()],
+                'is_vegan': dish.item_vegan,
+                
+            } for dish in selected
+        ]
+
+    return JsonResponse({'menu': menu, 'messages': messages})
+
 
 
 @login_required(login_url='/login')

@@ -135,10 +135,10 @@ class DeviceAccess(models.Model):
 class Review(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer_reviews')
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer_reviews', null=True, blank=True)
     comment = models.TextField()
     stars = models.IntegerField(choices=[(i, f"{i} stele") for i in range(1, 6)], default=5)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
 
     def __str__(self):
         return self.comment[0:20]
@@ -179,8 +179,15 @@ class Guests(models.Model):
 
 
 class Menu(models.Model):
+    CATEGORY_CHOICES = [
+        ('appetizer', 'Appetizer'),
+        ('main', 'Main'),
+        ('dessert', 'Desert'),
+        ('drink', 'Drink'),
+    ]
     at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     item_name = models.CharField(max_length=80)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
     item_cuisine = models.CharField(max_length=20)
     item_vegan = models.BooleanField(default=False)
     allergens = models.ManyToManyField(Allergen, blank=True)
@@ -285,8 +292,16 @@ class Log(models.Model):
 
 
 class EventMenu(models.Model):
+    CATEGORY_CHOICES = [
+        ('appetizer', 'Appetizer'),
+        ('main', 'Main'),
+        ('dessert', 'Desert'),
+        ('drink', 'Drink'),
+    ]
     event = models.ForeignKey(Event, related_name='menus', on_delete=models.CASCADE)
     item_name = models.CharField(max_length=80)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
+    description = models.TextField(null=True, blank=True)
     item_cuisine = models.CharField(max_length=20)
     item_vegan = models.BooleanField(default=False)
     allergens = models.JSONField(default=list, blank=True, null=True)

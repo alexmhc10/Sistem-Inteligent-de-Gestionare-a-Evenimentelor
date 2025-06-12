@@ -164,13 +164,20 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           }
                         </script>
                         <div class="col-lg-12">
+
+
+
                           <div class="header d-flex justify-content-center">
                             <h1 class="h1 text-center">Configure the menu for this event</h1>
                           </div>
         
-                            <hr>
+                          <hr>
+                          <div class="d-flex justify-content-center">
+                            <button class="btn btn-primary me-2" id="explore-menu-btn">Explore the menu by yourself</button>
+                            <button class="btn btn-primary" id="generate-menu">Generate personalised menu for you</button>
+                          </div>
 
-                          <form action="" method="POST" id="menu-configuration">
+                          <form action="" method="POST" id="menu-configuration" hidden>
                               {% csrf_token %}
                           <div class="row d-flex flex-row mt-4">
 
@@ -178,7 +185,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <h4 class="h4">Choose appetizer:</h4>
                               <select name="appetizer" class="form-select" id="foodSelect">
                                 <option value="">-- see the menu --</option>
-                                {% for food in menus %}
+                                {% for food in appetizers %}
                                   <option value="{{food.id}}">{{food.item_name}}</option>
                                 {% endfor %}
                               </select>
@@ -197,7 +204,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <h4 class="h4">Pick main course</h4>
                               <select id="mainCourse" class="form-select">
                                   <option value="">-- see the menu --</option>
-                                  {% for food in menus %}
+                                  {% for food in main_courses %}
                                       <option value="{{ food.id }}">{{ food.item_name }}</option>
                                   {% endfor %}
                               </select>
@@ -216,7 +223,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <h4 class="h4">Select desert</h4>
                               <select id="desertSelect" class="form-select">
                                   <option value="">-- Select the desert --</option>
-                                  {% for food in menus %}
+                                  {% for food in desserts %}
                                       <option value="{{ food.id }}">{{ food.item_name }}</option>
                                   {% endfor %}
                               </select>
@@ -235,7 +242,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 <h4 class="h4">Choose drinks</h4>
                                 <select id="step3Select" class="form-select">
                                     <option value="">-- Select the drink --</option>
-                                    {% for food in menus %}
+                                    {% for food in drinks %}
                                         <option value="{{ food.id }}">{{ food.item_name }}</option>
                                     {% endfor %}
                                 </select>
@@ -260,10 +267,149 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </div>
                           </div>
                           </form>
-        
+                          
+                          <div id="suggested-menu" class="row g-3">
+
+                          </div>
                               
                           </div>  
                         </div>
+                        <script>
+document.getElementById("generate-menu").addEventListener("click", () => {
+    fetch("/generate-menu/")
+        .then(res => res.json())
+        .then(data => {
+            const container = document.getElementById("suggested-menu");
+            container.innerHTML = "";
+
+            const MEDIA_URL = "{{ MEDIA_URL }}"
+
+            for (const [category, dishes] of Object.entries(data.menu)) {
+                // Titlu de categorie
+                const title = document.createElement("h4");
+                title.className = "text-primary fw-bold text-capitalize mt-4";
+                title.textContent = category;
+                container.appendChild(title);
+
+                const row = document.createElement("div");
+                row.className = "row g-3 mb-4";
+
+                if (dishes.length) {
+                    dishes.forEach(item => {
+                        const col = document.createElement("div");
+                        col.className = "col-lg-4 fade-in-top";
+
+                        let allergenHTML = '';
+                        if (item.allergens.length) {
+                            allergenHTML = item.allergens.map(name => `<span class="allergen-badge">${name}</span>`).join(', ');
+                        } else {
+                            allergenHTML = `<span class="no-allergens">No allergens</span>`;
+                        }
+                        const veganHTML = item.is_vegan
+                            ? `<i class="ti ti-message-2 text-dark fs-5"></i> vegan`
+                            : `<i class="ti ti-message-2 text-dark fs-5"></i> non-vegan`;
+
+                        col.innerHTML = `
+                            <div class="card overflow-hidden hover-img card-hover shadow-sm h-100">
+                                <div class="position-relative">
+                                    <img src="${item.image || MEDIA_URL + 'placeholder.jpg'}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="dish image">
+                                </div>
+                                <div class="card-body ps-3 pt-3 pb-3 pe-0">
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <a class="d-block fs-5 m-0 text-dark fw-semibold link-primary" href="#">${item.name}</a>
+                                        <a class="dropdown-toggle me-2" href="#" role="button" data-bs-toggle="dropdown" title="Settings" aria-expanded="false">
+                                            <i class="bi bi-three-dots-vertical"></i>                      
+                                        </a>
+                                        <ul class="dropdown-menu">
+                                            <li class="d-flex flex-row justify-content-center align-items-center">
+                                                <a class="dropdown-item edit-food-btn text-primary-emphasis" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="${item.id}">
+                                                    <i class="bi bi-pencil me-2"></i>Edit dish
+                                                </a>
+                                            </li>
+                                            <input type="text" class="edit-food-btn" id="foodId" value="${item.id}" hidden>
+                                            <li class="d-flex flex-row justify-content-center align-items-center">
+                                                <a class="dropdown-item text-danger" role="button" onclick="confirmDeleteDish(${item.id})">
+                                                    <i class="bi bi-trash3 me-2"></i>Delete dish
+                                                </a>
+                                            </li>                      
+                                        </ul>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-4 mt-3">
+                                        <div class="d-flex align-items-center flex-wrap gap-1">
+                                            ${allergenHTML}
+                                        </div>
+                                        <div class="d-flex align-items-center gap-2">
+                                            ${veganHTML}
+                                        </div>
+                                        <div class="d-flex align-items-center fs-6 ms-auto text-muted">
+                                            <i class="ti ti-point text-dark me-1"></i>${item.region}
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        `;
+                        row.appendChild(col);
+                    });
+                } else {
+                    const msg = document.createElement("div");
+                    msg.className = "alert alert-danger fade-in-top mt-2";
+                    msg.textContent = `Nicio sugestie pentru categoria: ${category}.`;
+                    const button = document.createElement("button");
+                    button.className = "btn-close";
+                    button.setAttribute("data-bs-dismiss", "alert");
+                    button.setAttribute("type", "button");
+                    button.setAttribute("aria-label", "Close");
+                    msg.appendChild(button);  
+                    row.appendChild(msg);
+                }
+
+                container.appendChild(row);
+            }
+
+            // Mesaje informative (fallback, alergeni etc.)
+            data.messages.forEach(msg => {
+                const alert = document.createElement("div");
+                alert.className = "alert alert-warning fade-in-top mt-2";
+                alert.textContent = msg;
+                container.appendChild(alert);
+            });
+        })
+        .catch(err => {
+            console.error("Eroare la generarea meniului:", err);
+            const container = document.getElementById("suggested-menu");
+            const errorMsg = document.createElement("div");
+            errorMsg.className = "alert alert-danger mt-3";
+            errorMsg.textContent = "A apărut o eroare la generarea meniului. Încearcă din nou.";
+            container.appendChild(errorMsg);
+        });
+});
+</script>
+
+<style>
+.fade-in-top {
+  animation: fadeInDown 0.5s ease-in-out;
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+</style>
+
+                        <script>
+                          document.getElementById('explore-menu-btn').addEventListener('click', function () {
+                            const form = document.getElementById('menu-configuration');
+                            form.removeAttribute('hidden');
+                            form.scrollIntoView({ behavior: 'smooth' });
+                          });
+                        </script>
 
                         <script>
                           document.addEventListener('DOMContentLoaded', function() {

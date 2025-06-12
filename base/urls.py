@@ -105,8 +105,9 @@ urlpatterns = [
     path('delete_comment/<int:comment_id>/', views.delete_comment, name='delete_comment'),
 
     #Face_recog
-    path('scan/<int:event_id>/', views.scan, name='scan'),
-    
+    #path('scan/<int:event_id>/', views.scan, name='scan'),
+    path('generate-menu/', views.generate_menu, name='generate-menu'),
+
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),
     path("get_notifications/", views.get_notifications, name="get_notifications"),
