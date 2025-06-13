@@ -764,6 +764,98 @@
         margin-bottom: 15px;
     }
 
+    /* Category Item Styles */
+    .category-item {
+        padding: 15px;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-gold);
+        transition: var(--transition-smooth);
+    }
+
+    .category-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-info h6 {
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .category-item .progress {
+        background-color: rgba(212, 175, 55, 0.2);
+    }
+
+    .category-item .badge {
+        font-size: 0.8rem;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    /* Performance Item Styles */
+    .performance-item {
+        padding: 15px;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-gold);
+        transition: var(--transition-smooth);
+    }
+
+    .performance-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .metric-value {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--primary-dark);
+        margin-bottom: 2px;
+    }
+
+    .performance-metrics small {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .performance-bar .progress {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
+    }
+
+    /* Revenue Analytics Styles */
+    .revenue-analytics-container {
+        height: 100%;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    .revenue-item {
+        padding: 15px;
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: var(--border-radius);
+        border-left: 4px solid var(--primary-gold);
+        transition: var(--transition-smooth);
+    }
+
+    .revenue-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .revenue-metrics .metric-value {
+        font-size: 1.1rem;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+
+    .revenue-bar .progress {
+        background-color: rgba(0, 0, 0, 0.1);
+        border-radius: 3px;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
         .tabs-container {
@@ -832,7 +924,7 @@
           <div class="tabs-container mb-3 d-flex justify-content-center">
               <button class="tab-button active" data-tab="1">Notifications</button>
               <button class="tab-button" data-tab="2">Event Analytics</button>
-              <button class="tab-button" data-tab="3">Event Management</button>
+              <button class="tab-button" data-tab="3">Revenue Analytics</button>
           </div>
           <div class="tab-content" data-tab="1" id="tab1">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -905,7 +997,7 @@
                       <div class="col-md-4">
                           <div class="analytics-card">
                               <h6>Avg. Rating</h6>
-                              <div class="analytics-number">{{ average_rating|default:"N/A" }}</div>
+                              <div class="analytics-number">{{ average_rating }}</div>
                           </div>
                       </div>
                   </div>
@@ -914,59 +1006,146 @@
                   <div class="chart-container">
                       <h6 class="chart-title">Popular Categories</h6>
                       <div class="categories-chart">
-                          <!-- Chart will be rendered here -->
+                          {% for category in popular_categories %}
+                          <div class="category-item mb-3">
+                              <div class="d-flex justify-content-between align-items-center mb-2">
+                                  <div class="category-info">
+                                      <h6 class="mb-0" style="color: var(--primary-dark);">{{ category.name }}</h6>
+                                      <small class="text-muted">{{ category.count }} events</small>
+                                  </div>
+                                  <span class="badge" style="background: var(--gold-gradient); color: white;">{{ category.percentage }}%</span>
+                              </div>
+                              <div class="progress" style="height: 8px;">
+                                  <div class="progress-bar" style="width: {{ category.percentage }}%; background: var(--gold-gradient);"></div>
+                              </div>
+                          </div>
+                          {% empty %}
+                          <div class="text-center py-3 text-muted">
+                              <i class="fas fa-chart-pie fa-2x mb-2"></i>
+                              <p>No categories data available</p>
+                          </div>
+                          {% endfor %}
                       </div>
                   </div>
 
                   <!-- Recent Performance -->
                   <div class="chart-container">
-                      <h6 class="chart-title">Recent Performance</h6>
+                      <h6 class="chart-title">Recent Performance (Last 6 Months)</h6>
                       <div class="performance-chart">
-                          <!-- Chart will be rendered here -->
+                          {% for performance in recent_performance %}
+                          <div class="performance-item mb-3">
+                              <div class="row align-items-center">
+                                  <div class="col-3">
+                                      <h6 class="mb-0" style="color: var(--primary-dark);">{{ performance.month }}</h6>
+                                  </div>
+                                  <div class="col-9">
+                                      <div class="performance-metrics">
+                                          <div class="row text-center">
+                                              <div class="col-3">
+                                                  <div class="metric-value">{{ performance.events }}</div>
+                                                  <small class="text-muted">Events</small>
+                                              </div>
+                                              <div class="col-3">
+                                                  <div class="metric-value">{{ performance.participants }}</div>
+                                                  <small class="text-muted">Guests</small>
+                                              </div>
+                                              <div class="col-3">
+                                                  <div class="metric-value">{{ performance.success_rate }}%</div>
+                                                  <small class="text-muted">Success</small>
+                                              </div>
+                                              <div class="col-3">
+                                                  <div class="metric-value">${{ performance.revenue|floatformat:0 }}</div>
+                                                  <small class="text-muted">Revenue</small>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="performance-bar mt-2">
+                                  <div class="progress" style="height: 4px;">
+                                      <div class="progress-bar" style="width: {{ performance.success_rate }}%; background: {% if performance.success_rate >= 95 %}#28a745{% elif performance.success_rate >= 80 %}var(--primary-gold){% else %}#dc3545{% endif %};"></div>
+                                  </div>
+                              </div>
+                          </div>
+                          {% empty %}
+                          <div class="text-center py-3 text-muted">
+                              <i class="fas fa-chart-line fa-2x mb-2"></i>
+                              <p>No performance data available</p>
+                          </div>
+                          {% endfor %}
                       </div>
                   </div>
               </div>
           </div>
           <div class="tab-content" data-tab="3" style="display: none;">
-              <div class="event-management-container p-3">
-                  <div class="d-flex justify-content-between align-items-center mb-4">
-                      <h5 class="card-title mb-0">Event Management</h5>
-                      <div class="filters">
-                          <select class="form-select form-select-sm">
-                              <option value="">All Status</option>
-                              <option value="draft">Draft</option>
-                              <option value="published">Published</option>
-                              <option value="completed">Completed</option>
-                          </select>
+              <div class="revenue-analytics-container p-3">
+                  <h5 class="card-title mb-4">Revenue Analytics</h5>
+                  
+                  <!-- Revenue Summary Cards -->
+                  <div class="row mb-4">
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Total Revenue</h6>
+                              <div class="analytics-number">${{ total_revenue|floatformat:0 }}</div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Total Costs</h6>
+                              <div class="analytics-number">${{ total_costs|floatformat:0 }}</div>
+                          </div>
+                      </div>
+                      <div class="col-md-4">
+                          <div class="analytics-card">
+                              <h6>Net Profit</h6>
+                              <div class="analytics-number" style="color: {% if total_profit >= 0 %}#28a745{% else %}#dc3545{% endif %};">${{ total_profit|floatformat:0 }}</div>
+                          </div>
                       </div>
                   </div>
 
-                  <div class="events-list" style="max-height: 500px; overflow-y: auto;">
-                      {% for event in events %}
-                      <div class="event-card">
-                          <div class="d-flex justify-content-between align-items-center">
-                              <div>
-                                  <h6 class="mb-1">{{ event.title }}</h6>
-                                  <small class="text-muted">
-                                      {{ event.date }} • {{ event.participants_count }} participants
-                                  </small>
+                  <!-- Monthly Revenue Breakdown -->
+                  <div class="chart-container">
+                      <h6 class="chart-title">Monthly Revenue Breakdown</h6>
+                      <div class="revenue-chart" style="max-height: 300px; overflow-y: auto;">
+                          {% for month_data in revenue_analytics %}
+                          <div class="revenue-item mb-3">
+                              <div class="row align-items-center">
+                                  <div class="col-3">
+                                      <h6 class="mb-0" style="color: var(--primary-dark);">{{ month_data.month }}</h6>
+                                      <small class="text-muted">{{ month_data.events_count }} events</small>
+                                  </div>
+                                  <div class="col-9">
+                                      <div class="revenue-metrics">
+                                          <div class="row text-center">
+                                              <div class="col-4">
+                                                  <div class="metric-value" style="color: #28a745;">${{ month_data.revenue|floatformat:0 }}</div>
+                                                  <small class="text-muted">Revenue</small>
+                                              </div>
+                                              <div class="col-4">
+                                                  <div class="metric-value" style="color: #dc3545;">${{ month_data.costs|floatformat:0 }}</div>
+                                                  <small class="text-muted">Costs</small>
+                                              </div>
+                                              <div class="col-4">
+                                                  <div class="metric-value" style="color: {% if month_data.profit >= 0 %}var(--primary-gold){% else %}#dc3545{% endif %};">${{ month_data.profit|floatformat:0 }}</div>
+                                                  <small class="text-muted">Profit</small>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
                               </div>
-                              <div class="event-actions">
-                                  <button class="event-button">Edit</button>
-                                  <button class="event-button">Registrations</button>
-                                  <button class="event-button">Duplicate</button>
+                              <div class="revenue-bar mt-2">
+                                  <div class="progress" style="height: 6px;">
+                                      <div class="progress-bar bg-success" style="width: {% widthratio month_data.revenue total_revenue 100 %}%;" title="Revenue"></div>
+                                  </div>
                               </div>
                           </div>
-                          <div class="progress mt-2">
-                              <div class="progress-bar" role="progressbar" style="width: {{ event.completion_percentage }}%"></div>
+                          {% empty %}
+                          <div class="text-center py-3 text-muted">
+                              <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                              <p>No revenue data available</p>
                           </div>
+                          {% endfor %}
                       </div>
-                      {% empty %}
-                      <div class="text-center py-4 text-muted">
-                          <i class="fas fa-calendar-times fa-2x mb-2"></i>
-                          <p>No events found</p>
-                      </div>
-                      {% endfor %}
                   </div>
               </div>
           </div>
@@ -994,8 +1173,14 @@
           {% for event in upcoming_events %}
           <div class="event_item">
               <div class="ei_Dot {% if forloop.first %}dot_active{% endif %}"></div>
-              <div class="ei_Title">{{ event.time }}</div>
+              <div class="ei_Title">{{ event.time }} - {{ event.date }}</div>
               <div class="ei_Copy">{{ event.title }}</div>
+          </div>
+          {% empty %}
+          <div class="text-center py-3 text-muted">
+              <i class="fas fa-calendar-plus fa-2x mb-2" style="color: #C5B28A;"></i>
+              <p style="color: #4A4A4A; font-size: 14px;">No upcoming events</p>
+              <small style="color: #C5B28A;">Create your first event!</small>
           </div>
           {% endfor %}
       </div>
