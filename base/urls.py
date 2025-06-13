@@ -120,5 +120,6 @@ urlpatterns = [
     path('organizer-profile/<str:username>/', views.organizer_profile, name='organizer-profile'),
     path('organizer-locations', views.organizer_locations, name='organizer_locations'),
     path('organizer-events', views.organizer_events, name='organizer_events'),
+    path('financial-management/', views.financial_management, name='financial_management'),
     path('api/table-details/<int:table_id>/', table_details_api, name='table-details-api'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

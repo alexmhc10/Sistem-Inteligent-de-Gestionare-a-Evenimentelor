@@ -11,7 +11,13 @@
             {% endif %}
             <h1><a style="text-decoration: none;" href="{% url 'location' location.name %}">{{ location.name }}</a></h1>
             <h2>Adaugat de {{ location.owner }}</h2>
+            {% if location.gallery %}
             <img style="height: 200px; width: auto;" src="{{ location.gallery.url }}" alt="{{ location.location }}">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center" style="height: 200px; width: 100%; background-color: #f8f9fa; border-radius: 8px;">
+                <i class="fas fa-map-marker-alt fa-2x text-muted"></i>
+            </div>
+            {% endif %}
         </div>
     </div>
     <div class="mapouter" style="flex: 1;">

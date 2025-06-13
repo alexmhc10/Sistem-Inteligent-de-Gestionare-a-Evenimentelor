@@ -137,7 +137,13 @@ img:hover {
                 {% endfor %}
             {% endif %}
         </p>
+        {% if location.gallery %}
         <img src="{{ location.gallery.url }}" alt="{{ location.name }}">
+        {% else %}
+        <div class="d-flex align-items-center justify-content-center" style="height: 300px; background-color: #f8f9fa; border-radius: 8px;">
+            <i class="fas fa-map-marker-alt fa-4x text-muted"></i>
+        </div>
+        {% endif %}
     </div>
 
     <div class="reviews_comments">

@@ -652,7 +652,13 @@
    <td>
       <div class="d-flex align-items-center">
          <div class="avatar-sm bg-light rounded p-1 me-2">
+            {% if item.location.gallery %}
             <img src="{{ item.location.gallery.url }}" style="width: 100px;" alt="" class="img-fluid d-block">
+            {% else %}
+            <div class="d-flex align-items-center justify-content-center" style="width: 100px; height: 60px; background-color: #f8f9fa; border-radius: 4px;">
+               <i class="fas fa-map-marker-alt text-muted"></i>
+            </div>
+            {% endif %}
          </div>
          <div>
             <h5 class="fs-14 my-1">

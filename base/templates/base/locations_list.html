@@ -44,7 +44,9 @@
                     {% if location.gallery %}
                         <img src="{{ location.gallery.url }}" class="card-img-top rounded-top-4" alt="{{ location.name }}">
                     {% else %}
-                        <img src="https://via.placeholder.com/400x250?text=No+Image" class="card-img-top rounded-top-4" alt="Placeholder">
+                        <div class="card-img-top rounded-top-4 d-flex align-items-center justify-content-center" style="height: 200px; background-color: #f8f9fa;">
+                            <i class="fas fa-map-marker-alt fa-3x text-muted"></i>
+                        </div>
                     {% endif %}
                     
                     <div class="card-body d-flex flex-column">

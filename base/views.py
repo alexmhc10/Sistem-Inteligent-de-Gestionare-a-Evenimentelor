@@ -312,6 +312,66 @@ def home_organizer(request):
     return render(request, 'base/home-organizer.html', context)
 
 
+@login_required(login_url='login')
+@user_is_organizer
+def financial_management(request):
+    """View pentru managementul financiar al organizatorului"""
+    from decimal import Decimal
+    
+    # Obține evenimentele organizatorului
+    organizer_events = Event.objects.filter(organized_by=request.user)
+    
+    # Calculează statistici financiare
+    total_revenue = Decimal('0')
+    total_pending = Decimal('0')
+    completed_events = organizer_events.filter(completed=True)
+    pending_events = organizer_events.filter(completed=False, is_canceled=False)
+    
+    # Calculează veniturile totale din evenimente completate
+    for event in completed_events:
+        total_revenue += event.cost
+    
+    # Calculează veniturile în așteptare
+    for event in pending_events:
+        total_pending += event.cost
+    
+    # Calculează costurile estimate (30% din venituri)
+    total_costs = total_revenue * Decimal('0.3')
+    net_profit = total_revenue - total_costs
+    
+    # Tranzacții recente (simulat pentru demo)
+    recent_transactions = []
+    for event in completed_events.order_by('-event_date')[:5]:
+        recent_transactions.append({
+            'date': event.event_date,
+            'description': f'Payment for {event.event_name}',
+            'amount': float(event.cost),
+            'type': 'income',
+            'status': 'completed'
+        })
+    
+    # Informații card (simulat)
+    card_info = {
+        'card_number': '**** **** **** 1234',
+        'card_type': 'Visa',
+        'balance': float(net_profit),
+        'available_for_withdrawal': float(net_profit * Decimal('0.8'))  # 80% disponibil pentru retragere
+    }
+    
+    context = {
+        'total_revenue': float(total_revenue),
+        'total_pending': float(total_pending),
+        'total_costs': float(total_costs),
+        'net_profit': float(net_profit),
+        'recent_transactions': recent_transactions,
+        'card_info': card_info,
+        'completed_events_count': completed_events.count(),
+        'pending_events_count': pending_events.count(),
+    }
+    
+    return render(request, 'base/financial_management.html', context)
+
+
 @login_required
 def guest_list(request, event_id):
     event = get_object_or_404(
