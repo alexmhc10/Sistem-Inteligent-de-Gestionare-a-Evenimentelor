@@ -1,0 +1,28 @@
+.table-arrangement-container {
+    position: relative;
+    width: 100%;
+    min-height: 400px; /* Adjusted to accommodate two rows */
+    margin-top: 20px; /* Some spacing */
+}
+
+.table-circle {
+    width: 60px;
+    height: 60px;
+    background-color: #ffc107; /* Schimbat în galben */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    position: absolute;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.card-header {
+    background-color: #f8f9fa;
+} 

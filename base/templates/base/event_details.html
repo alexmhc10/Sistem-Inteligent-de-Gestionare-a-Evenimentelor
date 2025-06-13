@@ -89,34 +89,190 @@
                 <div class="col-12">
                     <div class="card shadow-lg border-0 glass-effect">
                         <div class="card-header bg-transparent border-0">
-                            <h3 class="text-center mb-0">Aranjament Mese</h3>
+                            <h3 class="text-center mb-0">Table Arrangement</h3>
                         </div>
                         <div class="card-body">
                             <!-- Room Layout -->
-                            <div class="room-layout mb-4" style="position: relative; min-height: 400px; background: #f8f9fa; border-radius: 10px;">
+                            <div class="room-layout mb-4" style="position: relative; min-height: 600px; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; border: 2px solid #dee2e6; overflow: hidden;">
+                                <!-- Restaurant Floor Pattern -->
+                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; 
+                                           background-image: 
+                                               radial-gradient(circle at 25% 25%, rgba(0,0,0,0.05) 1px, transparent 1px),
+                                               radial-gradient(circle at 75% 75%, rgba(0,0,0,0.05) 1px, transparent 1px);
+                                               background-size: 40px 40px;
+                                               opacity: 0.3;"></div>
+                                
+
+                                
+                                <!-- VIP/Main Table Area (Center Front) -->
                                 {% for table in event.location.tables.all %}
-                                <div class="table-container" 
+                                {% if table.is_reserved %}
+                                <div class="table-container restaurant-table vip-table" 
                                      style="position: absolute; 
-                                            left: {{ table.position_x }}%; 
-                                            top: {{ table.position_y }}%; 
-                                            transform: translate(-50%, -50%);"
+                                            left: 50%; 
+                                            top: 25%; 
+                                            transform: translate(-50%, -50%);
+                                            transition: all 0.3s ease;"
                                      data-table-id="{{ table.id }}"
                                      data-bs-toggle="tooltip"
                                      data-bs-placement="top"
-                                     title="Masă {{ table.table_number }} ({{ table.capacity }} locuri)">
-                                    <div class="table-shape {% if table.shape == 'round' %}rounded-circle{% elif table.shape == 'square' %}rounded{% endif %}"
-                                         style="width: 80px; 
-                                                height: 80px; 
-                                                background: {% if table.is_reserved %}#ffd700{% else %}#28a745{% endif %}; 
+                                     title="VIP Table {{ table.table_number }} ({{ table.capacity }} seats)">
+                                    
+                                    <!-- VIP Table Shadow -->
+                                    <div style="position: absolute; top: 10px; left: 10px; width: 100px; height: 100px; 
+                                               background: rgba(255,215,0,0.2); border-radius: 50%; 
+                                               z-index: -1;"></div>
+                                    
+                                    <!-- VIP Main Table -->
+                                    <div class="table-shape rounded-circle"
+                                         style="width: 100px; 
+                                                height: 100px; 
+                                                background: linear-gradient(45deg, #ffd700, #ffed4e, #ffd700); 
                                                 display: flex; 
                                                 align-items: center; 
                                                 justify-content: center;
                                                 cursor: pointer;
-                                                transition: all 0.3s ease;">
-                                        <span class="table-number" style="color: white; font-weight: bold;">{{ table.table_number }}</span>
+                                                transition: all 0.3s ease;
+                                                border: 4px solid #b8860b;
+                                                box-shadow: 0 8px 20px rgba(255,215,0,0.3);
+                                                position: relative;
+                                                z-index: 1;">
+                                        
+                                        <!-- VIP Crown -->
+                                        <div style="position: absolute; top: -15px; left: 50%; transform: translateX(-50%);
+                                                   font-size: 20px;">👑</div>
+                                        
+                                        <!-- Table Number -->
+                                        <span class="table-number" style="color: #8b4513; font-weight: bold; font-size: 18px; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">{{ table.table_number }}</span>
+                                        
+                                        <!-- Capacity Indicator -->
+                                        <div style="position: absolute; bottom: -10px; right: -10px; 
+                                                   width: 24px; height: 24px; 
+                                                   background: #dc3545; color: white; 
+                                                   border-radius: 50%; display: flex; 
+                                                   align-items: center; justify-content: center; 
+                                                   font-size: 12px; font-weight: bold;
+                                                   border: 3px solid white;
+                                                   box-shadow: 0 3px 6px rgba(0,0,0,0.3);">{{ table.capacity }}</div>
                                     </div>
+                                    
+
                                 </div>
+                                {% endif %}
                                 {% endfor %}
+                                
+                                <!-- Regular Tables in Elegant Formation -->
+                                {% for table in event.location.tables.all %}
+                                {% if not table.is_reserved %}
+                                {% with table_index=forloop.counter0 %}
+                                <div class="table-container restaurant-table" 
+                                     style="position: absolute; 
+                                            {% if table_index == 0 %}left: 20%; top: 45%;{% endif %}
+                                            {% if table_index == 1 %}left: 35%; top: 40%;{% endif %}
+                                            {% if table_index == 2 %}left: 65%; top: 40%;{% endif %}
+                                            {% if table_index == 3 %}left: 80%; top: 45%;{% endif %}
+                                            {% if table_index == 4 %}left: 20%; top: 65%;{% endif %}
+                                            {% if table_index == 5 %}left: 35%; top: 70%;{% endif %}
+                                            {% if table_index == 6 %}left: 65%; top: 70%;{% endif %}
+                                            {% if table_index == 7 %}left: 80%; top: 65%;{% endif %}
+                                            {% if table_index == 8 %}left: 25%; top: 80%;{% endif %}
+                                            {% if table_index == 9 %}left: 75%; top: 80%;{% endif %}
+                                            transform: translate(-50%, -50%);
+                                            transition: all 0.3s ease;"
+                                     data-table-id="{{ table.id }}"
+                                     data-bs-toggle="tooltip"
+                                     data-bs-placement="top"
+                                     title="Table {{ table.table_number }} ({{ table.capacity }} seats)">
+                                    
+                                    <!-- Table Shadow -->
+                                    <div style="position: absolute; top: 8px; left: 8px; width: 90px; height: 90px; 
+                                               background: rgba(0,0,0,0.1); border-radius: {% if table.shape == 'round' %}50%{% else %}10px{% endif %}; 
+                                               z-index: -1;"></div>
+                                    
+                                    <!-- Main Table -->
+                                    <div class="table-shape {% if table.shape == 'round' %}rounded-circle{% elif table.shape == 'square' %}rounded{% endif %}"
+                                         style="width: 90px; 
+                                                height: 90px; 
+                                                background: linear-gradient(45deg, #28a745, #20c997, #17a2b8); 
+                                                display: flex; 
+                                                align-items: center; 
+                                                justify-content: center;
+                                                cursor: pointer;
+                                                transition: all 0.3s ease;
+                                                border: 3px solid #1e7e34;
+                                                box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+                                                position: relative;
+                                                z-index: 1;">
+                                        
+                                        <!-- Table Number -->
+                                        <span class="table-number" style="color: white; font-weight: bold; font-size: 18px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">{{ table.table_number }}</span>
+                                        
+                                        <!-- Capacity Indicator -->
+                                        <div style="position: absolute; bottom: -10px; right: -10px; 
+                                                   width: 22px; height: 22px; 
+                                                   background: #17a2b8; color: white; 
+                                                   border-radius: 50%; display: flex; 
+                                                   align-items: center; justify-content: center; 
+                                                   font-size: 11px; font-weight: bold;
+                                                   border: 2px solid white;
+                                                   box-shadow: 0 3px 6px rgba(0,0,0,0.25);">{{ table.capacity }}</div>
+                                    </div>
+                                    
+
+                                </div>
+                                {% endwith %}
+                                {% endif %}
+                                {% endfor %}
+                                
+                                <!-- Restaurant Elements -->
+                                <!-- Bar Area (Upgraded) -->
+                                <div style="position: absolute; bottom: 30px; right: 30px; 
+                                           width: 140px; height: 70px; 
+                                           background: linear-gradient(45deg, #8b4513, #a0522d, #cd853f); 
+                                           border-radius: 15px; display: flex; 
+                                           align-items: center; justify-content: center;
+                                           box-shadow: 0 6px 12px rgba(0,0,0,0.25); 
+                                           color: white; font-weight: bold; font-size: 14px;
+                                           border: 2px solid #654321;">
+                                    🍷 PREMIUM BAR
+                                </div>
+                                
+                                <!-- Kitchen Area (Upgraded) -->
+                                <div style="position: absolute; bottom: 30px; left: 30px; 
+                                           width: 120px; height: 70px; 
+                                           background: linear-gradient(45deg, #dc3545, #e74c3c, #c82333); 
+                                           border-radius: 15px; display: flex; 
+                                           align-items: center; justify-content: center;
+                                           box-shadow: 0 6px 12px rgba(0,0,0,0.25); 
+                                           color: white; font-weight: bold; font-size: 14px;
+                                           border: 2px solid #bd2130;">
+                                    👨‍🍳 KITCHEN
+                                </div>
+                                
+                                <!-- Entrance (Upgraded) -->
+                                <div style="position: absolute; top: 50%; left: 10px; 
+                                           width: 40px; height: 100px; 
+                                           background: linear-gradient(45deg, #6c757d, #868e96, #adb5bd); 
+                                           border-radius: 0 20px 20px 0; display: flex; 
+                                           align-items: center; justify-content: center;
+                                           box-shadow: 0 6px 12px rgba(0,0,0,0.25); 
+                                           color: white; font-weight: bold; font-size: 12px;
+                                           writing-mode: vertical-rl; text-orientation: mixed;
+                                           border: 2px solid #495057;">
+                                    🚪 MAIN ENTRANCE
+                                </div>
+                                
+                                <!-- Dance Floor -->
+                                <div style="position: absolute; bottom: 120px; left: 50%; transform: translateX(-50%); 
+                                           width: 180px; height: 80px; 
+                                           background: linear-gradient(45deg, #6f42c1, #e83e8c, #fd7e14); 
+                                           border-radius: 20px; display: flex; 
+                                           align-items: center; justify-content: center;
+                                           box-shadow: 0 6px 12px rgba(0,0,0,0.25); 
+                                           color: white; font-weight: bold; font-size: 14px;
+                                           border: 2px solid #5a32a3;">
+                                    💃 DANCE FLOOR
+                                </div>
                             </div>
 
                             <!-- Table Statistics -->
@@ -124,7 +280,7 @@
                                 <div class="col-md-4">
                                     <div class="card bg-light">
                                         <div class="card-body text-center">
-                                            <h5 class="card-title">Utilizare Mese</h5>
+                                            <h5 class="card-title">Table Utilization</h5>
                                             <div class="progress" style="height: 20px;">
                                                 <div class="progress-bar" role="progressbar" 
                                                      style="width: {{ stats.table_utilization }}%;" 
@@ -140,7 +296,7 @@
                                 <div class="col-md-4">
                                     <div class="card bg-light">
                                         <div class="card-body text-center">
-                                            <h5 class="card-title">Grupuri Aranjate</h5>
+                                            <h5 class="card-title">Groups Arranged</h5>
                                             <div class="progress" style="height: 20px;">
                                                 <div class="progress-bar bg-success" role="progressbar" 
                                                      style="width: {% widthratio stats.groups_arranged stats.total_groups 100 %}%;" 
@@ -156,7 +312,7 @@
                                 <div class="col-md-4">
                                     <div class="card bg-light">
                                         <div class="card-body text-center">
-                                            <h5 class="card-title">Coerență Grupuri</h5>
+                                            <h5 class="card-title">Group Cohesion</h5>
                                             <div class="progress" style="height: 20px;">
                                                 <div class="progress-bar bg-info" role="progressbar" 
                                                      style="width: {{ stats.group_cohesion|floatformat:2 }}%;" 
@@ -288,11 +444,11 @@
 </style>
 <div id="tableDetailsPanel">
   <div class="details-card">
-    <button id="closeTableDetailsPanel" title="Închide">&times;</button>
-    <div id="panelTableNumber">Masa #</div>
-    <div id="panelTableBody">
-      <p class="text-center text-muted">Se încarcă detaliile invitaților...</p>
-    </div>
+                        <button id="closeTableDetailsPanel" title="Close">&times;</button>
+                        <div id="panelTableNumber">Table #</div>
+                        <div id="panelTableBody">
+                      <p class="text-center text-muted">Loading guest details...</p>
+                    </div>
   </div>
 </div>
 
@@ -386,6 +542,99 @@
     .progress-bar {
         transition: width 0.6s ease;
     }
+    
+    /* Restaurant Table Styles */
+    .restaurant-table:hover .table-shape {
+        transform: scale(1.15) !important;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+        z-index: 10;
+    }
+    
+    .restaurant-table:hover {
+        z-index: 10;
+    }
+    
+    .table-shape {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    .restaurant-table:hover .table-number {
+        font-size: 18px !important;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5) !important;
+    }
+    
+    /* Restaurant Floor Animation */
+    @keyframes floorPattern {
+        0% { opacity: 0.2; }
+        50% { opacity: 0.4; }
+        100% { opacity: 0.2; }
+    }
+    
+    .room-layout::before {
+        animation: floorPattern 4s ease-in-out infinite;
+    }
+    
+    /* Table Glow Effect */
+    .table-container[data-table-id]:hover::after {
+        content: '';
+        position: absolute;
+        top: -10px;
+        left: -10px;
+        right: -10px;
+        bottom: -10px;
+        background: radial-gradient(circle, rgba(40, 167, 69, 0.3) 0%, transparent 70%);
+        border-radius: 50%;
+        z-index: -1;
+        animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(0.8); opacity: 0; }
+        50% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1.4); opacity: 0; }
+    }
+    
+    /* VIP Table Special Effects */
+    .vip-table:hover .table-shape {
+        transform: scale(1.2) !important;
+        box-shadow: 0 12px 30px rgba(255,215,0,0.5) !important;
+        animation: vipGlow 2s ease-in-out infinite;
+    }
+    
+    @keyframes vipGlow {
+        0% { box-shadow: 0 8px 20px rgba(255,215,0,0.3); }
+        50% { box-shadow: 0 15px 35px rgba(255,215,0,0.6); }
+        100% { box-shadow: 0 8px 20px rgba(255,215,0,0.3); }
+    }
+    
+    .vip-table:hover::after {
+        content: '';
+        position: absolute;
+        top: -15px;
+        left: -15px;
+        right: -15px;
+        bottom: -15px;
+        background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+        border-radius: 50%;
+        z-index: -1;
+        animation: vipPulse 3s ease-in-out infinite;
+    }
+    
+    @keyframes vipPulse {
+        0% { transform: scale(0.9); opacity: 0; }
+        50% { transform: scale(1.3); opacity: 1; }
+        100% { transform: scale(1.6); opacity: 0; }
+    }
+    
+    /* Enhanced Restaurant Elements */
+    .restaurant-table {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .restaurant-table:hover {
+        z-index: 15;
+        filter: brightness(1.1);
+    }
 </style>
 
 <script>
@@ -404,7 +653,7 @@
                 var eventId = "{{ event.id }}";
                 console.log('CLICK MASA', tableId, eventId);
                 // Update panel title
-                document.getElementById('panelTableNumber').textContent = 'Masa ' + tableNumber;
+                document.getElementById('panelTableNumber').textContent = 'Table ' + tableNumber;
                 // Fetch table details via AJAX
                 fetch('/api/table-details/' + tableId + '/?event_id=' + eventId)
                     .then(response => { console.log("fetch răspuns status:", response.status); if (!response.ok) { throw new Error("HTTP error, status " + response.status); } return response.json(); })
@@ -413,12 +662,12 @@
                         var panelBody = document.getElementById('panelTableBody');
                         panelBody.innerHTML = '';
                         if (data.guests && data.guests.length === 0) {
-                            panelBody.innerHTML = '<p>Nu există invitați la această masă.</p>';
+                            panelBody.innerHTML = '<p>No guests at this table.</p>';
                         } else {
                             var table = document.createElement('table');
                             table.className = 'table table-hover';
                             var thead = document.createElement('thead');
-                            thead.innerHTML = '<tr><th>Loc</th><th>Invitat</th><th>Grup</th><th>Status</th></tr>';
+                            thead.innerHTML = '<tr><th>Seat</th><th>Guest</th><th>Group</th><th>Status</th></tr>';
                             var tbody = document.createElement('tbody');
                             data.guests.forEach(function(guest, index) {
                                 var tr = document.createElement('tr');
@@ -433,7 +682,7 @@
                     })
                     .catch(error => {
                         console.error("fetch eroare:", error);
-                        document.getElementById('panelTableBody').innerHTML = '<p>Eroare la încărcarea invitaților.</p>';
+                        document.getElementById('panelTableBody').innerHTML = '<p>Error loading guests.</p>';
                         document.getElementById('tableDetailsPanel').style.display = 'flex';
                     });
             });
