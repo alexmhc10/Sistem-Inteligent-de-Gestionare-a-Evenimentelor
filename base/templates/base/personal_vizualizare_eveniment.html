@@ -103,167 +103,105 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
             </div>
         </div>
-        <video id="video-element" style="display: none;" autoplay playsinline></video>
-        <div id="img-element"></div>
-        <div class="d-flex flex-row justify-content-center mb-4 gap-2">
-            <button id="capture-btn" class="btn btn-primary">Photo</button>
-            <button id="reload-btn" class="btn btn-secondary">Retry</button>  
-            <button class="btn btn-primary scan" id="launch_camera">Scan guests</button>
-        </div>
+         <div class="text-center">
+        <video autoplay="true" id="video-element"></video>
+    </div>
+
+    <div id="img-element"></div>
+
+    <div class="text-center mt-3">
+        <button class="btn btn-primary" id="capture-btn">take photo</button>
+        <button class="btn btn-info" id="reload-btn">reload</button>
+    </div> 
 
         <script>
+console.log('hello world')
 
-        $(".scan").click(function () {
-            const eventId = "{{ event.id }}"; 
-            $.ajax({
-                url: `/scan/${eventId}/`,  // event_id în URL
-                type: "POST",
-                data: {
-                    csrfmiddlewaretoken: '{{ csrf_token }}'
-                },
-                success: function(response) {
-                    console.log("Scan success:", response);
+const getCookie = (name) => {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+const csrftoken = getCookie('csrftoken');
+
+const video = document.getElementById('video-element')
+const image = document.getElementById('img-element')
+const captureBtn = document.getElementById('capture-btn')
+const reloadBtn = document.getElementById('reload-btn')
+
+reloadBtn.addEventListener('click', () => {
+    window.location.reload()
+})
+
+if (navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({video: true})
+    .then((stream) => {
+        video.srcObject = stream
+        const {height, width} = stream.getTracks()[0].getSettings()
+
+        captureBtn.addEventListener('click', e=> {
+            e.preventDefault()
+            captureBtn.classList.add('not-visible')
+            const track = stream.getVideoTracks()[0]
+            const imageCapture = new ImageCapture(track)
+            console.log(imageCapture)
+
+            imageCapture.takePhoto().then(blob => {
+                console.log("took photo:", blob)
+                const img = new Image(width, height)
+                img.src = URL.createObjectURL(blob)
+                image.append(img)
+
+                video.classList.add('not-visible')
+
+                const reader = new FileReader()
+
+                reader.readAsDataURL(blob)
+                reader.onloadend = () => {
+                    const base64data = reader.result
+                    console.log(base64data)
+
+                    const fd = new FormData()
+                    fd.append('csrfmiddlewaretoken', csrftoken)
+                    fd.append('photo', base64data)
+
+                    $.ajax({
+                        type: 'POST',
+                        url: '/find_user_view/',
+                        enctype: 'multipart/form-data',
+                        data: fd,
+                        processData: false,
+                        contentType: false,
+                        success: (resp) => {
+                            console.log(resp)
+                            window.location.href = window.location.origin
+                        },
+                        error: (err) => {
+                            console.log(err)
+                        }
+                    })
                 }
+            }).catch(error => {
+                console.log('takePhoto() error: ', error);
             });
         });
+    })
+    .catch(error => {
+        console.log("Something went wrong!", error);
+    });
+}
 
         </script>
-
-        <!-- <video id="video" autoplay></video> -->
-
-
-
-        <!-- <script>
-            $(".scan").click(function () {
-                const eventId = "{{event.id}}";
-                $.ajax({
-                    url: `/scan/${eventId}/`, 
-                    type: "POST",
-                    data: {
-                        csrfmiddlewaretoken: '{{ csrf_token }}'
-                    },
-                     success: function(response) {
-                        console.log("Success", response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("Error AJAX:", xhr.responseText);
-                    }
-                });
-            });
-        </script> -->
-
-        <div class="col-lg-12">
-            <div class="d-flex">
-                
-            </div>
-        </div>
-
-        <!-- <script>
-
-        // document.getElementById("launch_camera").addEventListener("click", function() {
-        //         navigator.mediaDevices.getUserMedia({ video: true })
-        //              .then(function(stream) {
-        //                  let video = document.getElementById("video-element");
-        //                 video.srcObject = stream;
-        //                 video.play();
-        //                 video.classList.add('visible');
-        //              })
-        //              .catch(function(error) {
-        //                  console.error("Camera error:", error);
-        //             });
-        //      });
-
-        console.log('hello world')
-
-        const getCookie = (name) => {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                const cookies = document.cookie.split(';');
-                for (let i = 0; i < cookies.length; i++) {
-                    const cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
-                }
-            }
-            return cookieValue;
-        }
-
-        const csrftoken = getCookie('csrftoken');
-
-        const video = document.getElementById('video-element')
-        const image = document.getElementById('img-element')
-        const captureBtn = document.getElementById('capture-btn')
-        const reloadBtn = document.getElementById('reload-btn')
-
-        reloadBtn.addEventListener('click', () => {
-            window.location.reload()
-        })
-
-        document.getElementById("launch_camera").addEventListener("click", function() {
-            if (navigator.mediaDevices.getUserMedia) {
-                navigator.mediaDevices.getUserMedia({video: true})
-                .then((stream) => {
-                    video.style.display = "block";
-                    video.srcObject = stream
-                    video.play();
-                    const {height, width} = stream.getTracks()[0].getSettings()
-
-                    captureBtn.addEventListener('click', e=> {
-                        e.preventDefault()
-                        captureBtn.classList.add('not-visible')
-                        video.style.display = "none";
-                        const track = stream.getVideoTracks()[0]
-                        const imageCapture = new ImageCapture(track)
-                        console.log(imageCapture)
-
-                        imageCapture.takePhoto().then(blob => {
-                            console.log("took photo:", blob)
-                            const img = new Image(width, height)
-                            img.src = URL.createObjectURL(blob)
-                            image.append(img)
-
-                            video.classList.add('not-visible')
-
-                            const reader = new FileReader()
-
-                            reader.readAsDataURL(blob)
-                            reader.onloadend = () => {
-                                const base64data = reader.result
-                                console.log(base64data)
-
-                                const fd = new FormData()
-                                fd.append('csrfmiddlewaretoken', csrftoken)
-                                fd.append('photo', base64data)
-
-                                $.ajax({
-                                    type: 'POST',
-                                    url: '/classify/',
-                                    enctype: 'multipart/form-data',
-                                    data: fd,
-                                    processData: false,
-                                    contentType: false,
-                                    success: (resp) => {
-                                        console.log(resp)
-                                    },
-                                    error: (err) => {
-                                        console.log(err)
-                                    }
-                                })
-                            }
-                        }).catch(error => {
-                            console.log('takePhoto() error: ', error);
-                        });
-                    });
-                })
-                .catch(error => {
-                    console.log("Something went wrong!", error);
-                });
-            }
-        });
-
-        </script> -->
 
         <div class="col-lg-12">
                 <div class="card">

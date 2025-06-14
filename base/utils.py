@@ -1,111 +1,83 @@
 import face_recognition as fr
 import numpy as np
 from base.models import Profile
-from PIL import Image, ImageFile
-from django.core.files.storage import default_storage
-from django.core.files.base import ContentFile
 import os
-import warnings
-
 
 def is_ajax(request):
   return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 
-
-def validate_and_convert_image(img):
-    """Universal image validation and conversion for all image sources"""
-    # If img is already numpy array (from face_recognition)
-    if isinstance(img, np.ndarray):
-        if len(img.shape) == 2:  # Grayscale
-            img = np.stack((img,)*3, axis=-1)
-        elif img.shape[2] == 4:   # RGBA
-            img = img[:, :, :3]
-        return img
-    
-    # If img is file path or file-like object
-    with warnings.catch_warnings():
-        warnings.simplefilter("ignore")
-        pil_img = Image.open(img)
-        
-        if pil_img.mode == '1':  # 1-bit pixels
-            pil_img = pil_img.convert('L')
-        if pil_img.mode in ('L', 'P'):  # Grayscale or palette
-            pil_img = pil_img.convert('RGB')
-        elif pil_img.mode == 'RGBA':
-            background = Image.new('RGB', pil_img.size, (255, 255, 255))
-            background.paste(pil_img, mask=pil_img.split()[-1])
-            pil_img = background
-            
-        return np.array(pil_img)
-
 def get_encoded_faces():
-    """Improved face encoding with robust image handling"""
+    """
+    This function loads all user profile images and encodes their faces.
+    It handles missing files and skips images where no face is detected.
+    """
+    qs = Profile.objects.filter(user_type='guest')
     encoded = {}
-    qs = Profile.objects.select_related('user').exclude(photo__exact='')
-    
+
     for p in qs:
-        try:
-            # Validate and convert image
-            img_array = validate_and_convert_image(p.photo.path)
-            
-            # Face detection with fallback models
-            face_locations = fr.face_locations(img_array, model='hog')
-            if not face_locations:
-                face_locations = fr.face_locations(img_array, model='cnn')
-                
-            if face_locations:
-                encoding = fr.face_encodings(
-                    img_array, 
-                    known_face_locations=face_locations,
-                    num_jitters=2,
-                    model='large'
-                )[0]
-                encoded[p.user.username] = encoding
-                
-        except Exception as e:
-            print(f"Skipped {p.user.username}: {str(e)}")
-            continue
-            
+        encoding = None
+
+        # Verificăm dacă există imaginea și dacă fișierul există fizic pe disc
+        if p.photo and os.path.exists(p.photo.path):
+            try:
+                face = fr.load_image_file(p.photo.path)
+                face_encodings = fr.face_encodings(face)
+
+                if face_encodings:
+                    encoding = face_encodings[0]
+                    print(f"✅ Față detectată pentru {p.user.username}")
+                else:
+                    print(f"⚠️ Nicio față detectată în imaginea lui {p.user.username}")
+
+                if encoding is not None:
+                    encoded[p.user.username] = encoding
+            except Exception as e:
+                print(f"❌ Eroare la procesarea imaginii pentru {p.user.username}: {e}")
+        else:
+            print(f"🛑 Imagine lipsă pentru {p.user.username} - {p.photo}")
+
     return encoded
 
-def classify_face(img_source, tolerance=0.6):
+def classify_face(img):
     """
-    Robust face classification with improved error handling
-    :param img_source: Can be file path, file object, or numpy array
-    :param tolerance: Lower = more strict matching (0.6 is default)
-    :return: name or False
+    This function takes an image as input and returns the name of the face it contains
     """
+    # Load all the known faces and their encodings
+    faces = get_encoded_faces()
+    faces_encoded = list(faces.values())
+    known_face_names = list(faces.keys())
+
+    # Load the input image
+    img = fr.load_image_file(img)
+ 
     try:
-        # Load and validate input image
-        img_array = validate_and_convert_image(img_source)
-        
-        # Get encodings with fallback
-        faces = get_encoded_faces()
-        if not faces:
-            return False
-            
-        # Detect faces with multiple attempts
-        face_locations = fr.face_locations(img_array)
-        if not face_locations:
-            return False
-            
-        # Process each found face
-        unknown_encodings = fr.face_encodings(img_array, face_locations)
-        best_match = None
-        best_distance = tolerance  # Start with threshold
-        
-        for encoding in unknown_encodings:
-            distances = fr.face_distance(list(faces.values()), encoding)
-            min_index = np.argmin(distances)
-            min_distance = distances[min_index]
-            
-            if min_distance < best_distance:
-                best_distance = min_distance
-                best_match = list(faces.keys())[min_index]
-        
-        return best_match if best_match else False
-        
-    except Exception as e:
-        print(f"Classification error: {e}")
+        # Find the locations of all faces in the input image
+        face_locations = fr.face_locations(img)
+
+        # Encode the faces in the input image
+        unknown_face_encodings = fr.face_encodings(img, face_locations)
+
+        # Identify the faces in the input image
+        face_names = []
+        for face_encoding in unknown_face_encodings:
+            # Compare the encoding of the current face to the encodings of all known faces
+            matches = fr.compare_faces(faces_encoded, face_encoding)
+
+            # Find the known face with the closest encoding to the current face
+            face_distances = fr.face_distance(faces_encoded, face_encoding)
+            best_match_index = np.argmin(face_distances)
+
+            # If the closest known face is a match for the current face, label the face with the known name
+            if matches[best_match_index]:
+                name = known_face_names[best_match_index]
+            else:
+                name = "Unknown"
+
+            face_names.append(name)
+
+        # Return the name of the first face in the input image
+        return face_names[0]
+    except:
+        # If no faces are found in the input image or an error occurs, return False
         return False
