@@ -2765,8 +2765,17 @@ def generate_menu(request):
         else:
 
             regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
+            print("Regional dishes:", regional_dishes)
+            print("Preferred region:", preferred_region)
             if regional_dishes.exists():
+                print(category,regional_dishes)
                 selected = list(regional_dishes[:3])
+                count_needed = 3 - len(selected)
+                
+                if count_needed > 0:
+                    other_dishes = safe_dishes.filter(category=category).exclude(id__in=[d.id for d in selected])
+                    other_selected = list(other_dishes[:count_needed])
+                    selected += other_selected
             else:
                 messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
                 other_dishes = filtered_dishes
