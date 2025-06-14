@@ -167,10 +167,52 @@ class Guests(models.Model):
         ('M', 'Masculin'),
         ('F', 'Feminin')
         ]
+    REGION_CHOICES = [
+        ('no_region', 'No region'),
+        ('italian', 'Italian'),
+        ('french', 'French'),
+        ('mexican', 'Mexican'),
+        ('indian', 'Indian'),
+        ('chinese', 'Chinese'),
+        ('japanese', 'Japanese'),
+        ('american', 'American'),
+        ('mediterranean', 'Mediterranean'),
+        ('romanian', 'Romanian'),
+        ('spanish', 'Spanish'),
+        ('thai', 'Thai'),
+        ('greek', 'Greek'),
+        ('turkish', 'Turkish'),
+        ('german', 'German'),
+        ('korean', 'Korean'),
+        ('vietnamese', 'Vietnamese'),
+        ('lebanese', 'Lebanese'),
+        ('brazilian', 'Brazilian'),
+        ('ethiopian', 'Ethiopian'),
+        ('russian', 'Russian'),
+        ('moroccan', 'Moroccan'),
+        ('caribbean', 'Caribbean'),
+        ('african', 'African'),
+        ('british', 'British'),
+        ('australian', 'Australian'),
+        ('persian', 'Persian'),
+        ('polish', 'Polish'),
+        ('portuguese', 'Portuguese'),
+        ('cuban', 'Cuban'),
+        ('jamaican', 'Jamaican'),
+        ('swedish', 'Swedish'),
+        ('egyptian', 'Egyptian'),
+        ('indonesian', 'Indonesian'),
+        ('malaysian', 'Malaysian'),
+        ('pakistani', 'Pakistani'),
+        ('syrian', 'Syrian'),
+        ('argentinian', 'Argentinian'),
+        ('peruvian', 'Peruvian'),
+        ('filipino', 'Filipino'),
+    ]
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
-    cuisine_preference = models.CharField(max_length=50, blank=True, null=True)
+    cuisine_preference = models.CharField(max_length=50, choices=REGION_CHOICES ,blank=True, null=True)
     vegan = models.BooleanField(default=False)
     allergens = models.ManyToManyField(Allergen, blank=True)
     state = models.BooleanField(default=False)
@@ -185,10 +227,52 @@ class Menu(models.Model):
         ('dessert', 'Desert'),
         ('drink', 'Drink'),
     ]
+    REGION_CHOICES = [
+        ('no_region', 'No region'),
+        ('italian', 'Italian'),
+        ('french', 'French'),
+        ('mexican', 'Mexican'),
+        ('indian', 'Indian'),
+        ('chinese', 'Chinese'),
+        ('japanese', 'Japanese'),
+        ('american', 'American'),
+        ('mediterranean', 'Mediterranean'),
+        ('romanian', 'Romanian'),
+        ('spanish', 'Spanish'),
+        ('thai', 'Thai'),
+        ('greek', 'Greek'),
+        ('turkish', 'Turkish'),
+        ('german', 'German'),
+        ('korean', 'Korean'),
+        ('vietnamese', 'Vietnamese'),
+        ('lebanese', 'Lebanese'),
+        ('brazilian', 'Brazilian'),
+        ('ethiopian', 'Ethiopian'),
+        ('russian', 'Russian'),
+        ('moroccan', 'Moroccan'),
+        ('caribbean', 'Caribbean'),
+        ('african', 'African'),
+        ('british', 'British'),
+        ('australian', 'Australian'),
+        ('persian', 'Persian'),
+        ('polish', 'Polish'),
+        ('portuguese', 'Portuguese'),
+        ('cuban', 'Cuban'),
+        ('jamaican', 'Jamaican'),
+        ('swedish', 'Swedish'),
+        ('egyptian', 'Egyptian'),
+        ('indonesian', 'Indonesian'),
+        ('malaysian', 'Malaysian'),
+        ('pakistani', 'Pakistani'),
+        ('syrian', 'Syrian'),
+        ('argentinian', 'Argentinian'),
+        ('peruvian', 'Peruvian'),
+        ('filipino', 'Filipino'),
+    ]
     at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     item_name = models.CharField(max_length=80)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
-    item_cuisine = models.CharField(max_length=20)
+    item_cuisine = models.CharField(max_length=20, choices=REGION_CHOICES, default='No region')
     item_vegan = models.BooleanField(default=False)
     allergens = models.ManyToManyField(Allergen, blank=True)
     item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
@@ -248,7 +332,7 @@ class GuestMenu(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event")
     location_menu = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location_menu", default=None)
-    menu_choices = models.ManyToManyField(Menu, blank=True, related_name="guests")
+    menu_choices = models.ManyToManyField(Menu, blank=True, related_name="menu_choices")
 
     def __str__(self):
         return f"Menu Choises - {self.guest} for {self.event}"

@@ -60,6 +60,7 @@ from PIL import Image
 from .table_arrangement_algorithm import TableArrangementAlgorithm
 from django.views.decorators.http import require_GET
 from django.forms import modelformset_factory
+import joblib
 
 
 
@@ -2604,7 +2605,7 @@ def guest_home(request):
         "profile": profil,
         "next_confirmed_event": next_confirmed_event,
         "upcoming_events": upcoming_events,
-        "upcoming_events_count": upcoming_events.count(),
+        "upcoming_events_count": len(upcoming_events),
         "past_events": past_events,
         "past_events_count": past_events.count(),
         "event": next_confirmed_event,
@@ -2709,73 +2710,132 @@ def guest_event_view(request, pk):
     return render(request,'base/guest_event_view.html', context)
 
 
-@login_required
 def generate_menu(request):
     guest = request.user.profile_set.first().guest_profile
-    print("Guest profile:", guest)
     preferred_region = guest.cuisine_preference
     guest_allergens = guest.allergens.all()
+    prefers_vegan = getattr(guest, 'vegan', False)
 
     safe_dishes = Menu.objects.exclude(allergens__in=guest_allergens).distinct()
+    if prefers_vegan:
+        safe_dishes = safe_dishes.filter(item_vegan=True)
 
+    categories = ['appetizer', 'main', 'dessert', 'drink']
     menu = {}
     messages = []
-    categories = ['appetizer', 'main', 'dessert', 'drink']
 
+    model_path = 'ml_models/recommender_model.pkl'
+    ml_enabled = os.path.exists(model_path)
+    
+    if ml_enabled:
+        try:
+            model = joblib.load(model_path)
+        except Exception as e:
+            messages.append(f"Eroare la încărcarea modelului ML: {str(e)}")
+            ml_enabled = False
+
+    # 3. Pentru fiecare categorie
     for category in categories:
-
-        regional_dishes = safe_dishes.filter(category=category, item_cuisine=preferred_region)
+        filtered_dishes = safe_dishes.filter(category=category)
         
-        if regional_dishes.exists():
-            selected = regional_dishes[:3]
-        else:
-            messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
+        if ml_enabled and filtered_dishes.exists():
+            # Pregătim datele pentru model
+            data = []
+            for dish in filtered_dishes:
+                data.append({
+                    'guest_region': preferred_region if preferred_region else 'General',
+                    'dish_region': dish.item_cuisine if dish.item_cuisine else 'Unknown',
+                    'category': dish.category,
+                    'has_common_allergen': 0,
+                    'dish': dish
+                })
 
-            other_dishes = safe_dishes.filter(category=category)
-            if other_dishes.exists():
-                selected = other_dishes[:3]
+            df = pd.DataFrame(data)
+            X = df.drop(columns=['dish'])
+
+            try:
+                probabilities = model.predict_proba(X)[:, 1]
+                df['score'] = probabilities
+                df['dish'] = df['dish']
+                top_dishes = df.sort_values(by='score', ascending=False).head(3)['dish']
+                selected = list(top_dishes)
+            except Exception as e:
+                messages.append(f"Eroare în predicția ML pentru categoria {category}: {str(e)}")
+                selected = list(filtered_dishes[:3])
+        else:
+
+            regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
+            if regional_dishes.exists():
+                selected = list(regional_dishes[:3])
             else:
-                messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
-                selected = []
+                messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
+                other_dishes = filtered_dishes
+                if other_dishes.exists():
+                    selected = list(other_dishes[:3])
+                else:
+                    messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
+                    selected = []
 
         menu[category] = [
             {
                 'id': dish.id,
                 'name': dish.item_name,
-                'region': dish.item_cuisine,
+                'region': dish.item_cuisine if dish.item_cuisine else '',
                 'category': dish.category,
                 'image': dish.item_picture.url if dish.item_picture else "",
-                'allergens': [allergen.name for allergen in dish.allergens.all()],
+                'allergens': [a.name for a in dish.allergens.all()],
                 'is_vegan': dish.item_vegan,
-                
-            } for dish in selected
+            }
+            for dish in selected
         ]
 
     return JsonResponse({'menu': menu, 'messages': messages})
 
 
-
 @login_required(login_url='/login')
-def save_menu_configuration(request):
+@csrf_exempt
+def save_final_menu(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            
-            event_menu, created = GuestMenu.objects.update_or_create(
-                user=request.user,
-                defaults={
-                    'starter': data.get('starter'),
-                    'main_course': data.get('main_course'),
-                    'dessert': data.get('dessert'),
-                    'beverage': data.get('beverage'),
-                    'is_complete': all(data.values())
-                }
+            user = request.user
+            event_id = data.get('event_id')
+            location_id = data.get('location_id')
+
+            if not all([event_id, location_id]):
+                return JsonResponse({'error': 'ID-ul evenimentului și locației sunt necesare.'}, status=400)
+
+            event = Event.objects.get(id=event_id)
+            location = Location.objects.get(id=location_id)
+
+            # Recuperăm sau creăm GuestMenu
+            guest_menu, created = GuestMenu.objects.get_or_create(
+                guest=user,
+                event=event,
+                location_menu=location
             )
-            
-            return JsonResponse({'success': True, 'saved_id': event_menu.id})
+
+            # Recuperăm felurile de mâncare selectate
+            dish_ids = [
+                data.get('appetizer_id'),
+                data.get('main_id'),
+                data.get('dessert_id'),
+                data.get('drink_id')
+            ]
+
+            # Filtrăm doar ID-urile valide și le transformăm în queryset
+            selected_dishes = Menu.objects.filter(id__in=[id for id in dish_ids if id])
+
+            # Setăm meniul selectat
+            guest_menu.menu_choices.set(selected_dishes)
+            guest_menu.save()
+
+            return JsonResponse({'message': 'Meniul final a fost salvat cu succes!'})
+
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)}, status=400)
-    return JsonResponse({'error': 'Metoda nepermisă'}, status=405)
+            return JsonResponse({'error': str(e)}, status=500)
+
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
 
 @require_POST

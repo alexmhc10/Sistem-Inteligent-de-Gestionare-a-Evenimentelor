@@ -47,3 +47,6 @@ django-cors-headers
 djangorestframework
 device-detector
 opencv-python
+pillow
+pandas
+numpy

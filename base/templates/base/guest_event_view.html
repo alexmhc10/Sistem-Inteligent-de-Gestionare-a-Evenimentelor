@@ -271,121 +271,178 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           <div id="suggested-menu" class="row g-3">
 
                           </div>
-                              
+                          <div class="d-flex justify-content-center mt-4">
+                            <button id="submit-menu" class="btn btn-primary" style="display: none;">Submit Menu</button>
                           </div>  
                         </div>
                         <script>
-document.getElementById("generate-menu").addEventListener("click", () => {
-    fetch("/generate-menu/")
-        .then(res => res.json())
-        .then(data => {
-            const container = document.getElementById("suggested-menu");
-            container.innerHTML = "";
+                      document.getElementById("generate-menu").addEventListener("click", () => {
+                        fetch("/generate-menu/")
+                        .then(res => res.json())
+                        .then(data => {
+                            const container = document.getElementById("suggested-menu");
+                            container.innerHTML = "";
 
-            const MEDIA_URL = "{{ MEDIA_URL }}"
+                          const MEDIA_URL = "{{ MEDIA_URL }}"
 
-            for (const [category, dishes] of Object.entries(data.menu)) {
-                // Titlu de categorie
-                const title = document.createElement("h4");
-                title.className = "text-primary fw-bold text-capitalize mt-4";
-                title.textContent = category;
-                container.appendChild(title);
+                          for (const [category, dishes] of Object.entries(data.menu)) {
+                              const title = document.createElement("h4");
+                              title.className = "text-primary fw-bold text-capitalize mt-4";
+                              title.textContent = category;
+                              container.appendChild(title);
 
-                const row = document.createElement("div");
-                row.className = "row g-3 mb-4";
+                              const subTitle = document.createElement("h5");
+                              subTitle.className = "text-secondary";
+                              subTitle.textContent = `You have ${dishes.length} suggestions for this category. Please choose one.`;
+                              container.appendChild(subTitle);
 
-                if (dishes.length) {
-                    dishes.forEach(item => {
-                        const col = document.createElement("div");
-                        col.className = "col-lg-4 fade-in-top";
+                              const row = document.createElement("div");
+                              row.className = "row g-3 mb-4 dish-row";
+                              row.setAttribute("data-category", category);
 
-                        let allergenHTML = '';
-                        if (item.allergens.length) {
-                            allergenHTML = item.allergens.map(name => `<span class="allergen-badge">${name}</span>`).join(', ');
-                        } else {
-                            allergenHTML = `<span class="no-allergens">No allergens</span>`;
-                        }
-                        const veganHTML = item.is_vegan
-                            ? `<i class="ti ti-message-2 text-dark fs-5"></i> vegan`
-                            : `<i class="ti ti-message-2 text-dark fs-5"></i> non-vegan`;
+                              if (dishes.length) {
+                                  dishes.forEach(item => {
+                                      const col = document.createElement("div");
+                                      col.className = "col-lg-4 fade-in-top";
 
-                        col.innerHTML = `
-                            <div class="card overflow-hidden hover-img card-hover shadow-sm h-100">
-                                <div class="position-relative">
-                                    <img src="${item.image || MEDIA_URL + 'placeholder.jpg'}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="dish image">
-                                </div>
-                                <div class="card-body ps-3 pt-3 pb-3 pe-0">
-                                    <div class="d-flex flex-row justify-content-between">
-                                        <a class="d-block fs-5 m-0 text-dark fw-semibold link-primary" href="#">${item.name}</a>
-                                        <a class="dropdown-toggle me-2" href="#" role="button" data-bs-toggle="dropdown" title="Settings" aria-expanded="false">
-                                            <i class="bi bi-three-dots-vertical"></i>                      
-                                        </a>
-                                        <ul class="dropdown-menu">
-                                            <li class="d-flex flex-row justify-content-center align-items-center">
-                                                <a class="dropdown-item edit-food-btn text-primary-emphasis" data-bs-toggle="modal" data-bs-target="#exampleModal" data-id="${item.id}">
-                                                    <i class="bi bi-pencil me-2"></i>Edit dish
-                                                </a>
-                                            </li>
-                                            <input type="text" class="edit-food-btn" id="foodId" value="${item.id}" hidden>
-                                            <li class="d-flex flex-row justify-content-center align-items-center">
-                                                <a class="dropdown-item text-danger" role="button" onclick="confirmDeleteDish(${item.id})">
-                                                    <i class="bi bi-trash3 me-2"></i>Delete dish
-                                                </a>
-                                            </li>                      
-                                        </ul>
-                                    </div>
+                                      let allergenHTML = '';
+                                      if (item.allergens.length) {
+                                          allergenHTML = item.allergens.map(name => `<span class="allergen-badge">${name}</span>`).join(', ');
+                                      } else {
+                                          allergenHTML = `<span class="no-allergens">No allergens</span>`;
+                                      }
+                                      const veganHTML = item.is_vegan
+                                          ? `<i class="ti ti-message-2 text-dark fs-5"></i> vegan`
+                                          : `<i class="ti ti-message-2 text-dark fs-5"></i> non-vegan`;
 
-                                    <div class="d-flex align-items-center gap-4 mt-3">
-                                        <div class="d-flex align-items-center flex-wrap gap-1">
-                                            ${allergenHTML}
-                                        </div>
-                                        <div class="d-flex align-items-center gap-2">
-                                            ${veganHTML}
-                                        </div>
-                                        <div class="d-flex align-items-center fs-6 ms-auto text-muted">
-                                            <i class="ti ti-point text-dark me-1"></i>${item.region}
-                                        </div>
-                                    </div>
+                          col.innerHTML = `
+                              <div class="card overflow-hidden hover-img card-hover shadow-sm h-100">
+                                  <div class="position-relative">
+                                      <img src="${item.image || MEDIA_URL + 'placeholder.jpg'}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="dish image">
+                                  </div>
+                                  <div class="card-body p-3">
+                                      <div class="d-flex flex-row justify-content-between">
+                                          <a class="d-block fs-5 m-0 text-dark fw-semibold link-primary" href="#">${item.name}</a>
+                                          <input type="radio" name="${category}" class="dish-option form-check-input" data-id="${item.id}" value="${item.id}">
+                                      </div>
 
-                                </div>
-                            </div>
-                        `;
-                        row.appendChild(col);
-                    });
-                } else {
-                    const msg = document.createElement("div");
-                    msg.className = "alert alert-danger fade-in-top mt-2";
-                    msg.textContent = `Nicio sugestie pentru categoria: ${category}.`;
-                    const button = document.createElement("button");
-                    button.className = "btn-close";
-                    button.setAttribute("data-bs-dismiss", "alert");
-                    button.setAttribute("type", "button");
-                    button.setAttribute("aria-label", "Close");
-                    msg.appendChild(button);  
-                    row.appendChild(msg);
+                                      <div class="d-flex align-items-center gap-2 mt-3">
+                                          <div class="d-flex align-items-center flex-wrap gap-1">
+                                              <p class="m-0 text-primary">Allergens:</p>
+                                              ${allergenHTML}
+                                          </div>
+                                          <div class="d-flex align-items-center flex-wrap gap-1">
+                                              <p>Is vegan?</p>
+                                              ${veganHTML}
+                                          </div>
+                                          <div class="d-flex align-items-center flex-wrap gap-1">
+                                              <p>Region:</p>
+                                              <i class="ti ti-point text-dark me-1"></i>${item.region}
+                                          </div>
+                                      </div>
+
+                                  </div>
+                              </div>
+                          `;
+                          row.appendChild(col);
+                      });                      
+                  } else {
+                      const msg = document.createElement("div");
+                      msg.className = "alert alert-danger fade-in-top mt-2";
+                      msg.textContent = `Nicio sugestie pentru categoria: ${category}.`;
+                      const button = document.createElement("button");
+                      button.className = "btn-close";
+                      button.setAttribute("data-bs-dismiss", "alert");
+                      button.setAttribute("type", "button");
+                      button.setAttribute("aria-label", "Close");
+                      msg.appendChild(button);  
+                      row.appendChild(msg);
+                  }
+
+                  container.appendChild(row);
                 }
 
-                container.appendChild(row);
-            }
+                data.messages.forEach(msg => {
+                    const alert = document.createElement("div");
+                    alert.className = "alert alert-warning fade-in-top mt-2";
+                    alert.textContent = msg;
+                    container.appendChild(alert);
+                });
+              })
+              .catch(err => {
+                  console.error("Eroare la generarea meniului:", err);
+                  const container = document.getElementById("suggested-menu");
+                  const errorMsg = document.createElement("div");
+                  errorMsg.className = "alert alert-danger mt-3";
+                  errorMsg.textContent = "A apărut o eroare la generarea meniului. Încearcă din nou.";
+                  container.appendChild(errorMsg);
+                    });
+                });
 
-            // Mesaje informative (fallback, alergeni etc.)
-            data.messages.forEach(msg => {
-                const alert = document.createElement("div");
-                alert.className = "alert alert-warning fade-in-top mt-2";
-                alert.textContent = msg;
-                container.appendChild(alert);
-            });
-        })
-        .catch(err => {
-            console.error("Eroare la generarea meniului:", err);
-            const container = document.getElementById("suggested-menu");
-            const errorMsg = document.createElement("div");
-            errorMsg.className = "alert alert-danger mt-3";
-            errorMsg.textContent = "A apărut o eroare la generarea meniului. Încearcă din nou.";
-            container.appendChild(errorMsg);
-        });
-});
-</script>
+                      const selections = {};
+
+                      document.querySelectorAll(".dish-option").forEach(option => {
+                        option.addEventListener("click", function() {
+                          const categoryRow = option.closest(".dish-row");
+                          const category = categoryRow.dataset.category;
+                          const id = parseInt(option.dataset.id);
+
+                          selections[category] = id;
+
+                          categoryRow.querySelectorAll(".dish-option").forEach(el => el.classList.remove("selected"));
+
+                          option.classList.add("selected");
+                        });
+                      });
+
+                 let submitBtnCreated = false;
+
+                  function checkSelections() {
+                    const requiredCategories = ['appetizer', 'main', 'dessert', 'drink'];
+                    const allSelected = requiredCategories.every(category => {
+                      return document.querySelector(`input[name="${category}"]:checked`);
+                    });
+
+                    if (allSelected && !submitBtnCreated) {
+                      const submitBtn = document.createElement('button');
+                      submitBtn.id = 'submit-menu';
+                      submitBtn.textContent = 'Trimite meniul';
+                      submitBtn.style.marginTop = '20px';
+                      submitBtn.classList.add('btn', 'btn-primary'); // dacă folosești Bootstrap sau vrei stil
+                      document.body.appendChild(submitBtn); // sau alt container, dacă vrei
+
+                      submitBtn.addEventListener('click', function () {
+                        const payload = {
+                          event_id: 1, // setează dinamice dacă e cazul
+                          location_id: 3,
+                          appetizer_id: document.querySelector('input[name="appetizer"]:checked').value,
+                          main_id: document.querySelector('input[name="main"]:checked').value,
+                          dessert_id: document.querySelector('input[name="dessert"]:checked').value,
+                          drink_id: document.querySelector('input[name="drink"]:checked').value
+                        };
+
+                        fetch('/save-final-menu/', {
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': getCookie('csrftoken') // asigură-te că ai funcția getCookie
+                          },
+                          body: JSON.stringify(payload)
+                        })
+                          .then(res => res.json())
+                          .then(data => alert(data.message || data.error));
+                      });
+
+                      submitBtnCreated = true;
+                    }
+                  }
+
+                  // Ascultă schimbările de pe toate radio buttons
+                  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', checkSelections);
+                  });
+
+  </script>
 
 <style>
 .fade-in-top {
