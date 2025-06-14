@@ -269,11 +269,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           </form>
                           
                           <div id="suggested-menu" class="row g-3">
-
                           </div>
-                          <div class="d-flex justify-content-center mt-4">
-                            <button id="submit-menu" class="btn btn-primary" style="display: none;">Submit Menu</button>
-                          </div>  
+                          <div id="menu-data" data-event-id="{{ event.id }}" data-location-id="{{ location.id }}"></div>
+
+                          <div id="submit-menu-container" class="mt-4">
+                            <p class="text-center">Once you selected all the dishes, you can submit the menu.</p>
+                          
                         </div>
                         <script>
                       document.getElementById("generate-menu").addEventListener("click", () => {
@@ -314,7 +315,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                       const veganHTML = item.is_vegan
                                           ? `<i class="ti ti-message-2 text-dark fs-5"></i> vegan`
                                           : `<i class="ti ti-message-2 text-dark fs-5"></i> non-vegan`;
-                                      
+
                           col.innerHTML = `
                               <div class="card overflow-hidden hover-img card-hover shadow-sm h-100">
                                   <div class="position-relative">
@@ -379,70 +380,88 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     });
                 });
 
-                      const selections = {};
+                const selections = {};
 
-                      document.querySelectorAll(".dish-option").forEach(option => {
-                        option.addEventListener("click", function() {
-                          const categoryRow = option.closest(".dish-row");
-                          const category = categoryRow.dataset.category;
-                          const id = parseInt(option.dataset.id);
+                document.querySelectorAll(".dish-option").forEach(option => {
+                  option.addEventListener("click", function() {
+                    const categoryRow = option.closest(".dish-row");
+                    const category = categoryRow.dataset.category;
+                    const id = parseInt(option.dataset.id);
 
-                          selections[category] = id;
+                    selections[category] = id;
 
-                          categoryRow.querySelectorAll(".dish-option").forEach(el => el.classList.remove("selected"));
+                    categoryRow.querySelectorAll(".dish-option").forEach(el => el.classList.remove("selected"));
 
-                          option.classList.add("selected");
-                        });
-                      });
-
-                 let submitBtnCreated = false;
-
-                  function checkSelections() {
-                    const requiredCategories = ['appetizer', 'main', 'dessert', 'drink'];
-                    const allSelected = requiredCategories.every(category => {
-                      return document.querySelector(`input[name="${category}"]:checked`);
-                    });
-
-                    if (allSelected && !submitBtnCreated) {
-                      const submitBtn = document.createElement('button');
-                      submitBtn.id = 'submit-menu';
-                      submitBtn.textContent = 'Trimite meniul';
-                      submitBtn.style.marginTop = '20px';
-                      submitBtn.classList.add('btn', 'btn-primary'); // dacă folosești Bootstrap sau vrei stil
-                      document.body.appendChild(submitBtn); // sau alt container, dacă vrei
-
-                      submitBtn.addEventListener('click', function () {
-                        const payload = {
-                          event_id: 1, // setează dinamice dacă e cazul
-                          location_id: 3,
-                          appetizer_id: document.querySelector('input[name="appetizer"]:checked').value,
-                          main_id: document.querySelector('input[name="main"]:checked').value,
-                          dessert_id: document.querySelector('input[name="dessert"]:checked').value,
-                          drink_id: document.querySelector('input[name="drink"]:checked').value
-                        };
-
-                        fetch('/save-final-menu/', {
-                          method: 'POST',
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken') // asigură-te că ai funcția getCookie
-                          },
-                          body: JSON.stringify(payload)
-                        })
-                          .then(res => res.json())
-                          .then(data => alert(data.message || data.error));
-                      });
-
-                      submitBtnCreated = true;
-                    }
-                  }
-
-                  // Ascultă schimbările de pe toate radio buttons
-                  document.querySelectorAll('input[type="radio"]').forEach(radio => {
-                    radio.addEventListener('change', checkSelections);
+                    option.classList.add("selected");
                   });
+                });
 
-  </script>
+                 const selectedDishes = {};
+
+document.addEventListener("change", function (e) {
+    if (e.target.classList.contains("dish-option")) {
+        const category = e.target.name;
+        const dishId = e.target.value;
+        selectedDishes[category] = dishId;
+
+        const requiredCategories = ["appetizer", "main", "dessert", "drink"];
+        const allSelected = requiredCategories.every(cat => selectedDishes[cat]);
+
+        console.log("Selected dishes:", selectedDishes);
+
+        const btnId = "submit-menu-btn";
+        const existingBtn = document.getElementById(btnId);
+
+        if (allSelected && !existingBtn) {
+            const submitBtn = document.createElement("button");
+            submitBtn.id = btnId;
+            submitBtn.textContent = "Submit Menu";
+            submitBtn.className = "btn btn-success mt-3";
+            submitBtn.addEventListener("click", function () {
+                const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+                // Selected dishes trebuie să aibă exact 4 feluri (1 per categorie)
+                const dishIds = Object.values(selectedDishes);
+                const dataDiv = document.getElementById('menu-data');
+                const eventId = dataDiv.getAttribute('data-event-id');
+                const locationId = dataDiv.getAttribute('data-location-id');
+                const payload = {
+                    event_id: eventId, // înlocuiește dinamic dacă ai valoarea în pagină
+                    location_id: locationId,
+                    menu_choices: dishIds
+                };
+
+                fetch("/save_guest_menu/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": csrfToken
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    alert("Meniul a fost salvat cu succes!");
+                    console.log("Saved:", data);
+                })
+                .catch(error => {
+                    console.error("Eroare la salvare:", error);
+                    alert("A apărut o eroare la salvarea meniului.");
+                });
+                console.log("Submitting menu:", selectedDishes);
+            });
+            document.getElementById("submit-menu-container").appendChild(submitBtn);
+        }
+
+        if (!allSelected && existingBtn) {
+            existingBtn.remove();
+        }
+    }
+});
+
+                    </script>
 
 <style>
 .fade-in-top {

@@ -2623,6 +2623,7 @@ def guest_home(request):
 def guest_event_view(request, pk):
     
     event=Event.objects.get(id=pk)
+    location = event.location
     oragniser_profile = event.organized_by.profile_set.first()
     rsvp = RSVP.objects.get(event=event, guest=request.user)
     profile=Profile.objects.get(user=request.user)
@@ -2705,7 +2706,8 @@ def guest_event_view(request, pk):
         'guest_posts': guest_posts,
         'guest_posts_count': guest_posts.count(),
         'event_posts': event_posts,
-        'event_posts_count': event_posts.count()
+        'event_posts_count': event_posts.count(),
+        'location': location,
     }
     return render(request,'base/guest_event_view.html', context)
 
@@ -2801,50 +2803,36 @@ def generate_menu(request):
     return JsonResponse({'menu': menu, 'messages': messages})
 
 
-@login_required(login_url='/login')
-@csrf_exempt
-def save_final_menu(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            user = request.user
-            event_id = data.get('event_id')
-            location_id = data.get('location_id')
+@csrf_exempt  # dacă nu trimiți CSRFToken, altfel poți folosi @login_required + token
+@require_POST
+def save_guest_menu(request):
+    try:
+        data = json.loads(request.body)
+        user = request.user  # sau request.user.id
+        event_id = data.get("event_id")
+        location_id = data.get("location_id")
+        dish_ids = data.get("menu_choices", [])
 
-            if not all([event_id, location_id]):
-                return JsonResponse({'error': 'ID-ul evenimentului și locației sunt necesare.'}, status=400)
+        event = Event.objects.get(id=event_id)
+        location = Location.objects.get(id=location_id)
+        menu_items = Menu.objects.filter(id__in=dish_ids)
 
-            event = Event.objects.get(id=event_id)
-            location = Location.objects.get(id=location_id)
+        guest_menu, created = GuestMenu.objects.get_or_create(
+            guest=user,
+            event=event,
+            defaults={"location_menu": location}
+        )
+        if not created:
+            guest_menu.menu_choices.clear()
 
-            # Recuperăm sau creăm GuestMenu
-            guest_menu, created = GuestMenu.objects.get_or_create(
-                guest=user,
-                event=event,
-                location_menu=location
-            )
+        guest_menu.location_menu = location
+        guest_menu.save()
+        guest_menu.menu_choices.set(menu_items)
 
-            # Recuperăm felurile de mâncare selectate
-            dish_ids = [
-                data.get('appetizer_id'),
-                data.get('main_id'),
-                data.get('dessert_id'),
-                data.get('drink_id')
-            ]
+        return JsonResponse({"success": True, "message": "Menu saved successfully"})
 
-            # Filtrăm doar ID-urile valide și le transformăm în queryset
-            selected_dishes = Menu.objects.filter(id__in=[id for id in dish_ids if id])
-
-            # Setăm meniul selectat
-            guest_menu.menu_choices.set(selected_dishes)
-            guest_menu.save()
-
-            return JsonResponse({'message': 'Meniul final a fost salvat cu succes!'})
-
-        except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
-
-    return JsonResponse({'error': 'Method not allowed'}, status=405)
+    except Exception as e:
+        return JsonResponse({"success": False, "error": str(e)}, status=400)
 
 
 @require_POST
