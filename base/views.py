@@ -1967,7 +1967,7 @@ def deleteUser(request, pk):
 @login_required(login_url='/login')
 @user_is_staff
 def personal_eveniment_home(request):
-    location = Location.objects.get(owner=request.user)
+    location = Location.objects.get(user_account=request.user)
     print("Locatie:", location)
 
     events = Event.objects.filter(location=location)
@@ -2031,7 +2031,7 @@ TableFormSet = modelformset_factory(Table, form=TableForm, extra=1, can_delete=T
 @login_required(login_url='/login')
 @user_is_staff
 def personal_profile(request):
-    location_owned = Location.objects.filter(owner=request.user).first()
+    location_owned = Location.objects.filter(user_account=request.user).first()
     print(location_owned)
     profile = Profile.objects.get(user = request.user)
     location_images = LocationImages.objects.filter(location=location_owned)
@@ -2075,8 +2075,8 @@ def personal_profile(request):
 
     formset = TableFormSet(queryset=Table.objects.none())
     form_types = LocationEventTypesForm(instance=location_owned)
-    location_owned = Location.objects.filter(owner=request.user).first()
-    profile = Profile.objects.filter(user = location_owned.owner).first()
+    location_owned = Location.objects.filter(user_account=request.user).first()
+    profile = Profile.objects.filter(user = location_owned.user_account).first()
 
     context = {
         'location_data':location_owned,
@@ -2100,7 +2100,7 @@ def get_tables_for_location(request, location_id):
 @login_required(login_url='/login')
 @user_is_staff
 def upload_images(request):
-    location_owned = Location.objects.get(owner=request.user)
+    location_owned = Location.objects.get(user_account=request.user)
     if request.method == 'POST' and request.FILES.getlist('images'):
         images = request.FILES.getlist('images')
         for image in images:
@@ -2123,7 +2123,7 @@ def delete_image(request, image_id):
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
 
-    if event.location.owner != request.user:
+    if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces events that are not organised at your location.")
         return redirect(request.META.get('HTTP_REFERER', '/login/'))
     
@@ -2134,7 +2134,9 @@ def personal_vizualizare_eveniment(request, pk):
         
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
-
+    print('RSPV:', rspv)
+    logs = Log.objects.filter(event=event, is_correct = True)
+    print('Logs:', logs)
     event_data = [
         {
             'id': event.id,
@@ -2144,7 +2146,9 @@ def personal_vizualizare_eveniment(request, pk):
     ]   
     
     context = {
+        'logs': logs,
         'event': event,
+        'guests_count': rspv.count(),
         'event_data': json.dumps(event_data),
         'rspv': rspv,
         'profile': profile
@@ -2166,7 +2170,7 @@ def completed_event(request, pk):
     rspv = RSVP.objects.filter(event = event)
 
 
-    if event.location.owner != request.user:
+    if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
         return redirect(request.META.get('HTTP_REFERER', '/login/'))
 
@@ -2303,31 +2307,101 @@ def personal_face_id(request, pk):
     return render(request, 'base/personal_face_id.html', context)
 
 
+import tempfile
+
+
 def find_user_view(request):
     if is_ajax(request):
         photo = request.POST.get('photo')
         _, str_img = photo.split(';base64')
-
-        # print(photo)
+        event_id = request.POST.get("event_id")
+        event = Event.objects.get(id=event_id)
+    
         decoded_file = base64.b64decode(str_img)
-        print(decoded_file)
 
-        x = Log()
-        x.photo.save('upload.png', ContentFile(decoded_file))
-        x.save()
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as temp_img:
+            temp_img.write(decoded_file)
+            temp_img_path = temp_img.name
 
-        res = classify_face(x.photo.path)
+        res = classify_face(temp_img_path, event_id)
+
+        os.remove(temp_img_path)
+
         if res:
-            user_exists = User.objects.filter(username=res).exists()
-            if user_exists:
+            try:
                 user = User.objects.get(username=res)
                 profile = Profile.objects.get(user=user)
-                x.profile = profile
+
+                existing_log = Log.objects.filter(profile=profile, event=event, is_correct=True).first()
+                if existing_log:
+                    return JsonResponse({
+                        'status': 'success',
+                        'logged': 1,
+                        'user': {
+                            'id': user.id,
+                            'name': f"{user.first_name} {user.last_name}",
+                            'email': user.email,
+                            'photo_url': profile.photo.url if profile.photo else '',
+                        }
+                    })
+
+                x = Log(event=event, profile=profile)
+                x.photo.save('upload.png', ContentFile(decoded_file))
                 x.save()
 
-                login(request, user)
-                return JsonResponse({'success': True})
+                return JsonResponse({
+                    'status': 'success',
+                    'log_id': x.id,
+                    'user': {
+                        'id': user.id,
+                        'name': f"{user.first_name} {user.last_name}",
+                        'email': user.email,
+                        'photo_url': profile.photo.url if profile.photo else '',
+                    }
+                })
+
+            except User.DoesNotExist:
+                pass
+
         return JsonResponse({'success': False})
+
+
+
+
+@csrf_exempt
+def validate_attendance(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        user_id = data.get('user_id')
+        event_id = data.get('event_id')
+        log_id = data.get('log_id')
+        
+        try:
+            event = Event.objects.get(id=event_id)
+            user = User.objects.get(id=user_id)
+            profile = Profile.objects.get(user=user)
+            preferences = Guests.objects.get(profile=profile)
+            log = Log.objects.get(id=log_id)
+            log.is_correct = True
+            log.save()
+
+            return JsonResponse({
+                'message': 'Attendance marked',
+                'user': {
+                    'id': user.id,
+                    'name': f"{profile.first_name} {profile.last_name}",
+                    'email': user.email,
+                    'photo_url': profile.photo.url if profile.photo else '',
+                    'arriving_time': localtime(log.created).strftime("%d, %H:%M"),
+                    'gender': preferences.gender,
+                    'cuisine_preference': preferences.cuisine_preference,
+                    'vegan': preferences.vegan,
+                    'allergens': [allergen.name for allergen in preferences.allergens.all()]
+                    }
+                }, status=200)
+        except Profile.DoesNotExist:
+            return JsonResponse({'error': 'User not found'}, status=404)
+    return JsonResponse({'error': 'Invalid method'}, status=400)
 
 
 @login_required(login_url='/login')

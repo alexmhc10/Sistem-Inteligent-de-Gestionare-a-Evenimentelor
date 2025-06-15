@@ -99,6 +99,7 @@ urlpatterns = [
     path('update_profile_picture/', views.update_profile_picture, name='update_profile_picture'),
     path("save_guest_menu/", views.save_guest_menu, name="save_guest_menu"),
 
+
     #Postari
     path('like/<int:post_id>', views.like_post, name='like_post'),
     path('comment/<int:post_id>/', views.add_comment, name='add_comment'),    
@@ -107,6 +108,7 @@ urlpatterns = [
 
     #Face_recog
     path('find_user_view/', views.find_user_view, name='find_user_view'),
+    path("validate_attendance/", views.validate_attendance, name='validate_attendance'),
     path('generate-menu/', views.generate_menu, name='generate-menu'),
 
     #Notifications

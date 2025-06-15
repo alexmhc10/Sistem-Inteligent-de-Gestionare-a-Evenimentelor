@@ -50,6 +50,7 @@ class Type(models.Model):
 
 class Location(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    user_account = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='user_account')
     name = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     gallery = models.ImageField(upload_to='images/', null=True, blank=True)

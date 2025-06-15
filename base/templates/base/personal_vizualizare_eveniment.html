@@ -107,106 +107,222 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <video autoplay="true" id="video-element"></video>
     </div>
 
-    <div id="img-element"></div>
+    <div class="row flex-column gap-2 mt-3">
+        <div id="img-element" class="col-lg-9"></div>
+        <div id="recognition-result" class="col-lg-3"></div>
+    </div>
 
     <div class="text-center mt-3">
         <button class="btn btn-primary" id="capture-btn">take photo</button>
         <button class="btn btn-info" id="reload-btn">reload</button>
     </div> 
+    <input type="hidden" id="event_id" value="{{ event.id }}">
 
         <script>
-console.log('hello world')
 
-const getCookie = (name) => {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                break;
-            }
-        }
-    }
-    return cookieValue;
-}
-
-const csrftoken = getCookie('csrftoken');
-
-const video = document.getElementById('video-element')
-const image = document.getElementById('img-element')
-const captureBtn = document.getElementById('capture-btn')
-const reloadBtn = document.getElementById('reload-btn')
-
-reloadBtn.addEventListener('click', () => {
-    window.location.reload()
-})
-
-if (navigator.mediaDevices.getUserMedia) {
-    navigator.mediaDevices.getUserMedia({video: true})
-    .then((stream) => {
-        video.srcObject = stream
-        const {height, width} = stream.getTracks()[0].getSettings()
-
-        captureBtn.addEventListener('click', e=> {
-            e.preventDefault()
-            captureBtn.classList.add('not-visible')
-            const track = stream.getVideoTracks()[0]
-            const imageCapture = new ImageCapture(track)
-            console.log(imageCapture)
-
-            imageCapture.takePhoto().then(blob => {
-                console.log("took photo:", blob)
-                const img = new Image(width, height)
-                img.src = URL.createObjectURL(blob)
-                image.append(img)
-
-                video.classList.add('not-visible')
-
-                const reader = new FileReader()
-
-                reader.readAsDataURL(blob)
-                reader.onloadend = () => {
-                    const base64data = reader.result
-                    console.log(base64data)
-
-                    const fd = new FormData()
-                    fd.append('csrfmiddlewaretoken', csrftoken)
-                    fd.append('photo', base64data)
-
-                    $.ajax({
-                        type: 'POST',
-                        url: '/find_user_view/',
-                        enctype: 'multipart/form-data',
-                        data: fd,
-                        processData: false,
-                        contentType: false,
-                        success: (resp) => {
-                            console.log(resp)
-                            window.location.href = window.location.origin
-                        },
-                        error: (err) => {
-                            console.log(err)
-                        }
-                    })
+        const getCookie = (name) => {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
-            }).catch(error => {
-                console.log('takePhoto() error: ', error);
+            }
+            return cookieValue;
+        }
+
+        const csrftoken = getCookie('csrftoken');
+
+        const video = document.getElementById('video-element')
+        const image = document.getElementById('img-element')
+        const captureBtn = document.getElementById('capture-btn')
+        const reloadBtn = document.getElementById('reload-btn')
+
+
+
+        reloadBtn.addEventListener('click', () => {
+            window.location.reload()
+        })
+
+        if (navigator.mediaDevices.getUserMedia) {
+            navigator.mediaDevices.getUserMedia({video: true})
+            .then((stream) => {
+                video.srcObject = stream
+                const {height, width} = stream.getTracks()[0].getSettings()
+
+                captureBtn.addEventListener('click', e=> {
+                    e.preventDefault()
+                    captureBtn.classList.add('not-visible')
+                    const track = stream.getVideoTracks()[0]
+                    const imageCapture = new ImageCapture(track)
+                    console.log(imageCapture)
+
+                    imageCapture.takePhoto().then(blob => {
+                        console.log("took photo:", blob)
+                        const img = new Image(width, height)
+                        img.src = URL.createObjectURL(blob)
+                        image.append(img)
+
+                        video.classList.add('not-visible')
+
+                        const reader = new FileReader()
+                        const event_id = document.getElementById("event_id").value;
+
+                        reader.readAsDataURL(blob)
+                        reader.onloadend = () => {
+                            const base64data = reader.result
+                            console.log(base64data)
+
+                            const fd = new FormData()
+                            fd.append('csrfmiddlewaretoken', csrftoken)
+                            fd.append('photo', base64data)
+                            fd.append('event_id', event_id);
+
+                            $.ajax({
+                                type: 'POST',
+                                url: '/find_user_view/',
+                                enctype: 'multipart/form-data',
+                                data: fd,
+                                processData: false,
+                                contentType: false,
+                                success: (resp) => {
+                                            console.log(resp);
+                                            const resultDiv = document.getElementById('recognition-result');
+                                            resultDiv.innerHTML = '';
+                                            
+                                            if (resp.status === 'success' && resp.logged === 1 && resp.user) {
+                                                const user = resp.user;
+
+                                                resultDiv.innerHTML = `
+                                                    <div class="user-profile">
+                                                        <img src="${user.photo_url}" alt="Poză ${user.name}" width="150">
+                                                        <p><strong>Nume:</strong> ${user.name}</p>
+                                                        <p><strong>Email:</strong> ${user.email}</p>
+                                                        <p><strong>This user attendance is already confirmed:</strong></p>
+                                                    </div>
+                                                `;
+                                            }
+
+                                            else if (resp.status === 'success' && resp.user) {
+                                                const user = resp.user;
+                                                const log_id = resp.log_id;
+
+                                                resultDiv.innerHTML = `
+                                                    <div class="user-profile">
+                                                        <img src="${user.photo_url}" alt="Poză ${user.name}" width="150">
+                                                        <p><strong>Nume:</strong> ${user.name}</p>
+                                                        <p><strong>Email:</strong> ${user.email}</p>
+                                                        <button id="validate-btn" class="btn btn-success">Confirmă</button>
+                                                        <button id="reject-btn" class="btn btn-danger">Nu e el</button>
+                                                    </div>
+                                                `;
+
+                                                // Buton de validare
+                                                document.getElementById('validate-btn').addEventListener('click', () => {
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: '/validate_attendance/',
+                                                        data: JSON.stringify({ user_id: user.id, event_id: event_id, log_id: log_id }),
+                                                        contentType: 'application/json',
+                                                        success: (resp) => {
+                                                            addGuestToTable(resp.user);
+                                                            document.getElementById('recognition-result').style.display = 'none';
+                                                        },
+                                                        error: (err) => {
+                                                            console.log(err);
+                                                            alert("Eroare la confirmarea prezenței.");
+                                                        }
+                                                    });
+                                                });
+
+                                                // Buton de respingere
+                                                document.getElementById('reject-btn').addEventListener('click', () => {
+                                                    resultDiv.innerHTML = '<p class="text-warning">Invitatul nu a fost recunoscut corect. Te rugăm să încerci din nou.</p>';
+                                                });
+
+                                            }  else if (resp.status === 'not_found') {
+                                                resultDiv.innerHTML = '<p class="text-danger">Nicio față nu a fost recunoscută. Te rugăm să încerci din nou.</p>';
+                                            } else {
+                                                resultDiv.innerHTML = '<p class="text-danger">Eroare la procesare.</p>';
+                                            }
+                                },
+                                error: (err) => {
+                                    console.log(err)
+                                }
+                            })
+                        }
+                    }).catch(error => {
+                        console.log('takePhoto() error: ', error);
+                    });
+                });
+            })
+            .catch(error => {
+                console.log("Something went wrong!", error);
             });
-        });
-    })
-    .catch(error => {
-        console.log("Something went wrong!", error);
-    });
-}
+        }
+
+        
+
+        function addGuestToTable(userData) {
+            const tbody = document.getElementById('attendance-table-body');
+
+            const newRow = document.createElement('tr');
+            const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            newRow.innerHTML = `
+                <td class="ps-0 fw-medium"><span>#</span></td>
+                <td class="text-center fw-medium">
+                    <img src="${userData.photo_url}" class="rounded-circle" width="35" height="35">
+                </td>
+                <td><span>${userData.name}</span></td>
+                <td class="text-center fw-medium">
+                    <span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span>
+                </td>
+                <td class="text-center fw-medium">${userData.arriving_time}</td>
+                <td class="text-center fw-medium">${userData.gender}</td>
+                <td class="text-center fw-medium">${userData.cuisine_preference}</td>
+                <td class="text-center fw-medium">${userData.is_vegan ? 'vegan' : 'non-vegan'}</td>
+                <td class="text-center fw-medium">${userData.allergens.length > 0 ? userData.allergens.join(', ') : 'None'}</td>
+                <td class="text-center fw-medium">${userData.table_number}</td>
+            `;
+
+
+            tbody.appendChild(newRow);
+            updateRowNumbers();
+        }
+
+        function updateRowNumbers() {
+            const rows = document.querySelectorAll('#attendance-table-body tr');
+            rows.forEach((tr, idx) => {
+                const cell = tr.querySelector('td span');
+                if (cell) {
+                    cell.innerText = `${idx + 1}.`;
+                }
+            });
+        }
 
         </script>
+
 
         <div class="col-lg-12">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Guest list</h5>
+                        <div class="table-header d-flex justify-content-between">
+                            <div class="table-header-title">
+                                <h5 class="card-title">Guest list</h5>
+                            </div>  
+                            <div class="table-header-actions">
+                                {% if guests_count == logs.count %}
+                                <span class="badge bg-success-subtle text-success text-uppercase">All guests arrived</span>
+                                {% else %}
+                                <p class="text-dark">{{ logs.count }} / {{guests_count}} guests arrived</p>
+                                {% endif %} 
+                            </div>
+                        </div>    
                         <div class="table-responsive">
                             <table class="table text-nowrap align-middle mb-0">
                             <thead>
@@ -223,27 +339,36 @@ if (navigator.mediaDevices.getUserMedia) {
                                     <th scope="col" class="text-center">Table no.</th>
                                 </tr>
                             </thead>
-                            <tbody class="table-group-divider">
-                                {% for response in rspv %}
-                                <tr>
-                                    <td class="ps-0 fw-medium"><span>{{ forloop.counter }}.</span></td>
-                                    <td class="text-center fw-medium"><img src="{{MEDIA_URL}}{{ response.guest.profile_set.all.0.photo }}" class="rounded-circle" width="35" height="35"></td>
-                                    <td><span>{{ response.guest.profile_set.all.0.first_name }}</span></td>
-                                    <td class="text-center fw-medium"><span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span></td>
-                                    <td class="text-center fw-medium">22:31</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.gender }}</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.cuisine_preference }}</td>
-                                    {% if response.guest.profile_set.all.0.guest_profile.vegan %}
-                                    <td class="text-center fw-medium">Yes</td>
-                                    {% else %}
-                                    <td class="text-center fw-medium">No</td>
+                            <tbody class="table-group-divider" id="attendance-table-body">
+                                    {% if logs %}
+                                        {% for log in logs %}
+                                            <tr>
+                                                <td class="ps-0 fw-medium"><span>{{ forloop.counter }}.</span></td>
+                                                <td class="text-center fw-medium">
+                                                    <img src="{{ log.profile.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                </td>
+                                                <td><span>{{ log.profile.first_name }} {{ log.profile.last_name }}</span></td>
+                                                <td class="text-center fw-medium">
+                                                    <span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span>
+                                                </td>
+                                                <td class="text-center fw-medium">{{ log.created|date:"d, H:i" }}</td>
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.gender }}</td>
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.cuisine_preference }}</td>
+                                                {% if log.profile.guest_profile.is_vegan %}
+                                                <td class="text-center fw-medium">vegan</td>
+                                                {% else %}
+                                                <td class="text-center fw-medium">non-vegan</td>
+                                                {% endif %}
+                                                {% if log.profile.guest_profile.allergens.all %}
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.allergens.all|join:", " }}</td>
+                                                {% else %}
+                                                <td class="text-center fw-medium">None</td>
+                                                {% endif %}
+                                                <td class="text-center fw-medium">{{ log.table_number }}</td>
+                                            </tr>
+                                        {% endfor %}
                                     {% endif %}
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.allergens|join:", " }}</td>
-                                    <td class="text-center fw-medium">Table x</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-
+                                </tbody>
                             </table>
                         </div>
                     </div>

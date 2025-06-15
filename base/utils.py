@@ -1,18 +1,20 @@
 import face_recognition as fr
 import numpy as np
-from base.models import Profile
+from base.models import Profile, Event
 import os
 
 def is_ajax(request):
   return request.headers.get('x-requested-with') == 'XMLHttpRequest'
 
 
-def get_encoded_faces():
+def get_encoded_faces(event_id):
     """
     This function loads all user profile images and encodes their faces.
     It handles missing files and skips images where no face is detected.
     """
-    qs = Profile.objects.filter(user_type='guest')
+    event = Event.objects.get(id=event_id)
+    guests = event.guests.all()
+    qs = Profile.objects.filter(id__in=guests.values_list('profile', flat=True))
     encoded = {}
 
     for p in qs:
@@ -39,12 +41,12 @@ def get_encoded_faces():
 
     return encoded
 
-def classify_face(img):
+def classify_face(img, event_id):
     """
     This function takes an image as input and returns the name of the face it contains
     """
     # Load all the known faces and their encodings
-    faces = get_encoded_faces()
+    faces = get_encoded_faces(event_id)
     faces_encoded = list(faces.values())
     known_face_names = list(faces.keys())
 
