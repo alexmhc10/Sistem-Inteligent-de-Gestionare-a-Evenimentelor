@@ -1,20 +1,21 @@
 {% block content %}
-          <div class="event d-flex align-items-center justify-content-center">
-              <p id="countdown-{{ event.id }}" class="text-center"></p>
-          </div>
-        
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
+    <div class="event d-flex align-items-center justify-content-center">
+        <p id="countdown-{{ event.id }}" class="text-center"></p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
             try {
                 var eventDataArray = JSON.parse('{{ event_data|safe }}');
-                
+                const user_type = '{{ profile.user_type }}';
+                console.log("User Type:", user_type);
+
                 if (!eventDataArray || eventDataArray.length === 0) {
                     console.warn("No upcoming event found!");
                     return;
                 }
 
                 var eventData = eventDataArray[0];
-                
                 console.log("Event Data:", eventData);
 
                 var eventDate = new Date(eventData.event_date).getTime();
@@ -34,17 +35,26 @@
                     var minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
                     var seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
 
-                    countdownElement.innerHTML = timeLeft > 0
-                        ? `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`
-                        : "The event is live!";
+                    if (timeLeft > 0) {
+                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds`;
 
-                    if(hours < 2 && days < 1 && minutes > 1 && seconds > 1){
-                        countdownElement.style.color = "red";
-                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds` + '<br>' + `The event is about to begin you wont be able to modify your preferences one hour prior to the event!`;
-                    }
-                    if(hours < 1 && days < 1 && minutes > 1 && seconds > 1){
-                        countdownElement.style.color = "red";
-                        countdownElement.innerHTML = `${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds` + '<br>' + `You cant modify your preferences no more!`;
+                        if (user_type === "guest") {
+                            if (hours < 2 && days < 1 && minutes > 1 && seconds > 1) {
+                                countdownElement.style.color = "red";
+                                countdownElement.innerHTML += '<br>' + `The event is about to begin. You won’t be able to modify your preferences one hour prior to the event!`;
+                            }
+                            if (hours < 1 && days < 1 && minutes > 1 && seconds > 1) {
+                                countdownElement.style.color = "red";
+                                countdownElement.innerHTML += '<br>' + `You can't modify your preferences anymore!`;
+                            }
+                        } else if (user_type === "staff") {
+                            if (hours < 2 && days < 1 && minutes > 1 && seconds > 1) {
+                                countdownElement.style.color = "red";
+                                countdownElement.innerHTML += '<br>' + `The event is about to begin!`;
+                            }
+                        }
+                    } else {
+                        countdownElement.innerHTML = "The event is live!";
                     }
                 }
 
@@ -54,7 +64,5 @@
                 console.error("Error parsing event data:", error);
             }
         });
-
-
-        </script>
+    </script>
 {% endblock %}

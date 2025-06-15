@@ -60,7 +60,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">
-                            <h1 class="card-title d-flex align-items-center gap-2">Time left until event start!</h1>
+                            <h1 class="card-title text-center">Time left until event start!</h1>
                             {% include 'timer.html' %}
                         </div>
                     </div>
@@ -107,10 +107,38 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <video autoplay="true" id="video-element"></video>
     </div>
 
-    <div class="row flex-column gap-2 mt-3">
-        <div id="img-element" class="col-lg-9"></div>
-        <div id="recognition-result" class="col-lg-3"></div>
+    <div class="row align-items-start mt-3">
+        <div id="img-element" class="col-md-8"></div>
+        <div id="recognition-result" class="col-md-4">
     </div>
+</div>
+    <style>
+        #img-element img:not(:empty) {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        .user-profile:not(:empty) {
+            text-align: center;
+        }
+
+        .user-profile img {
+            border-radius: 10px;
+            margin-bottom: 10px;
+            max-width: 100%;
+            height: auto;
+        }
+
+        .user-profile p {
+            margin: 4px 0;
+        }
+
+        .user-profile button {
+            margin: 5px;
+        }
+
+    </style>
 
     <div class="text-center mt-3">
         <button class="btn btn-primary" id="capture-btn">take photo</button>
@@ -159,14 +187,13 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     captureBtn.classList.add('not-visible')
                     const track = stream.getVideoTracks()[0]
                     const imageCapture = new ImageCapture(track)
-                    console.log(imageCapture)
 
                     imageCapture.takePhoto().then(blob => {
                         console.log("took photo:", blob)
                         const img = new Image(width, height)
                         img.src = URL.createObjectURL(blob)
                         image.append(img)
-
+                        image.classList.add('p-2', 'd-flex', 'justify-content-center', 'align-items-center', 'border', 'rounded', 'bg-light');
                         video.classList.add('not-visible')
 
                         const reader = new FileReader()
@@ -197,6 +224,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                             if (resp.status === 'success' && resp.logged === 1 && resp.user) {
                                                 const user = resp.user;
 
+                                                resultDiv.classList.add('p-3', 'border', 'rounded', 'bg-white', 'shadow-sm');
                                                 resultDiv.innerHTML = `
                                                     <div class="user-profile">
                                                         <img src="${user.photo_url}" alt="Poză ${user.name}" width="150">
@@ -216,8 +244,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                         <img src="${user.photo_url}" alt="Poză ${user.name}" width="150">
                                                         <p><strong>Nume:</strong> ${user.name}</p>
                                                         <p><strong>Email:</strong> ${user.email}</p>
-                                                        <button id="validate-btn" class="btn btn-success">Confirmă</button>
-                                                        <button id="reject-btn" class="btn btn-danger">Nu e el</button>
+                                                        <button id="validate-btn" class="btn btn-success">Confirm</button>
+                                                        <button id="reject-btn" class="btn btn-danger">Incorect guest</button>
                                                     </div>
                                                 `;
 
@@ -244,10 +272,14 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                     resultDiv.innerHTML = '<p class="text-warning">Invitatul nu a fost recunoscut corect. Te rugăm să încerci din nou.</p>';
                                                 });
 
-                                            }  else if (resp.status === 'not_found') {
-                                                resultDiv.innerHTML = '<p class="text-danger">Nicio față nu a fost recunoscută. Te rugăm să încerci din nou.</p>';
+                                            }  else if (resp.result === 'Not_found') {
+                                                resultDiv.innerHTML = `
+                                                    <div class="user-profile">
+                                                        <p><strong>The person is not registered for this event:</strong></p>
+                                                    </div>
+                                                `;
                                             } else {
-                                                resultDiv.innerHTML = '<p class="text-danger">Eroare la procesare.</p>';
+                                                resultDiv.innerHTML = '<p class="text-danger">Procesing error.</p>';
                                             }
                                 },
                                 error: (err) => {

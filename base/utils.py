@@ -42,15 +42,11 @@ def get_encoded_faces(event_id):
     return encoded
 
 def classify_face(img, event_id):
-    """
-    This function takes an image as input and returns the name of the face it contains
-    """
-    # Load all the known faces and their encodings
+
     faces = get_encoded_faces(event_id)
     faces_encoded = list(faces.values())
     known_face_names = list(faces.keys())
 
-    # Load the input image
     img = fr.load_image_file(img)
  
     try:

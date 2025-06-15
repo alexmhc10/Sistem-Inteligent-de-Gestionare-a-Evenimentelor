@@ -2361,11 +2361,9 @@ def find_user_view(request):
                 })
 
             except User.DoesNotExist:
-                pass
+                return JsonResponse({'success': False, 'result': 'Not_found'})
 
         return JsonResponse({'success': False})
-
-
 
 
 @csrf_exempt
@@ -2384,6 +2382,7 @@ def validate_attendance(request):
             log = Log.objects.get(id=log_id)
             log.is_correct = True
             log.save()
+            created_aware = make_aware(log.created)  # convertește la aware
 
             return JsonResponse({
                 'message': 'Attendance marked',
@@ -2392,7 +2391,7 @@ def validate_attendance(request):
                     'name': f"{profile.first_name} {profile.last_name}",
                     'email': user.email,
                     'photo_url': profile.photo.url if profile.photo else '',
-                    'arriving_time': localtime(log.created).strftime("%d, %H:%M"),
+                    'arriving_time': localtime(created_aware).strftime("%d, %H:%M"),
                     'gender': preferences.gender,
                     'cuisine_preference': preferences.cuisine_preference,
                     'vegan': preferences.vegan,
