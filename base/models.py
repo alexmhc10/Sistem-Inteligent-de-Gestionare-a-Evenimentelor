@@ -551,8 +551,8 @@ class Table(models.Model):
     table_number = models.IntegerField()
     capacity = models.IntegerField(help_text="Number of seats at this table")
     shape = models.CharField(max_length=20, choices=SHAPE_CHOICES, default='round')
-    position_x = models.IntegerField(help_text="X position in the room layout")
-    position_y = models.IntegerField(help_text="Y position in the room layout")
+    position_x = models.FloatField(default=0)  # procent din lățimea containerului
+    position_y = models.FloatField(default=0)  # procent din înălțimea containerului
     is_reserved = models.BooleanField(default=False, help_text="Reserved for special groups (e.g., bride and groom)")
     notes = models.TextField(blank=True, null=True, help_text="Additional notes about the table")
     created_at = models.DateTimeField(auto_now_add=True)
