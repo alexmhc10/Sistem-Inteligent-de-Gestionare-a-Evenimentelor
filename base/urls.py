@@ -79,15 +79,15 @@ urlpatterns = [
     #Personal
     path('personal_eveniment_home/', views.personal_eveniment_home, name='personal_eveniment_home'),
     path('personal_vizualizare_eveniment/<int:pk>', views.personal_vizualizare_eveniment, name='personal_vizualizare_eveniment'),
-    path('personal_aranjament_invitati/', views.personal_aranjament_invitati, name='personal_aranjament_invitati'),
-    path('personal_aranjament_invitati/<int:pk>', views.personal_aranjament_invitati, name='personal_aranjament_invitati_event'),
+    path('personal_layout/', views.personal_layout, name='personal_layout'),
     path('personal_face_id/<int:pk>', views.personal_face_id, name='personal_face_id'),
     path('personal_profile/', views.personal_profile, name='personal_profile'),
     path('upload_images/', views.upload_images, name='upload_images'),
     path("delete-image/<int:image_id>/", views.delete_image, name="delete_image"),
     path("personal_menu/", views.personal_menu, name="personal_menu"),
     path("completed_event/<int:pk>", views.completed_event, name='completed_event'),
-    
+    path('api/events/<int:event_id>/upload-archive/', views.UploadArchiveAPI.as_view(), name='upload_archive_api'),
+
     #Personal sistem mese
     path('tables/<int:location_id>', views.get_tables_for_location, name='tables'),
 

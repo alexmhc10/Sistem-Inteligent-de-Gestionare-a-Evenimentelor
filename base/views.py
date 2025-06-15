@@ -61,6 +61,7 @@ from .table_arrangement_algorithm import TableArrangementAlgorithm
 from django.views.decorators.http import require_GET
 from django.forms import modelformset_factory
 import joblib
+from django.utils.decorators import method_decorator
 
 
 
@@ -2154,6 +2155,7 @@ def personal_vizualizare_eveniment(request, pk):
     print('RSPV:', rspv)
     logs = Log.objects.filter(event=event, is_correct = True)
     print('Logs:', logs)
+
     event_data = [
         {
             'id': event.id,
@@ -2162,13 +2164,17 @@ def personal_vizualizare_eveniment(request, pk):
         }
     ]   
     
+    guests_menu = GuestMenu.objects.filter(event=event)
+    print('Guests Menu:', guests_menu)
+
     context = {
         'logs': logs,
         'event': event,
         'guests_count': rspv.count(),
         'event_data': json.dumps(event_data),
         'rspv': rspv,
-        'profile': profile
+        'profile': profile,
+        'guests_menu': guests_menu
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 
@@ -2185,7 +2191,7 @@ def completed_event(request, pk):
     
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event)
-
+    logs = Log.objects.filter(event=event, is_correct = True)
 
     if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
@@ -2195,9 +2201,27 @@ def completed_event(request, pk):
         context = {
             'event':event,
             'profile': profile,
-            'rspv': rspv
+            'rspv': rspv,
+            'logs': logs
         }
     return render(request, 'base/completed_event.html', context)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class UploadArchiveAPI(View):
+    def post(self, request, event_id):
+        profile = Profile.objects.get(user=request.user)
+        if not request.user.is_authenticated or profile.user_type != 'staff':
+            return HttpResponseForbidden("Nu ai acces.")
+
+        event = get_object_or_404(Event, id=event_id)
+
+        archive_file = request.FILES.get('archive')
+        if not archive_file or not archive_file.name.endswith('.zip'):
+            return JsonResponse({"error": "Trebuie să fie fișier .zip sau .rar."}, status=400)
+
+        EventGallery.objects.create(event=event, archive=archive_file)
+        return JsonResponse({"success": "Arhiva a fost încărcată cu succes!"})
 
 
 @login_required(login_url='/login')
@@ -2291,27 +2315,25 @@ def search_food(request):
         "profile": profile,
         "allergens": allergens_db
     }
-    return render(request, "base/personal_menu.html", context)
-    
-
-
+    return render(request, "base/personal_menu.html", context)   
 
 
 @login_required(login_url='/login')
 @user_is_staff
-def personal_aranjament_invitati(request, pk=None):
-    events = Event.objects.first()
-    context_default = {
-        'event': events
+def personal_layout(request):
+    profile = Profile.objects.get(user=request.user)
+    location = Location.objects.filter(user_account=request.user).first()
+    if not location:
+        messages.error(request, "You don't have a location associated with your account.")
+        return redirect('personal_profile')
+    tables = Table.objects.filter(location__user_account=request.user)
+
+    context = {
+        'profile': profile,
+        'location': location,
+        'tables': tables
     }
-    location = Location.objects.first()
-    context_event = {
-        'location': location
-    }
-    if pk:
-        return render(request, 'base/personal_aranjament_invitati.html', context_event)
-    else:
-        return render(request, 'base/personal_aranjament_invitati.html', context_default)
+    return render(request, 'base/personal_layout.html', context)
 
 
 @login_required(login_url='/login')
@@ -2663,6 +2685,8 @@ def guest_event_view(request, pk):
         }
     ]
 
+    archives = event.archives.all()
+
     context={
         'organiser':oragniser_profile,
         'event':event,
@@ -2681,6 +2705,7 @@ def guest_event_view(request, pk):
         'event_posts': event_posts,
         'event_posts_count': event_posts.count(),
         'location': location,
+        'archives': archives,
     }
     return render(request,'base/guest_event_view.html', context)
 

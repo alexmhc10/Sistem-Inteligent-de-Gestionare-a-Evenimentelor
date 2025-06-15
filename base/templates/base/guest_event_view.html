@@ -804,11 +804,27 @@ document.addEventListener("change", function (e) {
             }
           </style>
             
-            
+              {% load custom_filters %}
+
               <h1 class="h1">The event ended!</h1> 
               <p>You can create a new post and interact with other users!</p>
               <hr>
-
+              <h3 class="archives-title">
+                Checkout the archives with photos from this event!
+              </h3>
+              <div class="card">
+                <div class="card-body d-flex flex-column">
+                  {% for archive in archives %}
+                    <div class="archive-item">
+                      <a href="{{ archive.archive.url }}" download>{{ archive.archive.name|basename }}</a>
+                      <p>Uploaded - {{ archive.uploaded_at }}</p>
+                    </div>
+                    {% empty %}
+                      <li>The archives with photos for this event will be available to download soon.</li>
+                  {% endfor %}
+                </div>
+              </div>
+              
               {% if guest_posts_count > 0 %}
               <a class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="collapse" href="#postCollapse" role="button" aria-expanded="false" aria-controls="postCollapse">
                 Add more posts!
@@ -875,10 +891,9 @@ document.addEventListener("change", function (e) {
                 </div>
               </div>
               {% else %}
-
+                  <h3 class="h3">Create a post for - {{ event.event_name }}</h3>
                   <div class="card mt-4">
                     <div class="card-body">
-                      <h3 class="h3">Create a post for - {{ event.event_name }}</h3>
                       <form method="post" id="post-form" enctype="multipart/form-data">
                           {% csrf_token %}
                           {{ form.non_field_errors }}

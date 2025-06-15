@@ -256,6 +256,21 @@ class EventPostForm(forms.ModelForm):
             return images
 
 
+class EventGalleryUploadForm(forms.ModelForm):
+    class Meta:
+        model = EventGallery
+        fields = ['archive']
+
+    def clean_archive(self):
+        file = self.cleaned_data.get('archive')
+        if file:
+            if not file.name.endswith('.zip'):
+                raise forms.ValidationError("Fișierul trebuie să fie o arhivă ZIP sau RAR.")
+            if file.size > 100 * 1024 * 1024:
+                raise forms.ValidationError("Arhiva nu trebuie să depășească 100MB.")
+        return file
+
+
 class TableForm(forms.ModelForm):
     class Meta:
         model = Table

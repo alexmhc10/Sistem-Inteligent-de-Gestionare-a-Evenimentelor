@@ -494,6 +494,12 @@ class LocationImages(models.Model):
         return f"Imagine pentru {self.location.name}"
 
 
+class EventGallery(models.Model):
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='archives')
+    archive = models.FileField(upload_to='event_archives/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
 class EventPost(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='posts')
     author = models.ForeignKey(User, on_delete=models.CASCADE)

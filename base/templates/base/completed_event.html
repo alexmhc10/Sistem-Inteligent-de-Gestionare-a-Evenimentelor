@@ -38,10 +38,54 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <i class="bi bi-camera h1 text-primary"></i>
               <h4 class="mt-7">Event gallery upload!</h4>
               <p class="card-subtitle mt-2 mb-3">Here you can upload the photos taken at your location and share them with the rest of the guests.</p>
-                <button class="btn btn-primary mb-3">Upload</button>
+                <form id="uploadForm">
+                  <input type="file" class="form-control mb-2" id="archiveFile" name="archive" accept=".zip" required>
+                  <button type="submit" class="btn btn-success">Upload</button>
+                </form>
+
+                <div id="status"></div>
             </div>
           </div>
         </div>
+        <script>
+          document.getElementById("uploadForm").addEventListener("submit", function (e) {
+              e.preventDefault();
+
+              const eventId = {{ event.id }};
+              const fileInput = document.getElementById("archiveFile");
+              const file = fileInput.files[0];
+
+              if (!file) {
+                  document.getElementById("status").textContent = "Selectează un fișier!";
+                  return;
+              }
+
+              const formData = new FormData();
+              formData.append("archive", file);
+
+              fetch(`/api/events/${eventId}/upload-archive/`, {
+                  method: "POST",
+                  headers: {
+                      "X-CSRFToken": "{{ csrf_token }}",
+                  },
+                  body: formData,
+              })
+              .then(response => {
+                  if (response.ok) {
+                      document.getElementById("status").textContent = "Arhiva a fost încărcată cu succes!";
+                      fileInput.value = '';
+                  } else {
+                      return response.text().then(text => {
+                          throw new Error(text || "Eroare la trimitere!");
+                      });
+                  }
+              })
+              .catch(error => {
+                  document.getElementById("status").textContent = "Eroare: " + error.message;
+              });
+          });
+          </script>
+
         <div class="col-lg-8">
            <div class="card">
                     <div class="card-body">
@@ -69,24 +113,34 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider">
-                                {% for response in rspv %}
-                                <tr>
-                                    <td class="ps-0 fw-medium"><span>{{ forloop.counter }}.</span></td>
-                                    <td class="text-center fw-medium"><img src="{{MEDIA_URL}}{{ response.guest.profile_set.all.0.photo }}" class="rounded-circle" width="35" height="35"></td>
-                                    <td><span>{{ response.guest.profile_set.all.0.first_name }}</span></td>
-                                    <td class="text-center fw-medium"><span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span></td>
-                                    <td class="text-center fw-medium">22:31</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.gender }}</td>
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.cuisine_preference }}</td>
-                                    {% if response.guest.profile_set.all.0.guest_profile.vegan %}
-                                    <td class="text-center fw-medium">Yes</td>
-                                    {% else %}
-                                    <td class="text-center fw-medium">No</td>
+                               {% if logs %}
+                                        {% for log in logs %}
+                                            <tr>
+                                                <td class="ps-0 fw-medium"><span>{{ forloop.counter }}.</span></td>
+                                                <td class="text-center fw-medium">
+                                                    <img src="{{ log.profile.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                </td>
+                                                <td><span>{{ log.profile.first_name }} {{ log.profile.last_name }}</span></td>
+                                                <td class="text-center fw-medium">
+                                                    <span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span>
+                                                </td>
+                                                <td class="text-center fw-medium">{{ log.created|date:"d, H:i" }}</td>
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.gender }}</td>
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.cuisine_preference }}</td>
+                                                {% if log.profile.guest_profile.is_vegan %}
+                                                <td class="text-center fw-medium">vegan</td>
+                                                {% else %}
+                                                <td class="text-center fw-medium">non-vegan</td>
+                                                {% endif %}
+                                                {% if log.profile.guest_profile.allergens.all %}
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.allergens.all|join:", " }}</td>
+                                                {% else %}
+                                                <td class="text-center fw-medium">None</td>
+                                                {% endif %}
+                                                <td class="text-center fw-medium">{{ log.table_number }}</td>
+                                            </tr>
+                                        {% endfor %}
                                     {% endif %}
-                                    <td class="text-center fw-medium">{{ response.guest.profile_set.all.0.guest_profile.allergens|join:", " }}</td>
-                                    <td class="text-center fw-medium">Table x</td>
-                                </tr>
-                                {% endfor %}
                             </tbody>
 
                             </table>
