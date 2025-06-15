@@ -977,7 +977,6 @@ def admin_view_locations(request, name):
     return render(request, 'base/admin-view-location.html', context)
 
 
-
 @login_required(login_url='login')
 def users(request):
     if not request.user.is_superuser:
@@ -1055,13 +1054,30 @@ def users(request):
             user = User.objects.filter(id=id)
             user.delete()
             return redirect('users')
-
+    total_users_accepted = Profile.objects.filter(user_type="organizer", approved=True).count()
+    total_users = Profile.objects.filter(user_type="organizer").count()
     user_profiles = {user: user.profile_set.first() for user in users}
     profiles = Profile.objects.filter(user_type="organizer")
+    today = now()
+    current_year = today.year
+    current_month = today.month
+    new_this_month = Profile.objects.filter(
+        user_type="organizer",
+        created_at__year=current_year,
+        created_at__month=current_month
+    ).count()
+    if total_users > 0:
+        percent_new = (new_this_month / total_users) * 100
+    else:
+        percent_new = 0
     user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
     context = {
+        'new_this_month': new_this_month,
+        'percent_new': percent_new,
+        'total_users_accepted': total_users_accepted,
+        'total_users': total_users,
         'notifications':notifications,
         'user_profiles':user_profiles,
         'updated':updated,
@@ -1075,6 +1091,7 @@ def users(request):
         'awaiting_profiles':awaiting_profiles
     }
     return render(request, 'base/users.html', context) 
+
 
 
 @login_required(login_url='login')

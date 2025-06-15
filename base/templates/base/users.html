@@ -82,11 +82,11 @@
                    <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                       <div class="card h-100">
                          <div class="card-body">
-                            <h6 class="card-subtitle mb-2">Total users</h6>
+                            <h6 class="card-subtitle mb-2">Total users accepted</h6>
                             <div class="row align-items-center gx-2">
                                <div class="col">
-                                  <span class="js-counter display-4 text-dark" data-value="24">24</span>
-                                  <span class="text-body fs-5 ms-1">from 22</span>
+                                  <span class="js-counter display-4 text-dark" data-value="24">{{total_users_accepted}}</span>
+                                  <span class="text-body fs-5 ms-1">from {{ total_users }}</span>
                                </div>
                                <div class="col-auto">
                                   <span class="badge bg-soft-success text-success p-1">
@@ -97,38 +97,26 @@
                          </div>
                       </div>
                    </div>
-                   <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
+                      <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
                       <div class="card h-100">
                          <div class="card-body">
-                            <h6 class="card-subtitle mb-2">Active members</h6>
+                            <h6 class="card-subtitle mb-2">New users</h6>
                             <div class="row align-items-center gx-2">
                                <div class="col">
-                                  <span class="js-counter display-4 text-dark" data-value="12">12</span>
-                                  <span class="text-body fs-5 ms-1">from 11</span>
+                                  <span class="js-counter display-4 text-dark" data-value="24">{{new_this_month}}</span>
+                                  <span class="text-body fs-5 ms-1">from {{ total_users }}</span>
                                </div>
                                <div class="col-auto">
+                                 {% if percent_new > 0 %}
                                   <span class="badge bg-soft-success text-success p-1">
-                                  <i class="bi-graph-up"></i> 1.2%
+                                  <i class="bi-graph-up"></i> {{percent_new}}%
                                   </span>
-                               </div>
-                            </div>
-                         </div>
-                      </div>
-                   </div>
-                   <div class="col-sm-6 col-lg-3 mb-3 mb-lg-5">
-                      <div class="card h-100">
-                         <div class="card-body">
-                            <h6 class="card-subtitle mb-2">New/returning</h6>
-                            <div class="row align-items-center gx-2">
-                               <div class="col">
-                                  <span class="js-counter display-4 text-dark" data-value="56">56</span>
-                                  <span class="display-4 text-dark">%</span>
-                                  <span class="text-body fs-5 ms-1">from 48.7</span>
-                               </div>
-                               <div class="col-auto">
-                                  <span class="badge bg-soft-danger text-danger p-1">
-                                  <i class="bi-graph-down"></i> 2.8%
-                                  </span>
+                                 {% else %}
+                                 <span class="badge p-1" style=" color: #6c757d;">
+    <i class="bi-graph-up"></i> {{ percent_new }}%
+</span>
+
+                                  {% endif %}
                                </div>
                             </div>
                          </div>
