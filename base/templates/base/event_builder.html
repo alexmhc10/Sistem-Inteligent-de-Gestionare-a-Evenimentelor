@@ -3,26 +3,53 @@
 
 {% block content %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
 
 <style>
 .form-step {
     transition: all 1s ease-in-out;
 }
 
-/* Calendar styling */
+/* Enhanced Calendar styling */
 .flatpickr-calendar {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    border: none;
-    width: 300px;
-    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08), 0 8px 16px rgba(212, 175, 55, 0.1);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    width: 320px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    animation: calendarFadeIn 0.3s ease-out;
+}
+
+@keyframes calendarFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .flatpickr-months {
-    background: white;
-    padding: 15px 0 5px 0;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
+    padding: 20px 0 15px 0;
     margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.flatpickr-months::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="rgba(255,255,255,0.1)"/><circle cx="80" cy="30" r="1.5" fill="rgba(255,255,255,0.08)"/><circle cx="60" cy="70" r="1" fill="rgba(255,255,255,0.05)"/></svg>');
+    pointer-events: none;
 }
 
 .flatpickr-month {
@@ -32,98 +59,268 @@
 .flatpickr-current-month {
     padding: 0 !important;
     height: auto;
+    position: relative;
+    z-index: 1;
 }
 
 .flatpickr-current-month .cur-month,
 .numInput.cur-year {
-    color: #333;
-    font-weight: 600;
-    font-size: 1.1rem;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .flatpickr-weekdays {
-    margin: 10px 0;
+    margin: 15px 0 10px 0;
+    background: rgba(212, 175, 55, 0.05);
+    padding: 10px 0;
 }
 
 .flatpickr-weekday {
     color: #666;
-    font-weight: 500;
-    font-size: 0.9rem;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.flatpickr-days {
+    padding: 10px;
 }
 
 .flatpickr-day {
-    border-radius: 50%;
-    height: 36px;
-    line-height: 36px;
-    margin: 2px;
+    border-radius: 12px;
+    height: 40px;
+    line-height: 40px;
+    margin: 3px;
     color: #333;
-    font-weight: 400;
-    border: 1px solid transparent;
+    font-weight: 500;
+    border: 2px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.flatpickr-day::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(184, 145, 42, 0.1));
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.flatpickr-day:hover::before {
+    opacity: 1;
 }
 
 .flatpickr-day:hover {
-    background: rgba(212, 175, 55, 0.1);
-    border-color: var(--primary-gold);
+    background: rgba(212, 175, 55, 0.15);
+    border-color: rgba(212, 175, 55, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
 }
 
 .flatpickr-day.selected {
-    background: var(--primary-gold) !important;
-    border-color: var(--primary-gold) !important;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%) !important;
+    border-color: #D4AF37 !important;
     color: white !important;
+    font-weight: 700 !important;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4);
+}
+
+.flatpickr-day.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 10px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
 }
 
 .flatpickr-day.today {
-    border: 1px solid var(--primary-gold);
-    color: var(--primary-gold);
+    border: 2px solid #D4AF37;
+    color: #D4AF37;
+    font-weight: 600;
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.flatpickr-day.today:not(.selected)::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background: #D4AF37;
+    border-radius: 50%;
+}
+
+/* Weekend styling */
+.flatpickr-day.flatpickr-saturday,
+.flatpickr-day.flatpickr-sunday {
+    color: #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
 }
 
 .flatpickr-prev-month,
 .flatpickr-next-month {
-    padding: 5px;
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.flatpickr-prev-month:hover,
+.flatpickr-next-month:hover {
+    background: rgba(255,255,255,0.2);
+    transform: scale(1.1);
 }
 
 .flatpickr-prev-month svg,
 .flatpickr-next-month svg {
-    fill: #666;
+    fill: white;
+    width: 16px;
+    height: 16px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-.flatpickr-prev-month:hover svg,
-.flatpickr-next-month:hover svg {
-    fill: var(--primary-gold);
-}
-
-/* Input styling */
+/* Enhanced Input styling */
 .date-input-container {
     position: relative;
-    max-width: 300px;
+    max-width: 320px;
     margin: 0 auto;
+}
+
+.date-input-container::before {
+    content: '📅';
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.7;
 }
 
 .date-input-container input {
     width: 100%;
-    padding: 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.95rem;
+    padding: 16px 16px 16px 50px;
+    border: 2px solid #e1e8ed;
+    border-radius: 15px;
+    font-size: 1rem;
     color: #333;
-    background: white;
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-weight: 500;
 }
 
 .date-input-container input:hover {
-    border-color: var(--primary-gold);
+    border-color: #D4AF37;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.15);
 }
 
 .date-input-container input:focus {
     outline: none;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    border-color: #D4AF37;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1), 0 8px 25px rgba(212, 175, 55, 0.15);
+    transform: translateY(-2px);
 }
 
-/* Eliminăm display-ul suplimentar al datei selectate pentru un design mai simplu */
+.date-input-container input[value]:not([value=""]) {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, rgba(212, 175, 55, 0.02) 100%);
+    border-color: #D4AF37;
+    color: #D4AF37;
+    font-weight: 600;
+}
+
+.date-input-container input::placeholder {
+    color: #888;
+    font-style: italic;
+    transition: color 0.3s ease;
+}
+
+.date-input-container input:focus::placeholder {
+    color: #D4AF37;
+}
+
+/* Pulse animation for empty date input */
+.date-input-container input:not([value]):not(:focus) {
+    animation: inputPulse 2s ease-in-out infinite;
+}
+
+@keyframes inputPulse {
+    0%, 100% {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    50% {
+        box-shadow: 0 2px 8px rgba(212, 175, 55, 0.1), 0 0 0 2px rgba(212, 175, 55, 0.05);
+    }
+}
+
+/* Selected date display enhancement */
 .selected-date-display {
-    display: none !important;
+    margin-top: 20px;
+    padding: 20px;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
+    border-radius: 15px;
+    color: white;
+    text-align: center;
+    transform: translateY(10px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+}
+
+.selected-date-display.active {
+    transform: translateY(0);
+    opacity: 1;
+    display: block !important;
+}
+
+.selected-date-display .day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.selected-date-display .full-date {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Step styling enhancement */
+.form-step.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+}
+
+.form-step.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
 }
 
 .progress {
@@ -136,15 +333,197 @@
 .progress-bar {
     transition: width 0.4s ease;
     font-weight: bold;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
 }
-    .tooltip-inner {
-        background-color: #D4AF37;
-        color: #fff;
-        font-size: 14px;
+
+.tooltip-inner {
+    background-color: #D4AF37;
+    color: #fff;
+    font-size: 14px;
+}
+
+.tooltip-arrow {
+    border-top-color: #D4AF37;
+}
+
+/* Calendar step specific styling */
+#step0 {
+    text-align: center;
+    background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,249,250,0.9) 100%);
+}
+
+#step0 h4 {
+    color: #333;
+    font-weight: 700;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+#step0 h4::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
+    border-radius: 2px;
+}
+
+/* Animation keyframes */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
     }
-    .tooltip-arrow {
-        border-top-color: #D4AF37;
+    to {
+        transform: translateX(0);
+        opacity: 1;
     }
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+    }
+    10% {
+        transform: translateY(10vh) rotate(360deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+/* Recommended dates styling */
+.flatpickr-day.recommended-date {
+    position: relative;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(212, 175, 55, 0.1));
+    border: 1px dashed #D4AF37;
+}
+
+.flatpickr-day.recommended-date::before {
+    content: '⭐';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    font-size: 8px;
+    background: #D4AF37;
+    color: white;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+}
+
+/* Calendar opening animation */
+.flatpickr-calendar.calendar-opening {
+    animation: calendarZoomIn 0.2s ease-out;
+}
+
+@keyframes calendarZoomIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0.8;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Enhanced weekend styling */
+.flatpickr-day.flatpickr-saturday:hover,
+.flatpickr-day.flatpickr-sunday:hover {
+    background: rgba(231, 76, 60, 0.15) !important;
+    border-color: rgba(231, 76, 60, 0.3);
+}
+
+/* Map styling */
+.location-map-container {
+    margin-top: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    border: 2px solid rgba(212, 175, 55, 0.2);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s ease;
+}
+
+.location-map-container.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#locationMap {
+    height: 300px;
+    width: 100%;
+    z-index: 1;
+}
+
+.map-header {
+    background: linear-gradient(135deg, #D4AF37 0%, #B8912A 100%);
+    color: white;
+    padding: 15px 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.map-header i {
+    font-size: 1.2rem;
+}
+
+.location-info {
+    background: rgba(212, 175, 55, 0.05);
+    padding: 15px 20px;
+    border-top: 1px solid rgba(212, 175, 55, 0.1);
+}
+
+.location-info h6 {
+    color: #D4AF37;
+    margin-bottom: 5px;
+    font-weight: 600;
+}
+
+.location-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+/* Leaflet custom styling */
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.leaflet-popup-content {
+    margin: 15px;
+    line-height: 1.6;
+}
+
+.custom-popup {
+    text-align: center;
+}
+
+.custom-popup h6 {
+    color: #D4AF37;
+    margin-bottom: 8px;
+    font-weight: 600;
+}
+
+.custom-popup p {
+    margin: 0;
+    color: #666;
+    font-size: 0.9rem;
+}
 </style>
 
 <div class="event_builder container mt-4">
@@ -174,6 +553,13 @@
                 <input type="text" id="event_calendar" name="event_calendar" class="form-control" required
                     placeholder="Click to select date" readonly>
             </div>
+            
+            <!-- Enhanced selected date display -->
+            <div class="selected-date-display">
+                <div class="day"></div>
+                <div class="full-date"></div>
+            </div>
+            
             <div class="form-step-buttons mt-4">
                 <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)">
                     Next <i class="fas fa-arrow-right ms-2"></i>
@@ -207,8 +593,9 @@
                 <div class="col-md-6">
                     <label for="location" class="form-label" data-bs-toggle="tooltip" title="Choose the location for your event">Location</label>
                     <select id="location" name="location" class="form-select" required>
+                        <option value="">Select a location</option>
                         {% for location in locations %}
-                            <option value="{{ location.id }}">{{ location.name }}</option>
+                            <option value="{{ location.id }}" data-address="{{ location.location }}" data-name="{{ location.name }}" data-description="{{ location.description }}">{{ location.name }}</option>
                         {% empty %}
                             <option value="">No locations available</option>
                         {% endfor %}
@@ -223,6 +610,19 @@
                         <option value="Party">Party</option>
                         <option value="Celebration">Celebration</option>
                     </select>
+                </div>
+            </div>
+
+            <!-- Location Map -->
+            <div class="location-map-container" id="mapContainer">
+                <div class="map-header">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span id="mapTitle">Location Preview</span>
+                </div>
+                <div id="locationMap"></div>
+                <div class="location-info">
+                    <h6 id="locationName">Select a location to view on map</h6>
+                    <p id="locationAddress">Choose a location from the dropdown above</p>
                 </div>
             </div>
 
@@ -325,18 +725,52 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-    // Initialize calendar
+    // Initialize enhanced calendar
     flatpickr("#event_calendar", {
         dateFormat: "Y-m-d",
         minDate: "today",
         animate: true,
         disableMobile: true,
+        showMonths: 1,
+        static: false,
+        monthSelectorType: 'dropdown',
+        yearSelectorType: 'dropdown',
+        weekNumbers: false,
+        allowInput: false,
+        clickOpens: true,
+        onReady: function(selectedDates, dateStr, instance) {
+            // Add custom classes for weekends
+            instance.calendarContainer.classList.add('flatpickr-enhanced');
+        },
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+            const date = dayElem.dateObj;
+            const dayOfWeek = date.getDay();
+            
+            // Add weekend classes
+            if (dayOfWeek === 0) { // Sunday
+                dayElem.classList.add('flatpickr-sunday');
+            } else if (dayOfWeek === 6) { // Saturday
+                dayElem.classList.add('flatpickr-saturday');
+            }
+            
+            // Add special highlighting for certain dates (optional)
+            const today = new Date();
+            const diffTime = date - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 7 || diffDays === 14 || diffDays === 30) {
+                dayElem.title = 'Recommended date';
+                dayElem.classList.add('recommended-date');
+            }
+        },
         onChange: function(selectedDates, dateStr) {
             if (selectedDates.length > 0) {
                 const today = new Date().toISOString().split('T')[0];
                 if (dateStr < today) {
-                    alert("Please select a future date.");
+                    // Create a more elegant alert
+                    showDateAlert("Please select a future date for your event!", "error");
                     this.clear();
                     return;
                 }
@@ -349,14 +783,213 @@
                     day: 'numeric'
                 });
 
+                // Update the display with animation
                 const displayElement = document.querySelector('.selected-date-display');
-                displayElement.querySelector('.day').textContent = dayName;
-                displayElement.querySelector('.full-date').textContent = fullDate;
-                displayElement.classList.add('active');
+                const dayElement = displayElement.querySelector('.day');
+                const fullDateElement = displayElement.querySelector('.full-date');
+                
+                // Animate the content change
+                displayElement.style.transform = 'translateY(10px)';
+                displayElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    dayElement.textContent = dayName;
+                    fullDateElement.textContent = fullDate;
+                    displayElement.classList.add('active');
+                }, 150);
+                
+                // Add confetti effect (optional)
+                createConfetti();
+                
             } else {
                 document.querySelector('.selected-date-display').classList.remove('active');
             }
+        },
+        onOpen: function() {
+            // Add opening animation class
+            this.calendarContainer.classList.add('calendar-opening');
+        },
+        onClose: function() {
+            // Remove opening animation class
+            this.calendarContainer.classList.remove('calendar-opening');
         }
+    });
+
+    // Enhanced alert function
+    function showDateAlert(message, type = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : 'info'} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 3000);
+    }
+
+    // Simple confetti effect for date selection
+    function createConfetti() {
+        const colors = ['#D4AF37', '#B8912A', '#FFD700', '#FFA500'];
+        const confettiCount = 15;
+        
+        for (let i = 0; i < confettiCount; i++) {
+            const confetti = document.createElement('div');
+            confetti.style.cssText = `
+                position: fixed;
+                width: 6px;
+                height: 6px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 9999;
+                left: ${Math.random() * window.innerWidth}px;
+                top: -10px;
+                animation: confettiFall ${2 + Math.random() * 3}s linear forwards;
+            `;
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => confetti.remove(), 5000);
+        }
+    }
+
+    // Initialize map functionality
+    let map = null;
+    let marker = null;
+
+    function initializeMap() {
+        if (map) {
+            map.remove(); // Remove existing map if any
+        }
+        
+        // Initialize map centered on Romania
+        map = L.map('locationMap').setView([45.9432, 24.9668], 7);
+        
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 18,
+        }).addTo(map);
+    }
+
+    function updateLocationMap(locationName, locationAddress, locationDescription) {
+        if (!map) {
+            initializeMap();
+        }
+
+        // Update UI elements
+        document.getElementById('mapTitle').textContent = `📍 ${locationName}`;
+        document.getElementById('locationName').textContent = locationName;
+        document.getElementById('locationAddress').textContent = locationAddress;
+        
+        // Show map container with animation
+        const mapContainer = document.getElementById('mapContainer');
+        mapContainer.classList.add('show');
+
+        // Geocode the address
+        geocodeAddress(locationAddress, locationName, locationDescription);
+    }
+
+    function geocodeAddress(address, name, description) {
+        // Using Nominatim API for geocoding (free)
+        const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`;
+        
+        fetch(geocodeUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+                    
+                    // Center map on the location
+                    map.setView([lat, lon], 16);
+                    
+                    // Remove existing marker
+                    if (marker) {
+                        map.removeLayer(marker);
+                    }
+                    
+                    // Add new marker with custom popup
+                    marker = L.marker([lat, lon]).addTo(map);
+                    
+                    const popupContent = `
+                        <div class="custom-popup">
+                            <h6>${name}</h6>
+                            <p><strong>Address:</strong> ${address}</p>
+                            ${description ? `<p><strong>Description:</strong> ${description}</p>` : ''}
+                        </div>
+                    `;
+                    
+                    marker.bindPopup(popupContent).openPopup();
+                } else {
+                    // If geocoding fails, show a message
+                    console.warn('Could not find coordinates for address:', address);
+                    showLocationAlert(`Could not find "${address}" on the map. Please check the address.`, 'warning');
+                }
+            })
+            .catch(error => {
+                console.error('Geocoding error:', error);
+                showLocationAlert('Error loading map location. Please try again.', 'error');
+            });
+    }
+
+    function showLocationAlert(message, type = 'info') {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'error' ? 'danger' : type === 'warning' ? 'warning' : 'info'} alert-dismissible fade show position-fixed`;
+        alertDiv.style.cssText = `
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+        `;
+        alertDiv.innerHTML = `
+            <i class="fas fa-map-marker-alt me-2"></i>${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+
+    // Location dropdown change handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const locationSelect = document.getElementById('location');
+        
+        locationSelect.addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            
+            if (selectedOption.value) {
+                const locationName = selectedOption.getAttribute('data-name');
+                const locationAddress = selectedOption.getAttribute('data-address');
+                const locationDescription = selectedOption.getAttribute('data-description');
+                
+                updateLocationMap(locationName, locationAddress, locationDescription);
+            } else {
+                // Hide map if no location selected
+                const mapContainer = document.getElementById('mapContainer');
+                mapContainer.classList.remove('show');
+            }
+        });
     });
 
     function selectGuest(username, email, button) {
