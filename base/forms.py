@@ -98,11 +98,26 @@ class LocationForm(ModelForm):
         required=False,
         label="Or write the types separated by commas"
     )
+    
+    email = forms.EmailField(
+        max_length=200,
+        required=True,
+        label="Staff Account Email",
+        help_text="This email will be used for the location's staff account"
+    )
+    
+    number = forms.CharField(
+        max_length=20,
+        required=True,
+        label="Phone Number",
+        initial="+(40) 74 83 64 823",
+        help_text="This number will be used as the password for the staff account"
+    )
 
     class Meta:
         model = Location
-        fields = ['name', 'description', 'gallery', 'location', 'seats_numbers', 'types']
-        exclude = ['owner']
+        fields = ['name', 'description', 'gallery', 'location', 'seats_numbers', 'types', 'email', 'number']
+        exclude = ['owner', 'user_account']
 
     def clean_custom_types(self):
         custom_types = self.cleaned_data.get('custom_types')
