@@ -848,21 +848,31 @@ def admin_events(request):
     finished_count = 0
     cancelled_count = 0
     for item in detailed_events:
-        if item['completed'] or item['event_date'] < today_date :
+        if item['completed'] :
             finished_count += 1
         elif item['cancelled'] == True:
             cancelled_count += 1
             detailed_incompleted_events.append(item)
 
-
-    
-
-    for item in detailed_events:
-        print(item['event_date'], today_date)
-        if item['event_date'] < today_date:
-            print("Da")
-        else:
-            print("NU")
+    if request.method == 'POST':
+        organizer = request.POST.get('organizer')
+        event_name = request.POST.get('event_name')
+        date_str = request.POST.get('event_date')
+        print("Data din post: ", date_str)
+        event_date = datetime.strptime(date_str, '%d %b, %Y').date()
+        print("Data dupa convertire: ", event_date)
+        id = request.POST.get('event_id')
+        event = Event.objects.get(id=id)
+        print("Data evenimentului in formatul ei: ", event.event_date)
+        try:
+            organizer_user = User.objects.get(username=organizer)
+        except User.DoesNotExist:
+            organizer_user = None
+        event.event_name = event_name
+        event.event_date = event_date
+        event.organized_by = organizer_user
+        event.save()
+        return redirect('admin-events')
     context = {
         'cancelled_count':cancelled_count,
         'today_date':today_date,
@@ -1305,6 +1315,8 @@ def homeAdmin(request):
 
     top_locations = sorted(loc_profit, key=lambda x: x["profit"], reverse=True)[:5]
     print("Cele mai bune loc: ", top_locations)
+    for location in locations:
+        print("Loc locatii: ", location.location)
     context= {
         'top_locations':top_locations,
         'loc_profit':loc_profit,

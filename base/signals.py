@@ -24,6 +24,8 @@ def update_completed_status(sender, instance, **kwargs):
         budget = Budget.objects.first()
         if budget:
             budget.update_budget_for_event(event_cost * Decimal("0.60"))
+    else:
+        instance.completed = False
 
 @receiver(post_save, sender=Location)
 def update_location_cost(sender, instance, created, **kwargs):

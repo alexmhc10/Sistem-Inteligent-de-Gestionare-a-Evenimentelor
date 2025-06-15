@@ -80,8 +80,8 @@
             </div>
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card" id="orderList">
-                        <div class="card-header border-0">
+                    <div class="card" id="eventList">
+                        <div class="card-header bevent-0">
                             <div class="row align-items-center gy-3">
                                 <div class="col-sm">
                                     <h5 class="card-title mb-0">Events History</h5>
@@ -89,7 +89,7 @@
                                 
                             </div>
                         </div>
-                        <div class="card-body border border-dashed border-end-0 border-start-0">
+                        <div class="card-body bevent bevent-dashed bevent-end-0 bevent-start-0">
                             <form>
                                 <div class="row g-3" >
                                     <div class="col-xxl-5 col-sm-6">
@@ -189,7 +189,7 @@
 
                                 <div class="table-responsive table-card mb-1">
                                     <div id="home1" class="tab-pane fade show active">
-                                        <table class="table table-nowrap align-middle" id="orderTable">
+                                        <table class="table table-nowrap align-middle" id="eventTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
                                                     <th scope="col" style="width: 25px;">
@@ -243,7 +243,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent">
                                                                             <i class="bi bi-trash fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -263,7 +263,7 @@
                                     </div>
                                     
                                     <div id="cancelled" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="orderTable">
+                                        <table class="table table-nowrap align-middle" id="eventTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
                                                     <th scope="col" style="width: 25px;">
@@ -310,7 +310,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent">
                                                                             <i class="bi bi-trash fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -330,7 +330,7 @@
                                          </div>
                                     </div>
                                     <div id="completed" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="orderTable">
+                                        <table class="table table-nowrap align-middle" id="eventTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
                                                     <th scope="col" style="width: 25px;">
@@ -350,7 +350,7 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if  item.completed or item.event_date < today_date %}
+                                                    {% if item.completed %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -377,7 +377,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent">
                                                                             <i class="bi bi-trash fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -398,7 +398,7 @@
                                          </div>
                                     </div>
                                     <div id="ongoing" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="orderTable">
+                                        <table class="table table-nowrap align-middle" id="eventTable">
                                             <thead class="text-muted table-light">
                                                 <tr class="text-uppercase">
                                                     <th scope="col" style="width: 25px;">
@@ -446,7 +446,7 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteOrder">
+                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent">
                                                                             <i class="bi bi-trash fs-16"></i>
                                                                         </a>
                                                                     </li>
@@ -483,50 +483,47 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                 aria-label="Close" id="close-modal"></button>
                                         </div>
-                                        <form class="tablelist-form" autocomplete="off">
+                                        <form class="tablelist-form" autocomplete="off" method="POST">
+                                            {% csrf_token %}
                                             <div class="modal-body">
-                                                <input type="hidden" id="id-field">
+                                                <input type="hidden" id="id-field" name="id_field">
 
                                                 <div class="mb-3" id="modal-id">
-                                                    <label for="orderId" class="form-label">ID</label>
-                                                    <input type="text" id="orderId" class="form-control"
-                                                        placeholder="ID" readonly="">
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="customername-field" class="form-label">Organizer
-                                                        </label>
-                                                    <input type="text" id="orderCost" class="form-control"
-                                                        placeholder="Enter name" required="">
+                                                    <label for="eventId" class="form-label">ID</label>
+                                                    <input type="text" id="eventId" name="event_id" class="form-control" placeholder="ID" readonly>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label for="productname-field" class="form-label">Event name</label>
-                                                    <input type="text" id="eventName" class="form-control"
-                                                        placeholder="Enter name" required="">
+                                                    <label for="eventCost" class="form-label">Organizer</label>
+                                                    <input type="text" id="eventCost" name="organizer" class="form-control" placeholder="Enter name" required>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label for="date-field" class="form-label">Event Date</label>
-                                                    <input type="text" id="eventDate"
-                                                        class="form-control flatpickr-input" data-provider="flatpickr"
-                                                        required="" data-date-format="d M, Y" data-enable-time=""
-                                                        placeholder="Select date" readonly="readonly">
+                                                    <label for="eventName" class="form-label">Event name</label>
+                                                    <input type="text" id="eventName" name="event_name" class="form-control" placeholder="Enter name" required>
                                                 </div>
-                                                
+
+                                                <div class="mb-3">
+                                                    <label for="eventDate" class="form-label">Event Date</label>
+                                                    <input type="text" id="eventDate" name="event_date" class="form-control flatpickr-input"
+                                                        data-provider="flatpickr" required data-date-format="d M, Y" data-enable-time=""
+                                                        placeholder="Select date" readonly>
+                                                </div>
                                             </div>
+
                                             <div class="modal-footer">
                                                 <div class="hstack gap-2 justify-content-end">
-                                                    <button type="button" class="btn btn-light"
-                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
                                                     <button type="submit" class="btn btn-success" id="add-btn">Update Event</button>
                                                 </div>
                                             </div>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="modal fade flip" id="deleteOrder" tabindex="-1" aria-hidden="true">
+                            <div class="modal fade flip" id="deleteevent" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-body p-5 text-center">
@@ -604,8 +601,8 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 console.error("Flatpickr nu este inițializat corect.");
             }
-            document.getElementById('orderId').value = eventId;
-            document.getElementById('orderCost').value = eventOrganizer;
+            document.getElementById('eventId').value = eventId;
+            document.getElementById('eventCost').value = eventOrganizer;
             document.getElementById('eventName').value = eventName;
             document.getElementById('eventOrganizer').value = eventOrganizer;
             document.getElementById('eventLocation').value = eventLocation;
@@ -959,7 +956,7 @@ select {
 }
     .pagination button{
         padding:10px;
-        border:none;
+        bevent:none;
         background:none;
         font-weight: 500;
         color:black;
