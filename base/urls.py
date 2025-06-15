@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import table_details_api, save_table_positions
+from .views import table_details_api
 
 urlpatterns = [
     # Paginile principale și autentificare
@@ -42,7 +42,7 @@ urlpatterns = [
     path('event/<int:event_id>/populate-test-data/', views.populate_test_data, name='populate_test_data'),
     path('event/<int:event_id>/confirm-arrangement/', views.confirm_table_arrangement, name='confirm_table_arrangement'),
     path('event/<int:event_id>/reset-arrangement/', views.reset_table_arrangement, name='reset_table_arrangement'),
-    path('event/<int:event_id>/save_table_positions/', save_table_positions, name='save_table_positions'),
+    path('event/<int:event_id>/save_table_positions/', views.save_table_positions, name='save_table_positions'),
    
 
 
@@ -126,4 +126,10 @@ urlpatterns = [
     path('organizer-events', views.organizer_events, name='organizer_events'),
     path('financial-management/', views.financial_management, name='financial_management'),
     path('api/table-details/<int:table_id>/', table_details_api, name='table-details-api'),
+
+    # New table management views
+    path('add_table/', views.add_table, name='add_table'),
+    path('update_table/', views.update_table, name='update_table'),
+    path('delete_table/', views.delete_table, name='delete_table'),
+    path('save_table_layout/', views.save_table_layout, name='save_table_layout'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

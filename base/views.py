@@ -2366,14 +2366,131 @@ def personal_layout(request):
         messages.error(request, "You don't have a location associated with your account.")
         return redirect('personal_profile')
     tables = Table.objects.filter(location__user_account=request.user)
+    special_elements = location.special_elements.all() if location else []
 
     context = {
         'profile': profile,
         'location': location,
-        'tables': tables
+        'tables': tables,
+        'special_elements': special_elements
     }
     return render(request, 'base/personal_layout.html', context)
 
+@login_required(login_url='/login')
+@user_is_staff
+@require_POST
+def add_table(request):
+    try:
+        location = Location.objects.get(user_account=request.user)
+        table = Table.objects.create(
+            location=location,
+            table_number=request.POST.get('table_number'),
+            capacity=request.POST.get('capacity'),
+            shape=request.POST.get('shape'),
+            position_x=50,
+            position_y=50
+        )
+        return JsonResponse({
+            'success': True,
+            'table': {
+                'id': table.id,
+                'table_number': table.table_number,
+                'capacity': table.capacity,
+                'shape': table.shape,
+                'x': 50,
+                'y': 50
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required(login_url='/login')
+@user_is_staff
+@require_POST
+def update_table(request):
+    try:
+        table = Table.objects.get(
+            id=request.POST.get('table_id'),
+            location__user_account=request.user
+        )
+        table.table_number = request.POST.get('table_number')
+        table.capacity = request.POST.get('capacity')
+        table.shape = request.POST.get('shape')
+        table.is_vip = request.POST.get('is_vip') == 'on'
+        table.save()
+        
+        return JsonResponse({
+            'success': True,
+            'table': {
+                'id': table.id,
+                'table_number': table.table_number,
+                'capacity': table.capacity,
+                'shape': table.shape,
+                'is_vip': table.is_vip,
+                'x': table.position_x,
+                'y': table.position_y
+            }
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required(login_url='/login')
+@user_is_staff
+@require_POST
+def delete_table(request):
+    try:
+        data = json.loads(request.body)
+        table = Table.objects.get(
+            id=data.get('table_id'),
+            location__user_account=request.user
+        )
+        table.delete()
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required(login_url='/login')
+@user_is_staff
+@require_POST
+def save_table_layout(request):
+    try:
+        data = json.loads(request.body)
+        location = Location.objects.get(user_account=request.user)
+
+        # Id-urile meselor rămase pe canvas
+        table_ids_on_canvas = [t['id'] for t in data.get('tables', [])]
+
+        # Șterge mesele care nu mai există pe canvas
+        Table.objects.filter(location=location).exclude(id__in=table_ids_on_canvas).delete()
+
+        # Salvează/actualizează pozițiile și rotația meselor rămase
+        for table_data in data.get('tables', []):
+            table = Table.objects.get(
+                id=table_data['id'],
+                location=location
+            )
+            table.position_x = table_data['x']
+            table.position_y = table_data['y']
+            table.rotation = table_data.get('rotation', 0)
+            table.save()
+
+        # Salvează elementele speciale (ca înainte)
+        special_elements = data.get('special_elements', [])
+        location.special_elements.all().delete()
+        from .models import SpecialElement
+        for el in special_elements:
+            SpecialElement.objects.create(
+                location=location,
+                type=el['type'],
+                label=el.get('label', ''),
+                position_x=el['x'],
+                position_y=el['y'],
+                rotation=el.get('rotation', 0)
+            )
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 @login_required(login_url='/login')
 @user_is_staff
@@ -3422,6 +3539,49 @@ def save_table_positions(request, event_id):
             table.position_y = float(t['top'])
             table.save()
         return JsonResponse({'status': 'ok'})
+
+@login_required(login_url='/login')
+@user_is_staff
+@require_POST
+def save_table_layout(request):
+    try:
+        data = json.loads(request.body)
+        location = Location.objects.get(user_account=request.user)
+
+        # Id-urile meselor rămase pe canvas
+        table_ids_on_canvas = [t['id'] for t in data.get('tables', [])]
+
+        # Șterge mesele care nu mai există pe canvas
+        Table.objects.filter(location=location).exclude(id__in=table_ids_on_canvas).delete()
+
+        # Salvează/actualizează pozițiile și rotația meselor rămase
+        for table_data in data.get('tables', []):
+            table = Table.objects.get(
+                id=table_data['id'],
+                location=location
+            )
+            table.position_x = table_data['x']
+            table.position_y = table_data['y']
+            table.rotation = table_data.get('rotation', 0)
+            table.save()
+
+        # Salvează elementele speciale (ca înainte)
+        special_elements = data.get('special_elements', [])
+        location.special_elements.all().delete()
+        from .models import SpecialElement
+        for el in special_elements:
+            SpecialElement.objects.create(
+                location=location,
+                type=el['type'],
+                label=el.get('label', ''),
+                position_x=el['x'],
+                position_y=el['y'],
+                rotation=el.get('rotation', 0)
+            )
+
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 
 

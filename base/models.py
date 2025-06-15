@@ -557,12 +557,13 @@ class Table(models.Model):
     table_number = models.IntegerField()
     capacity = models.IntegerField(help_text="Number of seats at this table")
     shape = models.CharField(max_length=20, choices=SHAPE_CHOICES, default='round')
-    position_x = models.FloatField(default=0)  # procent din lățimea containerului
-    position_y = models.FloatField(default=0)  # procent din înălțimea containerului
+    position_x = models.FloatField(default=0) 
+    position_y = models.FloatField(default=0)
     is_reserved = models.BooleanField(default=False, help_text="Reserved for special groups (e.g., bride and groom)")
     notes = models.TextField(blank=True, null=True, help_text="Additional notes about the table")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    rotation = models.FloatField(default=0)  # grade (0-360)
 
     class Meta:
         ordering = ['table_number']
@@ -625,3 +626,26 @@ class TableArrangementLog(models.Model):
 
     def __str__(self):
         return f"Log for {self.arrangement} - {self.created_at}"
+
+
+class SpecialElement(models.Model):
+    ELEMENT_TYPES = [
+        ('entrance', 'Entrance'),
+        ('dancefloor', 'Dance Floor'),
+        ('dj', 'DJ/Band'),
+        ('restrooms', 'Restrooms'),
+        ('bar', 'Bar'),
+        ('kitchen', 'Kitchen'),
+        ('emergency', 'Emergency Exit'),
+        ('photobooth', 'Photo Booth'),
+        ('kids', 'Kids Area'),
+    ]
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='special_elements')
+    type = models.CharField(max_length=32, choices=ELEMENT_TYPES)
+    label = models.CharField(max_length=64, blank=True)
+    position_x = models.FloatField(default=0)
+    position_y = models.FloatField(default=0)
+    rotation = models.FloatField(default=0)  # grade (0-360)
+
+    def __str__(self):
+        return f"{self.get_type_display()} at {self.location.name}"
