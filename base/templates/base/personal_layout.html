@@ -1,0 +1,793 @@
+{% extends 'main.html' %}
+{% block navbar %}
+{% endblock %}
+{% load static %}
+{% block content %}
+
+<style>
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 15px;
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    .table-controls {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+    .table-form {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    .table-form select,
+    .table-form input {
+        padding: 8px;
+        border-radius: 5px;
+        border: 1px solid #dee2e6;
+    }
+    .table-form button {
+        padding: 8px 15px;
+        border-radius: 5px;
+        border: none;
+        background: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+    .table-form button:hover {
+        background: #0056b3;
+    }
+    #konva-container {
+        width: 100% !important;
+        min-width: 300px;
+        max-width: 100%;
+        height: 600px;
+        border: 1px solid #ccc;
+        background: #f8f9fa;
+        border-radius: 15px;
+        margin-top: 20px;
+        display: block;
+    }
+    #edit-panel {
+        position: absolute;
+        min-width: 120px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        box-shadow: 0 2px 16px #0001;
+        padding: 14px 12px 10px 12px;
+        z-index: 2000;
+        display: none;
+    }
+    #edit-panel h5 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    #edit-panel .btn {
+        margin-top: 8px;
+    }
+    .konva-rotate-handle {
+        pointer-events: all;
+        cursor: pointer;
+    }
+</style>
+
+<div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+data-sidebar-position="fixed" data-header-position="fixed">
+    <!-- Sidebar Start -->
+    {% include 'sidebar.html' %}
+    <!--  Main wrapper -->
+    <div class="body-wrapper">
+        <!--  Header Start -->
+        {% include 'header.html' %}        
+        
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card glass-effect">
+                        <div class="card-body">
+                            <h1 class="card-title text-center mb-4">
+                                Layout Management
+                            </h1>
+                            <p class="text-center mb-4">
+                                Here you can customize your location's layout. Add, remove, and arrange tables to match your venue's setup.
+                            </p>
+                            
+                            <!-- Table Controls -->
+                            <div class="table-controls">
+                                <form id="addTableForm" class="table-form">
+                                    {% csrf_token %}
+                                    <select name="shape" class="form-select" required>
+                                        <option value="round">Round Table</option>
+                                        <option value="rect">Rectangle Table</option>
+                                    </select>
+                                    <input type="number" name="capacity" class="form-control" placeholder="Capacity" min="1" required>
+                                    <input type="number" name="table_number" class="form-control" placeholder="Table Number" min="1" required>
+                                    <div class="form-check">
+                                        <input type="checkbox" name="is_vip" class="form-check-input" id="isVip">
+                                        <label class="form-check-label" for="isVip">VIP Table</label>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Table</button>
+                                </form>
+                            </div>
+
+                            <!-- Special Elements Controls -->
+                            <div class="mb-3">
+                                <div class="special-elements-controls d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-success" data-element="entrance">Entrance</button>
+                                    <button type="button" class="btn btn-outline-primary" data-element="dancefloor">💃 Dance Floor</button>
+                                    <button type="button" class="btn btn-outline-warning" data-element="dj">🎧 DJ/Band</button>
+                                    <button type="button" class="btn btn-outline-info" data-element="restrooms">🚻 Restrooms</button>
+                                    <button type="button" class="btn btn-outline-secondary" data-element="bar">🍸 Bar</button>
+                                    <button type="button" class="btn btn-outline-dark" data-element="kitchen">🍽️ Kitchen</button>
+                                    <button type="button" class="btn btn-outline-danger" data-element="emergency">🚨 Emergency Exit</button>
+                                    <button type="button" class="btn btn-outline-danger" data-element="photobooth">📸 Photo Booth</button>
+                                    <button type="button" class="btn btn-outline-warning" data-element="kids">🧸 Kids Area</button>
+                                </div>
+                            </div>
+
+                            <!-- Canvas Container -->
+                            <div id="konva-container"></div>
+
+                            <!-- Save Button -->
+                            <div class="text-center mt-3">
+                                <button id="save-positions" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Save Layout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table Details Modal -->
+<div class="modal fade" id="tableDetailsModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Table Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editTableForm">
+                    {% csrf_token %}
+                    <input type="hidden" name="table_id" id="editTableId">
+                    <div class="mb-3">
+                        <label class="form-label">Table Number</label>
+                        <input type="number" name="table_number" id="editTableNumber" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" name="capacity" id="editCapacity" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Shape</label>
+                        <select name="shape" id="editShape" class="form-select" required>
+                            <option value="round">Round</option>
+                            <option value="rect">Rectangle</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="deleteTable">Delete Table</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveTableChanges">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="edit-panel">
+    <h5 id="edit-panel-title"></h5>
+    <button id="edit-panel-delete" class="btn btn-danger btn-sm w-100">Delete</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/konva@9.2.2/konva.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('konva-container');
+    let width = container.offsetWidth;
+    let height = container.offsetHeight || 600;
+    const stage = new Konva.Stage({
+        container: 'konva-container',
+        width: width,
+        height: height
+    });
+    const layer = new Konva.Layer();
+    stage.add(layer);
+
+    // Redimensionare canvas la resize
+    window.addEventListener('resize', function() {
+        const newWidth = container.offsetWidth;
+        stage.width(newWidth);
+        // Dacă vrei să scalezi și elementele, poți adăuga:
+        // const scale = newWidth / width;
+        // stage.scale({ x: scale, y: 1 });
+        // width = newWidth;
+    });
+
+    // Load existing tables
+    const tables = [
+        {% for table in tables %}
+        {
+            id: {{ table.id }},
+            table_number: "{{ table.table_number }}",
+            capacity: {{ table.capacity }},
+            shape: "{{ table.shape }}",
+            is_vip: {% if table.is_vip %}true{% else %}false{% endif %},
+            x: Math.round({{ table.position_x|default:50 }} / 100 * width),
+            y: Math.round({{ table.position_y|default:50 }} / 100 * height),
+            rotation: {{ table.rotation|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Draw tables
+    tables.forEach(function(table) {
+        createTable(table);
+    });
+
+    function createTable(tableData) {
+        const group = new Konva.Group({
+            x: tableData.x,
+            y: tableData.y,
+            draggable: true,
+            id: 'table-' + tableData.id,
+            rotation: tableData.rotation || 0
+        });
+
+        const shape = tableData.shape === 'round' 
+            ? new Konva.Circle({
+                radius: 45,
+                fill: tableData.is_vip ? '#ffd700' : '#28a745',
+                stroke: tableData.is_vip ? '#b8860b' : '#1e7e34',
+                strokeWidth: 4,
+                shadowBlur: tableData.is_vip ? 15 : 8
+            })
+            : new Konva.Rect({
+                width: 150,
+                height: 90,
+                fill: tableData.is_vip ? '#ffd700' : '#28a745',
+                stroke: tableData.is_vip ? '#b8860b' : '#1e7e34',
+                strokeWidth: 4,
+                cornerRadius: 12,
+                shadowBlur: tableData.is_vip ? 15 : 8
+            });
+
+        const text = new Konva.Text({
+            text: tableData.table_number,
+            fontSize: 28,
+            fontStyle: 'bold',
+            fill: tableData.is_vip ? '#8b4513' : 'white',
+            width: 90,
+            height: 32,
+            align: 'center',
+            verticalAlign: 'middle',
+            x: tableData.shape === 'round' ? -45 : 0,
+            y: tableData.shape === 'round' ? -18 : 29
+        });
+
+        const cap = new Konva.Text({
+            text: tableData.capacity + ' pers.',
+            fontSize: 15,
+            fill: tableData.is_vip ? '#8b4513' : '#f8f9fa',
+            width: 90,
+            height: 20,
+            align: 'center',
+            verticalAlign: 'middle',
+            x: tableData.shape === 'round' ? -45 : 0,
+            y: tableData.shape === 'round' ? 10 : 55
+        });
+
+        group._tableData = tableData;
+        group._tableRotation = tableData.rotation || 0;
+        group.add(shape);
+        group.add(text);
+        group.add(cap);
+
+        // Double click to edit/rotate/delete
+        group.on('dblclick', function(evt) {
+            evt.cancelBubble = true;
+            showTableMenu(group);
+        });
+
+        layer.add(group);
+        layer.draw();
+    }
+
+    function showTableMenu(group) {
+        document.getElementById('special-element-menu')?.remove();
+        const menu = document.createElement('div');
+        menu.id = 'special-element-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = (stage.container().getBoundingClientRect().left + group.x()) + 'px';
+        menu.style.top = (stage.container().getBoundingClientRect().top + group.y()) + 'px';
+        menu.style.background = '#fff';
+        menu.style.border = '1px solid #ccc';
+        menu.style.borderRadius = '8px';
+        menu.style.padding = '12px 16px';
+        menu.style.zIndex = 9999;
+        menu.style.boxShadow = '0 2px 8px #0002';
+        menu.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:8px;">Table #${group._tableData.table_number}</div>
+            <label style="font-size:13px;">Rotation: <input type='range' min='0' max='360' value='${group.rotation()}' id='table-rotation-slider' style='width:80px;vertical-align:middle;'></label>
+            <button id='table-delete-btn' style='margin-left:12px;' class='btn btn-sm btn-danger'>Delete</button>
+            <button id='table-close-btn' style='margin-left:8px;' class='btn btn-sm btn-secondary'>Close</button>
+        `;
+        document.body.appendChild(menu);
+        document.getElementById('table-rotation-slider').addEventListener('input', function() {
+            const angle = parseFloat(this.value);
+            group.rotation(angle);
+            group._tableRotation = angle;
+            layer.draw();
+        });
+        document.getElementById('table-delete-btn').onclick = function() {
+            group.destroy();
+            menu.remove();
+            layer.draw();
+        };
+        document.getElementById('table-close-btn').onclick = function() {
+            menu.remove();
+        };
+    }
+    window.addEventListener('mousedown', function(e) {
+        const menu = document.getElementById('special-element-menu');
+        if (menu && !menu.contains(e.target)) menu.remove();
+    });
+
+    // Add new table
+    document.getElementById('addTableForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        fetch('{% url "add_table" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                createTable(data.table);
+                this.reset();
+            } else {
+                alert('Error adding table: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error adding table');
+        });
+    });
+
+    // Save table changes
+    document.getElementById('saveTableChanges').addEventListener('click', function() {
+        const formData = new FormData(document.getElementById('editTableForm'));
+        
+        fetch('{% url "update_table" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tableGroup = layer.findOne('#table-' + data.table.id);
+                if (tableGroup) {
+                    layer.destroyChildren();
+                    tables.forEach(function(table) {
+                        if (table.id === data.table.id) {
+                            Object.assign(table, data.table);
+                        }
+                        createTable(table);
+                    });
+                }
+                bootstrap.Modal.getInstance(document.getElementById('tableDetailsModal')).hide();
+            } else {
+                alert('Error updating table: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating table');
+        });
+    });
+
+    // Delete table
+    document.getElementById('deleteTable').addEventListener('click', function() {
+        if (confirm('Are you sure you want to delete this table?')) {
+            const tableId = document.getElementById('editTableId').value;
+            
+            fetch('{% url "delete_table" %}', {
+                method: 'POST',
+                body: JSON.stringify({ table_id: tableId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tableGroup = layer.findOne('#table-' + tableId);
+                    if (tableGroup) {
+                        tableGroup.destroy();
+                        layer.draw();
+                    }
+                    bootstrap.Modal.getInstance(document.getElementById('tableDetailsModal')).hide();
+                } else {
+                    alert('Error deleting table: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error deleting table');
+            });
+        }
+    });
+
+    // --- Special Elements Definitions ---
+    const specialElements = {
+        entrance: {
+            shape: 'rect', color: 'green', width: 60, height: 20, icon: '', label: 'Entrance'
+        },
+        dancefloor: {
+            shape: 'rect', color: '#b39ddb', width: 200, height: 120, icon: '', label: 'Dance Floor'
+        },
+        dj: {
+            shape: 'circle', color: '#ffb300', radius: 25, icon: '', label: 'DJ/Band'
+        },
+        restrooms: {
+            shape: 'rect', color: '#90caf9', width: 50, height: 50, icon: '', label: 'Restrooms'
+        },
+        bar: {
+            shape: 'rect', color: '#ffe082', width: 150, height: 30, icon: '', label: 'Bar'
+        },
+        kitchen: {
+            shape: 'rect', color: '#616161', width: 80, height: 60, icon: '', label: 'Kitchen'
+        },
+        emergency: {
+            shape: 'rect', color: 'red', width: 60, height: 20, icon: '', label: 'Emergency Exit'
+        },
+        photobooth: {
+            shape: 'circle', color: '#f06292', radius: 30, icon: '', label: 'Photo Booth'
+        },
+        kids: {
+            shape: 'rect', color: '#fff59d', width: 70, height: 50, icon: '', label: 'Kids Area'
+        }
+    };
+
+    // --- Load special elements from localStorage ---
+    function loadSpecialElements() {
+        const saved = localStorage.getItem('specialElements');
+        if (!saved) return;
+        try {
+            const arr = JSON.parse(saved);
+            arr.forEach(function(el) {
+                addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100);
+            });
+        } catch(e) {}
+    }
+
+    function addSpecialElementToCanvas(type, x, y, rotation) {
+        const def = specialElements[type];
+        let group = new Konva.Group({
+            x: x || 100 + Math.random() * 200,
+            y: y || 100 + Math.random() * 200,
+            draggable: true,
+            rotation: rotation || 0
+        });
+        let shape;
+        if (def.shape === 'rect') {
+            shape = new Konva.Rect({
+                width: def.width,
+                height: def.height,
+                fill: def.color,
+                cornerRadius: 10,
+                shadowBlur: 8
+            });
+        } else if (def.shape === 'circle') {
+            shape = new Konva.Circle({
+                radius: def.radius,
+                fill: def.color,
+                shadowBlur: 8
+            });
+        }
+        let label = new Konva.Text({
+            text: def.label,
+            fontSize: 14,
+            fill: '#222',
+            x: def.shape === 'rect' ? 0 : -def.radius,
+            y: def.shape === 'rect' ? (def.height ? def.height+2 : 32) : (def.radius ? def.radius+2 : 32),
+            width: def.shape === 'rect' ? def.width : def.radius*2,
+            align: 'center'
+        });
+        group._specialType = type;
+        group._specialLabel = def.label;
+        group._specialRotation = rotation || 0;
+        group.add(shape);
+        group.add(label);
+        layer.add(group);
+        layer.draw();
+
+        // Dublu-click: meniu stergere si rotire
+        group.on('dblclick', function(evt) {
+            evt.cancelBubble = true;
+            showSpecialElementMenu(group);
+        });
+    }
+
+    // Meniu pentru stergere si rotire
+    function showSpecialElementMenu(group) {
+        // Sterge orice meniu vechi
+        document.getElementById('special-element-menu')?.remove();
+        const menu = document.createElement('div');
+        menu.id = 'special-element-menu';
+        menu.style.position = 'fixed';
+        menu.style.left = (stage.container().getBoundingClientRect().left + group.x()) + 'px';
+        menu.style.top = (stage.container().getBoundingClientRect().top + group.y()) + 'px';
+        menu.style.background = '#fff';
+        menu.style.border = '1px solid #ccc';
+        menu.style.borderRadius = '8px';
+        menu.style.padding = '12px 16px';
+        menu.style.zIndex = 9999;
+        menu.style.boxShadow = '0 2px 8px #0002';
+        menu.innerHTML = `
+            <div style="font-weight:bold; margin-bottom:8px;">${group._specialLabel}</div>
+            <label style="font-size:13px;">Rotation: <input type='range' min='0' max='360' value='${group.rotation()}' id='special-rotation-slider' style='width:80px;vertical-align:middle;'></label>
+            <button id='special-delete-btn' style='margin-left:12px;' class='btn btn-sm btn-danger'>Delete</button>
+            <button id='special-close-btn' style='margin-left:8px;' class='btn btn-sm btn-secondary'>Close</button>
+        `;
+        document.body.appendChild(menu);
+        // Rotire
+        document.getElementById('special-rotation-slider').addEventListener('input', function() {
+            const angle = parseFloat(this.value);
+            group.rotation(angle);
+            group._specialRotation = angle;
+            layer.draw();
+        });
+        // Stergere
+        document.getElementById('special-delete-btn').onclick = function() {
+            group.destroy();
+            menu.remove();
+            layer.draw();
+        };
+        // Close
+        document.getElementById('special-close-btn').onclick = function() {
+            menu.remove();
+        };
+    }
+    // Click in afara meniului inchide meniul
+    window.addEventListener('mousedown', function(e) {
+        const menu = document.getElementById('special-element-menu');
+        if (menu && !menu.contains(e.target)) menu.remove();
+    });
+
+    // --- Add special element on button click ---
+    document.querySelectorAll('.special-elements-controls button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const type = this.getAttribute('data-element');
+            addSpecialElementToCanvas(type);
+            saveSpecialElements();
+        });
+    });
+
+    // --- Save special elements to localStorage ---
+    function saveSpecialElements() {
+        const arr = [];
+        layer.getChildren().forEach(function(group) {
+            if (group._specialType) {
+                arr.push({
+                    type: group._specialType,
+                    label: group._specialLabel,
+                    x: group.x() / width * 100,
+                    y: group.y() / height * 100
+                });
+            }
+        });
+        localStorage.setItem('specialElements', JSON.stringify(arr));
+    }
+
+    // --- Save layout (include rotation) ---
+    document.getElementById('save-positions').addEventListener('click', function() {
+        const positions = [];
+        const specialElements = [];
+        layer.getChildren().forEach(function(group) {
+            if (group._tableData) {
+                positions.push({
+                    id: group._tableData.id,
+                    x: group.x() / width * 100,
+                    y: group.y() / height * 100,
+                    rotation: group._tableRotation || 0
+                });
+            }
+            if (group._specialType) {
+                specialElements.push({
+                    type: group._specialType,
+                    label: group._specialLabel,
+                    x: group.x() / width * 100,
+                    y: group.y() / height * 100,
+                    rotation: group._specialRotation || 0
+                });
+            }
+        });
+        fetch('{% url "save_table_layout" %}', {
+            method: 'POST',
+            body: JSON.stringify({ tables: positions, special_elements: specialElements }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Layout saved successfully!');
+            } else {
+                alert('Error saving layout: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving layout');
+        });
+    });
+
+    // --- Load special elements from backend context (include rotation) ---
+    const specialElementsFromBackend = [
+        {% for el in special_elements %}
+        {
+            type: "{{ el.type }}",
+            label: "{{ el.label }}",
+            x: {{ el.position_x }},
+            y: {{ el.position_y }},
+            rotation: {{ el.rotation|default:0 }}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    specialElementsFromBackend.forEach(function(el) {
+        addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation);
+    });
+
+    // --- Load special elements on page load ---
+    loadSpecialElements();
+
+    let selectedGroup = null;
+    let rotateHandle = null;
+    const editPanel = document.getElementById('edit-panel');
+    const editPanelTitle = document.getElementById('edit-panel-title');
+    const editPanelDelete = document.getElementById('edit-panel-delete');
+
+    function selectGroup(group) {
+        deselectGroup();
+        selectedGroup = group;
+        // Draw rotate handle (arc/sageata)
+        const bbox = group.getClientRect({ relativeTo: group.getLayer() });
+        const handleRadius = 22;
+        const handleAngle = Math.PI / 1.5;
+        const cx = bbox.x + bbox.width + 18;
+        const cy = bbox.y - 18;
+        rotateHandle = new Konva.Arc({
+            x: cx,
+            y: cy,
+            innerRadius: handleRadius - 6,
+            outerRadius: handleRadius,
+            angle: 270,
+            rotation: 45,
+            fill: '#007bff',
+            stroke: '#fff',
+            strokeWidth: 2,
+            draggable: false,
+            name: 'konva-rotate-handle',
+            shadowBlur: 6
+        });
+        // Sageata (cap de sageata)
+        const arrow = new Konva.Line({
+            points: [cx + handleRadius - 2, cy, cx + handleRadius + 10, cy - 8, cx + handleRadius + 2, cy + 10],
+            stroke: '#007bff',
+            strokeWidth: 3,
+            lineCap: 'round',
+            lineJoin: 'round',
+            closed: false
+        });
+        group.getLayer().add(rotateHandle);
+        group.getLayer().add(arrow);
+        group.getLayer().draw();
+        // Update panel langa forma
+        const canvasRect = stage.container().getBoundingClientRect();
+        editPanel.style.display = 'block';
+        editPanelTitle.textContent = group._tableData ? 'Table #' + group._tableData.table_number : group._specialLabel;
+        editPanel.style.left = (canvasRect.left + bbox.x + bbox.width + 30) + 'px';
+        editPanel.style.top = (canvasRect.top + bbox.y) + 'px';
+        // Bind delete
+        editPanelDelete.onclick = function() {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This element will be deleted!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    group.destroy();
+                    deselectGroup();
+                    layer.draw();
+                    Swal.fire('Deleted!', 'The element has been deleted.', 'success');
+                }
+            });
+        };
+        // Rotire la drag pe handle sau sageata
+        function startRotate(e) {
+            e.cancelBubble = true;
+            const center = group.getAbsolutePosition();
+            function onMove(ev) {
+                const pos = stage.getPointerPosition();
+                const dx = pos.x - center.x;
+                const dy = pos.y - center.y;
+                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                angle = (angle + 360) % 360;
+                group.rotation(angle);
+                if (group._tableData) group._tableRotation = angle;
+                if (group._specialType) group._specialRotation = angle;
+                group.getLayer().draw();
+            }
+            function onUp(ev) {
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('touchmove', onMove);
+                window.removeEventListener('mouseup', onUp);
+                window.removeEventListener('touchend', onUp);
+            }
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove);
+            window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchend', onUp);
+        }
+        rotateHandle.on('mousedown touchstart', startRotate);
+        arrow.on('mousedown touchstart', startRotate);
+        // Salveaza handle/arrow pentru deselectare
+        group._rotateHandle = rotateHandle;
+        group._rotateArrow = arrow;
+    }
+    function deselectGroup() {
+        if (selectedGroup && selectedGroup._rotateHandle) {
+            selectedGroup._rotateHandle.destroy();
+            selectedGroup._rotateHandle = null;
+        }
+        if (selectedGroup && selectedGroup._rotateArrow) {
+            selectedGroup._rotateArrow.destroy();
+            selectedGroup._rotateArrow = null;
+        }
+        rotateHandle = null;
+        selectedGroup = null;
+        editPanel.style.display = 'none';
+    }
+    // Click pe orice grup selecteaza
+    layer.on('click tap', function(e) {
+        if (e.target && e.target.getParent() && e.target.getParent() !== layer) {
+            const group = e.target.getParent();
+            selectGroup(group);
+        }
+    });
+    // Click in afara layerului sau pe fundal -> deselecteaza
+    stage.on('click tap', function(e) {
+        if (e.target === stage) {
+            deselectGroup();
+        }
+    });
+});
+</script>
+{% endblock %}
