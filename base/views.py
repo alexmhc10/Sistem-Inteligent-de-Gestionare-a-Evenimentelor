@@ -1794,7 +1794,39 @@ def addLocation(request):
         if form.is_valid():
             location = form.save(commit=False)
             location.owner = request.user
-            location.save()  
+            
+            # Create unique staff user account
+            base_username = f"{location.name.replace(' ', '_').lower()}_staff"
+            username = base_username
+            counter = 1
+            from django.contrib.auth.models import User
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+            email = f"{username}@eventplanner.com"
+            password = location.number  # Using the location's phone number as password
+            
+            # Create user account
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=location.name,
+                is_active=True
+            )
+            
+            # Create profile with user_type='staff'
+            Profile.objects.create(
+                user=user,
+                username=username,
+                password=password,
+                email=email,
+                user_type='staff'
+            )
+            
+            # Link user account to location
+            location.user_account = user
+            location.save()
 
             Notification.objects.create(
                 user=request.user,
@@ -1814,8 +1846,15 @@ def addLocation(request):
                 for type_instance in selected_types:
                     location.types.add(type_instance)
 
-            print(f"Redirecting to home with location: {location.name} and types: {location.types.all()}")
-            return redirect('home')
+            # Return modal with credentials
+            context = {
+                'form': LocationForm(),
+                'types': types,
+                'show_success_modal': True,
+                'staff_username': username,
+                'staff_password': password
+            }
+            return render(request, 'base/location_form.html', context)
         else:
             print(form.errors)  # Debug invalid form
 
@@ -3371,6 +3410,18 @@ def populate_reviews_for_emhasce():
 
 # Apelăm funcția pentru a popula review-urile
 populate_reviews_for_emhasce()
+
+@csrf_exempt
+@login_required
+def save_table_positions(request, event_id):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        for t in data['tables']:
+            table = Table.objects.get(id=t['id'])
+            table.position_x = float(t['left'])
+            table.position_y = float(t['top'])
+            table.save()
+        return JsonResponse({'status': 'ok'})
 
 
 

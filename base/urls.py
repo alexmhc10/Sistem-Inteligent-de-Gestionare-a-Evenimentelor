@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import table_details_api
+from .views import table_details_api, save_table_positions
 
 urlpatterns = [
     # Paginile principale și autentificare
@@ -42,6 +42,7 @@ urlpatterns = [
     path('event/<int:event_id>/populate-test-data/', views.populate_test_data, name='populate_test_data'),
     path('event/<int:event_id>/confirm-arrangement/', views.confirm_table_arrangement, name='confirm_table_arrangement'),
     path('event/<int:event_id>/reset-arrangement/', views.reset_table_arrangement, name='reset_table_arrangement'),
+    path('event/<int:event_id>/save_table_positions/', save_table_positions, name='save_table_positions'),
    
 
 
