@@ -453,6 +453,102 @@ document.addEventListener('DOMContentLoaded', function() {
     // Dimensiuni canvas
     var width = document.getElementById('konva-container').offsetWidth;
     var height = 600;
+
+    // ----- Grid layer (background) -----
+    const gridLayer = new Konva.Layer({ listening: false });
+    const gridSize = 50; // px
+    function drawGrid() {
+        const cols = Math.ceil(width / gridSize);
+        const rows = Math.ceil(height / gridSize);
+        for (let i = 0; i <= cols; i++) {
+            gridLayer.add(new Konva.Line({
+                points: [i * gridSize, 0, i * gridSize, height],
+                stroke: '#e0e0e0',
+                strokeWidth: 1
+            }));
+        }
+        for (let j = 0; j <= rows; j++) {
+            gridLayer.add(new Konva.Line({
+                points: [0, j * gridSize, width, j * gridSize],
+                stroke: '#e0e0e0',
+                strokeWidth: 1
+            }));
+        }
+    }
+
+    // Tables data injected from backend as JSON
+    const rawTables = JSON.parse('{{ tables_json|escapejs }}');
+    const tables = rawTables.map(function(t) {
+        return {
+            id: t.id,
+            table_number: t.table_number,
+            capacity: t.capacity,
+            shape: t.shape === 'round' ? 'circle' : 'rect',
+            is_vip: t.is_reserved,
+            x: Math.round(t.position_x / 100 * width),
+            y: Math.round(t.position_y / 100 * height),
+            rotation: t.rotation || 0,
+            width: t.width,
+            height: t.height,
+            radius: t.radius
+        };
+    });
+
+    // ----- Special Elements -----
+    const rawSpecial = JSON.parse('{{ special_json|escapejs }}');
+
+    const specialDefs = {
+        entrance: { shape:'rect', color:'green', width:60, height:20, label:'Entrance' },
+        dancefloor: { shape:'rect', color:'#b39ddb', width:200, height:120, opacity:0.3, label:'Dance Floor' },
+        dj: { shape:'circle', color:'#ffb300', radius:25, label:'DJ/Band' },
+        restrooms: { shape:'rect', color:'#90caf9', width:50, height:50, label:'Restrooms' },
+        bar: { shape:'rect', color:'#ffe082', width:150, height:30, label:'Bar' },
+        kitchen: { shape:'rect', color:'#616161', width:80, height:60, label:'Kitchen' },
+        emergency: { shape:'rect', color:'red', width:60, height:20, label:'Emergency Exit' },
+        photobooth: { shape:'circle', color:'#f06292', radius:30, label:'Photo Booth' },
+        kids: { shape:'rect', color:'#fff59d', width:70, height:50, label:'Kids Area' }
+    };
+
+    function drawSpecial(el){
+        const def = specialDefs[el.type] || {shape:'rect', color:'#ccc', width:40, height:40, label:el.label};
+        const grp = new Konva.Group({
+            x: Math.round(el.position_x !== undefined ? el.position_x : el.x) / 100 * width || el.x || 100,
+            y: Math.round(el.position_y !== undefined ? el.position_y : el.y) / 100 * height || el.y || 100,
+            rotation: el.rotation || 0,
+            draggable: false
+        });
+        let shape;
+        if(def.shape === 'rect'){
+            const w = el.width && el.width>0 ? el.width : def.width;
+            const h = el.height && el.height>0 ? el.height : def.height;
+            shape = new Konva.Rect({ width:w, height:h, fill:def.color, cornerRadius:10, shadowBlur:2 });
+            if(def.opacity){ shape.opacity(def.opacity); }
+            // label coords
+            var lblX = 0;
+            var lblY = h + 2;
+            var lblW = w;
+        }else{
+            const r = el.radius && el.radius>0 ? el.radius : def.radius;
+            shape = new Konva.Circle({ radius:r, fill:def.color, shadowBlur:2 });
+            if(def.opacity){ shape.opacity(def.opacity); }
+            var lblX = -r;
+            var lblY = r + 2;
+            var lblW = r*2;
+        }
+        const label = new Konva.Text({
+            text: def.label,
+            fontSize: 14,
+            fill: '#222',
+            x: lblX,
+            y: lblY,
+            width: lblW,
+            align: 'center'
+        });
+        grp.add(shape);
+        grp.add(label);
+        layer.add(grp);
+    }
+
     // Inițializează scena Konva
     var stage = new Konva.Stage({
         container: 'konva-container',
@@ -460,37 +556,39 @@ document.addEventListener('DOMContentLoaded', function() {
         height: height
     });
     var layer = new Konva.Layer();
+    stage.add(gridLayer);
+    drawGrid();
     stage.add(layer);
-    // Mesele din Django
-    var tables = [
-        {% for table in event.location.tables.all %}
-        {
-            id: {{ table.id }},
-            table_number: "{{ table.table_number }}",
-            capacity: {{ table.capacity }},
-            shape: "{% if table.shape == 'round' %}circle{% else %}rect{% endif %}",
-            is_vip: {% if table.is_reserved %}true{% else %}false{% endif %},
-            x: Math.round({{ table.position_x }} / 100 * width),
-            y: Math.round({{ table.position_y }} / 100 * height)
-        }{% if not forloop.last %},{% endif %}
-        {% endfor %}
-    ];
+
+    // Redimensionare grid la resize
+    window.addEventListener('resize', function() {
+        const newWidth = document.getElementById('konva-container').offsetWidth;
+        stage.width(newWidth);
+        width = newWidth;
+        gridLayer.destroyChildren();
+        drawGrid();
+        gridLayer.draw();
+    });
+
     // Desenează mesele
     tables.forEach(function(t) {
-        var group = new Konva.Group({ x: t.x, y: t.y, draggable: true });
+        var group = new Konva.Group({ x: t.x, y: t.y, rotation: t.rotation || 0, draggable: false });
         var shape;
         if (t.shape === 'circle') {
+            const radius = t.radius && t.radius > 0 ? t.radius : 45;
             shape = new Konva.Circle({
-                radius: 45,
+                radius: radius,
                 fill: t.is_vip ? '#ffd700' : '#28a745',
                 stroke: t.is_vip ? '#b8860b' : '#1e7e34',
                 strokeWidth: 4,
                 shadowBlur: t.is_vip ? 15 : 8
             });
         } else {
+            const rectW = t.width && t.width > 0 ? t.width : 90;
+            const rectH = t.height && t.height > 0 ? t.height : 90;
             shape = new Konva.Rect({
-                width: 90,
-                height: 90,
+                width: rectW,
+                height: rectH,
                 fill: t.is_vip ? '#ffd700' : '#28a745',
                 stroke: t.is_vip ? '#b8860b' : '#1e7e34',
                 strokeWidth: 4,
@@ -499,37 +597,41 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         // Text pentru numărul mesei (centrat)
+        const labelWidth = t.shape === 'circle' ? (t.radius && t.radius > 0 ? t.radius*2 : 90) : (t.width && t.width>0 ? t.width : 90);
+        const labelX = t.shape === 'circle' ? -labelWidth/2 : 0;
+        const labelY = t.shape === 'circle' ? -18 : ( (t.height && t.height>0 ? t.height : 90)/2 - 16 );
         var text = new Konva.Text({
             text: t.table_number,
             fontSize: 28,
             fontStyle: 'bold',
             fill: t.is_vip ? '#8b4513' : 'white',
-            width: 90,
+            width: labelWidth,
             height: 32,
             align: 'center',
             verticalAlign: 'middle',
-            x: t.shape === 'circle' ? -45 : 0,
-            y: t.shape === 'circle' ? -18 : 29
+            x: labelX,
+            y: labelY
         });
         // Text pentru capacitate (sub număr, centrat)
+        const capY = t.shape === 'circle' ? ( (t.radius && t.radius>0 ? t.radius : 45)/2 + 10 ) : ( (t.height && t.height>0 ? t.height : 90)/2 + 8 );
         var cap = new Konva.Text({
             text: t.capacity + ' pers.',
             fontSize: 15,
             fill: t.is_vip ? '#8b4513' : '#f8f9fa',
-            width: 90,
+            width: labelWidth,
             height: 20,
             align: 'center',
             verticalAlign: 'middle',
-            x: t.shape === 'circle' ? -45 : 0,
-            y: t.shape === 'circle' ? 10 : 55
+            x: labelX,
+            y: capY
         });
         group.add(shape);
         group.add(text);
         group.add(cap);
         group._tableId = t.id;
         group._tableData = t;
-        // Dublu-click: deschide modală cu detalii masă și invitați
-        group.on('dblclick', function() {
+        // Click: deschide modală cu detalii masă și invitați
+        group.on('click', function() {
             var info = this._tableData;
             var html = `<ul class='list-group mb-3'>
                 <li class='list-group-item'><b>Table Number:</b> ${info.table_number}</li>
@@ -561,6 +663,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         layer.add(group);
     });
+
+    // Desenează elementele speciale
+    rawSpecial.forEach(function(el) {
+        drawSpecial(el);
+    });
+
     layer.draw();
     // Salvare poziții
     document.getElementById('save-konva-positions').addEventListener('click', function() {

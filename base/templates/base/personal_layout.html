@@ -17,12 +17,6 @@
         padding: 15px;
         margin-bottom: 20px;
     }
-    .table-form {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
     .table-form select,
     .table-form input {
         padding: 8px;
@@ -97,25 +91,13 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </p>
                             
                             <!-- Table Controls -->
-                            <div class="table-controls">
-                                <form id="addTableForm" class="table-form">
-                                    {% csrf_token %}
-                                    <select name="shape" class="form-select" required>
-                                        <option value="round">Round Table</option>
-                                        <option value="rect">Rectangle Table</option>
-                                    </select>
-                                    <input type="number" name="capacity" class="form-control" placeholder="Capacity" min="1" required>
-                                    <input type="number" name="table_number" class="form-control" placeholder="Table Number" min="1" required>
-                                    <div class="form-check">
-                                        <input type="checkbox" name="is_vip" class="form-check-input" id="isVip">
-                                        <label class="form-check-label" for="isVip">VIP Table</label>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Add Table</button>
-                                </form>
-                            </div>
+                          
 
                             <!-- Special Elements Controls -->
                             <div class="mb-3">
+                                <h5 class="card-title mb-4">
+                                    Special Elements
+                                </h5>
                                 <div class="special-elements-controls d-flex flex-wrap gap-2">
                                     <button type="button" class="btn btn-outline-success" data-element="entrance">Entrance</button>
                                     <button type="button" class="btn btn-outline-primary" data-element="dancefloor">💃 Dance Floor</button>
@@ -133,7 +115,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             <div id="konva-container"></div>
 
                             <!-- Save Button -->
-                            <div class="text-center mt-3">
+                            
+                            <div class="text-center mt-3 d-flex justify-content-between">
+                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTableModal">
+                                    + Add a new table
+                                </button>
+                                
                                 <button id="save-positions" class="btn btn-success">
                                     <i class="fas fa-save"></i> Save Layout
                                 </button>
@@ -146,6 +133,46 @@ data-sidebar-position="fixed" data-header-position="fixed">
     </div>
 </div>
 
+  <div class="modal fade" id="addTableModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="addTableModalLabel">Add a new table</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form id="addTableForm" class="table-form">
+                {% csrf_token %}
+            <div class="mb-3">
+              <label for="shape" class="form-label">Table shape</label>
+              <select name="shape" class="form-select" required>
+                <option value="round">Round</option>
+                <option value="rect">Rectangle</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="capacity" class="form-label">Capacity</label>
+              <input type="number" name="capacity" class="form-control" placeholder="Capacity" min="1" required>
+            </div>
+            <div class="mb-3">
+              <label for="table_number" class="form-label">Table number</label>
+              <input type="number" name="table_number" class="form-control" placeholder="Table number" min="1" required>
+            </div>
+            <div class="form-check mb-3">
+              <input type="checkbox" name="is_vip" class="form-check-input" id="isVip">
+              <label class="form-check-label" for="isVip">Reserved</label>
+            </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Add Table</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+        </div>
+    </form>
+
+      </div>
+    </div>
+  </div>
+  
 <!-- Table Details Modal -->
 <div class="modal fade" id="tableDetailsModal" tabindex="-1">
     <div class="modal-dialog">
@@ -202,7 +229,43 @@ document.addEventListener('DOMContentLoaded', function() {
         height: height
     });
     const layer = new Konva.Layer();
+    // Grid layer (background, non-interactive)
+    const gridLayer = new Konva.Layer({ listening: false });
+    const gridSize = 50; // px
+    function drawGrid() {
+        const cols = Math.ceil(width / gridSize);
+        const rows = Math.ceil(height / gridSize);
+        for (let i = 0; i <= cols; i++) {
+            gridLayer.add(new Konva.Line({
+                points: [i * gridSize, 0, i * gridSize, height],
+                stroke: '#e0e0e0',
+                strokeWidth: 1
+            }));
+        }
+        for (let j = 0; j <= rows; j++) {
+            gridLayer.add(new Konva.Line({
+                points: [0, j * gridSize, width, j * gridSize],
+                stroke: '#e0e0e0',
+                strokeWidth: 1
+            }));
+        }
+    }
+    drawGrid();
+    stage.add(gridLayer);
     stage.add(layer);
+
+    // Shared Konva.Transformer for rotate / resize
+    const transformer = new Konva.Transformer({
+        rotateEnabled: true,
+        enabledAnchors: ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'],
+        anchorStroke: '#007bff',
+        anchorFill: '#ffffff',
+        anchorSize: 10,
+        anchorCornerRadius: 5,
+        borderStroke: '#007bff',
+        borderDash: [3, 3],
+    });
+    layer.add(transformer);
 
     // Redimensionare canvas la resize
     window.addEventListener('resize', function() {
@@ -212,6 +275,10 @@ document.addEventListener('DOMContentLoaded', function() {
         // const scale = newWidth / width;
         // stage.scale({ x: scale, y: 1 });
         // width = newWidth;
+        layer.draw();
+        gridLayer.destroyChildren();
+        drawGrid();
+        gridLayer.draw();
     });
 
     // Load existing tables
@@ -225,7 +292,10 @@ document.addEventListener('DOMContentLoaded', function() {
             is_vip: {% if table.is_vip %}true{% else %}false{% endif %},
             x: Math.round({{ table.position_x|default:50 }} / 100 * width),
             y: Math.round({{ table.position_y|default:50 }} / 100 * height),
-            rotation: {{ table.rotation|default:0 }}
+            rotation: {{ table.rotation|default:0 }},
+            width: {{ table.width|default:0 }},
+            height: {{ table.height|default:0 }},
+            radius: {{ table.radius|default:0 }}
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
@@ -244,47 +314,52 @@ document.addEventListener('DOMContentLoaded', function() {
             rotation: tableData.rotation || 0
         });
 
-        const shape = tableData.shape === 'round' 
+        const isRound = tableData.shape === 'round';
+        const radius = isRound ? (tableData.radius && tableData.radius > 0 ? tableData.radius : 45) : null;
+        const rectW = !isRound ? (tableData.width && tableData.width > 0 ? tableData.width : 150) : null;
+        const rectH = !isRound ? (tableData.height && tableData.height > 0 ? tableData.height : 90) : null;
+
+        const shape = isRound
             ? new Konva.Circle({
-                radius: 45,
-                fill: tableData.is_vip ? '#ffd700' : '#28a745',
-                stroke: tableData.is_vip ? '#b8860b' : '#1e7e34',
-                strokeWidth: 4,
-                shadowBlur: tableData.is_vip ? 15 : 8
+                radius: radius,
+                fill: tableData.is_vip ? '#ffd700' : '#82faea',
+                stroke: tableData.is_vip ? '#b8860b' : '#439c99',
+                strokeWidth: 2,
+                shadowBlur: tableData.is_vip ? 15 : 3
             })
             : new Konva.Rect({
-                width: 150,
-                height: 90,
-                fill: tableData.is_vip ? '#ffd700' : '#28a745',
-                stroke: tableData.is_vip ? '#b8860b' : '#1e7e34',
-                strokeWidth: 4,
+                width: rectW,
+                height: rectH,
+                fill: tableData.is_vip ? '#ffd700' : '#82faea',
+                stroke: tableData.is_vip ? '#b8860b' : '#439c99',
+                strokeWidth: 2,
                 cornerRadius: 12,
-                shadowBlur: tableData.is_vip ? 15 : 8
+                shadowBlur: tableData.is_vip ? 15 : 3
             });
 
         const text = new Konva.Text({
             text: tableData.table_number,
             fontSize: 28,
             fontStyle: 'bold',
-            fill: tableData.is_vip ? '#8b4513' : 'white',
-            width: 90,
+            fill: tableData.is_vip ? '#8b4513' : 'black',
+            width: isRound ? radius*2 : rectW,
             height: 32,
             align: 'center',
             verticalAlign: 'middle',
-            x: tableData.shape === 'round' ? -45 : 0,
-            y: tableData.shape === 'round' ? -18 : 29
+            x: isRound ? -radius : 0,
+            y: isRound ? -18 : rectH/2 - 16
         });
 
         const cap = new Konva.Text({
-            text: tableData.capacity + ' pers.',
+            text: tableData.capacity + ' ppl.',
             fontSize: 15,
-            fill: tableData.is_vip ? '#8b4513' : '#f8f9fa',
-            width: 90,
+            fill: tableData.is_vip ? '#8b4513' : 'black',
+            width: isRound ? radius*2 : rectW,
             height: 20,
             align: 'center',
             verticalAlign: 'middle',
-            x: tableData.shape === 'round' ? -45 : 0,
-            y: tableData.shape === 'round' ? 10 : 55
+            x: isRound ? -radius : 0,
+            y: isRound ? 10 : rectH/2 + 8
         });
 
         group._tableData = tableData;
@@ -293,55 +368,9 @@ document.addEventListener('DOMContentLoaded', function() {
         group.add(text);
         group.add(cap);
 
-        // Double click to edit/rotate/delete
-        group.on('dblclick', function(evt) {
-            evt.cancelBubble = true;
-            showTableMenu(group);
-        });
-
         layer.add(group);
         layer.draw();
     }
-
-    function showTableMenu(group) {
-        document.getElementById('special-element-menu')?.remove();
-        const menu = document.createElement('div');
-        menu.id = 'special-element-menu';
-        menu.style.position = 'fixed';
-        menu.style.left = (stage.container().getBoundingClientRect().left + group.x()) + 'px';
-        menu.style.top = (stage.container().getBoundingClientRect().top + group.y()) + 'px';
-        menu.style.background = '#fff';
-        menu.style.border = '1px solid #ccc';
-        menu.style.borderRadius = '8px';
-        menu.style.padding = '12px 16px';
-        menu.style.zIndex = 9999;
-        menu.style.boxShadow = '0 2px 8px #0002';
-        menu.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:8px;">Table #${group._tableData.table_number}</div>
-            <label style="font-size:13px;">Rotation: <input type='range' min='0' max='360' value='${group.rotation()}' id='table-rotation-slider' style='width:80px;vertical-align:middle;'></label>
-            <button id='table-delete-btn' style='margin-left:12px;' class='btn btn-sm btn-danger'>Delete</button>
-            <button id='table-close-btn' style='margin-left:8px;' class='btn btn-sm btn-secondary'>Close</button>
-        `;
-        document.body.appendChild(menu);
-        document.getElementById('table-rotation-slider').addEventListener('input', function() {
-            const angle = parseFloat(this.value);
-            group.rotation(angle);
-            group._tableRotation = angle;
-            layer.draw();
-        });
-        document.getElementById('table-delete-btn').onclick = function() {
-            group.destroy();
-            menu.remove();
-            layer.draw();
-        };
-        document.getElementById('table-close-btn').onclick = function() {
-            menu.remove();
-        };
-    }
-    window.addEventListener('mousedown', function(e) {
-        const menu = document.getElementById('special-element-menu');
-        if (menu && !menu.contains(e.target)) menu.remove();
-    });
 
     // Add new table
     document.getElementById('addTableForm').addEventListener('submit', function(e) {
@@ -360,6 +389,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 createTable(data.table);
                 this.reset();
+                const modalElement = document.getElementById('addTableModal');
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                modalInstance.hide();
             } else {
                 alert('Error adding table: ' + data.error);
             }
@@ -444,7 +476,7 @@ document.addEventListener('DOMContentLoaded', function() {
             shape: 'rect', color: 'green', width: 60, height: 20, icon: '', label: 'Entrance'
         },
         dancefloor: {
-            shape: 'rect', color: '#b39ddb', width: 200, height: 120, icon: '', label: 'Dance Floor'
+            shape: 'rect', color: '#b39ddb', width: 200, height: 120, icon: '', opacity: 0.3, label: 'Dance Floor'
         },
         dj: {
             shape: 'circle', color: '#ffb300', radius: 25, icon: '', label: 'DJ/Band'
@@ -469,19 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
-    // --- Load special elements from localStorage ---
-    function loadSpecialElements() {
-        const saved = localStorage.getItem('specialElements');
-        if (!saved) return;
-        try {
-            const arr = JSON.parse(saved);
-            arr.forEach(function(el) {
-                addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100);
-            });
-        } catch(e) {}
-    }
-
-    function addSpecialElementToCanvas(type, x, y, rotation) {
+    function addSpecialElementToCanvas(type, x, y, rotation, w, h, r) {
         const def = specialElements[type];
         let group = new Konva.Group({
             x: x || 100 + Math.random() * 200,
@@ -491,27 +511,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         let shape;
         if (def.shape === 'rect') {
+            const rectWidth = w && w>0 ? w : def.width;
+            const rectHeight = h && h>0 ? h : def.height;
             shape = new Konva.Rect({
-                width: def.width,
-                height: def.height,
+                width: rectWidth,
+                height: rectHeight,
                 fill: def.color,
                 cornerRadius: 10,
-                shadowBlur: 8
+                shadowBlur: 3
             });
+            if(def.opacity){ shape.opacity(def.opacity); }
         } else if (def.shape === 'circle') {
+            const cRadius = r && r>0 ? r : def.radius;
             shape = new Konva.Circle({
-                radius: def.radius,
+                radius: cRadius,
                 fill: def.color,
-                shadowBlur: 8
+                shadowBlur: 3
             });
+            if(def.opacity){ shape.opacity(def.opacity); }
         }
-        let label = new Konva.Text({
+        const label = new Konva.Text({
             text: def.label,
             fontSize: 14,
             fill: '#222',
-            x: def.shape === 'rect' ? 0 : -def.radius,
-            y: def.shape === 'rect' ? (def.height ? def.height+2 : 32) : (def.radius ? def.radius+2 : 32),
-            width: def.shape === 'rect' ? def.width : def.radius*2,
+            x: def.shape === 'rect' ? 0 : - (def.shape==='circle' ? (r && r>0 ? r : def.radius) : 0),
+            y: def.shape === 'rect' ? ((h && h>0 ? h : def.height)+2) : ((r && r>0 ? r : def.radius)+2),
+            width: def.shape === 'rect' ? (w && w>0 ? w : def.width) : ((r && r>0 ? r : def.radius)*2),
             align: 'center'
         });
         group._specialType = type;
@@ -521,83 +546,7 @@ document.addEventListener('DOMContentLoaded', function() {
         group.add(label);
         layer.add(group);
         layer.draw();
-
-        // Dublu-click: meniu stergere si rotire
-        group.on('dblclick', function(evt) {
-            evt.cancelBubble = true;
-            showSpecialElementMenu(group);
-        });
-    }
-
-    // Meniu pentru stergere si rotire
-    function showSpecialElementMenu(group) {
-        // Sterge orice meniu vechi
-        document.getElementById('special-element-menu')?.remove();
-        const menu = document.createElement('div');
-        menu.id = 'special-element-menu';
-        menu.style.position = 'fixed';
-        menu.style.left = (stage.container().getBoundingClientRect().left + group.x()) + 'px';
-        menu.style.top = (stage.container().getBoundingClientRect().top + group.y()) + 'px';
-        menu.style.background = '#fff';
-        menu.style.border = '1px solid #ccc';
-        menu.style.borderRadius = '8px';
-        menu.style.padding = '12px 16px';
-        menu.style.zIndex = 9999;
-        menu.style.boxShadow = '0 2px 8px #0002';
-        menu.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:8px;">${group._specialLabel}</div>
-            <label style="font-size:13px;">Rotation: <input type='range' min='0' max='360' value='${group.rotation()}' id='special-rotation-slider' style='width:80px;vertical-align:middle;'></label>
-            <button id='special-delete-btn' style='margin-left:12px;' class='btn btn-sm btn-danger'>Delete</button>
-            <button id='special-close-btn' style='margin-left:8px;' class='btn btn-sm btn-secondary'>Close</button>
-        `;
-        document.body.appendChild(menu);
-        // Rotire
-        document.getElementById('special-rotation-slider').addEventListener('input', function() {
-            const angle = parseFloat(this.value);
-            group.rotation(angle);
-            group._specialRotation = angle;
-            layer.draw();
-        });
-        // Stergere
-        document.getElementById('special-delete-btn').onclick = function() {
-            group.destroy();
-            menu.remove();
-            layer.draw();
-        };
-        // Close
-        document.getElementById('special-close-btn').onclick = function() {
-            menu.remove();
-        };
-    }
-    // Click in afara meniului inchide meniul
-    window.addEventListener('mousedown', function(e) {
-        const menu = document.getElementById('special-element-menu');
-        if (menu && !menu.contains(e.target)) menu.remove();
-    });
-
-    // --- Add special element on button click ---
-    document.querySelectorAll('.special-elements-controls button').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const type = this.getAttribute('data-element');
-            addSpecialElementToCanvas(type);
-            saveSpecialElements();
-        });
-    });
-
-    // --- Save special elements to localStorage ---
-    function saveSpecialElements() {
-        const arr = [];
-        layer.getChildren().forEach(function(group) {
-            if (group._specialType) {
-                arr.push({
-                    type: group._specialType,
-                    label: group._specialLabel,
-                    x: group.x() / width * 100,
-                    y: group.y() / height * 100
-                });
-            }
-        });
-        localStorage.setItem('specialElements', JSON.stringify(arr));
+        // End of element creation
     }
 
     // --- Save layout (include rotation) ---
@@ -610,7 +559,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     id: group._tableData.id,
                     x: group.x() / width * 100,
                     y: group.y() / height * 100,
-                    rotation: group._tableRotation || 0
+                    rotation: group.rotation(),
+                    width: group.findOne('Rect') ? group.findOne('Rect').width() * group.scaleX() : undefined,
+                    height: group.findOne('Rect') ? group.findOne('Rect').height() * group.scaleY() : undefined,
+                    radius: group.findOne('Circle') ? group.findOne('Circle').radius() * group.scaleX() : undefined
                 });
             }
             if (group._specialType) {
@@ -619,7 +571,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     label: group._specialLabel,
                     x: group.x() / width * 100,
                     y: group.y() / height * 100,
-                    rotation: group._specialRotation || 0
+                    rotation: group.rotation(),
+                    width: group.findOne('Rect') ? group.findOne('Rect').width() * group.scaleX() : undefined,
+                    height: group.findOne('Rect') ? group.findOne('Rect').height() * group.scaleY() : undefined,
+                    radius: group.findOne('Circle') ? group.findOne('Circle').radius() * group.scaleX() : undefined
                 });
             }
         });
@@ -653,16 +608,19 @@ document.addEventListener('DOMContentLoaded', function() {
             label: "{{ el.label }}",
             x: {{ el.position_x }},
             y: {{ el.position_y }},
-            rotation: {{ el.rotation|default:0 }}
+            rotation: {{ el.rotation|default:0 }},
+            width: {{ el.width|default:0 }},
+            height: {{ el.height|default:0 }},
+            radius: {{ el.radius|default:0 }}
         }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
     specialElementsFromBackend.forEach(function(el) {
-        addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation);
+        addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation, el.width, el.height, el.radius);
     });
 
     // --- Load special elements on page load ---
-    loadSpecialElements();
+    // (loadSpecialElements call removed)
 
     let selectedGroup = null;
     let rotateHandle = null;
@@ -673,38 +631,10 @@ document.addEventListener('DOMContentLoaded', function() {
     function selectGroup(group) {
         deselectGroup();
         selectedGroup = group;
-        // Draw rotate handle (arc/sageata)
+        // Attach Konva.Transformer for this group
+        transformer.nodes([group]);
+        transformer.getLayer().batchDraw();
         const bbox = group.getClientRect({ relativeTo: group.getLayer() });
-        const handleRadius = 22;
-        const handleAngle = Math.PI / 1.5;
-        const cx = bbox.x + bbox.width + 18;
-        const cy = bbox.y - 18;
-        rotateHandle = new Konva.Arc({
-            x: cx,
-            y: cy,
-            innerRadius: handleRadius - 6,
-            outerRadius: handleRadius,
-            angle: 270,
-            rotation: 45,
-            fill: '#007bff',
-            stroke: '#fff',
-            strokeWidth: 2,
-            draggable: false,
-            name: 'konva-rotate-handle',
-            shadowBlur: 6
-        });
-        // Sageata (cap de sageata)
-        const arrow = new Konva.Line({
-            points: [cx + handleRadius - 2, cy, cx + handleRadius + 10, cy - 8, cx + handleRadius + 2, cy + 10],
-            stroke: '#007bff',
-            strokeWidth: 3,
-            lineCap: 'round',
-            lineJoin: 'round',
-            closed: false
-        });
-        group.getLayer().add(rotateHandle);
-        group.getLayer().add(arrow);
-        group.getLayer().draw();
         // Update panel langa forma
         const canvasRect = stage.container().getBoundingClientRect();
         editPanel.style.display = 'block';
@@ -730,49 +660,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         };
-        // Rotire la drag pe handle sau sageata
-        function startRotate(e) {
-            e.cancelBubble = true;
-            const center = group.getAbsolutePosition();
-            function onMove(ev) {
-                const pos = stage.getPointerPosition();
-                const dx = pos.x - center.x;
-                const dy = pos.y - center.y;
-                let angle = Math.atan2(dy, dx) * 180 / Math.PI;
-                angle = (angle + 360) % 360;
-                group.rotation(angle);
-                if (group._tableData) group._tableRotation = angle;
-                if (group._specialType) group._specialRotation = angle;
-                group.getLayer().draw();
-            }
-            function onUp(ev) {
-                window.removeEventListener('mousemove', onMove);
-                window.removeEventListener('touchmove', onMove);
-                window.removeEventListener('mouseup', onUp);
-                window.removeEventListener('touchend', onUp);
-            }
-            window.addEventListener('mousemove', onMove);
-            window.addEventListener('touchmove', onMove);
-            window.addEventListener('mouseup', onUp);
-            window.addEventListener('touchend', onUp);
-        }
-        rotateHandle.on('mousedown touchstart', startRotate);
-        arrow.on('mousedown touchstart', startRotate);
-        // Salveaza handle/arrow pentru deselectare
-        group._rotateHandle = rotateHandle;
-        group._rotateArrow = arrow;
     }
     function deselectGroup() {
-        if (selectedGroup && selectedGroup._rotateHandle) {
-            selectedGroup._rotateHandle.destroy();
-            selectedGroup._rotateHandle = null;
-        }
-        if (selectedGroup && selectedGroup._rotateArrow) {
-            selectedGroup._rotateArrow.destroy();
-            selectedGroup._rotateArrow = null;
-        }
-        rotateHandle = null;
         selectedGroup = null;
+        transformer.nodes([]);
+        transformer.getLayer().batchDraw();
         editPanel.style.display = 'none';
     }
     // Click pe orice grup selecteaza
@@ -788,6 +680,17 @@ document.addEventListener('DOMContentLoaded', function() {
             deselectGroup();
         }
     });
+
+    // --- Add special element on button click ---
+    document.querySelectorAll('.special-elements-controls button').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const type = this.getAttribute('data-element');
+            addSpecialElementToCanvas(type);
+        });
+    });
+
+    // --- Save special elements to localStorage ---
+    // (removed localStorage saving functionality)
 });
 </script>
 {% endblock %}

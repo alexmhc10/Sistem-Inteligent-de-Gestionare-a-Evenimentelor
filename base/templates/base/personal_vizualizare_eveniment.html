@@ -406,26 +406,117 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
                 </div>
         </div>
-        <div>
-            {% if guests_menu %}
-                <h5>Guests Menu:</h5>
-                <ul>
-                    {% for guest in guests_menu %}
-                        <li>{{ guest.username }} - </li>
-                        <ul>
-                            {% for dish in guest.menu_choices.all %}
-                                <li>{{ dish.item_name }} - {{ dish.allergens.all|join:", " }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        </div>
+
         
-    </div>
-    </div>
+        </div>
+            <div class="row my-4">
+                <div class="col-12">
+                    <div class="card glass-effect">
+                        <div class="card-body">
+                            <h3 class="text-center mb-3">Room Layout</h3>
+                            <div id="layout-container" style="width:100%;height:600px;border:1px solid #ccc;background:#f8f9fa;border-radius:15px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div> 
+
+<!-- Layout Visualization -->
+
+
+<!-- Tooltip for guests -->
+<div id="tableTooltip" style="position:absolute;display:none;z-index:3000;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 2px 12px #0002;padding:10px;font-size:0.9rem;"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/konva@9.2.2/konva.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+    const tooltip = document.getElementById('tableTooltip');
+    const container = document.getElementById('layout-container');
+    let width = container.offsetWidth;
+    const height = 600;
+
+    // Stage & layers
+    const stage = new Konva.Stage({ container:'layout-container', width:width, height:height });
+    const gridLayer = new Konva.Layer({ listening:false });
+    const layer = new Konva.Layer();
+    stage.add(gridLayer);
+    const gridSize = 50;
+    function drawGrid(){
+        const cols = Math.ceil(width/gridSize); const rows=Math.ceil(height/gridSize);
+        for(let i=0;i<=cols;i++){ gridLayer.add(new Konva.Line({points:[i*gridSize,0,i*gridSize,height],stroke:'#e0e0e0',strokeWidth:1})); }
+        for(let j=0;j<=rows;j++){ gridLayer.add(new Konva.Line({points:[0,j*gridSize,width,j*gridSize],stroke:'#e0e0e0',strokeWidth:1})); }
+    }
+    drawGrid();
+    stage.add(layer);
+
+    window.addEventListener('resize',()=>{
+        width = container.offsetWidth; stage.width(width); gridLayer.destroyChildren(); drawGrid(); gridLayer.draw();
+    });
+
+    const tablesRaw = JSON.parse('{{ tables_json|escapejs }}');
+    const specialRaw = JSON.parse('{{ special_json|escapejs }}');
+
+    function drawTable(t){
+        const x = Math.round(t.position_x/100*width);
+        const y = Math.round(t.position_y/100*height);
+        const group = new Konva.Group({x:x,y:y,rotation:t.rotation||0});
+        const isRound = t.shape==='round';
+        const radius = isRound ? (t.radius||45):null;
+        const rectW = isRound?null:(t.width||90);
+        const rectH = isRound?null:(t.height||90);
+        let shape;
+        if(isRound){
+            shape=new Konva.Circle({radius:radius,fill:t.is_reserved?'#ffd700':'#28a745',stroke:t.is_reserved?'#b8860b':'#1e7e34',strokeWidth:3});
+        }else{
+            shape=new Konva.Rect({width:rectW,height:rectH,fill:t.is_reserved?'#ffd700':'#28a745',stroke:t.is_reserved?'#b8860b':'#1e7e34',strokeWidth:3,cornerRadius:10});
+        }
+        const labelW = isRound?radius*2:rectW;
+        const labelX = isRound?-radius:0;
+        const labelY = isRound?-12: (rectH/2-12);
+        const text = new Konva.Text({text:t.table_number,fontSize:20,fontStyle:'bold',fill:'#fff',width:labelW,align:'center',x:labelX,y:labelY});
+        group.add(shape); group.add(text);
+        group._tableId = t.id;
+        group.on('mouseenter', (e)=>{
+            fetch(`/api/table-details/${t.id}/?event_id={{ event.id }}`)
+                .then(resp=>resp.json()).then(data=>{
+                    let html = `<b>Table ${t.table_number}</b><br/>Guests:<br/>`;
+                    if(data.guests && data.guests.length){
+                        html += '<ul style="padding-left:16px;margin:4px 0">';
+                        data.guests.forEach((g)=>{html+=`<li>${g.name}</li>`});
+                        html+='</ul>';
+                    }else{ html+='No guests assigned'; }
+                    tooltip.innerHTML = html;
+                    tooltip.style.display='block';
+                });
+        });
+        group.on('mousemove',(e)=>{
+            tooltip.style.left = (e.evt.clientX+15)+'px';
+            tooltip.style.top = (e.evt.clientY+15)+'px';
+        });
+        group.on('mouseleave',()=>{ tooltip.style.display='none';});
+        layer.add(group);
+    }
+
+    tablesRaw.forEach(drawTable);
+
+    // special elements (same defs as before)
+    const defs={entrance:{shape:'rect',color:'green',width:60,height:20},dancefloor:{shape:'rect',color:'#b39ddb',width:200,height:120,opacity:0.3},dj:{shape:'circle',color:'#ffb300',radius:25},restrooms:{shape:'rect',color:'#90caf9',width:50,height:50},bar:{shape:'rect',color:'#ffe082',width:150,height:30},kitchen:{shape:'rect',color:'#616161',width:80,height:60},emergency:{shape:'rect',color:'red',width:60,height:20},photobooth:{shape:'circle',color:'#f06292',radius:30},kids:{shape:'rect',color:'#fff59d',width:70,height:50}};
+    specialRaw.forEach(function(el){
+        const def = defs[el.type]||{shape:'rect',color:'#ccc',width:40,height:40};
+        const grp = new Konva.Group({x:el.position_x/100*width,y:el.position_y/100*height,rotation:el.rotation||0});
+        let shape;
+        if(def.shape==='rect'){
+            shape=new Konva.Rect({width:el.width||def.width,height:el.height||def.height,fill:def.color,cornerRadius:8});
+            if(def.opacity) shape.opacity(def.opacity);
+        }else{const r=el.radius||def.radius;shape=new Konva.Circle({radius:r,fill:def.color}); if(def.opacity) shape.opacity(def.opacity);} 
+        grp.add(shape); layer.add(grp);
+    });
+
+    layer.draw();
+});
+</script>
 {% endblock content %}
 
 {% block javascript %}

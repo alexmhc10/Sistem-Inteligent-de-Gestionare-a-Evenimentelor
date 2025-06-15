@@ -387,7 +387,19 @@ def guest_list(request, event_id):
 
 def event_details(request, event_id):
     event = get_object_or_404(Event, id=event_id)
-    return render(request, 'base/event_details.html', {'event': event})
+    tables = list(event.location.tables.values(
+        'id', 'table_number', 'capacity', 'shape', 'is_reserved',
+        'position_x', 'position_y', 'rotation', 'width', 'height', 'radius'
+    )) if event.location else []
+    special_elements = list(event.location.special_elements.values(
+        'type','label','position_x','position_y','rotation','width','height','radius'
+    )) if event.location else []
+    context = {
+        'event': event,
+        'tables_json': json.dumps(tables),
+        'special_json': json.dumps(special_elements)
+    }
+    return render(request, 'base/event_details.html', context)
 
 def event_list(request):
     events = Event.objects.all()  
@@ -2206,6 +2218,12 @@ def personal_vizualizare_eveniment(request, pk):
     guests_menu = GuestMenu.objects.filter(event=event)
     print('Guests Menu:', guests_menu)
 
+    tables_json = []
+    special_json = []
+    if event.location:
+        tables_json = list(event.location.tables.values('id','table_number','capacity','shape','is_reserved','position_x','position_y','rotation','width','height','radius'))
+        special_json = list(event.location.special_elements.values('type','label','position_x','position_y','rotation','width','height','radius'))
+
     context = {
         'logs': logs,
         'event': event,
@@ -2213,7 +2231,9 @@ def personal_vizualizare_eveniment(request, pk):
         'event_data': json.dumps(event_data),
         'rspv': rspv,
         'profile': profile,
-        'guests_menu': guests_menu
+        'guests_menu': guests_menu,
+        'tables_json': json.dumps(tables_json),
+        'special_json': json.dumps(special_json)
     }
     return render(request, 'base/personal_vizualizare_eveniment.html', context)
 
@@ -2472,6 +2492,9 @@ def save_table_layout(request):
             table.position_x = table_data['x']
             table.position_y = table_data['y']
             table.rotation = table_data.get('rotation', 0)
+            table.width = table_data.get('width', 0) or 0
+            table.height = table_data.get('height', 0) or 0
+            table.radius = table_data.get('radius', 0) or 0
             table.save()
 
         # Salvează elementele speciale (ca înainte)
@@ -2485,7 +2508,10 @@ def save_table_layout(request):
                 label=el.get('label', ''),
                 position_x=el['x'],
                 position_y=el['y'],
-                rotation=el.get('rotation', 0)
+                rotation=el.get('rotation', 0),
+                width=el.get('width', 0) or 0,
+                height=el.get('height', 0) or 0,
+                radius=el.get('radius', 0) or 0
             )
 
         return JsonResponse({'success': True})
@@ -3563,6 +3589,9 @@ def save_table_layout(request):
             table.position_x = table_data['x']
             table.position_y = table_data['y']
             table.rotation = table_data.get('rotation', 0)
+            table.width = table_data.get('width', 0) or 0
+            table.height = table_data.get('height', 0) or 0
+            table.radius = table_data.get('radius', 0) or 0
             table.save()
 
         # Salvează elementele speciale (ca înainte)
@@ -3576,7 +3605,10 @@ def save_table_layout(request):
                 label=el.get('label', ''),
                 position_x=el['x'],
                 position_y=el['y'],
-                rotation=el.get('rotation', 0)
+                rotation=el.get('rotation', 0),
+                width=el.get('width', 0) or 0,
+                height=el.get('height', 0) or 0,
+                radius=el.get('radius', 0) or 0
             )
 
         return JsonResponse({'success': True})

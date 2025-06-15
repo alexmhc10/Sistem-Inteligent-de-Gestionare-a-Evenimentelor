@@ -559,6 +559,10 @@ class Table(models.Model):
     shape = models.CharField(max_length=20, choices=SHAPE_CHOICES, default='round')
     position_x = models.FloatField(default=0) 
     position_y = models.FloatField(default=0)
+    # Dimensiuni
+    width = models.FloatField(default=0, null=True, blank=True)
+    height = models.FloatField(default=0, null=True, blank=True)
+    radius = models.FloatField(default=0, null=True, blank=True)
     is_reserved = models.BooleanField(default=False, help_text="Reserved for special groups (e.g., bride and groom)")
     notes = models.TextField(blank=True, null=True, help_text="Additional notes about the table")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -645,6 +649,10 @@ class SpecialElement(models.Model):
     label = models.CharField(max_length=64, blank=True)
     position_x = models.FloatField(default=0)
     position_y = models.FloatField(default=0)
+    # Dimensiuni (pentru rect sau cerc)
+    width = models.FloatField(default=0, null=True, blank=True)
+    height = models.FloatField(default=0, null=True, blank=True)
+    radius = models.FloatField(default=0, null=True, blank=True)
     rotation = models.FloatField(default=0)  # grade (0-360)
 
     def __str__(self):
