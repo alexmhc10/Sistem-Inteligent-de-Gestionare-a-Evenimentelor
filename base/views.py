@@ -3009,6 +3009,21 @@ def guest_event_view(request, pk):
     archives = event.archives.all()
     posts = event.posts.all()
 
+    chosen_menu = []
+    try:
+        guest_menu = GuestMenu.objects.get(guest=request.user, event=event)
+        for d in guest_menu.menu_choices.all():
+            chosen_menu.append({
+                "id": d.id,
+                "name": d.item_name,
+                "category": d.category,
+                "image": d.item_picture.url if d.item_picture else "",
+                "allergens": [a.name for a in d.allergens.all()],
+                "is_vegan": d.item_vegan,
+            })
+    except GuestMenu.DoesNotExist:
+        pass
+
     context={
         'organiser':oragniser_profile,
         'event':event,
@@ -3028,7 +3043,9 @@ def guest_event_view(request, pk):
         'event_posts_count': event_posts.count(),
         'location': location,
         'archives': archives,
-        'posts': posts
+        'posts': posts,
+        'chosen_menu_json': json.dumps(chosen_menu),
+        'chosen_menu': chosen_menu
     }
     return render(request,'base/guest_event_view.html', context)
 
@@ -3150,7 +3167,19 @@ def save_guest_menu(request):
         guest_menu.save()
         guest_menu.menu_choices.set(menu_items)
 
-        return JsonResponse({"success": True, "message": "Menu saved successfully"})
+        chosen = [
+            {
+                "id": d.id,
+                "name": d.item_name,
+                "category": d.category,
+                "image": d.item_picture.url if d.item_picture else "",
+                "allergens": [a.name for a in d.allergens.all()],
+                "is_vegan": d.item_vegan,
+            }
+            for d in menu_items
+        ]
+
+        return JsonResponse({"success": True, "message": "Menu saved successfully", "menu": chosen})
 
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=400)

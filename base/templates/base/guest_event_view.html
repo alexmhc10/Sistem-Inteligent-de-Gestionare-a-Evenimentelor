@@ -419,13 +419,13 @@ document.addEventListener("change", function (e) {
             submitBtn.className = "btn btn-success mt-3";
             submitBtn.addEventListener("click", function () {
                 const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-                // Selected dishes trebuie să aibă exact 4 feluri (1 per categorie)
+
                 const dishIds = Object.values(selectedDishes);
                 const dataDiv = document.getElementById('menu-data');
                 const eventId = dataDiv.getAttribute('data-event-id');
                 const locationId = dataDiv.getAttribute('data-location-id');
                 const payload = {
-                    event_id: eventId, // înlocuiește dinamic dacă ai valoarea în pagină
+                    event_id: eventId,
                     location_id: locationId,
                     menu_choices: dishIds
                 };
@@ -443,8 +443,11 @@ document.addEventListener("change", function (e) {
                     return response.json();
                 })
                 .then(data => {
-                    alert("Meniul a fost salvat cu succes!");
-                    console.log("Saved:", data);
+                    if(data.success){
+                        alert("Meniul a fost salvat cu succes!");
+                        buildMenuSummary(data.menu);
+                        document.getElementById('suggested-menu').classList.add('d-none');
+                    }
                 })
                 .catch(error => {
                     console.error("Eroare la salvare:", error);
@@ -824,7 +827,20 @@ document.addEventListener("change", function (e) {
                   {% endfor %}
                 </div>
               </div>
-              
+              <h3 class="archives-title">
+                Rate the food and the organization!
+              </h3>
+              <div class="card">
+                <div class="card-body d-flex flex-column">
+                  {% for dish in chosen_menu %}
+                    <div class="archive-item">
+                     {{ dish.category|capfirst }}: {{ dish.name }} - Allergens: {{ dish.allergens|join:', ' }} - Vegan: {{ dish.is_vegan|yesno:"Yes,No" }}
+                    </div>
+                    {% empty %}
+                      <li>You didn't configure a custom menu for this event.</li>
+                  {% endfor %}
+                </div>
+              </div>
               {% if guest_posts_count > 0 %}
               <a class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="collapse" href="#postCollapse" role="button" aria-expanded="false" aria-controls="postCollapse">
                 Add more posts!
@@ -1320,5 +1336,54 @@ document.addEventListener("change", function (e) {
     </div>
   </div>
 </div>
+
+<script>
+  function buildMenuSummary(menu){
+    const container = document.getElementById('submit-menu-container');
+    container.innerHTML='';
+    const MEDIA="{{ MEDIA_URL }}";
+    const table=document.createElement('table');
+    table.className='table table-bordered mt-3';
+    table.innerHTML=`<thead><tr><th>Category</th><th>Image</th><th>Dish</th><th>Allergens</th><th>Vegan</th><th>Action</th></tr></thead><tbody></tbody>`;
+    const tbody=table.querySelector('tbody');
+
+    menu.forEach(item=>{
+      const tr=document.createElement('tr');
+      tr.dataset.category=item.category;
+      const imgSrc = item.image || MEDIA + 'placeholder.jpg';
+      tr.innerHTML=`<td class='text-capitalize'>${item.category}</td><td><img src="${imgSrc}" class="img-thumbnail" style="max-width:80px; max-height:80px; object-fit:cover;"></td><td>${item.name}</td><td>${item.allergens.length?item.allergens.join(', '):'None'}</td><td>${item.is_vegan ? 'Yes' : 'No'}</td><td><button class='btn btn-sm btn-primary edit-choice'>Edit  <i class="bi bi-pencil-square"></i></button></td>`;
+      tbody.appendChild(tr);
+    });
+    container.appendChild(table);
+
+    // ascundem formularul initial
+    document.getElementById('menu-configuration').style.display='none';
+
+    // attach edit handlers
+    container.querySelectorAll('.edit-choice').forEach(btn=>{
+      btn.addEventListener('click',function(){
+        const cat=this.closest('tr').dataset.category;
+        const form=document.getElementById('menu-configuration');
+        form.style.display='block';
+        document.getElementById('suggested-menu').classList.remove('d-none');
+
+        // afisăm doar rândurile din categoria selectată
+        document.querySelectorAll('.dish-row').forEach(r=>{
+          r.style.display=(r.dataset.category===cat)?'flex':'none';
+        });
+
+        form.scrollIntoView({behavior:'smooth'});
+      });
+    });
+  }
+
+  // initialize summary if already saved
+  document.addEventListener('DOMContentLoaded',function(){
+    const chosenMenu = JSON.parse('{{ chosen_menu_json|escapejs }}');
+    if(chosenMenu.length){
+       buildMenuSummary(chosenMenu);
+    }
+  });
+</script>
 
 {% endblock %}
