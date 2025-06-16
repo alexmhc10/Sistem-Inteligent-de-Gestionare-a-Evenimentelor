@@ -62,6 +62,7 @@ from django.views.decorators.http import require_GET
 from django.forms import modelformset_factory
 import joblib
 from django.utils.decorators import method_decorator
+import os
 
 
 
@@ -2280,10 +2281,8 @@ def completed_event(request, pk):
     guests = event.guests.all()
     guest_users = User.objects.filter(id__in=guests.values_list('id', flat=True))
     
-    # Get search query
     search_query = request.GET.get('search', '')
     
-    # Base querysets for percentages (unfiltered)
     base_present_guests = Log.objects.filter(event=event, is_correct = True)
     base_confirmed_but_absent = RSVP.objects.filter(event=event, response="Accepted", responded=True).exclude(
         guest__in=Log.objects.filter(
@@ -2294,13 +2293,11 @@ def completed_event(request, pk):
     base_absent_guests = RSVP.objects.filter(event=event, response = "Declined", responded = True)
     base_pending_guests = RSVP.objects.filter(event=event, response = "Pending", responded = False)
 
-    # Calculate percentages using unfiltered data
     present_guests_percentage = round((base_present_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
     absent_guests_percentage = round((base_absent_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
     pending_guests_percentage = round((base_pending_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
     confirmed_but_absent_percentage = round((base_confirmed_but_absent.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
 
-    # Apply search filter if search query exists (only for display)
     present_guests = base_present_guests
     confirmed_but_absent = base_confirmed_but_absent
     absent_guests = base_absent_guests
@@ -2328,6 +2325,12 @@ def completed_event(request, pk):
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
         return redirect(request.META.get('HTTP_REFERER', '/login/'))
 
+    # Utilize reverse relation for clarity and consistency
+    archives = event.archives.all()
+    posts = event.posts.all()
+    print('Posts:', posts)
+    print('Posts count:', posts.count())
+    
     if event is not None:
         context = {
             'event':event,
@@ -2343,7 +2346,10 @@ def completed_event(request, pk):
             'absent_guests_percentage': absent_guests_percentage,
             'pending_guests_percentage': pending_guests_percentage,
             'confirmed_but_absent_percentage': confirmed_but_absent_percentage,
-            'search_query': search_query
+            'search_query': search_query,
+            'archives': archives,
+            'posts': posts,
+            'posts_count': posts.count()
         }
     return render(request, 'base/completed_event.html', context)
 
@@ -2361,8 +2367,43 @@ class UploadArchiveAPI(View):
         if not archive_file or not archive_file.name.endswith('.zip'):
             return JsonResponse({"error": "Trebuie să fie fișier .zip sau .rar."}, status=400)
 
-        EventGallery.objects.create(event=event, archive=archive_file)
-        return JsonResponse({"success": "Arhiva a fost încărcată cu succes!"})
+        import os
+        archive_obj = EventGallery.objects.create(event=event, archive=archive_file)
+
+        archive_info = {
+            "id": archive_obj.id,
+            "url": archive_obj.archive.url,
+            "name": os.path.basename(archive_obj.archive.name),
+            "uploaded_at": archive_obj.uploaded_at.strftime("%Y-%m-%d %H:%M")
+        }
+
+        return JsonResponse({"success": True, "archive": archive_info})
+
+
+@csrf_exempt
+@login_required(login_url='/login')
+@user_is_staff
+def delete_archive(request, archive_id):
+    """Şterge un obiect EventGallery şi fişierul asociat."""
+    if request.method not in ["POST", "DELETE"]:
+        return JsonResponse({"success": False, "error": "Metodă invalidă"}, status=400)
+
+    try:
+        archive = EventGallery.objects.get(id=archive_id)
+
+        # Doar personalul locaţiei care a organizat evenimentul poate şterge
+        if archive.event.location.user_account != request.user:
+            return JsonResponse({"success": False, "error": "Permisiune refuzată"}, status=403)
+
+        # Şterge fişierul din storage înainte de a şterge obiectul
+        if archive.archive:
+            archive.archive.delete(save=False)
+
+        archive.delete()
+        return JsonResponse({"success": True})
+
+    except EventGallery.DoesNotExist:
+        return JsonResponse({"success": False, "error": "Arhiva nu a fost găsită"}, status=404)
 
 
 from .models import REGION_CHOICES
@@ -2966,6 +3007,7 @@ def guest_event_view(request, pk):
     ]
 
     archives = event.archives.all()
+    posts = event.posts.all()
 
     context={
         'organiser':oragniser_profile,
@@ -2986,6 +3028,7 @@ def guest_event_view(request, pk):
         'event_posts_count': event_posts.count(),
         'location': location,
         'archives': archives,
+        'posts': posts
     }
     return render(request,'base/guest_event_view.html', context)
 

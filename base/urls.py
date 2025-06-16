@@ -88,6 +88,7 @@ urlpatterns = [
     path("personal_menu/", views.personal_menu, name="personal_menu"),
     path("completed_event/<int:pk>", views.completed_event, name='completed_event'),
     path('api/events/<int:event_id>/upload-archive/', views.UploadArchiveAPI.as_view(), name='upload_archive_api'),
+    path('delete_archive/<int:archive_id>/', views.delete_archive, name='delete_archive'),
     path('calendar/events/', views.event_list_json, name='event_list_json'),
 
 

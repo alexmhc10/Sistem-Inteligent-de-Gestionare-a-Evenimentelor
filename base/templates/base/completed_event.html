@@ -22,7 +22,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title d-flex align-items-center gap-2 mb-4">
-                            Event Overview
+                            Event overview and statistics - {{event.event_name}}
                             <span>
                                 <iconify-icon icon="solar:question-circle-bold" class="fs-7 d-flex text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Traffic Overview"></iconify-icon>
                             </span>
@@ -38,7 +38,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
               <i class="bi bi-camera h1 text-primary"></i>
               <h4 class="mt-7">Event gallery upload!</h4>
               <p class="card-subtitle mt-2 mb-3">Here you can upload the photos taken at your location and share them with the rest of the guests.</p>
-                <form id="uploadForm">
+                <form id="uploadForm" data-event-id="{{ event.id }}">
                   <input type="file" class="form-control mb-2" id="archiveFile" name="archive" accept=".zip" required>
                   <button type="submit" class="btn btn-success">Upload</button>
                 </form>
@@ -48,10 +48,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
         </div>
         <script>
-          document.getElementById("uploadForm").addEventListener("submit", function (e) {
+          const uploadForm = document.getElementById("uploadForm");
+          uploadForm.addEventListener("submit", function (e) {
               e.preventDefault();
 
-              const eventId = {{ event.id }};
+              const eventId = this.dataset.eventId;
               const fileInput = document.getElementById("archiveFile");
               const file = fileInput.files[0];
 
@@ -70,14 +71,15 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   },
                   body: formData,
               })
-              .then(response => {
-                  if (response.ok) {
+              .then(response => response.json())
+              .then(data => {
+                  if (data.success) {
                       document.getElementById("status").textContent = "Arhiva a fost încărcată cu succes!";
                       fileInput.value = '';
+                      addArchiveRow(data.archive);
+                      document.getElementById("no-archives").style.display = "none";
                   } else {
-                      return response.text().then(text => {
-                          throw new Error(text || "Eroare la trimitere!");
-                      });
+                      throw new Error(data.error || 'Eroare la trimitere!');
                   }
               })
               .catch(error => {
@@ -89,7 +91,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div class="col-lg-8">
            <div class="card">
                     <div class="card-body">
-                        <div class="header d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-row justify-content-between align-items-center">
                           <h5 class="card-title">Guest list</h5>
                           <form method="GET" class="d-flex flex-row">
                             <div class="input-group">
@@ -215,7 +217,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <span class="fs-3 fw-medium">Attended</span>
                     <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{present_guests_percentage}}%</h6>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{present_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-primary" style="width: {{present_guests_percentage}}%"></div>
                   </div>
                 </div>
@@ -225,7 +227,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <span class="fs-3 fw-medium">Didn't attend</span>
                     <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{confirmed_but_absent_percentage}}%</h6>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{confirmed_but_absent_percentage}}" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-secondary" style="width: {{confirmed_but_absent_percentage}}%"></div>
                   </div>
                 </div>
@@ -235,7 +237,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <span class="fs-3 fw-medium">Didn't confirm</span>
                     <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{absent_guests_percentage}}%</h6>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{absent_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-success" style="width: {{absent_guests_percentage}}%"></div>
                   </div>
                 </div>
@@ -244,7 +246,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <span class="fs-3 fw-medium">Didn't respond</span>
                     <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{pending_guests_percentage}}%</h6>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{pending_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
                     <div class="progress-bar bg-success" style="width: {{pending_guests_percentage}}%"></div>
                   </div>
                 </div>
@@ -252,7 +254,450 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
           </div>
         </div>
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Socials and media section</h5>
+            </div>
+          </div>
+        </div>
+        {% load custom_filters %}
+
+        <h3 class="archives-title">
+          Manage photo archives for this event
+        </h3>
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped align-middle" id="archivesTable">
+                <thead>
+                  <tr>
+                    <th scope="col" style="width: 60px;">#</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Uploaded at</th>
+                    <th scope="col" style="width: 120px;">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for archive in archives %}
+                    <tr id="archive-row-{{ archive.id }}">
+                      <td>{{ forloop.counter }}</td>
+                      <td><a href="{{ archive.archive.url }}" download>{{ archive.archive.name|basename }}</a></td>
+                      <td>{{ archive.uploaded_at }}</td>
+                      <td>
+                        <button type="button" class="btn btn-danger btn-sm delete-archive-btn" data-archive-id="{{ archive.id }}">
+                          <i class="bi bi-trash"></i> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  {% empty %}
+                    <tr>
+                      <td colspan="4" id="no-archives">You didn't upload any archive at this event.</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <script>
+          function attachDeleteHandler(btn) {
+            if(!btn) return;
+            btn.addEventListener('click', function() {
+              const archiveId = this.dataset.archiveId;
+
+              Swal.fire({
+                title: 'Delete archive',
+                text: 'Are you sure you want to delete this archive?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch(`/delete_archive/${archiveId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                      'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    if (data.success) {
+                      document.getElementById(`archive-row-${archiveId}`).remove();
+                      Swal.fire('Deleted!', 'Archive has been removed.', 'success');
+                    } else {
+                      Swal.fire('Error!', data.error || 'Unknown error', 'error');
+                    }
+                  })
+                  .catch(error => {
+                    Swal.fire('Error!', error.message, 'error');
+                  });
+                }
+              });
+            });
+          }
+          document.querySelectorAll('.delete-archive-btn').forEach(attachDeleteHandler);
+
+          function addArchiveRow(archive) {
+            const tbody = document.querySelector('#archivesTable tbody');
+            if(!tbody) return;
+            const rowCount = tbody.querySelectorAll('tr').length + 1;
+            const tr = document.createElement('tr');
+            tr.id = `archive-row-${archive.id}`;
+            tr.innerHTML = `
+                <td>${rowCount}</td>
+                <td><a href="${archive.url}" download>${archive.name}</a></td>
+                <td>${archive.uploaded_at}</td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-sm delete-archive-btn" data-archive-id="${archive.id}">
+                    <i class="bi bi-trash"></i> Delete
+                  </button>
+                </td>`;
+            tbody.appendChild(tr);
+            attachDeleteHandler(tr.querySelector('.delete-archive-btn'));
+          }
+        </script>
         
+        {% if event.posts.count == 0 %}
+        <h3 class="h3">No posts so far!</h3>
+        {% else %}
+        <h3 class="soacial-posts">
+          See the posts and reviews from the guests!
+        </h3>
+      {% endif %}  
+      
+      <hr>
+      <link rel="stylesheet" href="{% static 'css/posts.css' %}">
+      <style>
+        .star-rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            font-size: 2rem;
+            line-height: 2rem;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            color: #ccc;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #ffc107;
+        }
+        .filled{
+          color: #ffc107;
+        }
+      </style>
+        
+      {% if posts_count != 0%}
+        {% for post in posts %}
+        <div class="card">
+          <div class="card-body">
+            <div class="timeline-body mt-4">
+              <div class="timeline-header">
+                <span class="userimage"><img src="{{MEDIA_URL}}{{post.author.profile_set.all.0.photo}}" alt=""></span>
+                <span class="username"><a href="javascript:;">{{post.author.profile_set.all.0.username}}</a> <small></small></span>
+                {% if  post.author == request.user %}
+                <span class="pull-right text-danger"><a role="button" onclick="confirmDeleteDish({{ post.id }})">Delete post <i class="bi bi-trash"></i></a></span>
+                {% endif %}
+              </div>
+              <div class="timeline-content">
+                <h3 class="h3">{{post.title}}</h3>
+                <p>
+                  <div class="star-rating">
+
+                    {% for i in "54321" %}
+                        <span class="stele{% if post.rating >= i|add:'0' %} filled{% endif %}">★</span>
+                    {% endfor %}
+                </div>                 
+                  {{post.content}}
+                </p>
+
+                {% if post.images.all %}
+                  {% for photo in post.images.all %}
+                    <img class="img-fluid rounded m-1" src="{{MEDIA_URL}}{{photo.image}}" alt="Post Image" onclick="openLightbox(this)" style="max-width: 150px; max-height: 100px; object-fit: cover;">
+                  {% endfor %}
+                {% endif %}
+              </div>
+              <style>
+                .gallery img:hover {
+                      transform: scale(1.1);
+                  }
+
+                  .lightbox {
+                      display: none;
+                      position: fixed;
+                      top: 0;
+                      left: 0;
+                      width: 100%;
+                      height: 100%;
+                      background: rgba(0, 0, 0, 0.8);
+                      justify-content: center;
+                      align-items: center;
+                      z-index: 9999;
+                  }
+
+                  .lightbox img {
+                      max-width: 90%;
+                      max-height: 90%;
+                      border-radius: 5px;
+                  }
+
+                  .close-btn-gallery {
+                      position: absolute;
+                      top: 20px;
+                      right: 30px;
+                      font-size: 30px;
+                      color: white;
+                      cursor: pointer;
+                  }
+                  .image-container {
+                      position: relative;
+                      display: inline-block;
+                      margin: 10px;
+                  }
+              </style>
+              <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+                <span class="close-btn-gallery" onclick="closeLightbox()">&times;</span>
+                <img id="lightbox-img">
+              </div>
+              <script>
+                function openLightbox(img) {
+                      document.getElementById("lightbox").style.display = "flex";
+                      document.getElementById("lightbox-img").src = img.src;
+                  }
+          
+                  function closeLightbox() {
+                      document.getElementById("lightbox").style.display = "none";
+                  }
+
+                  function confirmDeleteDish(postId) {
+                    Swal.fire({
+                        title: 'Post delete confirmation',
+                        text: "Are you sure that you want to delete this post?",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Yes, delete it!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            fetch(`/delete_post/${postId}/`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRFToken': getCSRFToken(),
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => {
+                                if (!response.ok) throw new Error('Network error');
+                                return response.json();
+                            })
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire('Deleted!', data.message || 'The post has been removed.', 'success')
+                                    .then(() => location.reload());
+                                } else {
+                                    throw new Error(data.error || 'Unknown error');
+                                }
+                            })
+                            .catch(error => {
+                                Swal.fire('Eroare!', error.message, 'error');
+                            });
+                        }
+                    });
+                }
+
+                function getCSRFToken() {
+                    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+                }
+              </script>
+              <div class="timeline-likes">
+                <div class="stats-right">
+                  <span class="fa-stack fa-fw stats-icon">
+                    </span>
+                    <span class="stats-text" id="like-count-{{post.id}}">{{post.like_count}} likes</span>
+                  <span class="fa-stack fa-fw stats-icon">
+                    </span>
+                    <span class="stats-text">{{post.comments.count}} comments</span>
+                </div>
+                <div class="stats">
+
+                </div>
+              </div>
+              <div class="timeline-footer">
+                {% if request.user == post.likes.user %}
+                <p>Liked</p>
+                {% endif %}
+                <a class="m-r-15 text-inverse-lighter like-btn" role="button" data-post-id="{{ post.id }}" id="like-btn-{{ post.id }}"><i class="bi {% if post.is_liked %}bi-heart-fill text-danger{%else%}bi-heart{%endif%}"></i> Like</a>
+                <a class="m-r-15 text-inverse-lighter ms-1" data-bs-toggle="collapse" href="#collapsePost{{post.id}}" role="button" aria-expanded="false" aria-controls="collapsePost{{post.id}}"><i class="bi bi-chat-dots-fill"></i> Comment</a> 
+              </div>
+              <div class="collapse" id="collapsePost{{post.id}}">
+                {% if post.comments.all %}
+                  {% for comment in post.comments.all %}
+                  <div class="timeline-comment-box" data-comment-id="{{ comment.id }}" id="comment-{{ comment.id }}" style="background-color: white;">
+                    <div class="user"><img src="{{ MEDIA_URL }}{{ comment.author.profile_set.all.0.photo }}" width="35" height="35" class="rounded-circle"></div>
+                      <div class="comment_elements d-flex flex-row justify-content-center align-items-center">
+                        <p class="flex-grow-1 ms-4">{{ comment.text }}</p>
+                        <p class="me-2">from - {{ comment.author.profile_set.all.0.username }} - </p>
+
+                        <p class="me-2">{{ comment.created_at }}</p>
+                        {% if comment.author == request.user %}
+                          <button class="btn btn-danger btn-sm delete-comment-btn mt-1" data-comment-id="{{ comment.id }}">Delete</button>
+                        {% endif %}
+                      </div>  
+                  </div>
+                  {% endfor %}
+                {% endif %}
+                <div class="timeline-comment-box">
+                  <div class="user"><img src="{{MEDIA_URL}}{{profile.photo}}"></div>
+                  <div class="input">
+                      <form method="POST" action="{% url 'add_comment' post.id %}" class="comment-form">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="text" class="form-control rounded-corner me-2" placeholder="Write a comment...">
+                            <span class="input-group-btn p-l-10 d-flex align-items-center justify-content-center">
+                              <button class="f-s-12 rounded-corner border border-0" type="submit"><i class="bi bi-send-plus-fill"></i></button>
+                            </span>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+        <script>
+          document.querySelectorAll('.delete-comment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+              const commentId = this.dataset.commentId;
+
+              Swal.fire({
+                title: 'Are you sure?',
+                text: "The comment will be detelet permanently!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Detele',
+                cancelButtonText: 'Dont'
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch(`/delete_comment/${commentId}/`, {
+                    method: 'POST',
+                    headers: {
+                      'X-CSRFToken': getCSRFToken(),
+                    }
+                  })
+                  .then(response => response.json())
+                  .then(data => {
+                    if (data.success) {
+                      const commentDiv = document.querySelector(`[data-comment-id="${commentId}"]`);
+                      commentDiv.remove();
+
+                      Swal.fire(
+                        'Deleted!',
+                        'The comment was removed.',
+                        'success'
+                      )
+                    } else {
+                      Swal.fire('Error', data.error || 'There was an error.', 'error');
+                    }
+                  });
+                }
+              });
+            });
+          });
+
+          function getCSRFToken() {
+            const cookieValue = document.cookie
+              .split('; ')
+              .find(row => row.startsWith('csrftoken='))
+              ?.split('=')[1];
+            return cookieValue;
+          }
+        </script>
+
+
+
+        <script>
+          document.addEventListener('DOMContentLoaded', function() {
+            document.body.addEventListener('click', function(event) {
+                const likeBtn = event.target.closest('.like-btn');
+                if (!likeBtn) return;
+
+                const postId = likeBtn.dataset.postId;
+                
+                likeBtn.disabled = true;
+                
+                fetch(`/like/${postId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin'
+                }).then(response => {
+                    if(!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const likeBtn = document.querySelector(`#like-btn-${postId}`);
+                    const likeCount = document.querySelector(`#like-count-${postId}`);
+                    const icon = likeBtn.querySelector('i');
+
+                     if (data.liked) {
+                        icon.className = 'bi bi-heart-fill text-danger';
+                    } else {
+                        icon.className = 'bi bi-heart';
+                    }
+                    likeCount.textContent = `${data.likes} likes`;
+                })
+                .catch(error => {
+                  console.error('Error: ', error);
+                })
+              });
+
+            document.querySelectorAll('.comment-form').forEach(form => {
+              form.addEventListener('submit', function(e) {
+                  e.preventDefault();
+                  const formData = new FormData(this);
+                  
+                  fetch(this.action, {
+                      method: 'POST',
+                      body: formData,
+                      headers: {
+                          'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                      }
+                  })
+                  .then(response => {
+                      if (response.redirected) {
+                          window.location.href = response.url;
+                      }
+                  });
+              });
+          });
+
+
+        });
+        </script>
+      {% endif %}
       </div>
     </div>
   </div>

@@ -816,7 +816,7 @@ document.addEventListener("change", function (e) {
                 <div class="card-body d-flex flex-column">
                   {% for archive in archives %}
                     <div class="archive-item">
-                      <a href="{{ archive.archive.url }}" download>{{ archive.archive.name|basename }}</a>
+                      Downlaod archive - <a href="{{ archive.archive.url }}" download>{{ archive.archive.name|basename }} <i class="bi bi-file-earmark-arrow-down"></i></a>
                       <p>Uploaded - {{ archive.uploaded_at }}</p>
                     </div>
                     {% empty %}
