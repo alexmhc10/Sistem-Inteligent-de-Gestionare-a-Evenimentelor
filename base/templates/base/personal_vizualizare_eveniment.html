@@ -552,7 +552,7 @@ document.addEventListener('DOMContentLoaded', function(){
                                 order.forEach(cat=>{
                                     if(g.menu[cat] && g.menu[cat].length){
                                         const label = cat.charAt(0).toUpperCase()+cat.slice(1);
-                                        menuPart += `<br/><small class='text-muted'><em>${label}:</em> ${g.menu[cat].join(', ')}</small>`;
+                                        menuPart += `<br/><small class='text-dark'><em>${label}:</em> ${g.menu[cat].join(', ')}</small>`;
                                     }
                                 });
                             }
