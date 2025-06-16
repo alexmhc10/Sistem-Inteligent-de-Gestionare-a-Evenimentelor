@@ -1,113 +1,386 @@
 {% extends 'main.html' %}
 
 {% block content %}
-    <style>
-        .location-form-modern {
-            max-width: 600px;
-            margin: 2rem auto;
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 8px 32px rgba(60,60,60,0.12);
-            padding: 2.5rem 2rem 2rem 2rem;
-        }
-        .location-form-modern .form-label {
-            font-weight: 600;
-            margin-bottom: 0.3rem;
-        }
-        .location-form-modern .form-control, .location-form-modern select, .location-form-modern textarea {
-            border-radius: 8px;
-            font-size: 1.08rem;
-            padding: 0.8rem 1rem;
-            margin-bottom: 1.2rem;
-            border: 1.5px solid #e1e1e1;
-            background: #f9f9f9;
-        }
-        .location-form-modern .form-control:focus, .location-form-modern select:focus, .location-form-modern textarea:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 0 2px rgba(0,123,255,0.08);
-        }
-        .location-form-modern .btn-primary {
-            font-size: 1.15rem;
-            padding: 0.7rem 2.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 0 2px 8px rgba(0,123,255,0.08);
-        }
-        .location-form-modern .form-text {
-            font-size: 0.95rem;
-        }
-        .location-form-modern .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .location-form-modern .icon {
-            color: #007bff;
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
-        .location-form-modern .form-title {
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-        .location-form-modern .form-desc {
-            color: #666;
-            margin-bottom: 2rem;
-        }
-    </style>
+<style>
+    .location-form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+        overflow: hidden;
+    }
 
-    {% if show_success_modal %}
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered">
+    .form-header {
+        background: linear-gradient(135deg, #D4AF37, #C5B28A);
+        padding: 2.5rem;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .form-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at top right, rgba(255,255,255,0.2), transparent);
+        pointer-events: none;
+    }
+
+    .form-header h2 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-header p {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .form-body {
+        padding: 2.5rem;
+    }
+
+    .form_group {
+        margin-bottom: 1.8rem;
+    }
+
+    .form_group label {
+        display: block;
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 0.8rem;
+        font-size: 1rem;
+    }
+
+    .form_group input,
+    .form_group textarea,
+    .form_group select {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #e1e1e1;
+        border-radius: 12px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #fff;
+    }
+
+    .form_group input:focus,
+    .form_group textarea:focus,
+    .form_group select:focus {
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        outline: none;
+    }
+
+    .form_group textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .form_group select[multiple] {
+        min-height: 150px;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        width: 100%;
+        min-height: 150px;
+        border: 2px dashed #D4AF37;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        padding: 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        background: rgba(212, 175, 55, 0.02);
+    }
+
+    .file-input-wrapper.drag-over {
+        background: rgba(212, 175, 55, 0.1);
+        border-color: #D4AF37;
+        transform: scale(1.01);
+    }
+
+    .file-input-wrapper:hover {
+        background: rgba(212, 175, 55, 0.05);
+        border-color: #C5B28A;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .file-input-trigger {
+        color: #D4AF37;
+        font-weight: 600;
+        pointer-events: none;
+    }
+
+    .file-input-trigger i {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        color: #D4AF37;
+    }
+
+    .file-name {
+        margin-top: 1rem;
+        color: #2c3e50;
+        font-size: 0.9rem;
+        word-break: break-all;
+    }
+
+    .submit-btn {
+        background: linear-gradient(135deg, #D4AF37, #C5B28A);
+        color: white;
+        width: 100%;
+        padding: 1.2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .submit-btn:active {
+        transform: translateY(1px);
+    }
+
+    .submit-btn i {
+        font-size: 1.4rem;
+    }
+
+    .submit-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .submit-btn:hover::before {
+        left: 100%;
+    }
+
+    .text-muted {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .location-form-container {
+            margin: 1rem;
+            border-radius: 15px;
+        }
+
+        .form-header {
+            padding: 2rem;
+        }
+
+        .form-header h2 {
+            font-size: 2rem;
+        }
+
+        .form-header p {
+            font-size: 1rem;
+        }
+
+        .form-body {
+            padding: 1.5rem;
+        }
+
+        .submit-btn {
+            font-size: 1.1rem;
+            padding: 1rem;
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .location-form-container {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .backdrop-blur {
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+    }
+</style>
+
+{% if show_success_modal %}
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="successModalLabel">Success</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <p>The location and staff account have been successfully created!</p>
-            <p><strong>Staff username:</strong> {{ staff_username }}<br>
-            <strong>Password:</strong> {{ staff_password }}</p>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-          </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>The location and staff account have been successfully created!</p>
+                <p><strong>Staff username:</strong> {{ staff_username }}<br>
+                <strong>Password:</strong> {{ staff_password }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+            </div>
         </div>
-      </div>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         var successModal = new bootstrap.Modal(document.getElementById('successModal'));
         successModal.show();
-      });
-    </script>
-    {% endif %}
+    });
+</script>
+{% endif %}
 
-    <div class="location-form-modern">
-        <div class="text-center">
-            <span class="icon"><i class="fas fa-map-marker-alt"></i></span>
-            <div class="form-title">Add New Location</div>
-            <div class="form-desc">Fill in the details below to add a new location and automatically create a staff account.</div>
-        </div>
+<div class="location-form-container backdrop-blur">
+    <div class="form-header">
+        <h2><i class="fas fa-map-marker-alt"></i> Add New Location</h2>
+        <p>Create a new venue and automatically set up a staff account</p>
+    </div>
+    <div class="form-body">
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {% for field in form %}
-                <div class="form-group">
-                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}{% if field.field.required %} <span class="text-danger">*</span>{% endif %}</label>
-                    {{ field }}
+                <div class="form_group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}
+                            <span class="text-danger">*</span>
+                        {% endif %}
+                    </label>
+                    {% if field.field.widget.input_type == 'file' %}
+                        <div class="file-input-wrapper" id="dropZone">
+                            <div class="file-input-trigger">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <div>Drag and drop your files here or click to browse</div>
+                                <div class="text-muted">Supported formats: JPG, PNG, GIF</div>
+                            </div>
+                            {{ field }}
+                            <div class="file-name" id="fileName"></div>
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
                     {% if field.help_text %}
-                        <div class="form-text">{{ field.help_text }}</div>
+                        <div class="text-muted">{{ field.help_text }}</div>
                     {% endif %}
                     {% for error in field.errors %}
-                        <div class="text-danger small">{{ error }}</div>
+                        <div class="text-danger">{{ error }}</div>
                     {% endfor %}
                 </div>
             {% endfor %}
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-2"></i>
-                    Add New Location
-                </button>
-            </div>
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-plus-circle"></i>
+                Create Location
+            </button>
         </form>
     </div>
-{% endblock %}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = dropZone.querySelector('input[type="file"]');
+    const fileName = document.getElementById('fileName');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight drop zone when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    // Handle file input change
+    fileInput.addEventListener('change', handleFiles, false);
+
+    function preventDefaults (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight(e) {
+        dropZone.classList.add('drag-over');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles({target: {files: files}});
+    }
+
+    function handleFiles(e) {
+        const files = e.target.files;
+        if (files.length > 0) {
+            // Update the file input value
+            fileInput.files = files;
+            
+            // Show file name
+            const fileNames = Array.from(files).map(file => file.name).join(', ');
+            fileName.textContent = `Selected file${files.length > 1 ? 's' : ''}: ${fileNames}`;
+            
+            // Trigger change event
+            const event = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(event);
+        }
+    }
+});
+</script>
+{% endblock %} 
