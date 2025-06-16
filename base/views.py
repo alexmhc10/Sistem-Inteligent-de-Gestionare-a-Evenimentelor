@@ -2525,6 +2525,19 @@ def save_table_layout(request):
                 radius=el.get('radius', 0) or 0
             )
 
+        # NOTIFICARE pentru organizator
+        from .models import EventNotification
+        staff_user = request.user
+        organizer = location.owner  # presupunem că owner este organizatorul
+        if organizer and organizer != staff_user:
+            mesaj = f"{staff_user.username} a modificat layout-ul pentru locația {location.name}."
+            EventNotification.objects.create(
+                sender=staff_user,
+                receiver=organizer,
+                event=None,
+                message=mesaj
+            )
+
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
@@ -3620,6 +3633,19 @@ def save_table_layout(request):
                 width=el.get('width', 0) or 0,
                 height=el.get('height', 0) or 0,
                 radius=el.get('radius', 0) or 0
+            )
+
+        # NOTIFICARE pentru organizator
+        from .models import EventNotification
+        staff_user = request.user
+        organizer = location.owner  # presupunem că owner este organizatorul
+        if organizer and organizer != staff_user:
+            mesaj = f"{staff_user.username} a modificat layout-ul pentru locația {location.name}."
+            EventNotification.objects.create(
+                sender=staff_user,
+                receiver=organizer,
+                event=None,
+                message=mesaj
             )
 
         return JsonResponse({'success': True})
