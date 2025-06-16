@@ -70,7 +70,7 @@ class Profile(models.Model):
     password = models.CharField(max_length=128) 
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
-    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True, default="poze_invitati/male.jpg")
+    photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True, default="poze_invitati/male.png")
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
     age = models.IntegerField(default=20)
@@ -161,6 +161,8 @@ class Allergen(models.Model):
     def __str__(self):
         return self.name  
 
+from .constants import REGION_CHOICES
+
 
 class Guests(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, related_name='guest_profile', null=True)
@@ -168,48 +170,7 @@ class Guests(models.Model):
         ('M', 'Masculin'),
         ('F', 'Feminin')
         ]
-    REGION_CHOICES = [
-        ('no_region', 'No region'),
-        ('italian', 'Italian'),
-        ('french', 'French'),
-        ('mexican', 'Mexican'),
-        ('indian', 'Indian'),
-        ('chinese', 'Chinese'),
-        ('japanese', 'Japanese'),
-        ('american', 'American'),
-        ('mediterranean', 'Mediterranean'),
-        ('romanian', 'Romanian'),
-        ('spanish', 'Spanish'),
-        ('thai', 'Thai'),
-        ('greek', 'Greek'),
-        ('turkish', 'Turkish'),
-        ('german', 'German'),
-        ('korean', 'Korean'),
-        ('vietnamese', 'Vietnamese'),
-        ('lebanese', 'Lebanese'),
-        ('brazilian', 'Brazilian'),
-        ('ethiopian', 'Ethiopian'),
-        ('russian', 'Russian'),
-        ('moroccan', 'Moroccan'),
-        ('caribbean', 'Caribbean'),
-        ('african', 'African'),
-        ('british', 'British'),
-        ('australian', 'Australian'),
-        ('persian', 'Persian'),
-        ('polish', 'Polish'),
-        ('portuguese', 'Portuguese'),
-        ('cuban', 'Cuban'),
-        ('jamaican', 'Jamaican'),
-        ('swedish', 'Swedish'),
-        ('egyptian', 'Egyptian'),
-        ('indonesian', 'Indonesian'),
-        ('malaysian', 'Malaysian'),
-        ('pakistani', 'Pakistani'),
-        ('syrian', 'Syrian'),
-        ('argentinian', 'Argentinian'),
-        ('peruvian', 'Peruvian'),
-        ('filipino', 'Filipino'),
-    ]
+    
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
@@ -228,48 +189,7 @@ class Menu(models.Model):
         ('dessert', 'Desert'),
         ('drink', 'Drink'),
     ]
-    REGION_CHOICES = [
-        ('no_region', 'No region'),
-        ('italian', 'Italian'),
-        ('french', 'French'),
-        ('mexican', 'Mexican'),
-        ('indian', 'Indian'),
-        ('chinese', 'Chinese'),
-        ('japanese', 'Japanese'),
-        ('american', 'American'),
-        ('mediterranean', 'Mediterranean'),
-        ('romanian', 'Romanian'),
-        ('spanish', 'Spanish'),
-        ('thai', 'Thai'),
-        ('greek', 'Greek'),
-        ('turkish', 'Turkish'),
-        ('german', 'German'),
-        ('korean', 'Korean'),
-        ('vietnamese', 'Vietnamese'),
-        ('lebanese', 'Lebanese'),
-        ('brazilian', 'Brazilian'),
-        ('ethiopian', 'Ethiopian'),
-        ('russian', 'Russian'),
-        ('moroccan', 'Moroccan'),
-        ('caribbean', 'Caribbean'),
-        ('african', 'African'),
-        ('british', 'British'),
-        ('australian', 'Australian'),
-        ('persian', 'Persian'),
-        ('polish', 'Polish'),
-        ('portuguese', 'Portuguese'),
-        ('cuban', 'Cuban'),
-        ('jamaican', 'Jamaican'),
-        ('swedish', 'Swedish'),
-        ('egyptian', 'Egyptian'),
-        ('indonesian', 'Indonesian'),
-        ('malaysian', 'Malaysian'),
-        ('pakistani', 'Pakistani'),
-        ('syrian', 'Syrian'),
-        ('argentinian', 'Argentinian'),
-        ('peruvian', 'Peruvian'),
-        ('filipino', 'Filipino'),
-    ]
+    
     at_location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True, blank=True)
     item_name = models.CharField(max_length=80)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
@@ -330,7 +250,7 @@ class Event(models.Model):
 
 
 class GuestMenu(models.Model):
-    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest")
+    guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest", default=None)
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event")
     location_menu = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location_menu", default=None)
     menu_choices = models.ManyToManyField(Menu, blank=True, related_name="menu_choices")

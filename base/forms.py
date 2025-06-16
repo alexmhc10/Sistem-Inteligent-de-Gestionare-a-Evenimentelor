@@ -352,7 +352,7 @@ class ComprehensiveGuestForm(forms.ModelForm):
     
     # === PREFERINȚE CULINARE (IMPORTANTE PENTRU ALGORITM) ===
     cuisine_preference = forms.ChoiceField(
-        choices=Guests.REGION_CHOICES,
+        choices=REGION_CHOICES,
         required=False,
         label="Preferințe culinare",
         help_text="Algoritmul va grupa invitații cu preferințe similare",

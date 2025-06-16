@@ -2106,6 +2106,22 @@ def personal_eveniment_home(request):
     return render(request, 'base/personal_eveniment_home.html', context)
 
 
+def event_list_json(request):
+    location = Location.objects.get(user_account=request.user)
+    events = Event.objects.filter(location=location)
+    event_data = []
+    print("Found events:", events.count())
+
+    for event in events:
+        event_data.append({
+            'title': event.event_name,
+            'start': format(event.event_date, 'Y-m-d'),
+            'url': f'/personal_vizualizare_eveniment/{event.id}',
+        })
+    print("Event data:", event_data)
+    return JsonResponse(event_data, safe=False)
+
+
 TableFormSet = modelformset_factory(Table, form=TableForm, extra=1, can_delete=True)
 
 @login_required(login_url='/login')
@@ -2294,16 +2310,19 @@ class UploadArchiveAPI(View):
         return JsonResponse({"success": "Arhiva a fost încărcată cu succes!"})
 
 
+from .models import REGION_CHOICES
 @login_required(login_url='/login')
 @user_is_staff
 def personal_menu(request):
     profile = Profile.objects.get(user=request.user)
     menu_items = Menu.objects.all()
     allergens = Allergen.objects.all()
+    region_choices = REGION_CHOICES
     context = {
         'profile':profile,
         'menu_items': menu_items,
-        'allergens': allergens
+        'allergens': allergens,
+        'region_choices': region_choices
     }
     return render(request, 'base/personal_menu.html', context)
 
@@ -3189,6 +3208,8 @@ def send_notification(request):
     return redirect('personal_eveniment_home')
 
 
+
+
 @login_required(login_url='/login')
 def get_notifications(request):
     profil = Profile.objects.get(user = request.user)
@@ -3518,18 +3539,40 @@ def table_details_api(request, table_id):
 
     arrangements = TableArrangement.objects.filter(table=table, event=event).order_by('seat_number')
     guests = []
+    menu_items = []
+
     for arrangement in arrangements:
         guest = arrangement.guest
+        user_obj = guest.profile.user
+        # Build menu grouped by category
+        menu_by_cat = {'appetizer': [], 'main': [], 'dessert': [], 'drink': []}
+        try:
+            guest_menu = GuestMenu.objects.get(guest=user_obj, event=event)
+            for item in guest_menu.menu_choices.all():
+                menu_by_cat.setdefault(item.category, []).append(item.item_name)
+        except GuestMenu.DoesNotExist:
+            pass
+
+        allergens_list = list(guest.allergens.values_list('name', flat=True))
+        is_vegan = getattr(guest, 'vegan', False)
+
         profile = getattr(guest, 'profile', None)
         name = None
+        photo = None
         if profile:
             first_name = getattr(profile, 'first_name', '')
             last_name = getattr(profile, 'last_name', '')
             name = f"{first_name} {last_name}".strip() or getattr(profile, 'username', '')
+            photo = profile.photo.url if profile.photo else None
+
         guests.append({
             'name': name or str(guest),
             'group': ', '.join([g.name for g in getattr(guest, 'table_groups', []).all()]) if hasattr(guest, 'table_groups') else None,
             'status': arrangement.status,
+            'photo': photo,
+            'menu': menu_by_cat,
+            'allergens': allergens_list,
+            'is_vegan': is_vegan,
         })
     return JsonResponse({'guests': guests})
 

@@ -44,53 +44,53 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </form>
       </div> -->
       
-      <div class="col-lg-12">
-        <div class="card card-hover">
-          <div class="card-body">
-            <h1 class="card-title d-flex align-items-center">
-              Welcome this is your homepage, down below you can acces all the events organised at your location!
-            </h1>
-          </div>
-        </div>
-      </div>
-      <hr>
-      <div class="row">
-          {% if event %}
-
-          <div class="col-lg-5 col-sm-6">
-              <div class="card card-hover">
-                  <div class="card-body">
-                      <h1 class="card-title d-flex align-items-center gap-2">
-                        Next upcoming event!
-                      </h1>
-                      <p>Check out event details by accesing the event</p>
-                  </div>
-            </div>
-          </div>
-          <div class="col-lg-4 col-sm-6">
+          <div class="col-lg-auto">
             <div class="card card-hover">
               <div class="card-body">
-                <h1 class="card-title d-flex align-items-center gap-2">Time left until event start!</h1>
-                {% include 'timer.html' %}
+                <h1 class="card-title d-flex align-items-center">
+                  Welcome this is your homepage, down below you can acces all the events organised at your location!
+                </h1>
               </div>
             </div>
           </div>
-          {% else %}
-          <div class="col">
-            <div class="card card-hover">
-              <div class="card-body p-2">
-                <h3 class="m-0 ms-2">- No upcoming event for now! -</h3>
-              </div>
-            </div>
-          </div>
-          {% endif %}
-        </div>             
+          <hr>
+          <div class="row">
+            <div class="col-lg-8">
+               <div class="row">
+              {% if event %}
 
-                
-        {% if event %}
+              <div class="col-lg-6 col-sm-6">
+                  <div class="card card-hover">
+                      <div class="card-body">
+                          <h1 class="card-title d-flex align-items-center gap-2">
+                            Next upcoming event!
+                          </h1>
+                          <p>Check out event details by accesing the event</p>
+                      </div>
+                </div>
+              </div>
+              <div class="col-lg-6 col-sm-6">
+                <div class="card card-hover">
+                  <div class="card-body">
+                    <h1 class="card-title d-flex align-items-center gap-2">Time left until event start!</h1>
+                    {% include 'timer.html' %}
+                  </div>
+                </div>
+              </div>
+              {% else %}
+              <div class="col">
+                <div class="card card-hover">
+                  <div class="card-body p-2">
+                    <h3 class="m-0 ms-2">- No upcoming event for now! -</h3>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+          </div> 
+          {% if event %}
           <div id="futureEventsSection">
               <div class="row">
-                  <div class="col-lg-4">
+                  <div class="col-lg-6">
                     <div class="card overflow-hidden hover-img card-hover">
                       <div class="position-relative">
                         <a href="{% url 'personal_vizualizare_eveniment' event.id %}">
@@ -119,6 +119,32 @@ data-sidebar-position="fixed" data-header-position="fixed">
               </div>
           </div>
           {% endif %}
+            </div>
+            <div class="col-lg-4">
+            <div id='calendar'></div>
+          </div>
+          </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+        
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    events: '/calendar/events/',
+                    eventClick: function(info) {
+                        info.jsEvent.preventDefault();
+                        if (info.event.url) {
+                            window.location.href = info.event.url;
+                        }
+                    }
+                });
+        
+                calendar.render();
+            });
+        </script>
+        
+                
+      
 
           {% if remaining_events %}
           <div class="col-lg-12">
@@ -224,4 +250,5 @@ data-sidebar-position="fixed" data-header-position="fixed">
     </div>
   </div>
 </div>
+
 {% endblock %}

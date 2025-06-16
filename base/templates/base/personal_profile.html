@@ -294,38 +294,7 @@
 
             </div>
 
-            <h2>Configure your table layout at: {{ location_data.name }}</h2>
-
-            <form method="post" id="table-form">
-              {% csrf_token %}
-              {{ formset.management_form }}
-
-              <div id="table-list">
-                {% for form in formset %}
-                  <div class="form-row border p-3 mb-3 rounded bg-light">
-                    {% for field in form.visible_fields %}
-                      <div class="row mb-2">
-                        <div class="col-md-4 fw-bold">
-                          {{ field.label_tag }}
-                        </div>
-                        <div class="col-md-8">
-                          {{ field }}
-                          {% if field.errors %}
-                            <div class="text-danger small">{{ field.errors }}</div>
-                          {% endif %}
-                        </div>
-                      </div>
-                    {% endfor %}
-                    <div class="text-end">
-                      <button type="button" class="btn btn-danger remove-row">Șterge masa</button>
-                    </div>
-                  </div>
-                {% endfor %}
-              </div>
-
-              <button type="button" class="btn btn-secondary" id="add-row">Adaugă masă</button>
-              <button type="submit" class="btn btn-primary" name="form_type" value="formTable">Salvează configurația</button>
-            </form>
+           
 
 
             <script>

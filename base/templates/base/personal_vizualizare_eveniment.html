@@ -413,7 +413,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <div class="col-12">
                     <div class="card glass-effect">
                         <div class="card-body">
-                            <h3 class="text-center mb-3">Room Layout</h3>
+                            <h3 class="text-center mb-3">Room Layout - click on the table to see the guests</h3>
                             <div id="layout-container" style="width:100%;height:600px;border:1px solid #ccc;background:#f8f9fa;border-radius:15px;"></div>
                         </div>
                     </div>
@@ -426,13 +426,61 @@ data-sidebar-position="fixed" data-header-position="fixed">
 <!-- Layout Visualization -->
 
 
-<!-- Tooltip for guests -->
-<div id="tableTooltip" style="position:absolute;display:none;z-index:3000;min-width:200px;background:#fff;border:1px solid #ddd;border-radius:8px;box-shadow:0 2px 12px #0002;padding:10px;font-size:0.9rem;"></div>
+<!-- Panel for table details -->
+<style>
+    #tablePanel {
+        position: fixed;
+        right: 20px;
+        top: 100px;
+        z-index: 4000;
+        min-width: 260px;
+        max-width: 500px;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 16px #0003;
+        display: none;
+    }
+    #tablePanelHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px 4px 12px;
+        border-bottom: 1px solid #eee;
+    }
+    #tablePanelHeader h6 {
+        margin: 0;
+        font-size: 1rem;
+    }
+    #tablePanelContent {
+        padding: 10px 14px 14px 14px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+</style>
+
+<div id="tablePanel">
+    <div id="tablePanelHeader">
+        <h6 class="mb-0" id="tablePanelTitle">Table</h6>
+        <button type="button" class="btn-close" id="tablePanelClose" aria-label="Close"></button>
+    </div>
+    <div id="tablePanelContent"></div>
+</div>
+
+<!-- Tooltip kept for future fallback but hidden -->
+<div id="tableTooltip" style="position:absolute;display:none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/konva@9.2.2/konva.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    const tooltip = document.getElementById('tableTooltip');
+    const tooltip = document.getElementById('tableTooltip'); // legacy, hidden
+    const panel = document.getElementById('tablePanel');
+    const panelTitle = document.getElementById('tablePanelTitle');
+    const panelContent = document.getElementById('tablePanelContent');
+    const panelCloseBtn = document.getElementById('tablePanelClose');
+
+    panelCloseBtn.addEventListener('click', ()=>{ panel.style.display='none'; });
+
     const container = document.getElementById('layout-container');
     let width = container.offsetWidth;
     const height = 600;
@@ -475,34 +523,74 @@ document.addEventListener('DOMContentLoaded', function(){
         const labelW = isRound?radius*2:rectW;
         const labelX = isRound?-radius:0;
         const labelY = isRound?-12: (rectH/2-12);
-        const text = new Konva.Text({text:t.table_number,fontSize:20,fontStyle:'bold',fill:'#fff',width:labelW,align:'center',x:labelX,y:labelY});
+        const text = new Konva.Text({
+            text: t.table_number,
+            fontSize: 20,
+            fontStyle: 'bold',
+            fill: '#fff',
+            stroke: '#000',
+            strokeWidth: 0.5,
+            width: labelW,
+            align: 'center',
+            x: labelX,
+            y: labelY
+        });
         group.add(shape); group.add(text);
         group._tableId = t.id;
-        group.on('mouseenter', (e)=>{
+        // OPEN PANEL ON CLICK
+        group.on('click',()=>{
             fetch(`/api/table-details/${t.id}/?event_id={{ event.id }}`)
                 .then(resp=>resp.json()).then(data=>{
-                    let html = `<b>Table ${t.table_number}</b><br/>Guests:<br/>`;
+                    let html = '';
                     if(data.guests && data.guests.length){
-                        html += '<ul style="padding-left:16px;margin:4px 0">';
-                        data.guests.forEach((g)=>{html+=`<li>${g.name}</li>`});
+                        html += '<ul class="list-group list-group-flush">';
+                        data.guests.forEach((g)=>{
+                            // Build menu by categories
+                            let menuPart = '';
+                            if(g.menu){
+                                const order = ['appetizer','main','dessert','drink'];
+                                order.forEach(cat=>{
+                                    if(g.menu[cat] && g.menu[cat].length){
+                                        const label = cat.charAt(0).toUpperCase()+cat.slice(1);
+                                        menuPart += `<br/><small class='text-muted'><em>${label}:</em> ${g.menu[cat].join(', ')}</small>`;
+                                    }
+                                });
+                            }
+
+                            // Allergens & vegan
+                            let dietary = '';
+                            if(g.allergens && g.allergens.length){
+                                dietary += `<br/><small class='text-danger'>Allergens: ${g.allergens.join(', ')}</small>`;
+                            }
+                            dietary += `<br/><small class='${g.is_vegan ? 'text-success' : 'text-secondary'}'>${g.is_vegan ? 'Vegan' : 'Non-vegan'}</small>`;
+
+                            const photoTag = g.photo ? `<img src="${g.photo}" class="rounded-circle me-2" width="35" height="35" alt="${g.name}">` : '';
+                            html+=`<li class="list-group-item d-flex align-items-start">${photoTag}<div><strong>${g.name}</strong>${menuPart}${dietary}</div></li>`;
+                        });
                         html+='</ul>';
-                    }else{ html+='No guests assigned'; }
-                    tooltip.innerHTML = html;
-                    tooltip.style.display='block';
+                    }else{ html+='<p class="mb-0">No guests assigned</p>'; }
+                    panelTitle.textContent = `Table ${t.table_number}`;
+                    panelContent.innerHTML = html;
+                    panel.style.display = 'block';
                 });
         });
-        group.on('mousemove',(e)=>{
-            tooltip.style.left = (e.evt.clientX+15)+'px';
-            tooltip.style.top = (e.evt.clientY+15)+'px';
-        });
-        group.on('mouseleave',()=>{ tooltip.style.display='none';});
         layer.add(group);
     }
 
     tablesRaw.forEach(drawTable);
 
     // special elements (same defs as before)
-    const defs={entrance:{shape:'rect',color:'green',width:60,height:20},dancefloor:{shape:'rect',color:'#b39ddb',width:200,height:120,opacity:0.3},dj:{shape:'circle',color:'#ffb300',radius:25},restrooms:{shape:'rect',color:'#90caf9',width:50,height:50},bar:{shape:'rect',color:'#ffe082',width:150,height:30},kitchen:{shape:'rect',color:'#616161',width:80,height:60},emergency:{shape:'rect',color:'red',width:60,height:20},photobooth:{shape:'circle',color:'#f06292',radius:30},kids:{shape:'rect',color:'#fff59d',width:70,height:50}};
+    const defs={
+        entrance:{shape:'rect',color:'green',width:60,height:20,label:'Entrance'},
+        dancefloor:{shape:'rect',color:'#b39ddb',width:200,height:120,opacity:0.3,label:'Dance Floor'},
+        dj:{shape:'circle',color:'#ffb300',radius:25,label:'DJ/Band'},
+        restrooms:{shape:'rect',color:'#90caf9',width:50,height:50,label:'Restrooms'},
+        bar:{shape:'rect',color:'#ffe082',width:150,height:30,label:'Bar'},
+        kitchen:{shape:'rect',color:'#616161',width:80,height:60,label:'Kitchen'},
+        emergency:{shape:'rect',color:'red',width:60,height:20,label:'Emergency Exit'},
+        photobooth:{shape:'circle',color:'#f06292',radius:30,label:'Photo Booth'},
+        kids:{shape:'rect',color:'#fff59d',width:70,height:50,label:'Kids Area'}
+    };
     specialRaw.forEach(function(el){
         const def = defs[el.type]||{shape:'rect',color:'#ccc',width:40,height:40};
         const grp = new Konva.Group({x:el.position_x/100*width,y:el.position_y/100*height,rotation:el.rotation||0});
@@ -511,7 +599,35 @@ document.addEventListener('DOMContentLoaded', function(){
             shape=new Konva.Rect({width:el.width||def.width,height:el.height||def.height,fill:def.color,cornerRadius:8});
             if(def.opacity) shape.opacity(def.opacity);
         }else{const r=el.radius||def.radius;shape=new Konva.Circle({radius:r,fill:def.color}); if(def.opacity) shape.opacity(def.opacity);} 
-        grp.add(shape); layer.add(grp);
+
+        // Add descriptive label under each special element
+        const labelText = el.label || (def && def.label) || el.type;
+        let labelX, labelY, labelWidth;
+        if(def.shape === 'rect'){
+            const w = el.width || def.width;
+            const h = el.height || def.height;
+            labelX = 0;
+            labelY = h + 4;
+            labelWidth = w;
+        }else{
+            const r = el.radius || def.radius;
+            labelX = -r;
+            labelY = r + 4;
+            labelWidth = r*2;
+        }
+        const label = new Konva.Text({
+            text: labelText,
+            fontSize: 14,
+            fill:'#000',
+            width: labelWidth,
+            align:'center',
+            x: labelX,
+            y: labelY
+        });
+
+        grp.add(shape);
+        grp.add(label);
+        layer.add(grp);
     });
 
     layer.draw();
