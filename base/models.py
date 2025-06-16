@@ -99,6 +99,39 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    @property
+    def is_complete(self):
+        """Returnează True dacă profilul conţine toate informaţiile considerate obligatorii."""
+        required_fields = [
+            self.first_name,
+            self.last_name,
+            self.age,
+            self.photo,
+            self.location,
+            self.street,
+            self.zip_code,
+        ]
+        # Dacă unul dintre câmpuri este None/şir gol → incomplet
+        return all(required_fields)
+
+    def get_missing_fields(self):
+        """Returnează o listă cu numele câmpurilor obligatorii care nu sunt completate."""
+        field_mapping = {
+            'first_name': 'first name',
+            'last_name': 'last name',
+            'age': 'age',
+            'photo': 'profile picture',
+            'location': 'location',
+            'street': 'street',
+            'zip_code': 'zip code',
+        }
+        missing = []
+        for field, label in field_mapping.items():
+            val = getattr(self, field)
+            if not val:
+                missing.append(label)
+        return missing
+
 
 class Notification(models.Model):
     ACTION_TYPES = [
@@ -180,6 +213,19 @@ class Guests(models.Model):
     state = models.BooleanField(default=False)
     def __str__(self):
         return self.profile.username
+
+    def get_missing_fields(self):
+        field_mapping = {
+            'age': 'age',
+            'gender': 'gender',
+            'cuisine_preference': 'cuisine preference',
+        }
+        missing = []
+        for field, label in field_mapping.items():
+            val = getattr(self, field)
+            if not val:
+                missing.append(label)
+        return missing
 
 
 class Menu(models.Model):

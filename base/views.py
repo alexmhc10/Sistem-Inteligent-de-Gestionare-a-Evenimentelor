@@ -3316,20 +3316,52 @@ def send_notification(request):
                 )
         receiver = event.organized_by
         EventNotification.objects.create(sender=sender, receiver=receiver, event=event ,message=message)
-    return redirect('personal_eveniment_home')
-
-
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 @login_required(login_url='/login')
 def get_notifications(request):
     profil = Profile.objects.get(user = request.user)
     user_type = profil.user_type
+    
+    # --- Generare automată notificări pentru profil incomplet (doar pentru invitaţi) ---
+    if user_type == "guest" and not profil.is_complete:
+        from datetime import timedelta
+        today = timezone.now().date()
+        upcoming_events = Event.objects.filter(
+            rsvps__guest=request.user,
+            rsvps__response="Accepted",
+        ).distinct()
+
+        for ev in upcoming_events:
+            if not EventNotification.objects.filter(
+                receiver=request.user,
+                event=ev,
+                message__icontains="complete your profile",
+                timestamp__date=today
+            ).exists():
+                msg = f"Complete your profile before the event '{ev.event_name}' ({ev.event_date})."
+
+                guest_obj = request.user.profile_set.first().guest_profile
+                guest_missing = guest_obj.get_missing_fields() if guest_obj else []
+                missing_fields = profil.get_missing_fields() + guest_missing
+
+                if missing_fields:
+                    nice_fields = ", ".join(missing_fields)
+                    msg = f"Missing info: {nice_fields}. Complete your profile before '{ev.event_name}' on {ev.event_date}."
+
+                    EventNotification.objects.create(
+                        sender=ev.location.user_account or ev.organized_by,
+                        receiver=request.user,
+                        event=ev,
+                        message=msg
+                    )
+
     if profil.user_type == "guest":
         rsvp = RSVP.objects.filter(guest = request.user, response = "Accepted").values_list('event', flat=True)
         notifications = EventNotification.objects.filter(event__in=rsvp, receiver=request.user, is_read="False").order_by('-timestamp')
     elif profil.user_type == "staff":
-        events = Event.objects.filter(location__owner = request.user)
+        events = Event.objects.filter(location__user_account = request.user)
         notifications = EventNotification.objects.filter(Q(receiver=request.user), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')
         print(notifications)
         for n in notifications:
@@ -3342,6 +3374,7 @@ def get_notifications(request):
             "timestamp": n.timestamp.strftime("%Y-%m-%d %H:%M"),
             "event_id":n.event.id if n.event else None,
             "user_type": user_type,
+            "redirect": "/guest_profile" if "Missing info" in n.message and user_type=="guest" else None,
         }
         for n in notifications
     ]

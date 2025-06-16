@@ -49,16 +49,17 @@
                     if (data.notifications && data.notifications.length > 0) {
                         data.notifications.forEach(notification => {
                             const listItem = document.createElement("li");
-                            const eventId = notification.event_id;
-
-                            let eventUrl;
-                            if( notification.user_type === "staff" ){
-                                eventUrl = `/personal_vizualizare_eveniment/${eventId}`;
-                            }else if( notification.user_type === "guest" ){
-                                eventUrl = `/guest_event_view/${eventId}`;
+                            let targetUrl = notification.redirect;
+                            if(!targetUrl){
+                                const eventId = notification.event_id;
+                                if( notification.user_type === "staff" ){
+                                    targetUrl = `/personal_vizualizare_eveniment/${eventId}`;
+                                }else if( notification.user_type === "guest" ){
+                                    targetUrl = `/guest_event_view/${eventId}`;
+                                }
                             }
 
-                            listItem.innerHTML = `<a class="dropdown-item" href="${eventUrl}">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
+                            listItem.innerHTML = `<a class="dropdown-item" href="${targetUrl}">${notification.message} <small class="text-muted">(${notification.timestamp})</small></a>`;
                             notificationList.appendChild(listItem);
                         });
                         notificationBadge.classList.remove("d-none");
