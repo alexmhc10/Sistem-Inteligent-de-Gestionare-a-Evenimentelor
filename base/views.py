@@ -868,24 +868,35 @@ def admin_events(request):
             detailed_incompleted_events.append(item)
 
     if request.method == 'POST':
+        if request.POST.get('form_delete') == 'form_delete':
+            event_id = request.POST.get('event_id')
+            Event.objects.filter(id=event_id).delete()
+            return redirect('admin-events')
+
         organizer = request.POST.get('organizer')
         event_name = request.POST.get('event_name')
         date_str = request.POST.get('event_date')
         print("Data din post: ", date_str)
+
         event_date = datetime.strptime(date_str, '%d %b, %Y').date()
         print("Data dupa convertire: ", event_date)
+
         id = request.POST.get('event_id')
         event = Event.objects.get(id=id)
         print("Data evenimentului in formatul ei: ", event.event_date)
+
         try:
             organizer_user = User.objects.get(username=organizer)
         except User.DoesNotExist:
             organizer_user = None
+
         event.event_name = event_name
         event.event_date = event_date
         event.organized_by = organizer_user
         event.save()
+
         return redirect('admin-events')
+
     context = {
         'cancelled_count':cancelled_count,
         'today_date':today_date,
