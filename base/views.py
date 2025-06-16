@@ -2274,10 +2274,55 @@ def completed_event(request, pk):
         messages.error(request, "We couln't find this event")
         return redirect(request.META.get('HTTP_REFERER', '/personal_eveniment_home'))
 
-    
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event)
-    logs = Log.objects.filter(event=event, is_correct = True)
+    total_guests = event.guests.count()
+    guests = event.guests.all()
+    guest_users = User.objects.filter(id__in=guests.values_list('id', flat=True))
+    
+    # Get search query
+    search_query = request.GET.get('search', '')
+    
+    # Base querysets for percentages (unfiltered)
+    base_present_guests = Log.objects.filter(event=event, is_correct = True)
+    base_confirmed_but_absent = RSVP.objects.filter(event=event, response="Accepted", responded=True).exclude(
+        guest__in=Log.objects.filter(
+            event=event, 
+            is_correct=True
+        ).values_list('profile', flat=True)
+    )
+    base_absent_guests = RSVP.objects.filter(event=event, response = "Declined", responded = True)
+    base_pending_guests = RSVP.objects.filter(event=event, response = "Pending", responded = False)
+
+    # Calculate percentages using unfiltered data
+    present_guests_percentage = round((base_present_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
+    absent_guests_percentage = round((base_absent_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
+    pending_guests_percentage = round((base_pending_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
+    confirmed_but_absent_percentage = round((base_confirmed_but_absent.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
+
+    # Apply search filter if search query exists (only for display)
+    present_guests = base_present_guests
+    confirmed_but_absent = base_confirmed_but_absent
+    absent_guests = base_absent_guests
+    pending_guests = base_pending_guests
+
+    if search_query:
+        present_guests = present_guests.filter(
+            Q(profile__first_name__icontains=search_query) |
+            Q(profile__last_name__icontains=search_query)
+        )
+        confirmed_but_absent = confirmed_but_absent.filter(
+            Q(guest__profile__first_name__icontains=search_query) |
+            Q(guest__profile__last_name__icontains=search_query)
+        )
+        absent_guests = absent_guests.filter(
+            Q(guest__profile__first_name__icontains=search_query) |
+            Q(guest__profile__last_name__icontains=search_query)
+        )
+        pending_guests = pending_guests.filter(
+            Q(guest__profile__first_name__icontains=search_query) |
+            Q(guest__profile__last_name__icontains=search_query)
+        )
 
     if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
@@ -2288,7 +2333,17 @@ def completed_event(request, pk):
             'event':event,
             'profile': profile,
             'rspv': rspv,
-            'logs': logs
+            'present_guests': present_guests,
+            'confirmed_but_absent': confirmed_but_absent,
+            'absent_guests': absent_guests,
+            'pending_guests': pending_guests,
+            'total_guests': total_guests,
+            'guest_users': guest_users,
+            'present_guests_percentage': present_guests_percentage,
+            'absent_guests_percentage': absent_guests_percentage,
+            'pending_guests_percentage': pending_guests_percentage,
+            'confirmed_but_absent_percentage': confirmed_but_absent_percentage,
+            'search_query': search_query
         }
     return render(request, 'base/completed_event.html', context)
 
