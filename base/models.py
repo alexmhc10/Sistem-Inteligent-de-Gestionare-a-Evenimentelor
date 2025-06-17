@@ -72,6 +72,7 @@ class Profile(models.Model):
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True, default="poze_invitati/male.png")
+    cv_file = models.FileField(upload_to='cv_folder', null=True, blank=True)
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
     age = models.IntegerField(default=20)
@@ -695,6 +696,73 @@ class SpecialElement(models.Model):
 
     def __str__(self):
         return f"{self.get_type_display()} at {self.location.name}"
+
+
+class EventBudget(models.Model):
+    event = models.OneToOneField('Event', on_delete=models.CASCADE, related_name='eventbudget')
+    # Venue & Ceremony
+    venue_rental_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    ceremony_location_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    furniture_rental_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    decorations_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Attire & Accessories
+    wedding_dress_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    groom_suit_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    accessories_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    shoes_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Photography & Video
+    photographer_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    videographer_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    photo_booth_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Entertainment
+    band_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    dj_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    sound_system_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Beauty and Health
+    hair_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    makeup_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    spa_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Flowers & Decorations
+    bouquet_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    centerpieces_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    ceremony_flowers_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Catering
+    food_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    beverages_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cake_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    snacks_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Stationery & Gifts
+    invitations_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    favors_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    thank_you_cards_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Transportation
+    wedding_car_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    guest_shuttle_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Miscellaneous
+    insurance_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    license_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    planner_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # Organizer Payment
+    organizer_payment_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    @property
+    def total_budget(self):
+        fields = [
+            'venue_rental_cost', 'ceremony_location_cost', 'furniture_rental_cost', 'decorations_cost',
+            'wedding_dress_cost', 'groom_suit_cost', 'accessories_cost', 'shoes_cost',
+            'photographer_cost', 'videographer_cost', 'photo_booth_cost',
+            'band_cost', 'dj_cost', 'sound_system_cost',
+            'hair_cost', 'makeup_cost', 'spa_cost',
+            'bouquet_cost', 'centerpieces_cost', 'ceremony_flowers_cost',
+            'food_cost', 'beverages_cost', 'cake_cost', 'snacks_cost',
+            'invitations_cost', 'favors_cost', 'thank_you_cards_cost',
+            'wedding_car_cost', 'guest_shuttle_cost',
+            'insurance_cost', 'license_cost', 'planner_cost', 'organizer_payment_cost',
+        ]
+        return sum(getattr(self, f) or 0 for f in fields)
+
+    def __str__(self):
+        return f"Budget for {self.event.event_name}"
 
 
 # -----------------------------

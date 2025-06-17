@@ -137,10 +137,14 @@ class RegisterForm(ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['username', 'password', 'email', 'description', 'photo']
+        fields = ['username', 'password', 'email', 'description', 'photo', 'cv_file']
         widgets = {
             'password': forms.PasswordInput(),
         }
+    def __init__(self, *args, **kwargs):
+        super(ProfileForm, self).__init__(*args, **kwargs)
+        for field_name in self.fields:
+            self.fields[field_name].required = True
     def save(self, commit=True):
         profile = super().save(commit=False)
         profile.password = make_password(self.cleaned_data["password"])  

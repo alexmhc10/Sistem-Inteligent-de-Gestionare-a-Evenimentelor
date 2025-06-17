@@ -101,10 +101,28 @@
         color: white;
     }
 
+    .btn-budget {
+        background-color: #D4AF37 !important;
+        color: white !important;
+        border: none !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-budget:hover {
+        background-color: #B8860B !important;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
 </style>
 
 <div class="container my-4">
-    <h2 class="text-center">My Events</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-center mb-0">My Events</h2>
+        <a href="{% url 'event_builder' %}" class="btn btn-view" style="font-size: 1.1rem; padding: 12px 25px;">
+            <i class="fas fa-plus-circle me-2"></i> Add Event
+        </a>
+    </div>
 
     {% if messages %}
         <div class="alert alert-success">
@@ -113,10 +131,6 @@
             {% endfor %}
         </div>
     {% endif %}
-
-    <div class="text-end mb-3">
-        <a href="{% url 'event_builder' %}" class="btn btn-view">+ Add Event</a>
-    </div>
 
 <form method="get" class="mb-3 d-flex gap-3 align-items-end flex-wrap">
     <div class="flex-grow-1">
@@ -170,6 +184,9 @@
                             <a href="{% url 'event_details' event.id %}" class="btn btn-view btn-sm me-1">View</a>
                             <a href="{% url 'guest_list' event.id %}" class="btn btn-view btn-sm me-1">Guest List</a>
                             <a href="{% url 'edit_event' event.id %}" class="btn btn-view btn-sm me-1">Edit</a>
+                            {% if user == event.organized_by %}
+                                <a href="{% url 'add_budget' event.id %}" class="btn btn-budget btn-sm me-1">Add Budget</a>
+                            {% endif %}
                             <a href="{% url 'delete_event' event.id %}" class="btn btn-delete btn-sm" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
                         </td>
                     </tr>

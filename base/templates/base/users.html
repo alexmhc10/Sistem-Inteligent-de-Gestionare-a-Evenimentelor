@@ -212,6 +212,9 @@
                                      {% if profile.photo %}
                                      data-photo="{{ profile.photo.url }}"
                                      {% endif %}
+                                     {% if profile.cv_file %}
+                                     data-cv="{{ profile.cv_file.url }}"
+                                     {% endif %}
                                      data-description="{{ profile.description }}">
                                      <i class="bi-pencil-fill me-1"></i> View
                                  </button>
@@ -583,6 +586,12 @@
                                     <textarea style="height: auto;" readonly class="form-control" name="editDescriptionModal" id="editDescriptionModal" placeholder="Description" aria-label="Description"></textarea>
                                  </div>
                               </div>
+                              <div class="row mb-4">
+                                 <label for="cvLink" class="col-sm-3 col-form-label form-label">CV file:</label>
+                                    <div class="col-sm-9">
+                                       <a id="cvLink" href="#" target="_blank" class="btn btn-outline-warning btn-sm mt-2">View CV</a>
+                                    </div>
+                              </div>
                               <div class="d-flex justify-content-end">
                                  <div class="d-flex gap-3">
                                     <button type="button" class="btn btn-white" data-bs-dismiss="modal" aria-label="Close">Exit</button>
@@ -629,26 +638,6 @@
                             </div>
 </div>
 
-<script type="text/javascript">
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawChart);
-
-    function drawChart() {
-        const users = JSON.parse('{{ chartusers | escapejs }}');
-        const data = new google.visualization.arrayToDataTable([
-            ['Employee\'s name', 'Salary'],
-            ...users.map(chartuser => [chartuser.username, chartuser.salary])
-        ]);
-
-        const options = {
-            title: 'Employees salaries'
-        };
-
-        const chart = new google.visualization.BarChart(document.getElementById('myChart'));
-        chart.draw(data, options);
-
-    }
-</script>
 <script>
    $('#DeleteUserModal').on('show.bs.modal', function (event) {
     const button = event.relatedTarget; 
@@ -689,6 +678,8 @@ $('#viewUserModal').on('show.bs.modal', function (event) {
     const email = button.dataset.email;
     const number = button.dataset.number;
     const photo = button.dataset.photo;
+    let cv = button.getAttribute('data-cv');
+    document.querySelector('#viewUserModal #cvLink').href = cv;
 
 
     document.querySelector('#viewUserModal #editAvatarImgModalView').src = photo;
