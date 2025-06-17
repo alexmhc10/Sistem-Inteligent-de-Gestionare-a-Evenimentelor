@@ -1717,8 +1717,8 @@ def MenuForEvent(request, event_id):
     menu_selected = []
     for guest in guests:
         available_dishes = [dish for dish in menu_items if dish.item_cuisine == guest.cuisine_preference]
-        if guest.vegan:
-            available_dishes = [dish for dish in available_dishes if dish.item_vegan]
+        if guest.diet_preference != 'none':
+            available_dishes = [dish for dish in available_dishes if dish.diet_type == guest.diet_preference]
         if not guest.vegan:
             available_dishes = [dish for dish in available_dishes]
         if isinstance(guest.allergens, str):
@@ -2485,7 +2485,8 @@ def search_food(request):
         ).distinct()
 
     if vegetarian:
-        foods = foods.filter(item_vegan=True)
+        # Afişează preparate potrivite pentru vegetarieni (includem şi vegan)
+        foods = foods.filter(diet_type__in=["vegetarian", "vegan"])
 
     if selected_allergens:
         allergen_filters = Q()
@@ -3054,11 +3055,11 @@ def generate_menu(request):
     guest = request.user.profile_set.first().guest_profile
     preferred_region = guest.cuisine_preference
     guest_allergens = guest.allergens.all()
-    prefers_vegan = getattr(guest, 'vegan', False)
+    guest_diet = guest.diet_preference
 
     safe_dishes = Menu.objects.exclude(allergens__in=guest_allergens).distinct()
-    if prefers_vegan:
-        safe_dishes = safe_dishes.filter(item_vegan=True)
+    if guest_diet != 'none':
+        safe_dishes = safe_dishes.filter(diet_type=guest_diet)
 
     categories = ['appetizer', 'main', 'dessert', 'drink']
     menu = {}

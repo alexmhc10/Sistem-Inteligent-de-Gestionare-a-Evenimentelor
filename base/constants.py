@@ -40,3 +40,15 @@ REGION_CHOICES = [
         ('peruvian', 'Peruvian'),
         ('filipino', 'Filipino'),
     ]
+
+# Regimuri alimentare (dietary restrictions)
+DIET_CHOICES = [
+    ('none', 'No specific diet'),
+    ('vegan', 'Vegan'),
+    ('vegetarian', 'Vegetarian'),
+    ('pescatarian', 'Pescatarian'),
+    ('low_carb', 'Low-carb'),
+    ('keto', 'Keto'),
+    ('halal', 'Halal'),
+    ('kosher', 'Kosher'),
+]

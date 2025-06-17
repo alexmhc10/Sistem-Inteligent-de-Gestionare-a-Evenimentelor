@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 import os
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
+from .constants import REGION_CHOICES, DIET_CHOICES
 
 
 
@@ -203,13 +204,21 @@ class Guests(models.Model):
         ('M', 'Masculin'),
         ('F', 'Feminin')
         ]
-    
+    SPICY_LEVELS = [
+        ('none', 'None'),
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High')
+    ]
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
     picture = models.ImageField(upload_to='poze_invitati/', null=True, blank=True)
     cuisine_preference = models.CharField(max_length=50, choices=REGION_CHOICES ,blank=True, null=True)
-    vegan = models.BooleanField(default=False)
+    diet_preference = models.CharField(max_length=15, choices=DIET_CHOICES, default='none')
     allergens = models.ManyToManyField(Allergen, blank=True)
+    medical_conditions = models.ManyToManyField('MedicalCondition', blank=True)
+    custom_medical_notes = models.TextField(null=True, blank=True)
+    spicy_food = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     state = models.BooleanField(default=False)
     def __str__(self):
         return self.profile.username
@@ -219,6 +228,7 @@ class Guests(models.Model):
             'age': 'age',
             'gender': 'gender',
             'cuisine_preference': 'cuisine preference',
+            'diet_preference': 'diet preference',
         }
         missing = []
         for field, label in field_mapping.items():
@@ -226,6 +236,54 @@ class Guests(models.Model):
             if not val:
                 missing.append(label)
         return missing
+
+    # Compatibilitate: proprietate booleană pentru codul existent
+    @property
+    def vegan(self):
+        return self.diet_preference == 'vegan'
+
+    @vegan.setter
+    def vegan(self, value: bool):
+        """Permit setarea convențională .vegan = True/False.
+        Dacă True → diet_preference devine 'vegan'. Dacă False și dieta curentă este 'vegan', se resetează la 'none'."""
+        if value:
+            self.diet_preference = 'vegan'
+        else:
+            if self.diet_preference == 'vegan':
+                self.diet_preference = 'none'
+
+    # -------------------------
+    # Helper: preparate sigure + preferințe
+    # -------------------------
+    def get_safe_menu_items(self):
+        """Returnează queryset cu preparatele care respectă constrângerile hard (alergeni & vegan).
+
+        1. Dacă invitatul este vegan → filtrăm doar item_vegan=True.
+        2. Excludem orice preparat care conţine unul dintre alergenii invitatului.
+        3. Dacă invitatul a setat un nivel iute preferat diferit de 'none', filtrăm preparatele cu spicy_level <= preferinţă
+           (unde ordinea este none < low < medium < high).
+        """
+        from django.db.models import Q
+
+        menu_qs = Menu.objects.all()
+
+        # 1. Diet constraint
+        if self.diet_preference != 'none':
+            menu_qs = menu_qs.filter(diet_type=self.diet_preference)
+
+        # 2. Allergen constraint
+        if self.allergens.exists():
+            # Excludem orice item care are intersectie cu alergenii invitatului
+            menu_qs = menu_qs.exclude(allergens__in=self.allergens.all()).distinct()
+
+        # 3. Nivel iute
+        preference = self.spicy_food or 'none'
+        order = ['none', 'low', 'medium', 'high']
+        if preference != 'none':
+            allowed_levels = order[: order.index(preference) + 1]  # acceptăm nivel <= preferinţă
+            menu_qs = menu_qs.filter(spicy_level__in=allowed_levels)
+
+        return menu_qs.distinct()
 
 
 class Menu(models.Model):
@@ -240,11 +298,24 @@ class Menu(models.Model):
     item_name = models.CharField(max_length=80)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
     item_cuisine = models.CharField(max_length=20, choices=REGION_CHOICES, default='No region')
-    item_vegan = models.BooleanField(default=False)
+    diet_type = models.CharField(max_length=15, choices=DIET_CHOICES, default='none')
+    # Nivel de iuțeală al preparatului
+    SPICY_LEVELS = [
+        ('none', 'None'),
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High')
+    ]
+    spicy_level = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     allergens = models.ManyToManyField(Allergen, blank=True)
     item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
     def __str__(self):
         return f"{self.item_name} at {self.at_location}"
+
+    # Compatibilitate: proprietate booleană
+    @property
+    def item_vegan(self):
+        return self.diet_type == 'vegan'
 
 
 class Event(models.Model):
@@ -624,3 +695,40 @@ class SpecialElement(models.Model):
 
     def __str__(self):
         return f"{self.get_type_display()} at {self.location.name}"
+
+
+# -----------------------------
+# Feedback / rating al preparatelor
+# -----------------------------
+
+
+class MenuRating(models.Model):
+    """Feedback explicit (1–5 stele) oferit de un invitat pentru un preparat."""
+    guest = models.ForeignKey('Guests', on_delete=models.CASCADE, related_name='menu_ratings')
+    menu_item = models.ForeignKey('Menu', on_delete=models.CASCADE, related_name='ratings')
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("guest", "menu_item")
+
+    def __str__(self):
+        return f"{self.guest} rated {self.menu_item} - {self.rating}★"
+
+
+# -------------------------------
+# Medical Conditions (diet-related)
+# -------------------------------
+
+
+class MedicalCondition(models.Model):
+    """Common health conditions that impact food choices."""
+    name = models.CharField(max_length=100, unique=True)  # e.g. "Diabetes", "Lactose intolerance"
+    is_common = models.BooleanField(default=True)
+
+    class Meta:
+        verbose_name = "Medical Condition"
+        verbose_name_plural = "Medical Conditions"
+
+    def __str__(self):
+        return self.name
