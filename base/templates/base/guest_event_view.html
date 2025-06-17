@@ -832,65 +832,118 @@ document.addEventListener("change", function (e) {
               </h3>
               <div class="card">
                 <div class="card-body d-flex flex-column">
-                  {% for dish in chosen_menu %}
-                    <div class="archive-item d-flex justify-content-between align-items-center">
-                      <div class="food-info">
-                      {{ dish.category|capfirst }}: {{ dish.name }} - Allergens: {{ dish.allergens|join:', ' }} - Diet type: {{ dish.diet_type }} - Region: {{ dish.item_cuisine }}
-                     </div>
-                     {% if dish.rating %}
-                      <input type="hidden" name="rating-{{ dish.id }}" id="rated-dish" value="{{ dish.rating }}">
-                      <div class="star-rating">
-                        {% for i in "54321" %}
-                            <span class="stele{% if dish.rating >= i|add:'0' %} filled{% endif %}">★</span>
-                        {% endfor %}
+                  <div class="d-flex flex-row justify-content-center gap-4 align-items-center">
+                    <div class="organizer-rate d-flex flex-column justify-content-center align-items-center mb-3">
+                      <img src="{{ MEDIA_URL }}{{ event.organized_by.profile_set.all.0.photo }}" alt="Ceva" width="70" height="70" style="object-fit: cover;" class="rounded-circle">
+                      <div class="organizer-info d-flex flex-column align-items-center justify-content-center">
+                        <span class="organizer-name text-center">{{ event.organized_by.profile_set.all.0.username }}</span>
+                        <span class="organizer-rating" id="organizer-rating">
+                          <div class="star-rating" data-kind="organizer" data-organizer-id="{{ event.organized_by.id }}">
+                            {% if review_organizer %}
+                              {% for i in "54321" %}
+                                <span class="stele{% if review_organizer.organizer_stars >= i|add:'0' %} filled{% endif %}">★</span>
+                              {% endfor %}
+                            {% else %}
+                              {% for i in "54321" %}
+                                <input type="radio" id="organized-{{ event.organized_by.id }}-{{ i }}" name="rating-{{ event.organized_by.id }}" value="{{ i }}">
+                                <label for="organized-{{ event.organized_by.id }}-{{ i }}" title="{{ i }} stars">★</label>
+                              {% endfor %}
+                            {% endif %}
+                          </div>
+                        </span>
                       </div>
-                    
                     </div>
-                   {% else %}
-                    <form method="post" action="">
-                      {% csrf_token %}
-                        <div class="star-rating" data-dish-id="{{ dish.id }}">
-                          {% for i in "54321" %}
-                            <input type="radio" id="star-{{ dish.id }}-{{ i }}" name="rating-{{ dish.id }}" value="{{ i }}">
-                            <label for="star-{{ dish.id }}-{{ i }}" title="{{ i }} stars">★</label>
-                          {% endfor %}
+                    <div class="location-rate d-flex flex-column justify-content-center align-items-center mb-3">
+                      <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" alt="Ceva" width="70" height="70" style="object-fit: cover;" class="rounded-circle">
+                      <div class="location-info d-flex flex-column align-items-center justify-content-center">
+                        <span class="location-name text-center">{{ event.location.name }}</span>
+                        <span class="location-rating" id="location-rating">
+                          <div class="star-rating" data-kind="location" data-location-id="{{ event.location.id }}">
+                            {% if review_location %}
+                              {% for i in "54321" %}
+                                <span class="stele{% if review_location.location_stars >= i|add:'0' %} filled{% endif %}">★</span>
+                              {% endfor %}
+                            {% else %}
+                              {% for i in "54321" %}
+                                <input type="radio" id="location-{{ event.location.id }}-{{ i }}" name="rating-{{ event.location.id }}" value="{{ i }}">
+                                <label for="location-{{ event.location.id }}-{{ i }}" title="{{ i }} stars">★</label>
+                              {% endfor %}
+                            {% endif %}
+                          </div>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    {% for dish in chosen_menu %}
+                    <div class="col-6">
+                      <div class="dish-item d-flex align-items-center mb-3">
+                        <img src="{{ dish.image }}" alt="" width="100" height="100" style="object-fit: cover;" class="rounded-circle">
+                        <div class="d-flex flex-column">
+                          <div class="food-info ms-2">
+                            <p class="mb-0">{{ dish.category|capfirst }}: {{ dish.name }}</p>
+                            <p class="mb-0">Allergens: {{ dish.allergens|join:', ' }}</p>
+                            <p class="mb-0">Diet type: {{ dish.diet_type }}</p>
+                            <p class="mb-0">Region: {{ dish.item_cuisine }}</p>
+                          </div>
+                          {% if dish.rating %}
+                            <input type="hidden" name="rating-{{ dish.id }}" id="rated-dish" value="{{ dish.rating }}">
+                            <div class="star-rating">
+                              {% for i in "54321" %}
+                                  <span class="stele{% if dish.rating >= i|add:'0' %} filled{% endif %}">★</span>
+                              {% endfor %}
+                            </div>
+                          </div>
                         </div>
-                     </form>
-                    {% endif %}       
-                    {% empty %}
-                      <li>You didn't configure a custom menu for this event.</li>
-                  {% endfor %}
-
-                  {% if rated_dish %}
-                  You rated this menu
-                  {% else %}
-                  <button type="submit" class="btn btn-primary" id="send-ratings">Rate</button>
-                  {% endif %}
+                      </div>  
+                      {% else %}
+                      <form method="post" action="">
+                        {% csrf_token %}
+                          <div class="star-rating" data-dish-id="{{ dish.id }}">
+                            {% for i in "54321" %}
+                              <input type="radio" id="star-{{ dish.id }}-{{ i }}" name="rating-{{ dish.id }}" value="{{ i }}">
+                              <label for="star-{{ dish.id }}-{{ i }}" title="{{ i }} stars">★</label>
+                            {% endfor %}
+                          </div>
+                      </form>
+                      {% endif %}       
+                      {% empty %}
+                        <li>You didn't configure a custom menu for this event.</li>
+                    {% endfor %}
+                    {% if not review_organizer or not review_location or not chosen_menu %}
+                      <button class="btn btn-primary" id="send-ratings">Send ratings</button>
+                    {% endif %}
+                    </div>
                       <script>
-                     document.getElementById('send-ratings').addEventListener('click', () => {
-     const ratings = [];
-     document.querySelectorAll('.star-rating').forEach(div => {
-       const checked = div.querySelector('input[type="radio"]:checked');
-       if (checked && !checked.disabled) {
-         ratings.push({ dish_id: div.dataset.dishId, rating: checked.value });
-       }
-     });
-     fetch("{% url 'save_menu_ratings' %}", {
-       method: "POST",
-       headers: { "Content-Type": "application/json",
-                  "X-CSRFToken": "{{ csrf_token }}",
-                  "X-Requested-With": "XMLHttpRequest" },
-       body: JSON.stringify(ratings)
-     })
-     .then(r => r.json())
-     .then(data => {
-        if (data.success) {
-          // Blochează stelele după salvare
-          document.querySelectorAll('.star-rating input').forEach(i => i.disabled = true);
-          alert("Mulţumim! Rating salvat.");
-        }
-     });
-   });
+                      document.getElementById('send-ratings').addEventListener('click', () => {
+                        const ratings = [];
+                        document.querySelectorAll('.star-rating').forEach(div => {
+                          const checked = div.querySelector('input[type="radio"]:checked');
+                          if (!(checked && !checked.disabled)) return;
+
+                          const kind = div.dataset.kind || 'dish';
+                          if (kind === 'dish') {
+                            ratings.push({ kind: 'dish', dish_id: div.dataset.dishId, rating: parseInt(checked.value) });
+                          } else if (kind === 'organizer') {
+                            ratings.push({ kind: 'organizer', organizer_id: div.dataset.organizerId, rating: parseInt(checked.value) });
+                          } else if (kind === 'location') {
+                            ratings.push({ kind: 'location', location_id: div.dataset.locationId, rating: parseInt(checked.value) });
+                          }
+                        });
+                        fetch("{% url 'save_menu_ratings' %}", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json",
+                                      "X-CSRFToken": "{{ csrf_token }}",
+                                      "X-Requested-With": "XMLHttpRequest" },
+                          body: JSON.stringify(ratings)
+                        })
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.success) {
+                              alert("Saved rating.");
+                            }
+                        });
+                      });
                       </script>
                 </div>
               </div>

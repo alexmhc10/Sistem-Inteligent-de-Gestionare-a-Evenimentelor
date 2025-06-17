@@ -161,18 +161,6 @@ class DeviceAccess(models.Model):
     def __str__(self):
         return f"{self.device_name} running {self.os_name} at {self.last_access_time}"
 
-
-class Review(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
-    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer_reviews', null=True, blank=True)
-    comment = models.TextField()
-    stars = models.IntegerField(choices=[(i, f"{i} stele") for i in range(1, 6)], default=5)
-    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
-
-    def __str__(self):
-        return self.comment[0:20]
-
     
 
 def menu_item_upload_path(instance, filename):
@@ -691,6 +679,20 @@ class SpecialElement(models.Model):
         return f"{self.get_type_display()} at {self.location.name}"
 
 
+class Review(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, null=True, blank=True)
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, null=True, blank=True)
+    organizer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='organizer_reviews', null=True, blank=True)
+    comment = models.TextField(blank=True, null=True)
+    organizer_stars = models.IntegerField(choices=[(i, f"{i} stele") for i in range(1, 6)], default=5)
+    location_stars = models.IntegerField(choices=[(i, f"{i} stele") for i in range(1, 6)], default=5)
+    created_at = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username
+
+
 class EventBudget(models.Model):
     event = models.OneToOneField('Event', on_delete=models.CASCADE, related_name='eventbudget')
     # Venue & Ceremony
@@ -758,11 +760,6 @@ class EventBudget(models.Model):
         return f"Budget for {self.event.event_name}"
 
 
-# -----------------------------
-# Feedback / rating al preparatelor
-# -----------------------------
-
-
 class MenuRating(models.Model):
     """Feedback explicit (1–5 stele) oferit de un invitat pentru un preparat."""
     guest = models.ForeignKey('Guests', on_delete=models.CASCADE, related_name='menu_ratings')
@@ -775,11 +772,6 @@ class MenuRating(models.Model):
 
     def __str__(self):
         return f"{self.guest} rated {self.menu_item} - {self.rating}★"
-
-
-# -------------------------------
-# Medical Conditions (diet-related)
-# -------------------------------
 
 
 class MedicalCondition(models.Model):

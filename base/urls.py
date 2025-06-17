@@ -130,6 +130,7 @@ urlpatterns = [
     path('organizer-events', views.organizer_events, name='organizer_events'),
     path('financial-management/', views.financial_management, name='financial_management'),
     path('api/table-details/<int:table_id>/', table_details_api, name='table-details-api'),
+    path('add_budget/<int:event_id>/', views.add_budget, name='add_budget'),
 
     # New table management views
     path('add_table/', views.add_table, name='add_table'),

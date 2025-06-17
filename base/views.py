@@ -140,7 +140,6 @@ def home_organizer(request):
     events = Event.objects.all()
     upcoming_events_raw = events.filter(organized_by=request.user, event_date__gte=timezone.now()).order_by('event_date')[:5]
     
-    # Format upcoming events for calendar display
     upcoming_events = []
     for event in upcoming_events_raw:
         upcoming_events.append({
@@ -150,33 +149,25 @@ def home_organizer(request):
             'id': event.id
         })
     
-    # Get all notifications (both read and unread) for the user
     notifications = EventNotification.objects.filter(
         receiver=request.user
-    ).order_by('-timestamp').select_related('sender', 'event')[:10]  # Show last 10
+    ).order_by('-timestamp').select_related('sender', 'event')[:10]
     
-    # Identify and mark unread notifications
     unread_notifications = [n for n in notifications if not n.is_read]
     if unread_notifications:
-        # Create list of IDs to update
         unread_ids = [n.id for n in unread_notifications]
-        # Bulk update to mark as read
         EventNotification.objects.filter(id__in=unread_ids).update(is_read=True)
-        # Update our queryset to reflect the change
         for notification in notifications:
             if not notification.is_read:
                 notification.is_read = True
 
-    # Calculate popular categories
     from django.db.models import Count
     from collections import Counter
     
-    # Get event types and their counts
     popular_categories = []
     event_types = events.values_list('types__name', flat=True).exclude(types__name__isnull=True)
     type_counts = Counter(event_types)
     
-    # Get top 5 most popular categories
     for type_name, count in type_counts.most_common(5):
         if type_name:  # Exclude None values
             popular_categories.append({
@@ -239,7 +230,7 @@ def home_organizer(request):
     # Calculate organizer rating
     from django.db.models import Avg
     organizer_reviews = Review.objects.filter(organizer=request.user)
-    average_rating = organizer_reviews.aggregate(Avg('stars'))['stars__avg']
+    average_rating = organizer_reviews.aggregate(Avg('organizer_stars'))['organizer_stars__avg']
     
     # Format rating to 1 decimal place or show N/A if no reviews
     if average_rating is not None:
@@ -440,7 +431,7 @@ def edit_profile(request, username):
 def organizer_profile(request, username):
     profile = get_object_or_404(Profile, user__username=username)
     reviews = Review.objects.filter(organizer=profile.user).order_by('-created_at')
-    average_rating = reviews.aggregate(models.Avg('stars'))['stars__avg'] or 0
+    average_rating = reviews.aggregate(models.Avg('organizer_stars'))['organizer_stars__avg'] or 0
     star_range = range(1, 6)
 
     if request.method == 'POST':
@@ -3013,6 +3004,8 @@ def guest_event_view(request, pk):
 
     archives = event.archives.all()
     posts = event.posts.all()
+    review_organizer = Review.objects.filter(user=request.user, organizer=event.organized_by).first()
+    review_location = Review.objects.filter(user=request.user, location=event.location).first()
 
     from .models import MenuRating
     chosen_menu = []
@@ -3054,7 +3047,9 @@ def guest_event_view(request, pk):
         'archives': archives,
         'posts': posts,
         'chosen_menu_json': json.dumps(chosen_menu),
-        'chosen_menu': chosen_menu
+        'chosen_menu': chosen_menu,
+        'review_organizer': review_organizer,
+        'review_location': review_location
     }
     return render(request,'base/guest_event_view.html', context)
 
@@ -3863,6 +3858,7 @@ def save_table_layout(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
+
 @login_required(login_url='/login')
 def add_budget(request, event_id):
     event = get_object_or_404(Event, id=event_id)
@@ -3881,9 +3877,6 @@ def add_budget(request, event_id):
         return redirect('event_details', event_id=event.id)
     return render(request, 'base/add_budget.html', {'event': event, 'budget': budget})
 
-# -------------------------------------------------
-#  AJAX: save ratings for multiple dishes in one go
-# -------------------------------------------------
 
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
@@ -3904,33 +3897,80 @@ def save_menu_ratings(request):
     except AttributeError:
         return JsonResponse({'success': False, 'error': 'Guest profile not found'}, status=400)
 
-    from .models import MenuRating, Menu
-
     saved, errors = 0, []
+
+    # variables for organizer/location rating aggregated
+    organizer_rating = None
+    location_rating = None
+    organizer_obj = None
+    location_obj = None
+    event_obj = None
+
     for entry in payload:
-        dish_id = entry.get('dish_id')
+        kind = entry.get('kind', 'dish')
         rating_val = entry.get('rating')
+
+        # validate rating int 1-5
         try:
             rating_val = int(rating_val)
         except (TypeError, ValueError):
-            errors.append(f'Invalid rating for dish {dish_id}')
+            errors.append('Invalid rating value')
+            continue
+        if rating_val not in range(1,6):
+            errors.append('Rating outside range')
             continue
 
-        if rating_val not in range(1, 6):
-            errors.append(f'Rating out of range for dish {dish_id}')
-            continue
+        if kind == 'dish':
+            dish_id = entry.get('dish_id')
+            dish = Menu.objects.filter(id=dish_id).first()
+            if not dish:
+                errors.append(f'Dish {dish_id} not found')
+                continue
+            MenuRating.objects.update_or_create(
+                guest=guest_profile,
+                menu_item=dish,
+                defaults={'rating': rating_val}
+            )
+            saved += 1
+        elif kind == 'organizer':
+            organizer_id = entry.get('organizer_id')
+            organizer_obj = User.objects.filter(id=organizer_id).first()
+            if not organizer_obj:
+                errors.append(f'Organizer {organizer_id} not found')
+                continue
+            organizer_rating = rating_val
+            saved += 1
+        elif kind == 'location':
+            location_id = entry.get('location_id')
+            location_obj = Location.objects.filter(id=location_id).first()
+            if not location_obj:
+                errors.append(f'Location {location_id} not found')
+                continue
+            location_rating = rating_val
+            saved += 1
+        else:
+            errors.append('Unknown kind')
 
-        dish = Menu.objects.filter(id=dish_id).first()
-        if not dish:
-            errors.append(f'Dish {dish_id} not found')
-            continue
+    # create or update single Review
+    if organizer_rating is not None or location_rating is not None:
+        review_defaults = {}
+        if organizer_rating is not None:
+            review_defaults['organizer_stars'] = organizer_rating
+        if location_rating is not None:
+            review_defaults['location_stars'] = location_rating
 
-        MenuRating.objects.update_or_create(
-            guest=guest_profile,
-            menu_item=dish,
-            defaults={'rating': rating_val}
+        # attempt to get event by organizer & location if exists
+        if organizer_obj and location_obj:
+            event_obj = Event.objects.filter(organized_by=organizer_obj, location=location_obj).first()
+
+        Review.objects.update_or_create(
+            user=request.user,
+            event=event_obj,
+            defaults=review_defaults | {
+                'organizer': organizer_obj,
+                'location': location_obj
+            }
         )
-        saved += 1
 
     return JsonResponse({'success': True, 'saved': saved, 'errors': errors})
 
