@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import os
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
-from .constants import REGION_CHOICES, DIET_CHOICES
+from .constants import REGION_CHOICES, DIET_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, TEMP_CHOICES, COOKING_METHOD_CHOICES
 
 
 
@@ -203,6 +203,11 @@ class Guests(models.Model):
     custom_medical_notes = models.TextField(null=True, blank=True)
     spicy_food = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     state = models.BooleanField(default=False)
+    # new soft preferences
+    texture_preference = models.CharField(max_length=10, choices=TEXTURE_CHOICES, default='none', blank=True, null=True)
+    nutrition_goal = models.CharField(max_length=15, choices=NUTRITION_GOAL_CHOICES, default='none', blank=True, null=True)
+    temp_preference = models.CharField(max_length=5, choices=TEMP_CHOICES, default='hot', blank=True, null=True)
+    preferred_course = models.CharField(max_length=20, choices=[('appetizer','Appetizer'),('main','Main'),('dessert','Dessert'),('drink','Drink')], blank=True, null=True)
     def __str__(self):
         return self.profile.username
 
@@ -212,6 +217,8 @@ class Guests(models.Model):
             'gender': 'gender',
             'cuisine_preference': 'cuisine preference',
             'diet_preference': 'diet preference',
+            'texture_preference': 'texture preference',
+            'nutrition_goal': 'nutrition goal',
         }
         missing = []
         for field, label in field_mapping.items():
@@ -292,6 +299,14 @@ class Menu(models.Model):
     spicy_level = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     allergens = models.ManyToManyField(Allergen, blank=True)
     item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
+    # new food features
+    cooking_method = models.CharField(max_length=10, choices=COOKING_METHOD_CHOICES, blank=True, null=True)
+    serving_temp = models.CharField(max_length=5, choices=TEMP_CHOICES, default='hot')
+    calories = models.PositiveIntegerField(null=True, blank=True, help_text="kcal per serving")
+    protein_g = models.PositiveIntegerField(null=True, blank=True)
+    carbs_g = models.PositiveIntegerField(null=True, blank=True)
+    fat_g = models.PositiveIntegerField(null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
     def __str__(self):
         return f"{self.item_name} at {self.at_location}"
 

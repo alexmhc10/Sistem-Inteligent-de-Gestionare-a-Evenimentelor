@@ -52,3 +52,35 @@ DIET_CHOICES = [
     ('halal', 'Halal'),
     ('kosher', 'Kosher'),
 ]
+
+# ---------- New preference / feature choices ----------
+
+TEXTURE_CHOICES = [
+    ('none', 'No preference'),
+    ('crunchy', 'Crunchy'),
+    ('creamy', 'Creamy'),
+    ('juicy', 'Juicy'),
+    ('soft', 'Soft'),
+]
+
+NUTRITION_GOAL_CHOICES = [
+    ('none', 'No specific goal'),
+    ('high_protein', 'High protein'),
+    ('low_fat', 'Low fat'),
+    ('low_sugar', 'Low sugar'),
+    ('balanced', 'Balanced'),
+]
+
+TEMP_CHOICES = [
+    ('hot', 'Hot'),
+    ('cold', 'Cold'),
+]
+
+COOKING_METHOD_CHOICES = [
+    ('grill', 'Grill'),
+    ('bake', 'Bake'),
+    ('fry', 'Fry'),
+    ('steam', 'Steam'),
+    ('boil', 'Boil'),
+    ('raw', 'Raw'),
+]
