@@ -99,33 +99,27 @@ class Profile(models.Model):
         default='guest'
     )
     def __str__(self):
-        return self.user.username
+        # user poate fi None pentru profiluri create înainte de asocierea unui User.
+        if self.user:
+            return self.user.username
+        return self.username or f"Profile #{self.pk}"
 
     @property
     def is_complete(self):
-        """Returnează True dacă profilul conţine toate informaţiile considerate obligatorii."""
         required_fields = [
             self.first_name,
             self.last_name,
             self.age,
             self.photo,
-            self.location,
-            self.street,
-            self.zip_code,
         ]
-        # Dacă unul dintre câmpuri este None/şir gol → incomplet
         return all(required_fields)
 
     def get_missing_fields(self):
-        """Returnează o listă cu numele câmpurilor obligatorii care nu sunt completate."""
         field_mapping = {
             'first_name': 'first name',
             'last_name': 'last name',
             'age': 'age',
             'photo': 'profile picture',
-            'location': 'location',
-            'street': 'street',
-            'zip_code': 'zip code',
         }
         missing = []
         for field, label in field_mapping.items():
@@ -300,7 +294,7 @@ class Menu(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='main')
     item_cuisine = models.CharField(max_length=20, choices=REGION_CHOICES, default='No region')
     diet_type = models.CharField(max_length=15, choices=DIET_CHOICES, default='none')
-    # Nivel de iuțeală al preparatului
+
     SPICY_LEVELS = [
         ('none', 'None'),
         ('low', 'Low'),
@@ -313,7 +307,6 @@ class Menu(models.Model):
     def __str__(self):
         return f"{self.item_name} at {self.at_location}"
 
-    # Compatibilitate: proprietate booleană
     @property
     def item_vegan(self):
         return self.diet_type == 'vegan'

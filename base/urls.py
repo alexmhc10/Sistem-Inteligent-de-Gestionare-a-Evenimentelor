@@ -114,6 +114,7 @@ urlpatterns = [
     path('find_user_view/', views.find_user_view, name='find_user_view'),
     path("validate_attendance/", views.validate_attendance, name='validate_attendance'),
     path('generate-menu/', views.generate_menu, name='generate-menu'),
+    path('save_ratings/', views.save_menu_ratings, name='save_menu_ratings'),
 
     #Notifications
     path("send_notification/", views.send_notification, name="send_notification"),

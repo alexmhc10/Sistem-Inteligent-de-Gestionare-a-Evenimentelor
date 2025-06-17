@@ -833,12 +833,65 @@ document.addEventListener("change", function (e) {
               <div class="card">
                 <div class="card-body d-flex flex-column">
                   {% for dish in chosen_menu %}
-                    <div class="archive-item">
-                     {{ dish.category|capfirst }}: {{ dish.name }} - Allergens: {{ dish.allergens|join:', ' }} - Vegan: {{ dish.is_vegan|yesno:"Yes,No" }}
+                    <div class="archive-item d-flex justify-content-between align-items-center">
+                      <div class="food-info">
+                      {{ dish.category|capfirst }}: {{ dish.name }} - Allergens: {{ dish.allergens|join:', ' }} - Diet type: {{ dish.diet_type }} - Region: {{ dish.item_cuisine }}
+                     </div>
+                     {% if dish.rating %}
+                      <input type="hidden" name="rating-{{ dish.id }}" id="rated-dish" value="{{ dish.rating }}">
+                      <div class="star-rating">
+                        {% for i in "54321" %}
+                            <span class="stele{% if dish.rating >= i|add:'0' %} filled{% endif %}">★</span>
+                        {% endfor %}
+                      </div>
+                    
                     </div>
+                   {% else %}
+                    <form method="post" action="">
+                      {% csrf_token %}
+                        <div class="star-rating" data-dish-id="{{ dish.id }}">
+                          {% for i in "54321" %}
+                            <input type="radio" id="star-{{ dish.id }}-{{ i }}" name="rating-{{ dish.id }}" value="{{ i }}">
+                            <label for="star-{{ dish.id }}-{{ i }}" title="{{ i }} stars">★</label>
+                          {% endfor %}
+                        </div>
+                     </form>
+                    {% endif %}       
                     {% empty %}
                       <li>You didn't configure a custom menu for this event.</li>
                   {% endfor %}
+
+                  {% if rated_dish %}
+                  You rated this menu
+                  {% else %}
+                  <button type="submit" class="btn btn-primary" id="send-ratings">Rate</button>
+                  {% endif %}
+                      <script>
+                     document.getElementById('send-ratings').addEventListener('click', () => {
+     const ratings = [];
+     document.querySelectorAll('.star-rating').forEach(div => {
+       const checked = div.querySelector('input[type="radio"]:checked');
+       if (checked && !checked.disabled) {
+         ratings.push({ dish_id: div.dataset.dishId, rating: checked.value });
+       }
+     });
+     fetch("{% url 'save_menu_ratings' %}", {
+       method: "POST",
+       headers: { "Content-Type": "application/json",
+                  "X-CSRFToken": "{{ csrf_token }}",
+                  "X-Requested-With": "XMLHttpRequest" },
+       body: JSON.stringify(ratings)
+     })
+     .then(r => r.json())
+     .then(data => {
+        if (data.success) {
+          // Blochează stelele după salvare
+          document.querySelectorAll('.star-rating input').forEach(i => i.disabled = true);
+          alert("Mulţumim! Rating salvat.");
+        }
+     });
+   });
+                      </script>
                 </div>
               </div>
               {% if guest_posts_count > 0 %}

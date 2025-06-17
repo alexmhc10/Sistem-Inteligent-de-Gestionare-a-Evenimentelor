@@ -3014,6 +3014,7 @@ def guest_event_view(request, pk):
     archives = event.archives.all()
     posts = event.posts.all()
 
+    from .models import MenuRating
     chosen_menu = []
     try:
         guest_menu = GuestMenu.objects.get(guest=request.user, event=event)
@@ -3025,6 +3026,9 @@ def guest_event_view(request, pk):
                 "image": d.item_picture.url if d.item_picture else "",
                 "allergens": [a.name for a in d.allergens.all()],
                 "is_vegan": d.item_vegan,
+                "rating": getattr(MenuRating.objects.filter(guest=preferences, menu_item=d).first(), 'rating', 0),
+                "diet_type": d.diet_type,
+                "item_cuisine": d.item_cuisine,
             })
     except GuestMenu.DoesNotExist:
         pass
@@ -3876,6 +3880,59 @@ def add_budget(request, event_id):
         budget.save()
         return redirect('event_details', event_id=event.id)
     return render(request, 'base/add_budget.html', {'event': event, 'budget': budget})
+
+# -------------------------------------------------
+#  AJAX: save ratings for multiple dishes in one go
+# -------------------------------------------------
+
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
+
+@require_POST
+@login_required(login_url='/login')
+def save_menu_ratings(request):
+    try:
+        payload = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+
+    if not isinstance(payload, list):
+        return JsonResponse({'success': False, 'error': 'Payload must be a list'}, status=400)
+
+    try:
+        guest_profile = request.user.profile_set.first().guest_profile
+    except AttributeError:
+        return JsonResponse({'success': False, 'error': 'Guest profile not found'}, status=400)
+
+    from .models import MenuRating, Menu
+
+    saved, errors = 0, []
+    for entry in payload:
+        dish_id = entry.get('dish_id')
+        rating_val = entry.get('rating')
+        try:
+            rating_val = int(rating_val)
+        except (TypeError, ValueError):
+            errors.append(f'Invalid rating for dish {dish_id}')
+            continue
+
+        if rating_val not in range(1, 6):
+            errors.append(f'Rating out of range for dish {dish_id}')
+            continue
+
+        dish = Menu.objects.filter(id=dish_id).first()
+        if not dish:
+            errors.append(f'Dish {dish_id} not found')
+            continue
+
+        MenuRating.objects.update_or_create(
+            guest=guest_profile,
+            menu_item=dish,
+            defaults={'rating': rating_val}
+        )
+        saved += 1
+
+    return JsonResponse({'success': True, 'saved': saved, 'errors': errors})
 
 
 
