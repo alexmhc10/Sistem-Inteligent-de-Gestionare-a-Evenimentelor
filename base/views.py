@@ -1098,6 +1098,7 @@ def users(request):
     user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
+    # print("Total organizatori: ", Profile.objects.filter(user_type="organizer").count())
     context = {
         'new_this_month': new_this_month,
         'percent_new': percent_new,

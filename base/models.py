@@ -71,6 +71,7 @@ class Profile(models.Model):
     email = models.EmailField()
     description = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True, default="poze_invitati/male.png")
+    cv_file = models.FileField(upload_to='cv_folder', null=True, blank=True)
     approved = models.BooleanField(default=False)
     number = models.CharField(max_length=15,default="+(40) 748364823")
     age = models.IntegerField(default=20)
