@@ -102,14 +102,14 @@
     }
 
     .btn-budget {
-        background-color: #28a745 !important;
+        background-color: #D4AF37 !important;
         color: white !important;
         border: none !important;
         transition: all 0.3s ease !important;
     }
 
     .btn-budget:hover {
-        background-color: #218838 !important;
+        background-color: #B8860B !important;
         transform: translateY(-2px);
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
@@ -184,7 +184,9 @@
                             <a href="{% url 'event_details' event.id %}" class="btn btn-view btn-sm me-1">View</a>
                             <a href="{% url 'guest_list' event.id %}" class="btn btn-view btn-sm me-1">Guest List</a>
                             <a href="{% url 'edit_event' event.id %}" class="btn btn-view btn-sm me-1">Edit</a>
-                            <a href="{% url 'add_budget' event.id %}" class="btn btn-budget btn-sm me-1">Add Budget</a>
+                            {% if user == event.organized_by %}
+                                <a href="{% url 'add_budget' event.id %}" class="btn btn-budget btn-sm me-1">Add Budget</a>
+                            {% endif %}
                             <a href="{% url 'delete_event' event.id %}" class="btn btn-delete btn-sm" onclick="return confirm('Are you sure you want to delete this event?')">Delete</a>
                         </td>
                     </tr>

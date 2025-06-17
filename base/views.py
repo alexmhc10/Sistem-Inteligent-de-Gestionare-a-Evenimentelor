@@ -63,6 +63,7 @@ from django.forms import modelformset_factory
 import joblib
 from django.utils.decorators import method_decorator
 import os
+from .models import EventBudget
 
 
 
@@ -395,10 +396,12 @@ def event_details(request, event_id):
     special_elements = list(event.location.special_elements.values(
         'type','label','position_x','position_y','rotation','width','height','radius'
     )) if event.location else []
+    budget = getattr(event, 'eventbudget', None)
     context = {
         'event': event,
         'tables_json': json.dumps(tables),
-        'special_json': json.dumps(special_elements)
+        'special_json': json.dumps(special_elements),
+        'budget': budget,
     }
     return render(request, 'base/event_details.html', context)
 
@@ -3795,7 +3798,6 @@ def save_table_positions(request, event_id):
         return JsonResponse({'status': 'ok'})
 
 @login_required(login_url='/login')
-@user_is_staff
 @require_POST
 def save_table_layout(request):
     try:
@@ -3855,6 +3857,24 @@ def save_table_layout(request):
         return JsonResponse({'success': True})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+@login_required(login_url='/login')
+def add_budget(request, event_id):
+    event = get_object_or_404(Event, id=event_id)
+    budget, created = EventBudget.objects.get_or_create(event=event)
+    if request.method == 'POST':
+        # Update all budget fields from the form
+        for field in budget._meta.fields:
+            if isinstance(field, models.DecimalField) and field.name.endswith('_cost'):
+                value = request.POST.get(field.name, '0')
+                try:
+                    value = float(value)
+                except ValueError:
+                    value = 0
+                setattr(budget, field.name, value)
+        budget.save()
+        return redirect('event_details', event_id=event.id)
+    return render(request, 'base/add_budget.html', {'event': event, 'budget': budget})
 
 
 

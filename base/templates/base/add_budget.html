@@ -1,435 +1,263 @@
 {% extends 'main.html' %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 <style>
-    .budget-category {
-        margin-bottom: 2rem;
-    }
-    
-    .category-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-        cursor: pointer;
-    }
-    
-    .category-icon {
-        margin-right: 1rem;
-        font-size: 1.5rem;
-    }
-    
-    .category-title {
-        font-size: 1.2rem;
-        color: #333;
-        margin: 0;
-    }
-    
-    .budget-item {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.5rem 0;
-        border-bottom: 1px solid #eee;
-    }
-    
-    .budget-item-title {
-        color: #666;
-    }
-    
-    .budget-item-cost input {
-        border: none;
-        border-bottom: 1px dashed #ccc;
-        width: 100px;
-        text-align: right;
-        padding: 0.2rem;
-    }
-    
-    .budget-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-        padding: 1rem;
-        background-color: #f8f9fa;
-        border-radius: 8px;
-    }
-    
-    .total-budget {
-        font-size: 1.5rem;
-        color: #28a745;
-    }
-    
-    .settings-btn {
-        color: #6c757d;
-        text-decoration: none;
-    }
-    
-    .settings-btn:hover {
-        color: #5a6268;
-    }
+    :root{--gold:#D4AF37;--creme:#FAF9F6;}
+    .title-col{min-width:220px;}
+    .input-group-text{background:var(--creme);border-right:0;color:var(--gold);font-weight:600;}
+    .form-control.number-input{border-left:0;text-align:right;background:#fff;}
+    .accordion-item{border:1px solid var(--gold);border-radius:6px;}
+    .accordion-button{background:var(--creme);color:var(--gold);font-weight:600;}
+    .accordion-button:not(.collapsed){background:var(--gold);color:#fff;}
+    .accordion-button:focus{box-shadow:none;}
+    .input-group .form-control{border-color:var(--gold);}    
+    .input-group .form-control:focus{box-shadow:0 0 0 .2rem rgba(212,175,55,.25);}
+    .input-group-text{border-color:var(--gold);}    
+    .accordion-body .border-bottom{border-color:var(--gold)!important;}
+    .btn-save{background:var(--gold);color:#fff;border:none;}
+    .btn-save:hover{background:#b7902a;}
 </style>
-
-<div class="container mt-5">
+<div class="container my-5">
+    <h2 class="text-center mb-4">Budget for {{ event.event_name }}</h2>
     <form method="POST">
         {% csrf_token %}
-        <div class="budget-header">
-            <h2>Budget <span class="total-budget">$<span id="totalBudget">{{ budget.total_budget|default:"0.00" }}</span></span></h2>
-            <a href="#" class="settings-btn">⚙️ Settings</a>
-        </div>
-
-        <!-- Venue & Ceremony -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">🏰</span>
-                <h3 class="category-title">Venue & Ceremony</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Venue Rental</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="venue_rental_cost" step="0.01" value="{{ budget.venue_rental_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Ceremony Location</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="ceremony_location_cost" step="0.01" value="{{ budget.ceremony_location_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Chairs & Tables Rental</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="furniture_rental_cost" step="0.01" value="{{ budget.furniture_rental_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Decorations & Flowers</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="decorations_cost" step="0.01" value="{{ budget.decorations_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Attire & Accessories -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">👰</span>
-                <h3 class="category-title">Attire & Accessories</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Dress</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="wedding_dress_cost" step="0.01" value="{{ budget.wedding_dress_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Groom's Suit</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="groom_suit_cost" step="0.01" value="{{ budget.groom_suit_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Accessories (Veil, Jewelry, etc.)</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="accessories_cost" step="0.01" value="{{ budget.accessories_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Shoes</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="shoes_cost" step="0.01" value="{{ budget.shoes_cost|default:'0.00' }}" class="cost-input">
+        <div class="accordion" id="budgetAccordion">
+            <!-- Entertainment -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="entHead">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#entCollapse" aria-expanded="true" aria-controls="entCollapse">
+                        <i class="bi bi-music-note-beamed me-2"></i> Entertainment
+                    </button>
+                </h2>
+                <div id="entCollapse" class="accordion-collapse collapse show" aria-labelledby="entHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Band</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="band_cost" value="{{ budget.band_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">DJ</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="dj_cost" value="{{ budget.dj_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Sound System</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="sound_system_cost" value="{{ budget.sound_system_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Photography & Video -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">📸</span>
-                <h3 class="category-title">Photography & Video</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Photographer</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="photographer_cost" step="0.01" value="{{ budget.photographer_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Videographer</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="videographer_cost" step="0.01" value="{{ budget.videographer_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Photo Booth</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="photo_booth_cost" step="0.01" value="{{ budget.photo_booth_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Album</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="album_cost" step="0.01" value="{{ budget.album_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Entertainment Section -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">🎵</span>
-                <h3 class="category-title">Entertainment</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Band</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="band_cost" step="0.01" value="{{ budget.band_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">DJ</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="dj_cost" step="0.01" value="{{ budget.dj_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Sound System Rental</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="sound_system_cost" step="0.01" value="{{ budget.sound_system_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Lighting Effects</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="lighting_cost" step="0.01" value="{{ budget.lighting_cost|default:'0.00' }}" class="cost-input">
+            <!-- Beauty & Health -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="beautyHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#beautyCollapse" aria-expanded="false" aria-controls="beautyCollapse">
+                        <i class="bi bi-scissors me-2"></i> Beauty and Health
+                    </button>
+                </h2>
+                <div id="beautyCollapse" class="accordion-collapse collapse" aria-labelledby="beautyHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Hair</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="hair_cost" value="{{ budget.hair_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Makeup</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="makeup_cost" value="{{ budget.makeup_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Spa</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="spa_cost" value="{{ budget.spa_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Beauty and Health Section -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">💅</span>
-                <h3 class="category-title">Beauty and Health</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Hair and Makeup</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="hair_makeup_cost" step="0.01" value="{{ budget.hair_makeup_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Prewedding Pampering</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="pampering_cost" step="0.01" value="{{ budget.pampering_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Bridal Party Hair & Makeup</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="bridal_party_beauty_cost" step="0.01" value="{{ budget.bridal_party_beauty_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Flowers & Decorations -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">💐</span>
-                <h3 class="category-title">Flowers & Decorations</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Bridal Bouquet</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="bridal_bouquet_cost" step="0.01" value="{{ budget.bridal_bouquet_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Bridesmaids Bouquets</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="bridesmaids_bouquets_cost" step="0.01" value="{{ budget.bridesmaids_bouquets_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Centerpieces</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="centerpieces_cost" step="0.01" value="{{ budget.centerpieces_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Ceremony Decorations</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="ceremony_decorations_cost" step="0.01" value="{{ budget.ceremony_decorations_cost|default:'0.00' }}" class="cost-input">
+            <!-- Cake -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="cakeHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cakeCollapse" aria-expanded="false" aria-controls="cakeCollapse">
+                        <i class="bi bi-cake2 me-2"></i> Cake
+                    </button>
+                </h2>
+                <div id="cakeCollapse" class="accordion-collapse collapse" aria-labelledby="cakeHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Cake and Cutting Fee</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="cake_cost" value="{{ budget.cake_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Puffs</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="snacks_cost" value="{{ budget.snacks_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Catering Section -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">🍽️</span>
-                <h3 class="category-title">Catering</h3>
+            <!-- Catering -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="catHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#catCollapse" aria-expanded="false" aria-controls="catCollapse">
+                        <i class="bi bi-egg-fried me-2"></i> Catering
+                    </button>
+                </h2>
+                <div id="catCollapse" class="accordion-collapse collapse" aria-labelledby="catHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Beverage and Bartenders</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="beverages_cost" value="{{ budget.beverages_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Food and Service</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="food_cost" value="{{ budget.food_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Food Service (per person)</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="food_per_person_cost" step="0.01" value="{{ budget.food_per_person_cost|default:'0.00' }}" class="cost-input">
+            <!-- Ceremony Music -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="cerMusicHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#cerMusicCollapse" aria-expanded="false" aria-controls="cerMusicCollapse">
+                        <i class="bi bi-mic me-2"></i> Ceremony Music
+                    </button>
+                </h2>
+                <div id="cerMusicCollapse" class="accordion-collapse collapse" aria-labelledby="cerMusicHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Ceremony Musicians / Orchestra</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="sound_system_cost" value="{{ budget.sound_system_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Singer</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="dj_cost" value="{{ budget.dj_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Beverages & Bar Service</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="beverage_cost" step="0.01" value="{{ budget.beverage_cost|default:'0.00' }}" class="cost-input">
+            </div>
+            <!-- Dress & Attire - Bride -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="dressHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dressCollapse" aria-expanded="false" aria-controls="dressCollapse">
+                        <i class="bi bi-bag-heart me-2"></i> Dress and Attire - Bride
+                    </button>
+                </h2>
+                <div id="dressCollapse" class="accordion-collapse collapse" aria-labelledby="dressHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Wedding Dress</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="wedding_dress_cost" value="{{ budget.wedding_dress_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Accessories</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="accessories_cost" value="{{ budget.accessories_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Shoes</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="shoes_cost" value="{{ budget.shoes_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Cake</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="cake_cost" step="0.01" value="{{ budget.cake_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Dessert Table</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="dessert_table_cost" step="0.01" value="{{ budget.dessert_table_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Late Night Snacks</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="late_night_snacks_cost" step="0.01" value="{{ budget.late_night_snacks_cost|default:'0.00' }}" class="cost-input">
+            </div>
+            <!-- Organizer Payment -->
+            <div class="accordion-item mb-3">
+                <h2 class="accordion-header" id="orgPayHead">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#orgPayCollapse" aria-expanded="false" aria-controls="orgPayCollapse">
+                        <i class="bi bi-wallet2 me-2"></i> Organizer Payment
+                    </button>
+                </h2>
+                <div id="orgPayCollapse" class="accordion-collapse collapse" aria-labelledby="orgPayHead" data-bs-parent="#budgetAccordion">
+                    <div class="accordion-body px-0">
+                        <div class="d-flex align-items-center border-bottom py-2 px-3">
+                            <div class="title-col flex-grow-1 fw-semibold">Organizer Fee</div>
+                            <div class="ms-auto" style="max-width:150px;">
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" step="0.01" name="organizer_payment_cost" value="{{ budget.organizer_payment_cost }}" class="form-control number-input" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- Stationery & Gifts -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">✉️</span>
-                <h3 class="category-title">Stationery & Gifts</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Invitations & Save the Dates</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="invitations_cost" step="0.01" value="{{ budget.invitations_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Programs</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="programs_cost" step="0.01" value="{{ budget.programs_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Party Gifts</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="party_gifts_cost" step="0.01" value="{{ budget.party_gifts_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Guest Favors</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="favors_cost" step="0.01" value="{{ budget.favors_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Transportation -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">🚗</span>
-                <h3 class="category-title">Transportation</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Car/Limo</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="wedding_car_cost" step="0.01" value="{{ budget.wedding_car_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Guest Shuttle Service</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="guest_transport_cost" step="0.01" value="{{ budget.guest_transport_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Miscellaneous -->
-        <div class="budget-category">
-            <div class="category-header">
-                <span class="category-icon">📋</span>
-                <h3 class="category-title">Miscellaneous</h3>
-            </div>
-            <div class="budget-items">
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Insurance</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="insurance_cost" step="0.01" value="{{ budget.insurance_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Marriage License</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="license_cost" step="0.01" value="{{ budget.license_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Wedding Planner</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="planner_cost" step="0.01" value="{{ budget.planner_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-                <div class="budget-item">
-                    <span class="budget-item-title">Emergency Fund</span>
-                    <div class="budget-item-cost">
-                        <input type="number" name="emergency_fund_cost" step="0.01" value="{{ budget.emergency_fund_cost|default:'0.00' }}" class="cost-input">
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="text-center mt-4">
-            <button type="submit" class="btn btn-primary">Save Budget</button>
+        <div class="text-end mt-4">
+            <button type="submit" class="btn btn-save btn-lg">Save Budget</button>
         </div>
     </form>
+    <div class="mt-4 text-end">
+        <h4>Total Budget: <span class="badge bg-primary">{{ budget.total_budget|floatformat:2 }} RON</span></h4>
+    </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const costInputs = document.querySelectorAll('.cost-input');
-    const totalBudgetSpan = document.getElementById('totalBudget');
-
-    function updateTotal() {
-        let total = 0;
-        costInputs.forEach(input => {
-            total += parseFloat(input.value) || 0;
-        });
-        totalBudgetSpan.textContent = total.toFixed(2);
-    }
-
-    costInputs.forEach(input => {
-        input.addEventListener('input', updateTotal);
-    });
-
-    // Initialize total
-    updateTotal();
-});
-</script>
 {% endblock %}

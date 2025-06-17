@@ -48,6 +48,24 @@
                 <div class="col-sm-9">{{ event.event_description }}</div>
             </div>
 
+            <!-- Budget Summary -->
+            {% if budget %}
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">💰 Budget:</div>
+                <div class="col-sm-9">
+                    <span class="badge" style="background:#D4AF37;color:#fff;font-size:1rem;">Total: {{ budget.total_budget|floatformat:2 }} RON</span>
+                    <a href="{% url 'add_budget' event.id %}" class="btn btn-sm btn-gold ms-3">View / Edit Details</a>
+                </div>
+            </div>
+            {% else %}
+            <div class="row mb-3">
+                <div class="col-sm-3 fw-bold text-secondary">💰 Budget:</div>
+                <div class="col-sm-9">
+                    <a href="{% url 'add_budget' event.id %}" class="btn btn-sm btn-gold">Add Budget</a>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Location -->
             <div class="row mb-3">
                 <div class="col-sm-3 fw-bold text-secondary">📍 Location:</div>
@@ -307,6 +325,16 @@
     }
     .table-shape {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    .btn-gold{
+        background:#D4AF37;
+        color:#fff;
+        border:1px solid #D4AF37;
+    }
+    .btn-gold:hover,.btn-gold:focus{
+        background:#c19a2c;
+        border-color:#c19a2c;
+        color:#fff;
     }
 </style>
 
