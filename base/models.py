@@ -201,7 +201,7 @@ class Guests(models.Model):
     allergens = models.ManyToManyField(Allergen, blank=True)
     medical_conditions = models.ManyToManyField('MedicalCondition', blank=True)
     custom_medical_notes = models.TextField(null=True, blank=True)
-    spicy_food = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
+    spicy_food = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none', blank=True, null=True)
     state = models.BooleanField(default=False)
     texture_preference = models.CharField(max_length=10, choices=TEXTURE_CHOICES, default='none', blank=True, null=True)
     nutrition_goal = models.CharField(max_length=15, choices=NUTRITION_GOAL_CHOICES, default='none', blank=True, null=True)

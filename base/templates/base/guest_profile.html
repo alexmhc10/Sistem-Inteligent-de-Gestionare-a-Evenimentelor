@@ -141,7 +141,7 @@
         </div>
 
         <div id="form-1" class="form-container flex-column align-items-center justify-content-center">
-            <h2 class="text-center">Since you just got your new account we'll have to go through and se up your profile.</h2>
+            <h2 class="text-center">Since you just got your new account we'll have to go through and set up your profile.</h2>
             <div class = "button-container">
                 <button class="btn btn-outline-success" id="accept-btn">Let's go!</button>
             </div>
@@ -177,11 +177,11 @@
                   <div class="d-grid gap-2 d-md-flex align-items-center mt-2">
                     <p>Gender:</p>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios1" value="M">
+                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios1" value="M" required>
                         <label class="form-check-label" for="exampleRadios1">M</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="F">
+                        <input class="form-check-input" type="radio" name="gender" id="exampleRadios2" value="F" required>
                         <label class="form-check-label" for="exampleRadios2">F</label>
                     </div>
                   </div>
@@ -194,31 +194,24 @@
 
               <div id="form-3" class="form-container flex-column">
                 <h2>Event details</h2>
-                <label for="zona">:</label>
-                <select id="zona" class="form-select" name="zona">
+                <!-- <label for="zona">:</label>
+                <select id="zona" class="form-select" name="zona" required>
                     <option value="Margine">Marginal</option>
                     <option value="Central">Central</option>
                     <option value="Oriunde" selected>No preferences</option>
                     <option value="Spre_iesire">Exit</option>
                     <option value="Langa_scena">Stage</option>
-                </select>
+                </select> -->
                 <!-- <label for="prieteni">Cu cine vei veni la eveniment?</label>
                 <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
                     Scrie numele complet al priteninilor cu care vei veni la eveniment
                 </textarea> -->
-                <label for="meniu">Menu:</label>
-                <select id="meniu" class="form-select" name="meniuSet" required>
-                    <option value="Iberic">Iberic</option>
-                    <option value="Italienesc">Italian</option>
-                    <option value="Chinezesc" selected>Chinese</option>
-                    <option value="Fara_preferinte">No preferences</option>
-                    <option value="Oriental">Oriental</option>
-                </select>
-                    <h4>Are you vegan?</h4>
-                    <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
-                        <label class="form-check-label" for="inlineCheckbox1">Yes</label>
-                    </div>
+                  <label for="diet_preference">Diet preference:</label>
+                  <select id="diet_preference" class="form-select" name="diet_preference" required>
+                      {% for diet in diet_choices %}
+                          <option value="{{diet.0}}">{{diet.1}}</option>
+                      {% endfor %}
+                  </select>
                     <h4>Are you allergic?</h4>
                     <div class="d-flex flex-row flex-wrap">
                       {% for allergen in allergens %}
@@ -228,6 +221,12 @@
                       </div>
                       {% endfor %}
                   </div>
+                  <label for="spicy_food">Spicy food preference:</label>
+                  <select id="spicy_food" class="form-select" name="spicy_food" required>
+                      {% for spicy in hot_levels %}
+                          <option value="{{spicy.0}}">{{spicy.1}}</option>
+                      {% endfor %}
+                  </select>
                   <div class="d-grid gap-2 d-md-flex justify-content-between">
                     <button type="button" id="back-2" class="btn btn-outline-dark">Back</button>
                     <button type="button" id="continue-2" class="btn btn-outline-success">Finalise</button>
@@ -237,108 +236,113 @@
             <div id="final-page" class="form-container flex-column text-center">
                 <h2>Thank you for your patience!</h2>
                 <h3>We wish you a great time at your future event!</h3>
+                <button type="button" id="back-3" class="btn btn-outline-dark">Back</button>
+
                 <button type="submit" name="submit" class="btn btn-outline-success mt-2 mb-2">Check out your profile!</button>
             </div>
           </form>
       </div>
       <script>
-        document.getElementById('accept-btn').addEventListener('click', function() {
-        document.getElementById('form-1').style.display = 'none';
-        document.getElementById('form-2').style.display = 'flex';
-        document.getElementById('step-1').querySelector('.circle').style.backgroundColor = 'green';
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.querySelector('form');
+
+            const step2 = document.getElementById('form-2');
+            const step3 = document.getElementById('form-3');
+            const finalPage = document.getElementById('final-page');
+
+            const btnCont1 = document.getElementById('continue-1');
+            const btnCont2 = document.getElementById('continue-2');
+            const btnBack2 = document.getElementById('back-2');
+            const btnBack3 = document.getElementById('back-3');
+            const btnAccept = document.getElementById('accept-btn');
+            function toggleStep(container, show) {
+            // show = true → afișăm + enable, else hide + disable
+              container.style.display = show ? (container.id === 'form-1' ? 'block' : 'flex') : 'none';
+              const fields = container.querySelectorAll('input, select, textarea, button');
+              fields.forEach(f => {
+                  if (f.name !== 'csrfmiddlewaretoken') {
+                      f.disabled = !show;
+                  }
+              });   // <-- important
+          }
+
+          function goTo(step) {
+              ['form-1','form-2','form-3','final-page'].forEach(id => {
+                  const el = document.getElementById(id);
+                  if (el) toggleStep(el, id === step);
+              });
+              localStorage.setItem('guestProfileStep', step);
+          }
+
+            function validateStep(container) {
+                const fields = container.querySelectorAll('input, select, textarea');
+                for (const field of fields) {
+                    if (!field.checkValidity()) {
+                        field.reportValidity();
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+
+            const savedStep = localStorage.getItem('guestProfileStep') || 'form-1';
+            goTo(savedStep);
+
+            btnCont1.addEventListener('click', () => {
+                if (validateStep(step2)) {
+                    goTo('form-3');
+                }
+            });
+
+            btnBack2.addEventListener('click', () => {
+                goTo('form-2');
+            });
+
+            btnCont2.addEventListener('click', () => {
+                if (validateStep(step3)) {
+                    goTo('final-page');
+                }
+            });
+
+            btnBack3.addEventListener('click', () => {
+                goTo('form-3');
+            });
+
+            if (btnAccept) {
+                btnAccept.addEventListener('click', () => {
+                    goTo('form-2');
+                });
+            }
+
+            form.addEventListener('submit', (e) => {
+                const allStepsValid = [step2, step3].every(validateStep);
+                if (!allStepsValid) {
+                    e.preventDefault();
+                } else {
+                    document.querySelectorAll('#form-1 input, #form-2 input, #form-3 input, #form-2 select, #form-3 select, #form-2 textarea, #form-3 textarea').forEach(f => f.disabled = false);
+                    localStorage.removeItem('guestProfileStep');
+                }
+            });
         });
-    
-        document.getElementById('continue-1').addEventListener('click', function(e) {
-        e.preventDefault();
-        document.getElementById('form-2').style.display = 'none';
-        document.getElementById('form-3').style.display = 'flex';
-        document.getElementById('step-2').querySelector('.circle').style.backgroundColor = 'green';
-        });
-    
-        document.getElementById('continue-2').addEventListener('click', function(e) {
-        document.getElementById('step-3').querySelector('.circle').style.backgroundColor = 'green';
-        document.getElementById('form-3').style.display = 'none';
-        document.getElementById('final-page').style.display = 'flex';
-        });
-        document.getElementById('back-2').addEventListener('click', function () {
-        document.getElementById('form-3').style.display = 'none';
-        document.getElementById('form-2').style.display = 'flex';
-        document.getElementById('step-2').querySelector('.circle').style.backgroundColor = '';
-        });
-    
+
     </script>
       {% else %}
       <form method="post" action="" enctype="multipart/form-data">
         {% csrf_token %}
 
         <div class="row gutters-sm mt-4">
-          <!--<div class="col-lg-4 mb-3">
-            <div class="card">
-              <div class="card-body">
-                <div class="d-flex flex-column align-items-center text-center">
-                  <label class="avatar avatar-xxl avatar-circle avatar-uploader profile-cover-avatar" for="editAvatarUploaderModal">
-                  <img src="{{ MEDIA_URL }}{{ profile.photo }}" id="editAvatarImgModal" alt="Admin" class="rounded-circle" width="150">
-                  <input type="file" style="display: none;" class="js-file-attach avatar-uploader-input" id="editAvatarUploaderModal" 
-                                          data-hs-file-attach-options="{
-                                            &quot;textTarget&quot;: &quot;#editAvatarImgModal&quot;,
-                                            &quot;mode&quot;: &quot;image&quot;,
-                                            &quot;targetAttr&quot;: &quot;src&quot;,
-                                            &quot;allowTypes&quot;: [&quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;]
-                                          }" onchange="updateImage(event)"
-                                          name="photo">
-                                          <span class="avatar-uploader-trigger" 
-                                          style="
-                                            display: inline-flex; 
-                                            justify-content: center; 
-                                            align-items: center; 
-                                            width: 40px; 
-                                            height: 40px; 
-                                            border-radius: 50%; 
-                                            background-color: #fff; 
-                                            position: absolute; 
-                                            bottom: -10px; 
-                                            top:90px;
-                                            right: 5px;">
-                                      <i class="bi-pencil-fill avatar-uploader-icon shadow-sm"></i>
-                                    </span>
-                  </label>
-                                          <script>
-                                            function updateImage(event) {
-                                                const file = event.target.files[0];
-                                                const reader = new FileReader();
-                                        
-                                                reader.onload = function (e) {
-                                                    document.getElementById('editAvatarImgModal').src = e.target.result;
-                                                }
-                                        
-                                                if (file) {
-                                                    reader.readAsDataURL(file); 
-                                                }
-                                            }
-                                        </script>                        
-                  <div class="mt-3">
-                    <h4>{{ profile.username }}</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>-->
           <div class="col-4 mb-4">
                 <div class="card">
                   <div class="card-body">
                     <div class="text-center">
                         <div class="position-relative d-inline-block">
-                            <img id="profile-image" src="{{MEDIA_URL}}{{profile.photo}}" style="max-width: 120px; max-height: 120px;" class="rounded-circle profile-pic" alt="Profile Picture">
+                            <img id="profile-image" src="{{MEDIA_URL}}{{profile.photo}}" style="max-width: 120px; height: 120px; object-fit: cover;" class="rounded-circle profile-pic" alt="Profile Picture">
                             <button id="upload-btn" type="button" class="btn btn-primary btn-sm position-absolute bottom-0 end-0 rounded-circle">
                                 <i class="fas fa-camera"></i>
                             </button>
                         </div>
                         <h3 class="mt-3 mb-1">{{profile.username}}</h3>
-                        <!--<p class="text-muted mb-3">Senior Product Designer</p>
-                        <div class="d-flex justify-content-center gap-2 mb-4">
-                            <button class="btn btn-outline-primary"><i class="fas fa-envelope me-2"></i>Message</button>
-                            <button class="btn btn-primary"><i class="fas fa-user-plus me-2"></i>Connect</button>
-                        </div>-->
                     </div>
                   </div>
                 </div> 
@@ -351,7 +355,7 @@
                     const profileImg = document.getElementById('profile-image');
 
                     uploadBtn.addEventListener('click', (e) => {
-                      e.preventDefault(); // oprește acțiunea implicită
+                      e.preventDefault();
                       inputFile.click();
                     });
 
@@ -386,9 +390,6 @@
                     }
                   });
                 </script>
-
-
-
             <div class="col-lg-8">
               <div class="card">
                 <div class="card-body">
@@ -495,7 +496,7 @@
                     </select>                   
                     </div>
                   </div>
-                  <div class="row mb-3 mt-2">
+                  <div class="row d-flex flex-wrap mb-3 mt-2">
                     <div class="col-sm-2">
                       <h6 class="mb-0">Allergens</h6>
                     </div>
@@ -506,20 +507,100 @@
                       {% endfor %}
                     </div>
                     <div class="col-sm-2">
-                      <h6 class="mb-0">Vegan</h6>
+                      <h6 class="mb-0">Diet preference</h6>
                     </div>
                     <div class="col-sm-3 text-secondary">
-                      <div class="form-check form-check-inline">
-                        {% if preferences.vegan %}
-                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1" checked>
-                        {% else %}
-                        <input class="form-check-input" type="checkbox" name="vegan_check" id="inlineCheckbox1" value="1">
-                        {% endif %}
-                        <label class="form-check-label text-dark" for="inlineCheckbox1">Yes</label>
-                      </div>                    
+                      <select id="diet_preference" class="form-select" name="diet_preference" required>
+                        <option value="{{ preferences.diet_preference }}">{{ preferences.diet_preference }}</option>  
+                        {% for diet in diet_choices %}
+                            <option value="{{diet.0}}">{{diet.1}}</option>
+                        {% endfor %}
+                      </select>
                     </div>
+                    <hr>
                   </div>
+                    <p class="mb-4">Complete aditional information for a better and more personalized experience</p>
                   <div class="row">
+                    <div class="row mb-3">
+                      <div class="col-sm-3 d-flex align-items-center">
+                        <h6 class="mb-0">Spice preference</h6>
+                      </div>
+                      <div class="col-sm-3 text-secondary">
+                        <select id="spicy_food" class="form-select" name="spicy_food" required>
+                          {% if preferences.spicy_food %}
+                            <option value="{{preferences.spicy_food}}">{{preferences.spicy_food}}</option>
+                          {% endif %}
+                          {% for spicy in hot_levels %}
+                              <option value="{{spicy.0}}">{{spicy.1}}</option>
+                          {% endfor %}
+                      </select>
+                      </div>
+                      <div class="col-sm-3 d-flex align-items-center">
+                        <h6 class="mb-0">Texture preference</h6>
+                      </div>
+                      <div class="col-sm-3 text-secondary">
+                        <select id="texture_preference" class="form-select" name="texture_preference" required>
+                          {% if preferences.texture_preference %}
+                            <option value="{{preferences.texture_preference}}">{{preferences.texture_preference}}</option>
+                          {% else %}
+                            <option value="no_texture">No texture</option>
+                          {% endif %}
+                          {% for texture in texture_choices %}
+                              <option value="{{texture.0}}">{{texture.1}}</option>
+                          {% endfor %}
+                      </select>
+                      </div>
+                    </div>
+                    <div class="row mb-3">
+                      <div class="col-sm-3 d-flex align-items-center">
+                        <h6 class="mb-0">Nutrition goal</h6>
+                      </div>
+                      <div class="col-sm-3 text-secondary">
+                        <select id="nutrition_goal" class="form-select" name="nutrition_goal" required>
+                          {% if preferences.nutrition_goal %}
+                          <option value="{{preferences.nutrition_goal}}">{{preferences.nutrition_goal}}</option>
+                            {% for goal in nutrition_goals %}
+                                <option value="{{goal.0}}">{{goal.1}}</option>
+                            {% endfor %}
+                          {% else %}
+                            <option value="no_goal">No goal</option>
+                          {% endif %}
+                      </select>
+                      </div>
+                      <div class="col-sm-3 d-flex align-items-center">
+                        <h6 class="mb-0">Medical conditions</h6>
+                      </div>
+                      <div class="col-sm-3 text-secondary">
+                        <select id="medical_conditions"
+                        class="form-select"
+                        name="medical_conditions"  multiple required>
+                
+                        {% for cond in preferences.medical_conditions.all %}
+                            <option value="{{ cond.id }}" selected>{{ cond.name }}</option>
+                        {% endfor %}
+                      
+                        {# opţiune “No condition” dacă nu e nimic ales #}
+                        {% if not preferences.medical_conditions.exists %}
+                            <option value="no_condition" selected>No condition</option>
+                        {% else %}
+                            <option value="no_condition">No condition</option>
+                        {% endif %}
+                      
+                        {% for condition in medical_conditions %}
+                            <option value="{{ condition.id }}">{{ condition.name }}</option>
+                        {% endfor %}
+                      </select>
+                      
+                    </div>
+                    <div class="col-sm-3 d-flex align-items-center">
+                      <h6 class="mb-0">Medical notes</h6>
+                    </div>
+                    <div class="col-sm-3 text-secondary">
+                      <textarea id="medical_notes" class="form-control" name="medical_notes" rows="3">{{preferences.medical_notes}}</textarea>
+                      </div>
+                     </div> 
+                  </div>
+                  <div class="row mt-4">
                     <div class="col-sm-3"></div>
                     <div class="col-sm-9 text-secondary">
                       <button type="submit" id="submit" name="form_type" value="form2" class="btn btn-primary px-4">Save changes</button>

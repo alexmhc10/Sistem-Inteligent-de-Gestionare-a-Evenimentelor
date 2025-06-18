@@ -2370,7 +2370,6 @@ def completed_event(request, pk):
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
         return redirect(request.META.get('HTTP_REFERER', '/login/'))
 
-    # Utilize reverse relation for clarity and consistency
     archives = event.archives.all()
     posts = event.posts.all()
     print('Posts:', posts)
@@ -2429,18 +2428,15 @@ class UploadArchiveAPI(View):
 @login_required(login_url='/login')
 @user_is_staff
 def delete_archive(request, archive_id):
-    """Şterge un obiect EventGallery şi fişierul asociat."""
     if request.method not in ["POST", "DELETE"]:
         return JsonResponse({"success": False, "error": "Metodă invalidă"}, status=400)
 
     try:
         archive = EventGallery.objects.get(id=archive_id)
 
-        # Doar personalul locaţiei care a organizat evenimentul poate şterge
         if archive.event.location.user_account != request.user:
             return JsonResponse({"success": False, "error": "Permisiune refuzată"}, status=403)
 
-        # Şterge fişierul din storage înainte de a şterge obiectul
         if archive.archive:
             archive.archive.delete(save=False)
 
@@ -2451,7 +2447,6 @@ def delete_archive(request, archive_id):
         return JsonResponse({"success": False, "error": "Arhiva nu a fost găsită"}, status=404)
 
 
-from .models import REGION_CHOICES
 @login_required(login_url='/login')
 @user_is_staff
 def personal_menu(request):
@@ -2808,6 +2803,7 @@ def validate_attendance(request):
             return JsonResponse({'error': 'User not found'}, status=404)
     return JsonResponse({'error': 'Invalid method'}, status=400)
 
+from .constants import TEMP_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, DIET_CHOICES
 
 @login_required(login_url='/login')
 @user_is_guest
@@ -2822,11 +2818,12 @@ def guest_profile(request):
             try:
                 required_fields = {
                     'firstname': "Firstname is mandatory",
-                    'lastname': "lastname is mandatory",
+                    'lastname': "Lastname is mandatory",
                     'email': "Email is mandatory",
                     'age': "Age is mandatory",
                     'gender': "Gender is mandatory",
-                    'meniuSet': "Menu is mandatory"
+                    'diet_preference': "Diet preference is mandatory",
+                    'spicy_food': "Spicy food preference is mandatory"
                 }
                 
                 errors = {}
@@ -2858,8 +2855,9 @@ def guest_profile(request):
                 
                 preferences = profil.guest_profile
                 preferences.gender = request.POST.get('gender')
-                preferences.cuisine_preference = request.POST.get('meniuSet')
-                preferences.vegan = request.POST.get('vegan_check') == '1'
+                preferences.cuisine_preference = request.POST.get('meniu')
+                preferences.diet_preference = request.POST.get('diet_preference')
+                preferences.spicy_food = request.POST.get('spicy_food')
                 
                 selected_allergens = request.POST.getlist('allergensSet')
                 selected_allergens_ids = [int(id) for id in selected_allergens if id.isdigit()]
@@ -2891,23 +2889,53 @@ def guest_profile(request):
                 profil.user.save()
                 
             elif form_type == 'form2':
-                preferences.cuisine_preference = request.POST.get('meniu')
-                preferences.vegan = request.POST.get('vegan_check') == '1'
+                preferences.diet_preference = request.POST.get('diet_preference', 'none')
+                preferences.spicy_food = request.POST.get('spicy_food', 'none')
+                preferences.texture_preference = request.POST.get('texture_preference', 'none')
+                preferences.nutrition_goal = request.POST.get('nutrition_goal', 'none')
+
+                selected_medical_ids = request.POST.getlist('medical_conditions')
+                if selected_medical_ids and selected_medical_ids[0] != 'no_condition':
+                    mc_qs = MedicalCondition.objects.filter(id__in=selected_medical_ids)
+                    preferences.medical_conditions.set(mc_qs)
+                else:
+                    preferences.medical_conditions.clear()
+
                 selected_allergens = request.POST.getlist('allergens')
-                selected_allergens_ids = [int(id) for id in selected_allergens if id.isdigit()]
-                allergens = Allergen.objects.filter(id__in=selected_allergens_ids)
-                preferences.allergens.set(allergens)
+                selected_allergens_ids = [int(i) for i in selected_allergens if i.isdigit()]
+                preferences.allergens.set(Allergen.objects.filter(id__in=selected_allergens_ids))
+
+                preferences.custom_medical_notes = request.POST.get('medical_notes')
+
                 preferences.save()
 
             
     not_completed = Guests.objects.filter(profile__user=request.user, state=False).exists()
     allergens = Allergen.objects.all()
+    medical_conditions = MedicalCondition.objects.all()
+    temp_choices = TEMP_CHOICES
+    texture_choices = TEXTURE_CHOICES
+    nutrition_goals = NUTRITION_GOAL_CHOICES
+    diet_choices = DIET_CHOICES
+    SPICY_LEVELS = [
+        ('none', 'None'),
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High')
+    ]
+    hot_levels = SPICY_LEVELS
 
     context = {
         "not_completed": not_completed,
         "preferences": preferences,
         "profile": profil,
-        "allergens": allergens
+        "allergens": allergens,
+        "diet_choices": diet_choices,
+        "hot_levels": hot_levels,
+        "medical_conditions": medical_conditions,
+        "temp_choices": temp_choices,
+        "texture_choices": texture_choices,
+        "nutrition_goals": nutrition_goals,
     }            
 
     return render(request, 'base/guest_profile.html', context)
@@ -3003,6 +3031,7 @@ def guest_event_view(request, pk):
         print(value)
         if value in ["Accepted", "Declined"]:
             rsvp.response = value
+            rsvp.responded = True
             rsvp.save() 
 
     if request.method == 'POST' and request.POST.get("form_type") == "add_post":

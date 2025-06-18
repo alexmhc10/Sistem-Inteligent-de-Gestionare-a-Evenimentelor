@@ -41,7 +41,6 @@ REGION_CHOICES = [
         ('filipino', 'Filipino'),
     ]
 
-# Regimuri alimentare (dietary restrictions)
 DIET_CHOICES = [
     ('none', 'No specific diet'),
     ('vegan', 'Vegan'),
@@ -52,8 +51,6 @@ DIET_CHOICES = [
     ('halal', 'Halal'),
     ('kosher', 'Kosher'),
 ]
-
-# ---------- New preference / feature choices ----------
 
 TEXTURE_CHOICES = [
     ('none', 'No preference'),
