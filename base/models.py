@@ -203,7 +203,6 @@ class Guests(models.Model):
     custom_medical_notes = models.TextField(null=True, blank=True)
     spicy_food = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     state = models.BooleanField(default=False)
-    # new soft preferences
     texture_preference = models.CharField(max_length=10, choices=TEXTURE_CHOICES, default='none', blank=True, null=True)
     nutrition_goal = models.CharField(max_length=15, choices=NUTRITION_GOAL_CHOICES, default='none', blank=True, null=True)
     temp_preference = models.CharField(max_length=5, choices=TEMP_CHOICES, default='hot', blank=True, null=True)
@@ -242,37 +241,54 @@ class Guests(models.Model):
             if self.diet_preference == 'vegan':
                 self.diet_preference = 'none'
 
-    # -------------------------
-    # Helper: preparate sigure + preferințe
-    # -------------------------
     def get_safe_menu_items(self):
-        """Returnează queryset cu preparatele care respectă constrângerile hard (alergeni & vegan).
 
-        1. Dacă invitatul este vegan → filtrăm doar item_vegan=True.
-        2. Excludem orice preparat care conţine unul dintre alergenii invitatului.
-        3. Dacă invitatul a setat un nivel iute preferat diferit de 'none', filtrăm preparatele cu spicy_level <= preferinţă
-           (unde ordinea este none < low < medium < high).
-        """
         from django.db.models import Q
 
         menu_qs = Menu.objects.all()
 
-        # 1. Diet constraint
-        if self.diet_preference != 'none':
-            menu_qs = menu_qs.filter(diet_type=self.diet_preference)
+        # 1. Diet constraint – diet compatibility mapping (e.g. vegetarian includes vegan dishes)
+        if self.diet_preference and self.diet_preference != 'none':
+            DIET_COMPATIBILITY = {
+                'vegan': ['vegan'],
+                'vegetarian': ['vegetarian', 'vegan'],
+                'pescatarian': ['pescatarian', 'vegetarian', 'vegan'],
+                'low_carb': ['low_carb', 'keto'],
+                'keto': ['keto'],
+                'halal': ['halal'],
+                'kosher': ['kosher'],
+            }
+            allowed_diets = DIET_COMPATIBILITY.get(self.diet_preference, [self.diet_preference])
+            menu_qs = menu_qs.filter(diet_type__in=allowed_diets)
 
-        # 2. Allergen constraint
+        # 2. Allergen constraint – exclude any dish that contains at least one of the guest allergens
         if self.allergens.exists():
-            # Excludem orice item care are intersectie cu alergenii invitatului
             menu_qs = menu_qs.exclude(allergens__in=self.allergens.all()).distinct()
 
-        # 3. Nivel iute
+        # 3. Spicy level – accept dishes whose spicy_level is <= guest preference
         preference = self.spicy_food or 'none'
         order = ['none', 'low', 'medium', 'high']
-        if preference != 'none':
-            allowed_levels = order[: order.index(preference) + 1]  # acceptăm nivel <= preferinţă
+        if preference in order and preference != 'none':
+            allowed_levels = order[: order.index(preference) + 1]
             menu_qs = menu_qs.filter(spicy_level__in=allowed_levels)
 
+        # 4. Serving temperature (hot / cold)
+        if self.temp_preference:
+            menu_qs = menu_qs.filter(serving_temp=self.temp_preference)
+
+
+        # 6. Regional cuisine preference – prioritate la afișare, dar nu excludem alte feluri
+        if self.cuisine_preference and self.cuisine_preference != 'no_region':
+            from django.db.models import Case, When, Value, IntegerField
+            menu_qs = menu_qs.annotate(
+                _pref=Case(
+                    When(item_cuisine=self.cuisine_preference, then=Value(0)),
+                    default=Value(1),
+                    output_field=IntegerField(),
+                )
+            ).order_by('_pref')
+
+        # eliminăm duplicatele după toate filtrările/annotările
         return menu_qs.distinct()
 
 

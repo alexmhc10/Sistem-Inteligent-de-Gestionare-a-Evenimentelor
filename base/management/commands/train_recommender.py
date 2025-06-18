@@ -6,6 +6,7 @@ import joblib
 from base.models import Guests, Menu, MenuRating
 import os
 from django.conf import settings
+import time
 
 class Command(BaseCommand):
     help = "Re-train LightFM model"
@@ -35,56 +36,105 @@ class Command(BaseCommand):
                 "Nu există niciun MenuRating în baza de date – modelul nu poate fi antrenat."))
             return
 
+        # -------- helpers --------
+        def user_tokens(g):
+            tokens = []
+            if g.diet_preference != 'none':
+                tokens.append(f"diet_{g.diet_preference}")
+            else:
+                tokens.append("diet_any")
+            if g.spicy_food:
+                tokens.append(f"spicy_{g.spicy_food}")
+            if g.temp_preference:
+                tokens.append(f"temp_{g.temp_preference}")
+            if g.cuisine_preference and g.cuisine_preference != 'no_region':
+                tokens.append(f"cuisine_{g.cuisine_preference}")
+            else:
+                tokens.append("cuisine_any")
+            if g.texture_preference and g.texture_preference != 'none':
+                tokens.append(f"texture_{g.texture_preference}")
+            else:
+                tokens.append("texture_any")
+            if g.nutrition_goal and g.nutrition_goal != 'none':
+                tokens.append(f"goal_{g.nutrition_goal}")
+            else:
+                tokens.append("goal_any")
+            if g.preferred_course:
+                tokens.append(f"course_{g.preferred_course}")
+            else:
+                tokens.append("course_any")
+            return tokens
+
+        def item_tokens(d):
+            tokens = []
+            if d.diet_type and d.diet_type != 'none':
+                tokens.append(f"diet_{d.diet_type}")    
+            else:
+                tokens.append("diet_any")
+            if d.spicy_level:
+                tokens.append(f"spicy_{d.spicy_level}")
+            if d.serving_temp:
+                tokens.append(f"temp_{d.serving_temp}")
+            tokens.append(f"course_{d.category}")
+            if d.item_cuisine and d.item_cuisine != 'no_region':
+                tokens.append(f"cuisine_{d.item_cuisine}")
+            else:
+                tokens.append("cuisine_any")
+            if d.cooking_method:
+                tokens.append(f"cook_{d.cooking_method}")
+            else:
+                tokens.append("cook_unknown")  
+            if d.protein_g and d.protein_g >= 20:
+                tokens.append("macro_high_protein")
+            if d.calories and d.calories <= 400:
+                tokens.append("macro_low_kcal")
+            return tokens
+
+        # -------------------------
+
+        user_feature_tokens = set().union(*[user_tokens(g) for g in guests])
+        item_feature_tokens = set().union(*[item_tokens(d) for d in dishes])
+
         ds = Dataset()
+        start_time = time.perf_counter()
         ds.fit(
             users=guests.values_list('id', flat=True),
             items=dishes.values_list('id', flat=True),
-            user_features=set(sum([
-                [g.diet_preference, g.cuisine_preference,
-                 g.texture_preference, g.nutrition_goal,
-                 g.spicy_food, g.temp_preference] for g in guests
-            ], [])),
-            item_features=set(sum([
-                [d.category, d.item_cuisine, d.diet_type,
-                 d.cooking_method, d.serving_temp,
-                 d.spicy_level] for d in dishes
-            ], []))
+            user_features=user_feature_tokens,
+            item_features=item_feature_tokens,
         )
+        end_time = time.perf_counter() - start_time
+        self.stdout.write(f"Dataset fit time: {end_time:.2f} seconds")
 
-        # interactions matrix (sparse)
-        (interactions, weights) = ds.build_interactions(
+        interactions, _ = ds.build_interactions(
             (
-                (r.guest_id, r.menu_item_id, r.rating)
-                for r in ratings
+                ((r.guest_id, r.menu_item_id) for r in ratings)
             )
         )
-
+        print("Interactions nnz:", interactions.nnz)
+        print("Positives per user min:", interactions.sum(axis=1).min())
+        print("Positives per item min:", interactions.sum(axis=0).min())
         if verbosity >= 2:
             self.stdout.write(f"Interactions: {interactions.getnnz()} non-zero entries")
 
         user_features = ds.build_user_features([
-            (g.id, [g.diet_preference, g.cuisine_preference,
-                    g.texture_preference, g.nutrition_goal,
-                    g.spicy_food, g.temp_preference])
+            (g.id, user_tokens(g))
             for g in guests
         ])
 
         item_features = ds.build_item_features([
-            (d.id, [d.category, d.item_cuisine, d.diet_type,
-                    d.cooking_method, d.serving_temp,
-                    d.spicy_level])
+            (d.id, item_tokens(d))
             for d in dishes
         ])
 
         show_progress = options.get("progress", False)
 
-        model = LightFM(loss="warp", no_components=32)
+        model = LightFM(loss="warp", no_components=32, random_state=42)
         model.fit(
             interactions,
-            sample_weight=weights,
             user_features=user_features,
             item_features=item_features,
-            epochs=15,
+            epochs=30,
             num_threads=4,
             verbose=show_progress,
         )

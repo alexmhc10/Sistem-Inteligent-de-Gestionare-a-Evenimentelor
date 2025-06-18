@@ -3081,9 +3081,10 @@ def generate_menu(request):
     menu = {}
     messages = []
 
-    model_path = 'ml_models/recommender_model.pkl'
+    MODEL_DIR = os.path.join(settings.BASE_DIR, 'base', 'ml_models')
+    # ----------- încercăm mai întâi modelul complex (LightFM) -----------
+    model_path = os.path.join(MODEL_DIR, 'recommender_model.pkl')
     ml_enabled = os.path.exists(model_path)
-    
     if ml_enabled:
         try:
             model = joblib.load(model_path)
@@ -3091,12 +3092,24 @@ def generate_menu(request):
             messages.append(f"Eroare la încărcarea modelului ML: {str(e)}")
             ml_enabled = False
 
+    # ----------- încărcăm varianta simplă (SVD) ca fallback -----------
+    simple_model_path = os.path.join(MODEL_DIR, 'simple_recommender.npz')
+    simple_enabled = False
+    simple_data = None
+    if not ml_enabled and os.path.exists(simple_model_path):
+        try:
+            simple_data = np.load(simple_model_path)
+            simple_enabled = True
+        except Exception as e:
+            messages.append(f"Eroare la încărcarea modelului simplu: {str(e)}")
+            simple_enabled = False
+
     # 3. Pentru fiecare categorie
     for category in categories:
         filtered_dishes = safe_dishes.filter(category=category)
         
         if ml_enabled and filtered_dishes.exists():
-            # Pregătim datele pentru model
+            print("se executa ml")
             data = []
             for dish in filtered_dishes:
                 data.append({
@@ -3119,8 +3132,31 @@ def generate_menu(request):
             except Exception as e:
                 messages.append(f"Eroare în predicția ML pentru categoria {category}: {str(e)}")
                 selected = list(filtered_dishes[:3])
-        else:
+        elif simple_enabled and filtered_dishes.exists():
+            print("se executa simple")
+            # Scoring with simple SVD recommender
+            selected = []
+            user_ids = simple_data['user_ids']
+            try:
+                user_idx_arr = np.where(user_ids == guest.id)[0]
+                if user_idx_arr.size:
+                    user_index = int(user_idx_arr[0])
+                    user_vec = simple_data['user_factors'][user_index]
+                    item_ids = simple_data['item_ids']
+                    item_factors = simple_data['item_factors']
 
+                    score_map = {int(item_ids[i]): float(user_vec @ item_factors[i]) for i in range(len(item_ids))}
+
+                    ranked = sorted(filtered_dishes, key=lambda d: score_map.get(d.id, -np.inf), reverse=True)
+                    selected = list(ranked[:3])
+                else:
+                    # user not in model
+                    messages.append("Invitatul nu are factori în modelul simplu → folosește euristici.")
+            except Exception as e:
+                messages.append(f"Eroare scorare model simplu categoria {category}: {str(e)}")
+
+        else:
+            print("se executa filtrarea")
             regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
             print("Regional dishes:", regional_dishes)
             print("Preferred region:", preferred_region)

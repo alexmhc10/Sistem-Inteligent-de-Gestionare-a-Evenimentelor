@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         try:
-            user = User.objects.get(username='MoldovanDaniela')
+            user = User.objects.get(username='valentina_ungureanu')
         except User.DoesNotExist:
             self.stdout.write(self.style.ERROR("User 'George' not found."))
             return
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             MenuRating.objects.update_or_create(
                 guest=guest_profile,
                 menu_item=dish,
-                defaults={'rating': random.choice([3,5])}
+                defaults={'rating': random.choice([4,5])}
             )
 
         self.stdout.write(self.style.SUCCESS(f"Populated {len(choices)} choices and ratings for George.")) 
