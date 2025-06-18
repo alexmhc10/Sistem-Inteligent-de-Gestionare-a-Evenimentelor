@@ -543,9 +543,27 @@
     transition: opacity .3s;
 }
 .stepper .step.active::after { opacity: 1; }
+
+/* Global aesthetic tweaks */
+body{
+  background: radial-gradient(circle at top left,#fdfcfb 0%,#e4e4e4 100%);
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,sans-serif;
+}
+.card-builder{
+  background:#fff;
+  border-radius:24px;
+  border:1px solid rgba(0,0,0,.05);
+  box-shadow:0 8px 32px rgba(0,0,0,.05);
+}
+.btn-gold{background:#d4af37;color:#fff;border:none}
+.btn-gold:hover{background:#c09b2e;color:#fff}
+#guestList{max-height:350px;overflow-y:auto;border-radius:12px}
+.form-floating>.form-control{border-radius:14px;padding:1.25rem 1rem}
+.form-floating>label{padding-left:1rem;color:#777}
 </style>
 
-<div class="event_builder container mt-4">
+<div class="row justify-content-center">
+  <div class="col-lg-9 col-xl-8">
     <h3 class="text-center mb-4">Create a New Event</h3>
     <!-- Progress bar removed; stepper acts as visual progress -->
 
@@ -571,7 +589,7 @@
         </ul>
 
         <!-- Calendar Step -->
-        <div class="form-step card p-4" id="step0">
+        <div class="form-step card-builder p-4" id="step0">
             <h4 class="mb-4">Select Event Date</h4>
             <div class="date-input-container">
                 <input type="text" id="event_calendar" name="event_calendar" class="form-control" required
@@ -585,14 +603,14 @@
             </div>
             
             <div class="form-step-buttons mt-4">
-                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(1)">
+                <button type="button" class="btn btn-gold" onclick="nextStep(1)">
                     Next <i class="fas fa-arrow-right ms-2"></i>
                 </button>
             </div>
         </div>
 
         <!-- Event details -->
-        <div class="form-step card p-4" id="step1" style="display:none;">
+        <div class="form-step card-builder p-4" id="step1" style="display:none;">
             <h4>Event Details</h4>
             <div class="mb-3">
                 <label for="event_name" class="form-label" data-bs-toggle="tooltip" title="Enter a descriptive name for the event">Event Name</label>
@@ -656,12 +674,12 @@
             </div>
 
             <div class="form-step-buttons mt-3 d-flex justify-content-between">
-                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(0)">Back</button>
-                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="nextStep(2)">Next</button>
+                <button type="button" class="btn btn-gold" onclick="prevStep(0)">Back</button>
+                <button type="button" class="btn btn-gold" onclick="nextStep(2)">Next</button>
             </div>
         </div>
 
-        <div class="form-step card p-4 mt-4" id="step2" style="display:none;">
+        <div class="form-step card-builder p-4 mt-4" id="step2" style="display:none;">
             <h4 class="mb-3">Guests</h4>
 
             <div class="card p-3">
@@ -701,7 +719,7 @@
 <p>You can import registered users as guests.</p>
 
 <!-- Butonul care deschide fereastra -->
-<button type="button" class="btn" style="background-color: #D4AF37; color: white;" data-bs-toggle="modal" data-bs-target="#importModal">
+<button type="button" class="btn btn-gold" data-bs-toggle="modal" data-bs-target="#importModal">
     Import Guests with Account
 </button>
 
@@ -709,8 +727,8 @@
 
             <!-- Navigation Buttons -->
             <div class="form-step-buttons mt-3 d-flex justify-content-between">
-                <button type="button" class="btn" style="background-color: #D4AF37; color: white;" onclick="prevStep(1)">Back</button>
-                <button type="submit" class="btn" style="background-color: #D4AF37; color: white;">Save Event</button>
+                <button type="button" class="btn btn-gold" onclick="prevStep(1)">Back</button>
+                <button type="submit" class="btn btn-gold">Save Event</button>
             </div>
         </div>
 <!-- Modal Bootstrap pentru import invitați -->
