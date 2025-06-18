@@ -51,10 +51,11 @@
     }
 
     .table-container {
-        border: 2px solid #D4AF37;
-        border-radius: 10px;
-        padding: 20px;
-        background-color: #FAF9F6;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+        background: rgb(224, 199, 16);
     }
 
     .table {
@@ -68,8 +69,10 @@
     }
 
     .table th {
-        background-color: #D4AF37;
-        color: white;
+        background: linear-gradient(90deg,#f9eebc 0%, #f4d96f 100%);
+        color: #4A4A4A;
+        font-weight: 600;
+        border-bottom: none;
     }
 
     .table tr:nth-child(even) {
@@ -93,12 +96,20 @@
 
     .badge-success {
         background-color: #28a745;
-        color: white;
+        color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .badge-danger {
         background-color: #dc3545;
-        color: white;
+        color: #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .badge-completed {
+        background-color: #ffc107 !important;
+        color: #4A4A4A !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .btn-budget {
@@ -112,6 +123,41 @@
         background-color: #B8860B !important;
         transform: translateY(-2px);
         box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    .btn-view, .btn-delete, .btn-budget {
+        border-radius: 30px;
+        font-size: 0.85rem;
+        padding: 8px 16px;
+    }
+    .btn-view i {
+        margin-right:4px;
+    }
+
+    @media (max-width: 768px){
+        .table-container{overflow-x:auto;}
+        .btn-view, .btn-delete, .btn-budget{margin-top:4px;}
+    }
+
+    /* GOLD pagination */
+    .pagination .page-link {
+        color: #D4AF37;
+        border: none;
+        background: transparent;
+        font-weight: 600;
+    }
+    .pagination .page-link:hover {
+        background: rgba(212,175,55,0.15);
+        color: #B8860B;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #D4AF37;
+        color: white;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+    .pagination .page-item.disabled .page-link {
+        color: #ccc;
     }
 
 </style>
