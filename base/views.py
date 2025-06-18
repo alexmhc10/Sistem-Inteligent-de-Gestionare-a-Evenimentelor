@@ -823,7 +823,11 @@ def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
     events = Event.objects.all()
-    users = User.objects.filter(is_superuser=False).exclude(username="defaultuser")
+    users = User.objects.filter(
+    is_superuser=False,
+    profile__user_type='organizer'
+).exclude(username='defaultuser')
+
     types = Type.objects.all()
     types_with_event_count = []
     
@@ -871,6 +875,8 @@ def admin_events(request):
 
         organizer = request.POST.get('organizer')
         event_name = request.POST.get('event_name')
+        event_location = request.POST.get('event_location')
+        location = Location.objects.get(id=event_location)
         date_str = request.POST.get('event_date')
         print("Data din post: ", date_str)
 
@@ -882,18 +888,25 @@ def admin_events(request):
         print("Data evenimentului in formatul ei: ", event.event_date)
 
         try:
-            organizer_user = User.objects.get(username=organizer)
+            organizer_user = User.objects.get(id=organizer)
         except User.DoesNotExist:
             organizer_user = None
-
+        print(
+            "Nume: ",event_name,"\n"
+            "Date: ",event_date,"\n"
+            "Location: ",location,"\n"
+            "Organizer: ", organizer_user
+        )
         event.event_name = event_name
         event.event_date = event_date
+        event.location = location
         event.organized_by = organizer_user
         event.save()
 
         return redirect('admin-events')
-
+    locations = Location.objects.all()
     context = {
+        'locations':locations,
         'cancelled_count':cancelled_count,
         'today_date':today_date,
         'today_time':today_time,
@@ -961,15 +974,15 @@ def admin_view_locations(request, name):
     reviews = Review.objects.filter(location=location)
     reviews_count = reviews.count()
     loc_images = LocationImages.objects.filter(location=location)
-    average_rating = reviews.aggregate(avg=Avg('stars'))['avg'] or 0
+    average_rating = reviews.aggregate(avg=Avg('location_stars'))['avg'] or 0
     average_rating = round(float(average_rating), 1)
     print("rating: ", average_rating)
-    ratings = Review.objects.filter(location=location).values('stars').annotate(count=Count('stars'))
+    ratings = Review.objects.filter(location=location).values('location_stars').annotate(count=Count('location_stars'))
     rating_counts = {i: 0 for i in range(1, 6)}
     total_reviews = 0
 
     for item in ratings:
-        rating_counts[item['stars']] = item['count']
+        rating_counts[item['location_stars']] = item['count']
         total_reviews += item['count']
 
     rating_percentages = {
