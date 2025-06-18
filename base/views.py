@@ -2045,7 +2045,7 @@ def deleteUser(request, pk):
 def personal_eveniment_home(request):
     location = Location.objects.get(user_account=request.user)
     print("Locatie:", location)
-
+    print("Locatie:", location.id)
     events = Event.objects.filter(location=location)
     print("Events:", events)
 
@@ -3059,10 +3059,23 @@ def generate_menu(request):
     preferred_region = guest.cuisine_preference
     guest_allergens = guest.allergens.all()
     guest_diet = guest.diet_preference
+    guest_texture = guest.texture_preference or 'none'
+    guest_nutri = guest.nutrition_goal or 'none'
+    guest_temp = guest.temp_preference or 'hot'
+    spicy_pref = guest.spicy_food or 'none'
 
     safe_dishes = Menu.objects.exclude(allergens__in=guest_allergens).distinct()
     if guest_diet != 'none':
         safe_dishes = safe_dishes.filter(diet_type=guest_diet)
+
+    # temperatura preferată (acceptăm dacă se potriveşte sau e no preference)
+    if guest_temp:
+        safe_dishes = safe_dishes.filter(serving_temp=guest_temp)
+
+    # spicy level <= preferinţă
+    order = ['none','low','medium','high']
+    allowed_levels = order[: order.index(spicy_pref)+1] if spicy_pref in order else order
+    safe_dishes = safe_dishes.filter(spicy_level__in=allowed_levels)
 
     categories = ['appetizer', 'main', 'dessert', 'drink']
     menu = {}

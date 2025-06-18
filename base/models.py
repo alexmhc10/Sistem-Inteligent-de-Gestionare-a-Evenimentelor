@@ -365,7 +365,7 @@ class Event(models.Model):
 
 class GuestMenu(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest", default=None)
-    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="event", null=True, blank=True)
     location_menu = models.ForeignKey(Location, on_delete=models.CASCADE, related_name="location_menu", default=None)
     menu_choices = models.ManyToManyField(Menu, blank=True, related_name="menu_choices")
 
@@ -776,7 +776,6 @@ class EventBudget(models.Model):
 
 
 class MenuRating(models.Model):
-    """Feedback explicit (1–5 stele) oferit de un invitat pentru un preparat."""
     guest = models.ForeignKey('Guests', on_delete=models.CASCADE, related_name='menu_ratings')
     menu_item = models.ForeignKey('Menu', on_delete=models.CASCADE, related_name='ratings')
     rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
