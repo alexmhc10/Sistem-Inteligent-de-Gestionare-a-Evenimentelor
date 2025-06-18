@@ -86,17 +86,33 @@
                 </div>
             </div>
 
-            <!-- Debug Info -->
-            <div class="row mb-3">
+            <!-- Invitation Info -->
+            <div class="row mb-4">
                 <div class="col-12">
-                    <div class="alert alert-info">
-                        <h5>Debug Info:</h5>
-                        <p>Event Status: {{ event.status }}</p>
-                        <p>Is Upcoming: {% if event.status == 'upcoming' %}Yes{% else %}No{% endif %}</p>
-                        <p>Is Ongoing: {% if event.status == 'ongoing' %}Yes{% else %}No{% endif %}</p>
-                        <p>Has Location: {% if event.location %}Yes{% else %}No{% endif %}</p>
-                        <p>Has Guests: {% if event.guests.exists %}Yes ({{ event.guests.count }} guests){% else %}No{% endif %}</p>
-                        <p>Has Tables: {% if event.location.tables.exists %}Yes ({{ event.location.tables.count }} tables){% else %}No{% endif %}</p>
+                    <div class="card shadow-sm border-0 glass-effect">
+                        <div class="card-body">
+                            <h5 class="mb-3"><i class="bi bi-envelope-heart-fill"></i> Invitation Info</h5>
+
+                            {% if total_invites > 0 %}
+                            <ul class="list-unstyled mb-3">
+                                <li><strong>Total Guests Invited:</strong> {{ total_invites }}</li>
+                                <li><strong>Guests Created:</strong> {{ guest_count }}</li>
+                                <li><strong>Guests with Seat:</strong> {{ seated_count }} / {{ guest_count }}</li>
+                                <li><strong>Without Seat:</strong> {{ unseated_count }}</li>
+                                <li class="text-success"><strong>Accepted:</strong> {{ accepted_invites }} ({% widthratio accepted_invites total_invites 100 %}%)</li>
+                                <li class="text-warning"><strong>Pending:</strong> {{ pending_invites }} ({% widthratio pending_invites total_invites 100 %}%)</li>
+                                <li class="text-danger"><strong>Declined:</strong> {{ declined_invites }} ({% widthratio declined_invites total_invites 100 %}%)</li>
+                            </ul>
+
+                            <div class="progress" style="height: 12px;">
+                                <div class="progress-bar bg-success" style="width: {% widthratio accepted_invites total_invites 100 %}%;"></div>
+                                <div class="progress-bar bg-warning" style="width: {% widthratio pending_invites total_invites 100 %}%;"></div>
+                                <div class="progress-bar bg-danger" style="width: {% widthratio declined_invites total_invites 100 %}%;"></div>
+                            </div>
+                            {% else %}
+                            <p class="text-muted">Nu există invitați pentru acest eveniment.</p>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -389,11 +389,27 @@ def event_details(request, event_id):
         'type','label','position_x','position_y','rotation','width','height','radius'
     )) if event.location else []
     budget = getattr(event, 'eventbudget', None)
+    total_invites = event.rsvps.count()
+    accepted_invites = event.rsvps.filter(response='Accepted').count()
+    pending_invites = event.rsvps.filter(response='Pending').count()
+    declined_invites = event.rsvps.filter(response='Declined').count()
+
+    guest_count = event.guests.count()
+    seated_count = event.table_arrangements.count()
+    unseated_count = guest_count - seated_count if guest_count >= seated_count else 0
+
     context = {
         'event': event,
         'tables_json': json.dumps(tables),
         'special_json': json.dumps(special_elements),
         'budget': budget,
+        'total_invites': total_invites,
+        'accepted_invites': accepted_invites,
+        'pending_invites': pending_invites,
+        'declined_invites': declined_invites,
+        'guest_count': guest_count,
+        'seated_count': seated_count,
+        'unseated_count': unseated_count,
     }
     return render(request, 'base/event_details.html', context)
 
