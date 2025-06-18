@@ -289,6 +289,20 @@ def home_organizer(request):
     
     total_profit = total_revenue - total_costs
 
+    # --- NEW STATISTICS FOR QUICK STATS CARD ---
+    # Number of distinct locations/cities where organizer has held events
+    events_cities = organizer_events.exclude(location__isnull=True).values_list('location__location', flat=True).distinct().count()
+    
+    # Date of the most recent event
+    last_event_obj = organizer_events.order_by('-event_date').first()
+    last_event_date = last_event_obj.event_date.strftime('%d.%m.%Y') if last_event_obj else 'N/A'
+
+    # Positive feedback percentage (reviews with 4 or 5 stars)
+    total_reviews = organizer_reviews.count()
+    positive_reviews = organizer_reviews.filter(organizer_stars__gte=4).count()
+    positive_feedback = round((positive_reviews / total_reviews) * 100) if total_reviews > 0 else 0
+    # -------------------------------------------------
+
     context = {
         'total_events': events.count(),
         'total_participants': sum(event.guests.count() for event in events),
@@ -304,6 +318,10 @@ def home_organizer(request):
         'total_revenue': float(total_revenue),
         'total_costs': float(total_costs),
         'total_profit': float(total_profit),
+        # NEW stats for quick stats card
+        'events_cities': events_cities,
+        'last_event_date': last_event_date,
+        'positive_feedback': positive_feedback,
     }
     return render(request, 'base/home-organizer.html', context)
 

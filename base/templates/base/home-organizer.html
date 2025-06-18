@@ -534,6 +534,25 @@
         height: 180px !important;
     }
 
+    /* NEW: Enable scrolling when there are many popular categories */
+    .categories-chart {
+        overflow-y: auto;
+        padding-right: 10px; /* space for scrollbar */
+    }
+
+    /* NEW: Custom scrollbar for categories chart */
+    .categories-chart::-webkit-scrollbar {
+        width: 6px;
+    }
+    .categories-chart::-webkit-scrollbar-track {
+        background: var(--neutral-gray);
+        border-radius: 3px;
+    }
+    .categories-chart::-webkit-scrollbar-thumb {
+        background: var(--primary-gold);
+        border-radius: 3px;
+    }
+
     /* Ajustăm cardurile de statistici */
     .analytics-container .card.bg-light {
         height: 100px;
@@ -891,7 +910,7 @@
                           <h5>Your Profile</h5>
                           <p><strong>Name:</strong> {{ request.user.first_name }} {{ request.user.last_name }}</p>
                           <p><strong>Email:</strong> {{ request.user.email }}</p>
-                          <p><strong>Events Organized:</strong> 15</p>
+                          <p><strong>Events Organized:</strong> {{ total_events }}</p>
                           <p><strong>Location:</strong> {{ request.user.profile_set.first.location }}</p>
                       </div>
                   </div>
@@ -900,16 +919,16 @@
                       <div class="profile-stats">
                           <h5>Quick Stats</h5>
                           <div class="stat-item">
-                              ⭐ Rating mediu: 4.8
+                              ⭐ Average rating: {{ average_rating }}
                           </div>
                           <div class="stat-item">
-                              �� Evenimente în 3 orașe
+                              📍 Events in {{ events_cities }} cities
                           </div>
                           <div class="stat-item">
-                              📅 Ultimul eveniment: 10.04.2025
+                              📅 Last event: {{ last_event_date }}
                           </div>
                           <div class="stat-item">
-                              💬 Feedback pozitiv: 95%
+                              💬 Positive feedback: {{ positive_feedback }}%
                           </div>
                       </div>
                   </div>

@@ -5,9 +5,13 @@
     <!-- Event Details Card -->
     <div class="card shadow-lg border-0 glass-effect">
         <div class="card-body p-5">
-            <h2 class="text-center text-gradient mb-4">{{ event.event_name }}</h2>
+            <h2 class="text-center text-gradient mb-2">{{ event.event_name }}</h2>
+            {% if event.status == 'completed' %}
+            <p class="text-center mb-4"><span class="badge bg-success fs-6">Event Completed</span></p>
+            {% endif %}
 
             <!-- Timeline Section -->
+            {% if event.status != 'completed' %}
             <div class="timeline">
                 <div class="timeline-item active">✔ Event Created</div>
                 <div class="timeline-item active">✔ Invitations Sent</div>
@@ -15,6 +19,7 @@
                 <div class="timeline-item">🍽 Selecting Food Menus</div>
                 <div class="timeline-item">🎉 Event Day</div>
             </div>
+            {% endif %}
 
             <!-- Categories and Types -->
             <div class="row mb-3">

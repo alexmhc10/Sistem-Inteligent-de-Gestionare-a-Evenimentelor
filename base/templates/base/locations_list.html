@@ -19,6 +19,17 @@
     border-color: #D4AF37;
 }
 
+/* NEW: Uniform card image size */
+.card-img-top.rounded-top-4 {
+    height: 250px; /* fixed height for all images */
+    object-fit: cover; /* crop to fill */
+}
+
+/* Ensure placeholder height matches */
+.card-img-top-placeholder {
+    height: 250px !important;
+}
+
 </style>
 <div class="container py-5">
     <h2 class="text-center mb-4 text-gold">Available Locations</h2>
