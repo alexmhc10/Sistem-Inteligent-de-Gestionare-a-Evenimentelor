@@ -398,6 +398,11 @@ def event_details(request, event_id):
     seated_count = event.table_arrangements.count()
     unseated_count = guest_count - seated_count if guest_count >= seated_count else 0
 
+    show_arrangement = False
+    if event.location:
+        if event.location.tables.exists() or event.location.name.lower() in ["perla cosaului", "romanita"]:
+            show_arrangement = True
+
     context = {
         'event': event,
         'tables_json': json.dumps(tables),
@@ -410,6 +415,7 @@ def event_details(request, event_id):
         'guest_count': guest_count,
         'seated_count': seated_count,
         'unseated_count': unseated_count,
+        'show_arrangement': show_arrangement,
     }
     return render(request, 'base/event_details.html', context)
 
