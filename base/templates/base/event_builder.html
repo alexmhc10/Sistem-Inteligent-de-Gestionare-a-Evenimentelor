@@ -543,7 +543,7 @@
         </div>
     {% endif %}
 
-    <form id="eventForm" method="POST" action="" enctype="multipart/form-data">
+    <form id="eventForm" method="POST" action="" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
 
         <!-- Calendar Step -->
@@ -699,7 +699,8 @@
             </div>
             <div class="modal-body">
                 <h5>List of Guests with Accounts:</h5>
-                <ul class="list-group">
+                <input type="text" class="form-control mb-3" id="guestSearch" placeholder="Search guest..." onkeyup="filterGuests()">
+                <ul class="list-group" id="guestList">
                     {% for guest in guests %}
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <span>{{ guest.username }} - {{ guest.email }}</span>
@@ -1074,5 +1075,17 @@
             }
         });
     });
+
+    function filterGuests(){
+        const term = document.getElementById('guestSearch').value.toLowerCase().trim();
+        document.querySelectorAll('#guestList li').forEach(li=>{
+            const text = li.textContent.toLowerCase();
+            if(term === '' || text.includes(term)){
+                li.classList.remove('d-none');
+            }else{
+                li.classList.add('d-none');
+            }
+        });
+    }
 </script>
 {% endblock %}

@@ -512,73 +512,69 @@ def delete_event(request, event_id):
 def event_builder(request):
     locations = Location.objects.all()
 
-    # Verificăm dacă există un fișier de invitați încărcat
-    if request.method == 'POST' and request.FILES.get('guest_file'):
+    if request.method == 'POST':
         form = EventForm(request.POST)
+        form_file = UploadFileForm(request.POST, request.FILES)
 
         if form.is_valid():
             event = form.save(commit=False)
             event.organized_by = request.user
             event.save()
             form.save_m2m()
+
             Notification.objects.create(
                 user=request.user,
                 action_type='created_event',
                 target_object_id=request.user.id,
                 target_object_name=request.user.username,
                 target_model='Event'
-            )  
+            )
 
-        uploaded_file = request.FILES['guest_file']
-        fs = FileSystemStorage()
-        filename = fs.save(uploaded_file.name, uploaded_file)
-        file_path = fs.path(filename)
+            # Dacă a fost încărcat și un fișier cu invitați, îl procesăm
+            if request.FILES.get('guest_file'):
+                uploaded_file = request.FILES['guest_file']
+                fs = FileSystemStorage()
+                filename = fs.save(uploaded_file.name, uploaded_file)
+                file_path = fs.path(filename)
 
-        if filename.endswith('.csv'):
-            try:
-                df = pd.read_csv(file_path)
-            except Exception as e:
-                return render(request, 'event_builder.html', {'error': f"Fișierul CSV nu poate fi citit: {e}"})
-        elif filename.endswith(('.xls', '.xlsx')):
-            try:
-                df = pd.read_excel(file_path)
-            except Exception as e:
-                return render(request, 'event_builder.html', {'error': f"Fișierul Excel nu poate fi citit: {e}"})
-        else:
-            return render(request, 'event_builder.html', {'error': 'Format de fișier invalid'})
-
-        # Procesăm invitații din fișier
-        invited_guests = []  # Vom salva invitații care vor fi adăugați
-        for _, row in df.iterrows():
-            name = row.get('nume')
-            email = row.get('email')
-            phone = row.get('telefon')
-
-            if name and email:
-                username = name.replace(" ", "")
-                
-                counter = 1
-                while User.objects.filter(username=username).exists():
-                    username = f"{username}{counter}"
-                    counter += 1
-
-                # Creăm sau găsim utilizatorul
-                user, created = User.objects.get_or_create(username=username, email=email)
-                if created:
-                    user.set_password(phone)  # Folosim telefonul ca parolă
-                    user.save()
-                    Profile.objects.create(user=user, username=username, email=email, password=phone, number=phone, user_type='guest')
-
-                # Legăm invitatul la eveniment
                 try:
-                    event = Event.objects.get(id=event.id)
-                except Event.DoesNotExist:
-                    continue
+                    if filename.endswith('.csv'):
+                        df = pd.read_csv(file_path)
+                    elif filename.endswith(('.xls', '.xlsx')):
+                        df = pd.read_excel(file_path)
+                    else:
+                        raise ValueError('Format de fișier invalid')
+                except Exception as e:
+                    return render(request, 'event_builder.html', {
+                        'error': f"Fișierul invitați nu poate fi citit: {e}",
+                        'form': form,
+                        'form_file': form_file,
+                        'locations': locations
+                    })
 
-                invited_guests.append(RSVP(guest=user, event=event))
+                # Procesăm invitații din fișier
+                invited_guests = []
+                for _, row in df.iterrows():
+                    name = row.get('nume')
+                    email = row.get('email')
+                    phone = row.get('telefon')
 
-        if invited_guests:
-            RSVP.objects.bulk_create(invited_guests)
+                    if name and email:
+                        username = name.replace(" ", "")
+                        counter = 1
+                        while User.objects.filter(username=username).exists():
+                            username = f"{username}{counter}"
+                            counter += 1
+                        user, created = User.objects.get_or_create(username=username, email=email)
+                        if created:
+                            user.set_password(phone or "password123")
+                            user.save()
+                            Profile.objects.create(user=user, username=username, email=email, password=phone or "password123", number=phone, user_type='guest')
+
+                        invited_guests.append(RSVP(guest=user, event=event))
+
+                if invited_guests:
+                    RSVP.objects.bulk_create(invited_guests)
 
         return redirect('my_events')
 
