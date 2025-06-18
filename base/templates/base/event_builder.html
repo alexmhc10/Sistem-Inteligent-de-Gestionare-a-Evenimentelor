@@ -524,13 +524,30 @@
     color: #666;
     font-size: 0.9rem;
 }
+
+.stepper .step {
+    font-weight: 600;
+    position: relative;
+    color: #6c757d;
+}
+.stepper .step.active { color: #D4AF37; }
+.stepper .step::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #D4AF37;
+    bottom: -6px;
+    opacity: 0;
+    transition: opacity .3s;
+}
+.stepper .step.active::after { opacity: 1; }
 </style>
 
 <div class="event_builder container mt-4">
     <h3 class="text-center mb-4">Create a New Event</h3>
-    <div class="progress mb-3">
-        <div class="progress-bar bg-warning" id="progressBar" style="width: 0%"></div>
-    </div>
+    <!-- Progress bar removed; stepper acts as visual progress -->
 
     {% if form2.errors %}
         <div class="alert alert-danger">
@@ -545,6 +562,13 @@
 
     <form id="eventForm" method="POST" action="" enctype="multipart/form-data" novalidate>
         {% csrf_token %}
+
+        <!-- Stepper Nav -->
+        <ul class="stepper d-flex justify-content-center list-unstyled mb-4">
+            <li class="step flex-fill text-center active" data-step="0">Info</li>
+            <li class="step flex-fill text-center" data-step="1">Details</li>
+            <li class="step flex-fill text-center" data-step="2">Guests</li>
+        </ul>
 
         <!-- Calendar Step -->
         <div class="form-step card p-4" id="step0">
@@ -1014,12 +1038,12 @@
         document.querySelectorAll('.form-step').forEach(div => div.style.display = 'none');
         document.getElementById('step' + step).style.display = 'block';
 
-        const bar = document.getElementById('progressBar');
-        let width = '0%';
-        if (step === 1) width = '50%';
-        else if (step === 2) width = '75%';
-        bar.style.width = width;
-        bar.setAttribute('aria-valuenow', width);
+        // update stepper active classes
+        document.querySelectorAll('.stepper .step').forEach(li=>{
+            const s = parseInt(li.dataset.step);
+            if(s <= step){ li.classList.add('active'); }
+            else { li.classList.remove('active'); }
+        });
     }
 
     function prevStep(step) {
