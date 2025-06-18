@@ -238,8 +238,13 @@
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
+<a href="#showModal" data-bs-toggle="modal" class="edit-item-btn"
+   data-event-id="{{ item.id }}"
+   data-event-cost="{{ item.cost }}"
+   data-event-name="{{ item.name|escapejs }}"
+   data-event-organizer="{{ item.organized_by.id }}"
+   data-event-location="{{ item.location.id }}"
+   data-event-date="{{ item.event_date }}">                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
                                                                         </a>
                                                                     </li>
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
@@ -495,15 +500,25 @@
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <label for="eventCost" class="form-label">Organizer</label>
-                                                    <input type="text" id="eventCost" name="organizer" class="form-control" placeholder="Enter name" required>
-                                                </div>
+    <label for="organizerSelect" class="form-label">Organizer</label>
+    <select id="organizerSelect" name="organizer" class="form-select" required>
+        <option value="">Select organizer</option>
+        {% for user in users %}
+            <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
+        {% endfor %}
+    </select>
+</div>
 
                                                 <div class="mb-3">
                                                     <label for="eventName" class="form-label">Event name</label>
                                                     <input type="text" id="eventName" name="event_name" class="form-control" placeholder="Enter name" required>
                                                 </div>
-
+                                                <div class="mb-3">
+                                                    <label for="eventLocationSelect" class="form-label">Event Location</label>
+                                                    <select id="eventLocationSelect" name="event_location" class="form-select" required>
+    <option value="">Select location</option>
+</select>
+                                                </div>
                                                 <div class="mb-3">
                                                     <label for="eventDate" class="form-label">Event Date</label>
                                                     <input type="text" id="eventDate" name="event_date" class="form-control flatpickr-input"
@@ -574,6 +589,34 @@
 {% endblock content %}
 {% block javascript %}
 <script>
+  const locations = [
+    {% for location in locations %}
+      {
+        id: "{{ location.id }}",
+        name: "{{ location.name|escapejs }}",
+        owner_id: "{{ location.owner.id }}"
+      }{% if not forloop.last %},{% endif %}
+    {% empty %}
+    {% endfor %}
+  ];console.log(locations);
+function populateLocationsForOrganizer(organizerId, selectedLocationId = null) {
+    const select = document.getElementById('eventLocationSelect');
+    select.innerHTML = '<option value="">Select location</option>'; 
+
+    const filteredLocations = locations.filter(loc => loc.owner_id === organizerId);
+    filteredLocations.forEach(loc => {
+      const option = document.createElement('option');
+      option.value = loc.id;
+      option.textContent = loc.name;
+      if (selectedLocationId && loc.id === selectedLocationId) {
+        option.selected = true;
+      }
+      select.appendChild(option);
+    });
+  }
+</script>
+
+<script>
 document.addEventListener('DOMContentLoaded', function () {
     const eventDateInput = document.getElementById('eventDate');
     const flatpickrInstance = flatpickr(eventDateInput, {
@@ -582,15 +625,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelectorAll('.edit-item-btn').forEach(function (editButton) {
         editButton.addEventListener('click', function (event) {
-            const dataId = event.target.closest('a').getAttribute('data-id');
-            const [eventId, eventCost, eventName, eventOrganizer, eventLocation, eventDate, eventDate2] =
-                dataId.split(',').map(value => value.trim());
-            const fullEventDate = `${eventDate} ${eventDate2}`; 
-            
-            console.log('Full Event Date:', fullEventDate);
-            const parsedDate = new Date(fullEventDate);
+            const link = event.target.closest('a');
+
+            const eventId = link.dataset.eventId;
+            const eventCost = link.dataset.eventCost;
+            const eventName = link.dataset.eventName;
+            const eventOrganizer = link.dataset.eventOrganizer;
+            const eventLocation = link.dataset.eventLocation;
+            const eventDateRaw = link.dataset.eventDate;
+
+            const parsedDate = new Date(eventDateRaw);
             if (isNaN(parsedDate.getTime())) {
-                console.error("Data nu este validă:", fullEventDate);
+                console.error("Data nu este validă:", eventDateRaw);
                 return;
             }
 
@@ -598,20 +644,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 day: '2-digit',
                 month: 'short',
                 year: 'numeric',
-            }); 
-
-            console.log('Formatted Date:', formattedDate);
+            });
 
             if (flatpickrInstance) {
                 flatpickrInstance.setDate(formattedDate, true);
             } else {
                 console.error("Flatpickr nu este inițializat corect.");
             }
+
+            populateLocationsForOrganizer(eventOrganizer, eventLocation);
+
             document.getElementById('eventId').value = eventId;
-            document.getElementById('eventCost').value = eventOrganizer;
+            document.getElementById('organizerSelect').value = eventOrganizer;
             document.getElementById('eventName').value = eventName;
-            document.getElementById('eventOrganizer').value = eventOrganizer;
-            document.getElementById('eventLocation').value = eventLocation;
         });
     });
 });
@@ -952,6 +997,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+
+
 <style>
     .choices *{
         font-size:20px;
