@@ -137,4 +137,9 @@ urlpatterns = [
     path('update_table/', views.update_table, name='update_table'),
     path('delete_table/', views.delete_table, name='delete_table'),
     path('save_table_layout/', views.save_table_layout, name='save_table_layout'),
+
+    # Recomandări și ML
+    path('recommendations/<int:guest_id>/', views.recommendations_view, name='recommendations'),
+    path('similar-dishes/<int:dish_id>/', views.similar_dishes_view, name='similar_dishes'),
+    path('model-status/', views.model_status_view, name='model_status'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

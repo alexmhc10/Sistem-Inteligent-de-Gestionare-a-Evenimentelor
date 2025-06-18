@@ -1,0 +1,89 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Preparate similare cu {{ dish.item_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-utensils"></i>
+                        Preparate similare cu "{{ dish.item_name }}"
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Informații despre preparatul original -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Preparatul original:</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ dish.item_name }}</h6>
+                                    <p class="card-text">
+                                        <strong>Categorie:</strong> {{ dish.category|title }}<br>
+                                        <strong>Bucătărie:</strong> {{ dish.item_cuisine|title }}<br>
+                                        <strong>Tip dietă:</strong> {{ dish.diet_type|title }}<br>
+                                        <strong>Nivel picant:</strong> {{ dish.spicy_level|title }}<br>
+                                        <strong>Temperatură:</strong> {{ dish.serving_temp|title }}<br>
+                                        <strong>Calorii:</strong> {{ dish.calories }} kcal<br>
+                                        <strong>Proteine:</strong> {{ dish.protein_g }}g
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Alergeni:</h5>
+                            {% if dish.allergens.all %}
+                                <ul class="list-group">
+                                    {% for allergen in dish.allergens.all %}
+                                        <li class="list-group-item">{{ allergen.name }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">Nu conține alergeni cunoscuți</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Preparate similare -->
+                    {% if similar_dishes %}
+                        <h5>Preparate similare:</h5>
+                        <div class="row">
+                            {% for similar in similar_dishes %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="card h-100">
+                                        <div class="card-body">
+                                            <h6 class="card-title">{{ similar.name }}</h6>
+                                            <p class="card-text">
+                                                <small class="text-muted">
+                                                    {{ similar.category|title }}
+                                                </small>
+                                            </p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div class="progress flex-grow-1 me-2" style="height: 8px;">
+                                                    <div class="progress-bar bg-info" 
+                                                         style="width: {{ similar.similarity|multiply:100 }}%"></div>
+                                                </div>
+                                                <small class="text-muted">{{ similar.similarity|multiply:100|floatformat:1 }}%</small>
+                                            </div>
+                                            <small class="text-muted">Similaritate: {{ similar.similarity|floatformat:3 }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            Nu s-au găsit preparate similare pentru acest preparat.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

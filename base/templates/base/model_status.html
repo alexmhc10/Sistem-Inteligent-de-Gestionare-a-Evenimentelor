@@ -1,0 +1,151 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Status Model LightFM{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-brain"></i>
+                        Status Model LightFM
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Status general -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Status Model:</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Status:</strong>
+                                        {% if model_info.status == 'loaded' %}
+                                            <span class="badge bg-success">Încărcat</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Nu este încărcat</span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Tip model:</strong>
+                                        <span>{{ model_info.model_type }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Invitați în model:</strong>
+                                        <span>{{ model_info.total_guests }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <strong>Preparate în model:</strong>
+                                        <span>{{ model_info.total_dishes }}</span>
+                                    </div>
+                                    {% if model_info.features_shape %}
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <strong>Features shape:</strong>
+                                        <span>{{ model_info.features_shape.0 }} x {{ model_info.features_shape.1 }}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Acțiuni:</h5>
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'schedule_model_training' %}" class="btn btn-primary">
+                                    <i class="fas fa-sync"></i> Verifică antrenarea
+                                </a>
+                                <a href="{% url 'improve_preferences' %}" class="btn btn-warning">
+                                    <i class="fas fa-cogs"></i> Îmbunătățește preferințele
+                                </a>
+                                <a href="{% url 'export_colab_data_improved' %}" class="btn btn-info">
+                                    <i class="fas fa-download"></i> Export date pentru Colab
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informații despre antrenare -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5>Informații despre antrenare:</h5>
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Cum funcționează antrenarea:</h6>
+                                <ul class="mb-0">
+                                    <li>Modelul se antrenează automat când este mai vechi de 7 zile</li>
+                                    <li>Se antrenează și când sunt adăugate 50+ ratinguri noi</li>
+                                    <li>Antrenarea se face în Google Colab pentru performanță optimă</li>
+                                    <li>Modelul antrenat se descarcă și se pune în directorul rădăcină</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Statistici -->
+                    {% if model_info.status == 'loaded' %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Statistici model:</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3 class="text-primary">{{ model_info.total_guests }}</h3>
+                                            <p class="card-text">Invitați</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3 class="text-success">{{ model_info.total_dishes }}</h3>
+                                            <p class="card-text">Preparate</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3 class="text-info">{{ model_info.features_shape.0|default:"N/A" }}</h3>
+                                            <p class="card-text">User Features</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center">
+                                        <div class="card-body">
+                                            <h3 class="text-warning">{{ model_info.features_shape.1|default:"N/A" }}</h3>
+                                            <p class="card-text">Item Features</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Mesaj dacă modelul nu este încărcat -->
+                    {% if model_info.status != 'loaded' %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle"></i> Modelul nu este încărcat!</h6>
+                                <p class="mb-0">
+                                    Pentru a folosi recomandările, trebuie să:
+                                    <ol>
+                                        <li>Antrenezi modelul în Google Colab</li>
+                                        <li>Descarci fișierul lightfm_model.pkl</li>
+                                        <li>Îl pui în directorul rădăcină al proiectului</li>
+                                    </ol>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

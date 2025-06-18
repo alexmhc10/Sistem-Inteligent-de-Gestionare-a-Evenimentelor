@@ -64,6 +64,7 @@ import joblib
 from django.utils.decorators import method_decorator
 import os
 from .models import EventBudget
+from .recommender import get_recommendations_for_guest, get_similar_dishes_for_dish, get_recommender
 
 
 
@@ -2882,8 +2883,9 @@ def guest_home(request):
     profil = Profile.objects.get(user = request.user)
     preferences = Guests.objects.get(profile = profil)
     now = timezone.now()
-
+    
     guest_profile = Guests.objects.get(profile = profil)
+    print(guest_profile.id)
     confirmed_events = Event.objects.filter(event_date__gte=now, guests=guest_profile).filter(Q(rsvps__response="Accepted") | Q(rsvps__response="Pending")).distinct().order_by('event_date')
     past_events = Event.objects.filter(event_date__lt=now, guests=guest_profile, rsvps__response="Accepted").distinct().order_by('event_date')
     print("past_events:", past_events)
@@ -3066,11 +3068,18 @@ def generate_menu(request):
 
     safe_dishes = Menu.objects.exclude(allergens__in=guest_allergens).distinct()
     if guest_diet != 'none':
-        safe_dishes = safe_dishes.filter(diet_type=guest_diet)
+        DIET_COMPATIBILITY = {
+            'vegan': ['vegan'],
+            'vegetarian': ['vegetarian', 'vegan'],
+            'pescatarian': ['pescatarian', 'vegetarian', 'vegan'],
+            'low_carb': ['low_carb', 'keto'],
+            'keto': ['keto'],
+            'halal': ['halal'],
+            'kosher': ['kosher'],
+        }
 
-    # temperatura preferată (acceptăm dacă se potriveşte sau e no preference)
-    if guest_temp:
-        safe_dishes = safe_dishes.filter(serving_temp=guest_temp)
+        allowed_diets = DIET_COMPATIBILITY.get(guest_diet, [guest_diet])
+        safe_dishes = safe_dishes.filter(diet_type__in=allowed_diets)
 
     # spicy level <= preferinţă
     order = ['none','low','medium','high']
@@ -3081,115 +3090,131 @@ def generate_menu(request):
     menu = {}
     messages = []
 
-    MODEL_DIR = os.path.join(settings.BASE_DIR, 'base', 'ml_models')
-    # ----------- încercăm mai întâi modelul complex (LightFM) -----------
-    model_path = os.path.join(MODEL_DIR, 'recommender_model.pkl')
-    ml_enabled = os.path.exists(model_path)
-    if ml_enabled:
-        try:
-            model = joblib.load(model_path)
-        except Exception as e:
-            messages.append(f"Eroare la încărcarea modelului ML: {str(e)}")
-            ml_enabled = False
-
-    # ----------- încărcăm varianta simplă (SVD) ca fallback -----------
-    simple_model_path = os.path.join(MODEL_DIR, 'simple_recommender.npz')
-    simple_enabled = False
-    simple_data = None
-    if not ml_enabled and os.path.exists(simple_model_path):
-        try:
-            simple_data = np.load(simple_model_path)
-            simple_enabled = True
-        except Exception as e:
-            messages.append(f"Eroare la încărcarea modelului simplu: {str(e)}")
-            simple_enabled = False
-
-    # 3. Pentru fiecare categorie
-    for category in categories:
-        filtered_dishes = safe_dishes.filter(category=category)
+    # Încercăm să folosim modelul LightFM
+    try:
+        from .recommender import get_recommender
+        recommender = get_recommender()
         
-        if ml_enabled and filtered_dishes.exists():
-            print("se executa ml")
-            data = []
-            for dish in filtered_dishes:
-                data.append({
-                    'guest_region': preferred_region if preferred_region else 'General',
-                    'dish_region': dish.item_cuisine if dish.item_cuisine else 'Unknown',
-                    'category': dish.category,
-                    'has_common_allergen': 0,
-                    'dish': dish
-                })
-
-            df = pd.DataFrame(data)
-            X = df.drop(columns=['dish'])
-
-            try:
-                probabilities = model.predict_proba(X)[:, 1]
-                df['score'] = probabilities
-                df['dish'] = df['dish']
-                top_dishes = df.sort_values(by='score', ascending=False).head(3)['dish']
-                selected = list(top_dishes)
-            except Exception as e:
-                messages.append(f"Eroare în predicția ML pentru categoria {category}: {str(e)}")
-                selected = list(filtered_dishes[:3])
-        elif simple_enabled and filtered_dishes.exists():
-            print("se executa simple")
-            # Scoring with simple SVD recommender
-            selected = []
-            user_ids = simple_data['user_ids']
-            try:
-                user_idx_arr = np.where(user_ids == guest.id)[0]
-                if user_idx_arr.size:
-                    user_index = int(user_idx_arr[0])
-                    user_vec = simple_data['user_factors'][user_index]
-                    item_ids = simple_data['item_ids']
-                    item_factors = simple_data['item_factors']
-
-                    score_map = {int(item_ids[i]): float(user_vec @ item_factors[i]) for i in range(len(item_ids))}
-
-                    ranked = sorted(filtered_dishes, key=lambda d: score_map.get(d.id, -np.inf), reverse=True)
-                    selected = list(ranked[:3])
-                else:
-                    # user not in model
-                    messages.append("Invitatul nu are factori în modelul simplu → folosește euristici.")
-            except Exception as e:
-                messages.append(f"Eroare scorare model simplu categoria {category}: {str(e)}")
-
-        else:
-            print("se executa filtrarea")
-            regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
-            print("Regional dishes:", regional_dishes)
-            print("Preferred region:", preferred_region)
-            if regional_dishes.exists():
-                print(category,regional_dishes)
-                selected = list(regional_dishes[:3])
-                count_needed = 3 - len(selected)
+        if recommender.is_loaded:
+            print("Folosim modelul LightFM pentru recomandări")
+            
+            # Pentru fiecare categorie
+            for category in categories:
+                filtered_dishes = safe_dishes.filter(category=category)
                 
-                if count_needed > 0:
-                    other_dishes = safe_dishes.filter(category=category).exclude(id__in=[d.id for d in selected])
-                    other_selected = list(other_dishes[:count_needed])
-                    selected += other_selected
-            else:
-                messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
-                other_dishes = filtered_dishes
-                if other_dishes.exists():
-                    selected = list(other_dishes[:3])
+                if filtered_dishes.exists():
+                    # Obține recomandările pentru invitat
+                    recommendations = recommender.get_recommendations(guest.id, top_n=20, exclude_rated=False)
+                    
+                    # Filtrează recomandările pentru categoria curentă
+                    category_recommendations = []
+                    for rec in recommendations:
+                        dish_id = rec['dish_id']
+                        try:
+                            dish = Menu.objects.get(id=dish_id, category=category)
+                            # Verifică din nou dacă preparatul este sigur pentru invitat
+                            if not dish.allergens.filter(id__in=guest_allergens.values_list('id', flat=True)).exists() and dish in filtered_dishes:
+                                category_recommendations.append({
+                                    'dish': dish,
+                                    'score': rec['score']
+                                })
+                        except Menu.DoesNotExist:
+                            continue
+                    
+                    # Sortează după scor și ia top 3
+                    category_recommendations.sort(key=lambda x: x['score'], reverse=True)
+                    selected = [item['dish'] for item in category_recommendations[:3]]
+                    
+                    # Dacă nu avem suficiente recomandări, completează cu preparate din regiunea preferată
+                    if len(selected) < 3:
+                        remaining_needed = 3 - len(selected)
+                        selected_ids = [d.id for d in selected]
+                        
+                        # Încearcă preparate din regiunea preferată
+                        regional_dishes = filtered_dishes.filter(
+                            item_cuisine=preferred_region
+                        ).exclude(id__in=selected_ids)
+                        
+                        if regional_dishes.exists():
+                            additional = list(regional_dishes[:remaining_needed])
+                            selected.extend(additional)
+                            remaining_needed -= len(additional)
+                        
+                        # Dacă încă avem nevoie, completează cu orice preparat disponibil
+                        if remaining_needed > 0:
+                            other_dishes = filtered_dishes.exclude(id__in=[d.id for d in selected])
+                            if other_dishes.exists():
+                                selected.extend(list(other_dishes[:remaining_needed]))
+                    
                 else:
-                    messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
                     selected = []
+                    messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
+                
+                menu[category] = [
+                    {
+                        'id': dish.id,
+                        'name': dish.item_name,
+                        'region': dish.item_cuisine if dish.item_cuisine else '',
+                        'category': dish.category,
+                        'image': dish.item_picture.url if dish.item_picture else "",
+                        'allergens': [a.name for a in dish.allergens.all()],
+                        'is_vegan': dish.item_vegan,
+                        'diet_type': dish.diet_type,
+                        'spicy_level': dish.spicy_level,
+                        'calories': dish.calories,
+                        'protein_g': dish.protein_g,
+                    }
+                    for dish in selected
+                ]
+                
+        else:
+            # Fallback la logica veche dacă modelul nu este încărcat
+            messages.append("Modelul LightFM nu este încărcat. Folosesc filtrarea de bază.")
+            raise Exception("Model not loaded")
+            
+    except Exception as e:
+        print(f"Eroare cu modelul LightFM: {e}")
+        messages.append(f"Eroare cu modelul LightFM: {str(e)}. Folosesc filtrarea de bază.")
+        
+        # Fallback la logica veche
+        for category in categories:
+            filtered_dishes = safe_dishes.filter(category=category)
+            
+            if filtered_dishes.exists():
+                # Încearcă preparate din regiunea preferată
+                regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
+                
+                if regional_dishes.exists():
+                    selected = list(regional_dishes[:3])
+                    count_needed = 3 - len(selected)
+                    
+                    if count_needed > 0:
+                        other_dishes = filtered_dishes.exclude(id__in=[d.id for d in selected])
+                        other_selected = list(other_dishes[:count_needed])
+                        selected.extend(other_selected)
+                else:
+                    messages.append(f"Nu există opțiuni din regiunea preferată pentru categoria '{category}'.")
+                    selected = list(filtered_dishes[:3])
+            else:
+                messages.append(f"Nicio opțiune disponibilă fără alergeni pentru categoria '{category}'.")
+                selected = []
 
-        menu[category] = [
-            {
-                'id': dish.id,
-                'name': dish.item_name,
-                'region': dish.item_cuisine if dish.item_cuisine else '',
-                'category': dish.category,
-                'image': dish.item_picture.url if dish.item_picture else "",
-                'allergens': [a.name for a in dish.allergens.all()],
-                'is_vegan': dish.item_vegan,
-            }
-            for dish in selected
-        ]
+            menu[category] = [
+                {
+                    'id': dish.id,
+                    'name': dish.item_name,
+                    'region': dish.item_cuisine if dish.item_cuisine else '',
+                    'category': dish.category,
+                    'image': dish.item_picture.url if dish.item_picture else "",
+                    'allergens': [a.name for a in dish.allergens.all()],
+                    'is_vegan': dish.item_vegan,
+                    'diet_type': dish.diet_type,
+                    'spicy_level': dish.spicy_level,
+                    'calories': dish.calories,
+                    'protein_g': dish.protein_g,
+                }
+                for dish in selected
+            ]
 
     return JsonResponse({'menu': menu, 'messages': messages})
 
@@ -4022,6 +4047,80 @@ def save_menu_ratings(request):
         )
 
     return JsonResponse({'success': True, 'saved': saved, 'errors': errors})
+
+def recommendations_view(request, guest_id):
+
+    try:
+        guest = Guests.objects.get(id=guest_id)
+        
+        # Obține recomandările
+        recommendations = get_recommendations_for_guest(guest_id, top_n=10)
+        
+        # Obține informații despre model
+        recommender = get_recommender()
+        model_info = recommender.get_model_info()
+        
+        context = {
+            'guest': guest,
+            'recommendations': recommendations,
+            'model_info': model_info,
+        }
+        
+        return render(request, 'base/recommendations.html', context)
+        
+    except Guests.DoesNotExist:
+        messages.error(request, 'Invitatul nu a fost găsit.')
+        return redirect('home')
+    except Exception as e:
+        messages.error(request, f'Eroare la generarea recomandărilor: {e}')
+        return redirect('home')
+
+def similar_dishes_view(request, dish_id):
+    """
+    View pentru afișarea preparatelor similare
+    """
+    try:
+        dish = Menu.objects.get(id=dish_id)
+        
+        # Obține preparatele similare
+        similar_dishes = get_similar_dishes_for_dish(dish_id, top_n=5)
+        
+        context = {
+            'dish': dish,
+            'similar_dishes': similar_dishes,
+        }
+        
+        return render(request, 'base/similar_dishes.html', context)
+        
+    except Menu.DoesNotExist:   
+        messages.error(request, 'Preparatul nu a fost găsit.')
+        return redirect('home')
+    except Exception as e:
+        messages.error(request, f'Eroare la găsirea preparatelor similare: {e}')
+        return redirect('home')
+
+def model_status_view(request):
+    """
+    View pentru afișarea statusului modelului
+    """
+    try:
+        recommender = get_recommender()
+        model_info = recommender.get_model_info()
+        
+        # Verifică dacă antrenarea este necesară
+        from .management.commands.schedule_model_training import Command as TrainingCommand
+        training_check = TrainingCommand()
+        
+        context = {
+            'model_info': model_info,
+            'training_check': training_check,
+        }
+        
+        return render(request, 'base/model_status.html', context)
+        
+    except Exception as e:
+        messages.error(request, f'Eroare la verificarea statusului modelului: {e}')
+        return redirect('home')
 
 
 
