@@ -17,21 +17,15 @@ data-sidebar-position="fixed" data-header-position="fixed">
     {% include 'header.html' %}
 
     <div class="container-fluid">
-        <div class="row">
-            <div class="col-lg-8">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title d-flex align-items-center gap-2 mb-4">
-                            Event overview and statistics - {{event.event_name}}
-                            <span>
-                                <iconify-icon icon="solar:question-circle-bold" class="fs-7 d-flex text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Traffic Overview"></iconify-icon>
-                            </span>
-                        </h5>
-                        <div id="traffic-overview" >
-                        </div>
-                    </div>
-                </div>
+        <div class="row d-flex flex-wrap">
+          <div class="col-lg-8 mt-4">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Guest arrival timeline</h5>
+                <div id="arrivalChart"></div>
+              </div>
             </div>
+          </div>
         <div class="col-lg-4">
           <div class="card">
             <div class="card-body text-center">
@@ -91,7 +85,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div class="col-lg-8">
            <div class="card">
                     <div class="card-body">
-                        <div class="d-flex flex-row justify-content-between align-items-center">
+                        <div class="d-flex flex-row justify-content-between align-items-center mb-2">
                           <h5 class="card-title">Guest list</h5>
                           <form method="GET" class="d-flex flex-row">
                             <div class="input-group">
@@ -107,7 +101,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </div>
                           </form>
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive"{% if total_guests > 10 %} style="max-height:500px; overflow-y:auto;"{% endif %}>
                             <table class="table text-nowrap align-middle mb-0">
                             <thead>
                                 <tr class="border-2 border-bottom border-primary justify-content-center border-0">
@@ -708,4 +702,25 @@ data-sidebar-position="fixed" data-header-position="fixed">
         background-color: inherit !important;
     }
 </style>
+
+<!-- ApexCharts for arrival timeline -->
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const arrivalData = {{ arrival_series|safe }};
+    if(arrivalData.length){
+      const options = {
+        chart:{ type:'line', height:350, toolbar:{show:false}},
+        series:[{ name:'Guests arrived', data: arrivalData }],
+        xaxis:{ type:'category', title:{ text:'Time (HH:MM)'} },
+        yaxis:{ title:{ text:'Cumulative guests'} , min:0, tickAmount:4},
+        stroke:{ width:2, curve:'stepline'},
+        markers:{ size:4 },
+        colors:['#0d6efd']
+      };
+      new ApexCharts(document.querySelector('#arrivalChart'), options).render();
+    }
+  });
+</script>
+
 {% endblock %}

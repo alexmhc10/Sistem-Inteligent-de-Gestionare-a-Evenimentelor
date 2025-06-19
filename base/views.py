@@ -2444,6 +2444,16 @@ def completed_event(request, pk):
     print('Posts count:', posts.count())
     
     if event is not None:
+        # Build data series for arrival chart (time vs cumulative guests)
+        arrival_series = []
+        cnt = 0
+        for lg in base_present_guests.order_by('created'):
+            cnt += 1
+            dt = lg.created
+            if timezone.is_naive(dt):
+                dt = timezone.make_aware(dt)
+            local_time = localtime(dt)
+            arrival_series.append({'x': local_time.strftime('%H:%M'), 'y': cnt})
         context = {
             'event':event,
             'profile': profile,
@@ -2461,7 +2471,8 @@ def completed_event(request, pk):
             'search_query': search_query,
             'archives': archives,
             'posts': posts,
-            'posts_count': posts.count()
+            'posts_count': posts.count(),
+            'arrival_series': json.dumps(arrival_series)
         }
     return render(request, 'base/completed_event.html', context)
 
