@@ -3057,11 +3057,15 @@ def guest_event_view(request, pk):
     posts = event.posts.all()
     review_organizer = Review.objects.filter(user=request.user, organizer=event.organized_by).first()
     review_location = Review.objects.filter(user=request.user, location=event.location).first()
+    gallery = LocationImages.objects.filter(location=event.location)
 
     from .models import MenuRating
     chosen_menu = []
     try:
         guest_menu = GuestMenu.objects.get(guest=request.user, event=event)
+        all_rated = False
+        rated_item = guest_menu.menu_choices.all()
+        rated_item_count = MenuRating.objects.filter(guest=preferences, menu_item__in=rated_item).count()
         for d in guest_menu.menu_choices.all():
             chosen_menu.append({
                 "id": d.id,
@@ -3073,6 +3077,7 @@ def guest_event_view(request, pk):
                 "rating": getattr(MenuRating.objects.filter(guest=preferences, menu_item=d).first(), 'rating', 0),
                 "diet_type": d.diet_type,
                 "item_cuisine": d.item_cuisine,
+
             })
     except GuestMenu.DoesNotExist:
         pass
@@ -3100,7 +3105,9 @@ def guest_event_view(request, pk):
         'chosen_menu_json': json.dumps(chosen_menu),
         'chosen_menu': chosen_menu,
         'review_organizer': review_organizer,
-        'review_location': review_location
+        'review_location': review_location,
+        'gallery': gallery,
+        'rated_item_count': rated_item_count
     }
     return render(request,'base/guest_event_view.html', context)
 
