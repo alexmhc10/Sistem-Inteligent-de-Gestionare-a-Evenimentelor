@@ -81,7 +81,14 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card" id="eventList">
-                       
+                        <div class="card-header bevent-0">
+                            <div class="row align-items-center gy-3">
+                                <div class="col-sm">
+                                    <h5 class="card-title mb-0">Events History</h5>
+                                </div>
+                                
+                            </div>
+                        </div>
                         <div class="card-body bevent bevent-dashed bevent-end-0 bevent-start-0">
                             <form>
                                 <div class="row g-3" >
@@ -99,8 +106,55 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-xxl-2 col-sm-6">
+                                        <div>
+                                                    <input type="text"
+                                                    value=""
+                                                        class="form-control flatpickr-input" data-provider="flatpickr"
+                                                        required="" data-date-format="d M, Y" data-enable-time=""
+                                                        placeholder="Select date" readonly="readonly"
+                                                        id="SelectDate">
+                                        </div>
+                                    </div>
+                                    <div class="col-xxl-2 col-sm-4">
+                                        <div>
+                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
+                                                aria-haspopup="true" aria-expanded="false">
+                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
+                                                        data-choices="" data-choices-search-false=""
+                                                        name="choices-single-default" id="idStatus" hidden=""
+                                                        tabindex="-1" data-choice="active">
+                                                        <option value="all" selected="">All</option>
+                                                        <option value="Completed">Completed</option>
+                                                        <option value="Ongoing">Ongoing</option>
+                                                        <option value="Cancelled">Cancelled</option>
+                                                        <option value="Upcoming">Upcoming</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                    </div>
                                    
-                                    
+                                    <div class="col-xxl-2 col-sm-4">
+                                        <div>
+                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
+                                                aria-haspopup="true" aria-expanded="false">
+                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
+                                                        data-choices="" data-choices-search-false=""
+                                                        name="choices-single-default" id="idUsers" hidden=""
+                                                        tabindex="-1" data-choice="active">
+                                                        <option value="all" selected="">All</option>
+                                                        {% for user in users %}
+                                                        <option value="{{ user.username }}"> {{ user.username }} </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    
+                                                </div>
+                                        
+                                            </div>
+                                        </div>
+                                    </div>
                         
                                 </div>
                             </form>
@@ -137,10 +191,10 @@
 
     <div class="ms-auto me-4">
         <a style="
-            padding:15px;
+            padding:10px;
             border-radius:50px;
             border:1px solid greenyellow;
-            " href="" class="fs-4 mb-0 text-success">Apply Changes</a>
+            " href="" class="fs-4 mb-0 text-success">Optimise events</a>
     </div>
 </ul>
 
@@ -621,45 +675,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 
-<script>
 
-document.addEventListener('DOMContentLoaded', function () {
-  const statusElement = document.getElementById('idStatus');
-  const paymentElement = document.getElementById('idUsers');
-
-  function resetChoices(element) {
-    if (element.choicesInstance) {
-      element.choicesInstance.destroy(); 
-      element.choicesInstance = null;
-    }
-    element.removeAttribute('hidden'); 
-    const clonedElement = element.cloneNode(true);
-    element.replaceWith(clonedElement); 
-    return clonedElement; 
-  }
-
-  const resetStatusElement = resetChoices(statusElement);
-  const resetPaymentElement = resetChoices(paymentElement);
-
-  console.log('Element before reinitialization:', resetStatusElement);
-
-  resetStatusElement.choicesInstance = new Choices(resetStatusElement, {
-    searchEnabled: false,
-    itemSelectText: '',
-    shouldSort: false,
-  });
-
-  resetPaymentElement.choicesInstance = new Choices(resetPaymentElement, {
-    searchEnabled: false,
-    itemSelectText: '',
-    shouldSort: false,
-  });
-
-  console.log('Choices initialized successfully for idStatus and idUsers');
-});
-
-
-</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const currentDate = new Date();
