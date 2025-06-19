@@ -819,7 +819,7 @@ def admin_locations(request):
             'types':location.types
         })
     average_ratings = Location.objects.annotate(
-    rating=Coalesce(Avg('review__stars'), Value(0), output_field=FloatField())
+    rating=Coalesce(Avg('review__location_stars'), Value(0), output_field=FloatField())
 ).values('name', 'rating')
     print("Average: ", average_ratings)
     count_organizers = organizers.count()
@@ -962,7 +962,7 @@ def admin_events(request):
 def admin_view_events(request, pk):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
-    event = Event.objects.get(event_name=pk)
+    event = Event.objects.get(id=pk)
     guests_count = event.guests.count()
     location = Location.objects.get(event=event)
     next_day = event.event_date + timedelta(days=1)
