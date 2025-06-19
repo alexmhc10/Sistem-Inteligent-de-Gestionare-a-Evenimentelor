@@ -2854,6 +2854,8 @@ def guest_profile(request):
                 profil.age = request.POST.get('age')
                 
                 preferences = profil.guest_profile
+                preferences.age = request.POST.get('age')
+
                 preferences.gender = request.POST.get('gender')
                 preferences.cuisine_preference = request.POST.get('meniu')
                 preferences.diet_preference = request.POST.get('diet_preference')
@@ -3094,7 +3096,11 @@ def guest_event_view(request, pk):
         guest_menu = GuestMenu.objects.get(guest=request.user, event=event)
         all_rated = False
         rated_item = guest_menu.menu_choices.all()
-        rated_item_count = MenuRating.objects.filter(guest=preferences, menu_item__in=rated_item).count()
+        if rated_item:
+            rated_item_count = MenuRating.objects.filter(guest=preferences, menu_item__in=rated_item).count()
+        else:
+            rated_item_count = 0
+
         for d in guest_menu.menu_choices.all():
             chosen_menu.append({
                 "id": d.id,
@@ -3109,6 +3115,7 @@ def guest_event_view(request, pk):
 
             })
     except GuestMenu.DoesNotExist:
+        rated_item_count = 0
         pass
 
     context={
