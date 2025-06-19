@@ -32,6 +32,7 @@ urlpatterns = [
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),
     path('admin-events', views.admin_events, name="admin-events"),
     path('admin-view-event/<int:pk>/', views.admin_view_events, name="admin-view-event"),
+    path('admin-optimise-events/<str:pk>/', views.admin_optimise_events, name="admin-optimise-events"),
     path('istoric_evenimente/', views.event_history, name='event_history'),
     path('guest_list/', views.guest_list, name='guest_list'),
     path('event/<int:event_id>/', views.vizualizare_eveniment, name='vizualizare_eveniment'),

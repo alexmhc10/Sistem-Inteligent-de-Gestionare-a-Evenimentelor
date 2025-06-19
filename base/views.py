@@ -941,7 +941,9 @@ def admin_events(request):
 
         return redirect('admin-events')
     locations = Location.objects.all()
+    completed = "completed"
     context = {
+        'completed':completed,
         'locations':locations,
         'cancelled_count':cancelled_count,
         'today_date':today_date,
@@ -956,7 +958,13 @@ def admin_events(request):
     }
     return render(request, 'base/admin-events.html', context)
 
-
+@login_required(login_url='login')
+def admin_optimise_events(request, pk):
+    completed = "completed"
+    context = {
+        'completed':completed,
+    }
+    return render(request, 'base/optimise_events.html', context)
 
 @login_required(login_url='login')
 def admin_view_events(request, pk):
@@ -1095,6 +1103,7 @@ def users(request):
                     password=profile.password,
                     email=profile.email
                 )
+                Salary.objects.create(user=user)
                 profile.user = user 
                 profile.approved = True
                 profile.save()
@@ -1139,10 +1148,15 @@ def users(request):
         percent_new = (new_this_month / total_users) * 100
     else:
         percent_new = 0
-    user_data = [{'username': profile.user.username if profile.user else profile.username, 'salary': random.choice([1000, 5000, 10000])} for profile in profiles]
+    user_data = [
+    {
+        'username': profile.user.username if profile.user else profile.username,
+        'salary': float(getattr(profile.user.salary, 'total_salary', 0)) if profile.user else 0
+    }
+    for profile in profiles
+]
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
-    # print("Total organizatori: ", Profile.objects.filter(user_type="organizer").count())
     context = {
         'new_this_month': new_this_month,
         'percent_new': percent_new,

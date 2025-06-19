@@ -71,7 +71,7 @@
                         <div class="page-title-right">
                             <ol class="breadcrumb m-0">
                                 <li class="breadcrumb-item"><a href="javascript: void(0);">EventEase</a></li>
-                                <li class="breadcrumb-item active">Events</li>
+                                <li class="breadcrumb-item active">Events Optimisation</li>
                             </ol>
                         </div>
 
@@ -81,14 +81,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="card" id="eventList">
-                        <div class="card-header bevent-0">
-                            <div class="row align-items-center gy-3">
-                                <div class="col-sm">
-                                    <h5 class="card-title mb-0">Events History</h5>
-                                </div>
-                                
-                            </div>
-                        </div>
+                       
                         <div class="card-body bevent bevent-dashed bevent-end-0 bevent-start-0">
                             <form>
                                 <div class="row g-3" >
@@ -106,55 +99,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-2 col-sm-6">
-                                        <div>
-                                                    <input type="text"
-                                                    value=""
-                                                        class="form-control flatpickr-input" data-provider="flatpickr"
-                                                        required="" data-date-format="d M, Y" data-enable-time=""
-                                                        placeholder="Select date" readonly="readonly"
-                                                        id="SelectDate">
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-2 col-sm-4">
-                                        <div>
-                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                                        data-choices="" data-choices-search-false=""
-                                                        name="choices-single-default" id="idStatus" hidden=""
-                                                        tabindex="-1" data-choice="active">
-                                                        <option value="all" selected="">All</option>
-                                                        <option value="Completed">Completed</option>
-                                                        <option value="Ongoing">Ongoing</option>
-                                                        <option value="Cancelled">Cancelled</option>
-                                                        <option value="Upcoming">Upcoming</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
                                    
-                                    <div class="col-xxl-2 col-sm-4">
-                                        <div>
-                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                                        data-choices="" data-choices-search-false=""
-                                                        name="choices-single-default" id="idUsers" hidden=""
-                                                        tabindex="-1" data-choice="active">
-                                                        <option value="all" selected="">All</option>
-                                                        {% for user in users %}
-                                                        <option value="{{ user.username }}"> {{ user.username }} </option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    
-                                                </div>
-                                        
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                         
                                 </div>
                             </form>
@@ -191,10 +137,10 @@
 
     <div class="ms-auto me-4">
         <a style="
-            padding:10px;
+            padding:15px;
             border-radius:50px;
             border:1px solid greenyellow;
-            " href="{% url 'admin-optimise-events' completed %}" class="fs-4 mb-0 text-success">Optimise events</a>
+            " href="" class="fs-4 mb-0 text-success">Apply Changes</a>
     </div>
 </ul>
 
