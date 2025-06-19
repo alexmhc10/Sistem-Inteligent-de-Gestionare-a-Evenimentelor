@@ -106,56 +106,6 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="col-xxl-2 col-sm-6">
-                                        <div>
-                                                    <input type="text"
-                                                    value=""
-                                                        class="form-control flatpickr-input" data-provider="flatpickr"
-                                                        required="" data-date-format="d M, Y" data-enable-time=""
-                                                        placeholder="Select date" readonly="readonly"
-                                                        id="SelectDate">
-                                        </div>
-                                    </div>
-                                    <div class="col-xxl-2 col-sm-4">
-                                        <div>
-                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                                        data-choices="" data-choices-search-false=""
-                                                        name="choices-single-default" id="idStatus" hidden=""
-                                                        tabindex="-1" data-choice="active">
-                                                        <option value="all" selected="">All</option>
-                                                        <option value="Completed">Completed</option>
-                                                        <option value="Ongoing">Ongoing</option>
-                                                        <option value="Cancelled">Cancelled</option>
-                                                        <option value="Upcoming">Upcoming</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                    </div>
-                                   
-                                    <div class="col-xxl-2 col-sm-4">
-                                        <div>
-                                            <div class="choices" data-type="select-one" tabindex="0" role="listbox"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <div class="choices__inner"><select class="form-control choices_input choices-single"
-                                                        data-choices="" data-choices-search-false=""
-                                                        name="choices-single-default" id="idUsers" hidden=""
-                                                        tabindex="-1" data-choice="active">
-                                                        <option value="all" selected="">All</option>
-                                                        {% for user in users %}
-                                                        <option value="{{ user.username }}"> {{ user.username }} </option>
-                                                        {% endfor %}
-                                                    </select>
-                                                    
-                                                </div>
-                                        
-                                            </div>
-                                        </div>
-                                    </div>
-                        
                                 </div>
                             </form>
                         </div>
@@ -167,24 +117,6 @@
             <a class="nav-link All py-3 active" data-bs-toggle="tab" href="#home1" role="tab" aria-selected="true">
                 <i class="ri-store-2-fill me-1 align-bottom"></i> All Events
                 <span class="badge bg-danger align-middle ms-1">{{ events_count }}</span>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link py-3 completed" data-bs-toggle="tab" href="#completed" role="tab" aria-selected="false">
-                <i class="ri-checkbox-circle-line me-1 align-bottom"></i> Completed
-                <span class="badge bg-danger align-middle ms-1">{{ finished_count }}</span>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link py-3 ongoing" data-bs-toggle="tab" href="#ongoing" role="tab" aria-selected="false">
-                <i class="ri-truck-line me-1 align-bottom"></i> Ongoing
-                <span class="badge bg-danger align-middle ms-1">{{ unfinished_count }}</span>
-            </a>
-        </li>
-        <li class="nav-item" role="presentation">
-            <a class="nav-link py-3 Cancelled" data-bs-toggle="tab" href="#cancelled" role="tab" aria-selected="false">
-                <i class="ri-close-circle-line me-1 align-bottom"></i> Cancelled
-                <span class="badge bg-danger align-middle ms-1">{{ cancelled_count }}</span>
             </a>
         </li>
     </div>
@@ -243,236 +175,9 @@
                                                             <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
                                                         {% endif %}
                                                             <td>
-                                                                <ul class="list-inline hstack gap-2 mb-0">
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                        <a href="{% url 'admin-view-event' item.id %}" class="text-primary d-inline-block">
-                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-<a href="#showModal" data-bs-toggle="modal" class="edit-item-btn"
-   data-event-id="{{ item.id }}"
-   data-event-cost="{{ item.cost }}"
-   data-event-name="{{ item.name|escapejs }}"
-   data-event-organizer="{{ item.organized_by.id }}"
-   data-event-location="{{ item.location.id }}"
-   data-event-date="{{ item.event_date }}">                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent" data-id="{{ item.id }}">
-                                                                            
-                                                                            <i class="bi bi-trash fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
+                                                               
                                                             </td>
                                                         </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        <div class="py-4 text-center no-result-message"style="display: none;">
-                                            <div style="width:1185px;"></div>
-                                            <h5 class="mt-4">Sorry! No events matching your criteria 
-                                                <strong style="font-weight: 500;">
-                                                <i class="bi bi-search"></i>
-                                            </strong>.</h5>
-                                         </div>
-                                    </div>
-                                    
-                                    <div id="cancelled" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="eventTable">
-                                            <thead class="text-muted table-light">
-                                                <tr class="text-uppercase">
-                                                    <th scope="col" style="width: 25px;">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                                                        </div>
-                                                    </th>
-                                                    <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
-                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
-                                                    <th class="sort" data-sort="date">Event Date and Time</th>
-                                                    <th class="sort" data-sort="amount">Guests</th>
-                                                    <th class="sort" data-sort="payment">Event's Price</th>
-                                                    <th class="sort" data-sort="status">Status</th>
-                                                    <th class="sort" data-sort="city">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="list form-check-all">
-                                                {% for item in detailed_events %}
-                                                    {% if item.cancelled %}
-                                                        <tr>
-                                                            <th scope="row">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                                </div>
-                                                            </th>
-                                                            <td class="id"><a href="{% url 'admin-view-event' item.id %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
-                                                            <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                            <td class="amount"> {{ item.guest_count }} </td>
-                                                            <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-                                                            <td>
-                                                                <ul class="list-inline hstack gap-2 mb-0">
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                        <a href="{% url 'admin-view-event' item.id %}" class="text-primary d-inline-block">
-                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent" data-id="{{ item.id }}>
-                                                                            <i class="bi bi-trash fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-                                        <div class="py-4 text-center no-result-message"style="display: none;">
-                                            <div style="width:1185px;"></div>
-                                            <h5 class="mt-4">Sorry! No events matching your criteria 
-                                                <strong style="font-weight: 500;">
-                                                <i class="bi bi-search"></i>
-                                            </strong>.</h5>
-                                         </div>
-                                    </div>
-                                    <div id="completed" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="eventTable">
-                                            <thead class="text-muted table-light">
-                                                <tr class="text-uppercase">
-                                                    <th scope="col" style="width: 25px;">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                                                        </div>
-                                                    </th>
-                                                    <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
-                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
-                                                    <th class="sort" data-sort="date">Event Date and Time</th>
-                                                    <th class="sort" data-sort="amount">Guests</th>
-                                                    <th class="sort" data-sort="payment">Event's Price</th>
-                                                    <th class="sort" data-sort="status">Status</th>
-                                                    <th class="sort" data-sort="city">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="list form-check-all">
-                                                {% for item in detailed_events %}
-                                                    {% if item.completed %}
-                                                        <tr>
-                                                            <th scope="row">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                                </div>
-                                                            </th>
-                                                            <td class="id"><a href="{% url 'admin-view-event' item.id %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
-                                                            <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                            <td class="amount"> {{ item.guest_count }} </td>
-                                                            <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-                                                            <td>
-                                                                <ul class="list-inline hstack gap-2 mb-0">
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                        <a href="{% url 'admin-view-event' item.id %}" class="text-primary d-inline-block">
-                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent" data-id="{{ item.id }}">
-                                                                            <i class="bi bi-trash fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                    {% endif %}
-                                                {% endfor %}
-                                                
-                                            </tbody>
-                                        </table>
-                                        <div class="py-4 text-center no-result-message"style="display: none;">
-                                            <div style="width:1185px;"></div>
-                                            <h5 class="mt-4">Sorry! No events matching your criteria 
-                                                <strong style="font-weight: 500;">
-                                                <i class="bi bi-search"></i>
-                                            </strong>.</h5>
-                                         </div>
-                                    </div>
-                                    <div id="ongoing" class="tab-pane fade">
-                                        <table class="table table-nowrap align-middle" id="eventTable">
-                                            <thead class="text-muted table-light">
-                                                <tr class="text-uppercase">
-                                                    <th scope="col" style="width: 25px;">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" id="checkAll" value="option">
-                                                        </div>
-                                                    </th>
-                                                    <th class="sort" data-sort="id">Event ID</th>
-                                                    <th class="sort" data-sort="event_organizer">Organizer</th>
-                                                    <th class="sort asc" data-sort="event_name">Event Name</th>
-                                                    <th class="sort" data-sort="date">Event Date and Time</th>
-                                                    <th class="sort" data-sort="amount">Guests</th>
-                                                    <th class="sort" data-sort="payment">Event's Price</th>
-                                                    <th class="sort" data-sort="status">Status</th>
-                                                    <th class="sort" data-sort="city">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="list form-check-all">
-                                                {% for item in detailed_events %}
-                                                    {% if not item.completed %}
-                                                        {% if item.event_date == today_date and today_time >= item.even_time  %}
-                                                        <tr>
-                                                            <th scope="row">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
-                                                                </div>
-                                                            </th>
-                                                            <td class="id"><a href="{% url 'admin-view-event' item.id %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
-                                                            <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                            <td class="amount"> {{ item.guest_count }} </td>
-                                                            <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-                                                            <td>
-                                                                <ul class="list-inline hstack gap-2 mb-0">
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
-                                                                        <a href="{% url 'admin-view-event' item.id %}" class="text-primary d-inline-block">
-                                                                            <i style="color:#D4AF37;" class="bi bi-eye fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item edit" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Edit">
-                                                                        <a href="#showModal" data-bs-toggle="modal" class="text-primary d-inline-block edit-item-btn" data-id="{{ item.id }}, {{ item.cost }}, {{ item.name }}, {{ item.organized_by }}, {{ item.location }}, {{ item.event_date }}">
-                                                                            <i style="color:rgb(20, 24, 52);" class="bi bi-pencil fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                    <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="Remove">
-                                                                        <a class="text-danger d-inline-block remove-item-btn" data-bs-toggle="modal" href="#deleteevent" data-id="{{ item.id }}">
-                                                                            <i class="bi bi-trash fs-16"></i>
-                                                                        </a>
-                                                                    </li>
-                                                                </ul>
-                                                            </td>
-                                                        </tr>
-                                                        {% endif %}
-                                                    {% endif %}
                                                 {% endfor %}
                                             </tbody>
                                         </table>
@@ -492,94 +197,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header bg-light p-3">
-                                            <h5 class="modal-title" id="exampleModalLabel">&nbsp;Edit event</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close" id="close-modal"></button>
-                                        </div>
-                                        <form class="tablelist-form" autocomplete="off" method="POST">
-                                            {% csrf_token %}
-                                            <div class="modal-body">
-                                                <input type="hidden" id="id-field" name="id_field">
 
-                                                <div class="mb-3" id="modal-id">
-                                                    <label for="eventId" class="form-label">ID</label>
-                                                    <input type="text" id="eventId" name="event_id" class="form-control" placeholder="ID" readonly>
-                                                </div>
-
-                                                <div class="mb-3">
-    <label for="organizerSelect" class="form-label">Organizer</label>
-    <select id="organizerSelect" name="organizer" class="form-select" required>
-        <option value="">Select organizer</option>
-        {% for user in users %}
-            <option value="{{ user.id }}">{{ user.get_full_name|default:user.username }}</option>
-        {% endfor %}
-    </select>
-</div>
-
-                                                <div class="mb-3">
-                                                    <label for="eventName" class="form-label">Event name</label>
-                                                    <input type="text" id="eventName" name="event_name" class="form-control" placeholder="Enter name" required>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="eventLocationSelect" class="form-label">Event Location</label>
-                                                    <select id="eventLocationSelect" name="event_location" class="form-select" required>
-    <option value="">Select location</option>
-</select>
-                                                </div>
-                                                <div class="mb-3">
-                                                    <label for="eventDate" class="form-label">Event Date</label>
-                                                    <input type="text" id="eventDate" name="event_date" class="form-control flatpickr-input"
-                                                        data-provider="flatpickr" required data-date-format="d M, Y" data-enable-time=""
-                                                        placeholder="Select date" readonly>
-                                                </div>
-                                            </div>
-
-                                            <div class="modal-footer">
-                                                <div class="hstack gap-2 justify-content-end">
-                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-success" id="add-btn">Update Event</button>
-                                                </div>
-                                            </div>
-                                        </form>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="modal fade flip" id="deleteevent" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <form action="" method="POST">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="form_delete" value="form_delete">
-                                            <input type="hidden" name="event_id" value="event_id">
-                                        <div class="modal-body p-5 text-center">
-                                            <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop"
-                                                colors="primary:#405189,secondary:#f06548"
-                                                style="width:90px;height:90px"></lord-icon>
-                                            <div class="mt-4 text-center">
-                                                <h4>You are about to delete an event.</h4>
-                                                <p class="text-muted fs-15 mb-4">Deleting your event will remove all of
-                                                    it's information from our database.</p>
-                                                <div class="hstack gap-2 justify-content-center remove">
-                                                    <button
-                                                        class="btn btn-link link-success fw-medium text-decoration-none"
-                                                        id="deleteRecord-close" data-bs-dismiss="modal"><i
-                                                            class="ri-close-line me-1 align-middle"></i> Close</button>
-                                                    <button class="btn btn-danger" type="submit" id="delete-record">Yes, Delete
-                                                        It</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
@@ -588,7 +206,6 @@
         </div>
     </div>
 </div>
-
 
 
 
@@ -628,99 +245,12 @@ function populateLocationsForOrganizer(organizerId, selectedLocationId = null) {
   }
 </script>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const eventDateInput = document.getElementById('eventDate');
-    const flatpickrInstance = flatpickr(eventDateInput, {
-        dateFormat: "d M, Y",
-    });
 
-    document.querySelectorAll('.edit-item-btn').forEach(function (editButton) {
-        editButton.addEventListener('click', function (event) {
-            const link = event.target.closest('a');
-
-            const eventId = link.dataset.eventId;
-            const eventCost = link.dataset.eventCost;
-            const eventName = link.dataset.eventName;
-            const eventOrganizer = link.dataset.eventOrganizer;
-            const eventLocation = link.dataset.eventLocation;
-            const eventDateRaw = link.dataset.eventDate;
-
-            const parsedDate = new Date(eventDateRaw);
-            if (isNaN(parsedDate.getTime())) {
-                console.error("Data nu este validă:", eventDateRaw);
-                return;
-            }
-
-            const formattedDate = parsedDate.toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-            });
-
-            if (flatpickrInstance) {
-                flatpickrInstance.setDate(formattedDate, true);
-            } else {
-                console.error("Flatpickr nu este inițializat corect.");
-            }
-
-            populateLocationsForOrganizer(eventOrganizer, eventLocation);
-
-            document.getElementById('eventId').value = eventId;
-            document.getElementById('organizerSelect').value = eventOrganizer;
-            document.getElementById('eventName').value = eventName;
-        });
-    });
-});
-
-</script>
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const currentDate = new Date();
-        
-        const formattedCurrentDate = currentDate.toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'short',
-            year: 'numeric',
-        });
-    
-        const dateInputElement = document.getElementById('SelectDate');
-        dateInputElement.value = formattedCurrentDate;
-    
-        flatpickr(dateInputElement, {
-            dateFormat: "M d, Y", 
-            defaultDate: formattedCurrentDate,
-        });
-    });
-    </script>
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const rowsPerPage = 6;
         let currentPage = 1;
         let searchInput = document.getElementById("searchEventList");
-        const filterButton = document.querySelector(".btn.btn-primary");
-        const dateInput = document.getElementById("SelectDate");
-        const statusSelect = document.getElementById("idStatus");
-        const organizerSelect = document.getElementById("idUsers");
-
-        function normalizeDate(dateStr) {
-            const months = {
-                "jan.": "Jan", "feb.": "Feb", "mar.": "Mar", "apr.": "Apr", "mai": "May", "iun.": "Jun",
-                "iul.": "Jul", "aug.": "Aug", "sept.": "Sep", "oct.": "Oct", "nov.": "Nov", "dec.": "Dec"
-            };
-
-            let parts = dateStr.split(" ");
-            if (parts.length >= 3) {
-                let day = parts[1].replace(",", "");
-                let month = months[parts[0].toLowerCase()] || parts[0];
-                let year = parts[2];
-
-                return `${day} ${month}, ${year}`;
-            }
-            return dateStr;
-        }
 
         function getActiveTabRows() {
             const activeTab = document.querySelector(".tab-pane.fade.active.show");
@@ -782,60 +312,18 @@ document.addEventListener('DOMContentLoaded', function () {
             paginationContainer.appendChild(nextButton);
         }
 
-        let changed = false;
-
-let defaultDate = dateInput.value.trim();
-
-dateInput.addEventListener("change", function () {
-    if (dateInput.value.trim() !== defaultDate) {
-        changed = true; 
-    }
-});
-
 function getFilteredRows() {
     const tableRows = getActiveTabRows();
 
     return Array.from(tableRows).filter(row => {
         let matchesSearch = true;
-        let matchesStatus = true;
-        let matchesOrganizer = true;
-        let matchesDate = true;
 
         let eventName = row.querySelector(".event_name");
         if (eventName) {
             let locationName = eventName.textContent.trim().toLowerCase();
             matchesSearch = locationName.includes(searchInput.value.trim().toLowerCase());
         }
-
-        let statusText = row.querySelector(".status")?.textContent?.trim().toLowerCase() || "";
-        let selectedStatus = statusSelect.value.trim().toLowerCase();
-
-        if (selectedStatus !== "all" && statusText !== selectedStatus) {
-            matchesStatus = false;
-        }
-
-        let organizerText = row.querySelector(".event_organizer")?.textContent?.trim().toLowerCase() || "";
-        let selectedOrganizer = organizerSelect.value.trim().toLowerCase();
-
-        if (selectedOrganizer !== "all" && organizerText !== selectedOrganizer) {
-            matchesOrganizer = false;
-        }
-
-        let eventDateText = row.querySelector(".event_date")?.textContent?.trim();
-        console.log("data: ", eventDateText);
-
-        if (dateInput.value && eventDateText && changed) {
-            try {
-                let normalizedEventDate = normalizeDate(eventDateText);
-                let normalizedInputDate = normalizeDate(dateInput.value);
-                matchesDate = normalizedEventDate === normalizedInputDate;
-            } catch (e) {
-                console.error("Eroare la compararea datelor:", e);
-                matchesDate = false;
-            }
-        }
-
-        return matchesSearch && matchesStatus && matchesOrganizer && matchesDate;
+        return matchesSearch;
     });
 }
 
@@ -887,38 +375,11 @@ function showPage(page) {
             });
         });
 
-        statusSelect.addEventListener("change", function () {
-            showPage(1);
-        });
-
-        organizerSelect.addEventListener("change", function () {
-            showPage(1);
-        });
-
-        dateInput.addEventListener("change", function () {
-            showPage(1);
-        });
-
         searchInput.addEventListener("keyup", function () {
             showPage(1);
         });
     });
 </script>
-<script>
-  document.addEventListener('DOMContentLoaded', function () {
-    const deleteButtons = document.querySelectorAll('.remove-item-btn');
-    const eventIdInput = document.querySelector('#deleteevent input[name="event_id"]');
-
-    deleteButtons.forEach(button => {
-      button.addEventListener('click', function () {
-        const eventId = this.getAttribute('data-id');
-        console.log(eventId)
-        eventIdInput.value = eventId;
-      });
-    });
-  });
-</script>
-
 <script>
     document.querySelectorAll('.sort').forEach(function(header) {
     header.addEventListener('click', function() {
