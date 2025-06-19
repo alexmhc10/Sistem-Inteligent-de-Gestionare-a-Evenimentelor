@@ -3182,7 +3182,6 @@ def generate_menu(request):
     menu = {}
     messages = []
 
-    # Încercăm să folosim modelul LightFM
     try:
         from .recommender import get_recommender
         recommender = get_recommender()
@@ -3190,21 +3189,17 @@ def generate_menu(request):
         if recommender.is_loaded:
             print("Folosim modelul LightFM pentru recomandări")
             
-            # Pentru fiecare categorie
             for category in categories:
                 filtered_dishes = safe_dishes.filter(category=category)
                 
                 if filtered_dishes.exists():
-                    # Obține recomandările pentru invitat
                     recommendations = recommender.get_recommendations(guest.id, top_n=20, exclude_rated=False)
                     
-                    # Filtrează recomandările pentru categoria curentă
                     category_recommendations = []
                     for rec in recommendations:
                         dish_id = rec['dish_id']
                         try:
                             dish = Menu.objects.get(id=dish_id, category=category)
-                            # Verifică din nou dacă preparatul este sigur pentru invitat
                             if not dish.allergens.filter(id__in=guest_allergens.values_list('id', flat=True)).exists() and dish in filtered_dishes:
                                 category_recommendations.append({
                                     'dish': dish,
@@ -3213,16 +3208,13 @@ def generate_menu(request):
                         except Menu.DoesNotExist:
                             continue
                     
-                    # Sortează după scor și ia top 3
                     category_recommendations.sort(key=lambda x: x['score'], reverse=True)
                     selected = [item['dish'] for item in category_recommendations[:3]]
                     
-                    # Dacă nu avem suficiente recomandări, completează cu preparate din regiunea preferată
                     if len(selected) < 3:
                         remaining_needed = 3 - len(selected)
                         selected_ids = [d.id for d in selected]
                         
-                        # Încearcă preparate din regiunea preferată
                         regional_dishes = filtered_dishes.filter(
                             item_cuisine=preferred_region
                         ).exclude(id__in=selected_ids)
@@ -3232,7 +3224,6 @@ def generate_menu(request):
                             selected.extend(additional)
                             remaining_needed -= len(additional)
                         
-                        # Dacă încă avem nevoie, completează cu orice preparat disponibil
                         if remaining_needed > 0:
                             other_dishes = filtered_dishes.exclude(id__in=[d.id for d in selected])
                             if other_dishes.exists():
@@ -3260,7 +3251,6 @@ def generate_menu(request):
                 ]
                 
         else:
-            # Fallback la logica veche dacă modelul nu este încărcat
             messages.append("Modelul LightFM nu este încărcat. Folosesc filtrarea de bază.")
             raise Exception("Model not loaded")
             
@@ -3268,12 +3258,10 @@ def generate_menu(request):
         print(f"Eroare cu modelul LightFM: {e}")
         messages.append(f"Eroare cu modelul LightFM: {str(e)}. Folosesc filtrarea de bază.")
         
-        # Fallback la logica veche
         for category in categories:
             filtered_dishes = safe_dishes.filter(category=category)
             
             if filtered_dishes.exists():
-                # Încearcă preparate din regiunea preferată
                 regional_dishes = filtered_dishes.filter(item_cuisine=preferred_region)
                 
                 if regional_dishes.exists():
@@ -3342,6 +3330,8 @@ def save_guest_menu(request):
                 "id": d.id,
                 "name": d.item_name,
                 "category": d.category,
+                "region": d.item_cuisine if d.item_cuisine else '',
+                "diet_type": d.diet_type,
                 "image": d.item_picture.url if d.item_picture else "",
                 "allergens": [a.name for a in d.allergens.all()],
                 "is_vegan": d.item_vegan,

@@ -351,7 +351,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                               </div>
                                               <div class="d-flex align-items-center flex-wrap gap-1">
                                                   <p>Is vegan?</p>
-                                                  ${veganHTML}
+                                                  ${item.diet_type}
                                               </div>
                                               <div class="d-flex align-items-center flex-wrap gap-1">
                                                   <p>Region:</p>
@@ -1537,22 +1537,20 @@ data-sidebar-position="fixed" data-header-position="fixed">
     const MEDIA="{{ MEDIA_URL }}";
     const table=document.createElement('table');
     table.className='table table-bordered mt-3';
-    table.innerHTML=`<thead><tr><th>Category</th><th>Image</th><th>Dish</th><th>Allergens</th><th>Vegan</th><th>Action</th></tr></thead><tbody></tbody>`;
+    table.innerHTML=`<thead><tr><th>Category</th><th>Image</th><th>Dish</th><th>Allergens</th><th>Diet</th><th>Action</th></tr></thead><tbody></tbody>`;
     const tbody=table.querySelector('tbody');
 
     menu.forEach(item=>{
       const tr=document.createElement('tr');
       tr.dataset.category=item.category;
       const imgSrc = item.image || MEDIA + 'placeholder.jpg';
-      tr.innerHTML=`<td class='text-capitalize'>${item.category}</td><td><img src="${imgSrc}" class="img-thumbnail" style="max-width:80px; max-height:80px; object-fit:cover;"></td><td>${item.name}</td><td>${item.allergens.length?item.allergens.join(', '):'None'}</td><td>${item.is_vegan ? 'Yes' : 'No'}</td><td><button class='btn btn-sm btn-primary edit-choice'>Edit  <i class="bi bi-pencil-square"></i></button></td>`;
+      tr.innerHTML=`<td class='text-capitalize'>${item.category}</td><td><img src="${imgSrc}" class="img-thumbnail" style="max-width:80px; max-height:80px; object-fit:cover;"></td><td>${item.name} ${item.region ? `, ${item.region}` : ''}</td><td>${item.allergens.length?item.allergens.join(', '):'None'}</td><td>${item.diet_type}</td><td><button class='btn btn-sm btn-primary edit-choice'>Edit  <i class="bi bi-pencil-square"></i></button></td>`;
       tbody.appendChild(tr);
     });
     container.appendChild(table);
 
-    // ascundem formularul initial
     document.getElementById('menu-configuration').style.display='none';
 
-    // attach edit handlers
     container.querySelectorAll('.edit-choice').forEach(btn=>{
       btn.addEventListener('click',function(){
         const cat=this.closest('tr').dataset.category;
@@ -1560,7 +1558,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
         form.style.display='block';
         document.getElementById('suggested-menu').classList.remove('d-none');
 
-        // afisăm doar rândurile din categoria selectată
         document.querySelectorAll('.dish-row').forEach(r=>{
           r.style.display=(r.dataset.category===cat)?'flex':'none';
         });
@@ -1570,7 +1567,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
     });
   }
 
-  // initialize summary if already saved
   document.addEventListener('DOMContentLoaded',function(){
     const chosenMenu = JSON.parse('{{ chosen_menu_json|escapejs }}');
     if(chosenMenu.length){
