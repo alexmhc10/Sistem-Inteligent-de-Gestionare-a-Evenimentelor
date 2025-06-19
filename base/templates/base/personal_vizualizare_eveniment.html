@@ -349,7 +349,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 {% if guests_count == logs.count %}
                                 <span class="badge bg-success-subtle text-success text-uppercase">All guests arrived</span>
                                 {% else %}
-                                <p class="text-dark">{{ logs.count }} / {{event_guests_count}} guests arrived</p>
+                                <p class="text-dark"><span id="guests-arrived">{{ logs.count }}</span> / {{event_guests_count}} guests arrived</p>
                                 {% endif %} 
                             </div>
                             <div class="table-header-validation">
@@ -716,7 +716,10 @@ document.addEventListener('DOMContentLoaded', function(){
             addGuestToTable(data.user);
             if(window.Swal){
                 Swal.fire('Success', 'Guest attendance confirmed!', 'success');
+                const guestsArrived = document.getElementById('guests-arrived');
+                guestsArrived.textContent = parseInt(guestsArrived.textContent) + 1;  
             }
+ 
         })
         .catch(err=>{
             console.error(err);

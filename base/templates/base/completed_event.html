@@ -703,7 +703,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
     }
 </style>
 
-<!-- ApexCharts for arrival timeline -->
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function(){
@@ -714,7 +713,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
         series:[{ name:'Guests arrived', data: arrivalData }],
         xaxis:{ type:'category', title:{ text:'Time (HH:MM)'} },
         yaxis:{ title:{ text:'Cumulative guests'} , min:0, tickAmount:4},
-        stroke:{ width:2, curve:'stepline'},
+        stroke:{ width:2, curve:'smooth'},
         markers:{ size:4 },
         colors:['#0d6efd']
       };

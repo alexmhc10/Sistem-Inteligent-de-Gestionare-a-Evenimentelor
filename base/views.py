@@ -2388,51 +2388,81 @@ def completed_event(request, pk):
         messages.error(request, "We couln't find this event")
         return redirect(request.META.get('HTTP_REFERER', '/personal_eveniment_home'))
 
+    if event.status != "completed":
+        messages.error(request, "This event is not completed yet.")
+        return redirect('personal_vizualizare_eveniment', pk)
+
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event)
+
     total_guests = event.guests.count()
     guests = event.guests.all()
+
     guest_users = User.objects.filter(id__in=guests.values_list('id', flat=True))
     
     search_query = request.GET.get('search', '')
     
-    base_present_guests = Log.objects.filter(event=event, is_correct = True)
-    base_confirmed_but_absent = RSVP.objects.filter(event=event, response="Accepted", responded=True).exclude(
-        guest__in=Log.objects.filter(
-            event=event, 
-            is_correct=True
-        ).values_list('profile', flat=True)
+    # ------ Pregătim set-uri de ID-uri pentru a evita dublurile ------
+    raw_logs = Log.objects.filter(event=event, is_correct=True).select_related('profile__user').order_by('created')
+    present_logs = []
+    present_user_ids = set()
+    for lg in raw_logs:
+        uid = getattr(lg.profile, 'user_id', None)
+        if uid and uid not in present_user_ids:
+            present_logs.append(lg)
+            present_user_ids.add(uid)
+ 
+    accepted_user_ids = set(
+        RSVP.objects.filter(event=event, response="Accepted", responded=True)
+            .values_list('guest_id', flat=True).distinct()
     )
-    base_absent_guests = RSVP.objects.filter(event=event, response = "Declined", responded = True)
-    base_pending_guests = RSVP.objects.filter(event=event, response = "Pending", responded = False)
+ 
+    declined_user_ids = set(
+        RSVP.objects.filter(event=event, response="Declined", responded=True)
+            .values_list('guest_id', flat=True).distinct()
+    )
+ 
+    pending_user_ids = set(
+        RSVP.objects.filter(event=event, response="Pending", responded=False)
+            .values_list('guest_id', flat=True).distinct()
+    )
+ 
+    # Guests who accepted but didn't show
+    confirmed_but_absent_ids = accepted_user_ids - present_user_ids
 
-    present_guests_percentage = round((base_present_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
-    absent_guests_percentage = round((base_absent_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
-    pending_guests_percentage = round((base_pending_guests.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
-    confirmed_but_absent_percentage = round((base_confirmed_but_absent.count() / guests.count() * 100), 2) if guests.count() > 0 else 0
+    # Percentages
+    # Calculăm denominator pe baza reuniunii seturilor (elim. eventuale discrepanţe)
+    unique_user_ids = present_user_ids | confirmed_but_absent_ids | declined_user_ids | pending_user_ids
+    denominator = len(unique_user_ids) or 1
+
+    present_guests_percentage = round(len(present_user_ids) / denominator * 100, 2)
+    confirmed_but_absent_percentage = round(len(confirmed_but_absent_ids) / denominator * 100, 2)
+    absent_guests_percentage = round(len(declined_user_ids) / denominator * 100, 2)
+    pending_guests_percentage = round(len(pending_user_ids) / denominator * 100, 2)
+ 
+    base_present_guests = Log.objects.filter(id__in=[lg.id for lg in present_logs])
+    base_confirmed_but_absent = RSVP.objects.filter(event=event, guest_id__in=confirmed_but_absent_ids)
+    base_absent_guests = RSVP.objects.filter(event=event, guest_id__in=declined_user_ids)
+    base_pending_guests = RSVP.objects.filter(event=event, guest_id__in=pending_user_ids)
+
+    if search_query:
+        base_present_guests = base_present_guests.filter(
+            Q(profile__first_name__icontains=search_query) |
+            Q(profile__last_name__icontains=search_query)
+        )
+        base_absent_guests = base_absent_guests.filter(
+            Q(guest__profile__first_name__icontains=search_query) |
+            Q(guest__profile__last_name__icontains=search_query)
+        )
+        base_pending_guests = base_pending_guests.filter(
+            Q(guest__profile__first_name__icontains=search_query) |
+            Q(guest__profile__last_name__icontains=search_query)
+        )
 
     present_guests = base_present_guests
     confirmed_but_absent = base_confirmed_but_absent
     absent_guests = base_absent_guests
     pending_guests = base_pending_guests
-
-    if search_query:
-        present_guests = present_guests.filter(
-            Q(profile__first_name__icontains=search_query) |
-            Q(profile__last_name__icontains=search_query)
-        )
-        confirmed_but_absent = confirmed_but_absent.filter(
-            Q(guest__profile__first_name__icontains=search_query) |
-            Q(guest__profile__last_name__icontains=search_query)
-        )
-        absent_guests = absent_guests.filter(
-            Q(guest__profile__first_name__icontains=search_query) |
-            Q(guest__profile__last_name__icontains=search_query)
-        )
-        pending_guests = pending_guests.filter(
-            Q(guest__profile__first_name__icontains=search_query) |
-            Q(guest__profile__last_name__icontains=search_query)
-        )
 
     if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces an completed event that was not organised at your location.")
@@ -2444,7 +2474,6 @@ def completed_event(request, pk):
     print('Posts count:', posts.count())
     
     if event is not None:
-        # Build data series for arrival chart (time vs cumulative guests)
         arrival_series = []
         cnt = 0
         for lg in base_present_guests.order_by('created'):
@@ -4338,6 +4367,7 @@ def manual_validate_attendance(request):
 
     query = (data.get('query') or '').strip()
     event_id = data.get('event_id')
+    target_guest_id = data.get('guest_id')  # optional – explicit guest to mark
 
     if not query or not event_id:
         return JsonResponse({'success': False, 'error': 'Missing parameters'}, status=400)
@@ -4357,28 +4387,24 @@ def manual_validate_attendance(request):
     if not guests_qs.exists():
         return JsonResponse({'success': False, 'error': 'Guest not found'}, status=404)
 
-    guest = guests_qs.first()
-    profile = guest.profile
-    user = profile.user if profile else None
-
-    existing_log = Log.objects.filter(event=event, profile=profile, is_correct=True).first()
+    existing_log = Log.objects.filter(event=event, profile=guests_qs.first().profile, is_correct=True).first()
     if existing_log:
-        log = existing_log
+        return JsonResponse({'success': False, 'error': 'Guest already attended'}, status=400)
+
+    log = Log(event=event, profile=guests_qs.first().profile, is_correct=True)
+    if guests_qs.first().profile and guests_qs.first().profile.photo:
+        log.photo = guests_qs.first().profile.photo
     else:
-        log = Log(event=event, profile=profile, is_correct=True)
-        if profile and profile.photo:
-            log.photo = profile.photo
-        else:
-            from django.core.files.base import ContentFile
-            import base64
-            transparent_png = base64.b64decode(
-                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAqsB9WkQrK8AAAAASUVORK5CYII="
-            )
-            log.photo.save('placeholder.png', ContentFile(transparent_png), save=False)
-        log.save()
+        from django.core.files.base import ContentFile
+        import base64
+        transparent_png = base64.b64decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAqsB9WkQrK8AAAAASUVORK5CYII="
+        )
+        log.photo.save('placeholder.png', ContentFile(transparent_png), save=False)
+    log.save()
 
     table_number = None
-    arrangement = TableArrangement.objects.filter(event=event, guest=guest).select_related('table').first()
+    arrangement = TableArrangement.objects.filter(event=event, guest=guests_qs.first()).select_related('table').first()
     if arrangement and arrangement.table:
         table_number = arrangement.table.table_number
 
@@ -4389,15 +4415,15 @@ def manual_validate_attendance(request):
     created_local = timezone.localtime(created_at)
 
     user_data = {
-        'id': user.id if user else None,
-        'name': f"{profile.first_name} {profile.last_name}" if profile else 'Unknown',
-        'email': user.email if user else '',
-        'photo_url': profile.photo.url if profile and profile.photo else '',
+        'id': guests_qs.first().profile.user.id if guests_qs.first().profile.user else None,
+        'name': f"{guests_qs.first().profile.first_name} {guests_qs.first().profile.last_name}" if guests_qs.first().profile else 'Unknown',
+        'email': guests_qs.first().profile.user.email if guests_qs.first().profile.user else '',
+        'photo_url': guests_qs.first().profile.photo.url if guests_qs.first().profile and guests_qs.first().profile.photo else '',
         'arriving_time': created_local.strftime("%d, %H:%M"),
-        'gender': guest.gender,
-        'cuisine_preference': guest.cuisine_preference,
-        'is_vegan': guest.vegan,
-        'allergens': [a.name for a in guest.allergens.all()],
+        'gender': guests_qs.first().gender,
+        'cuisine_preference': guests_qs.first().cuisine_preference,
+        'is_vegan': guests_qs.first().vegan,
+        'allergens': [a.name for a in guests_qs.first().allergens.all()],
         'table_number': table_number,
     }
 
