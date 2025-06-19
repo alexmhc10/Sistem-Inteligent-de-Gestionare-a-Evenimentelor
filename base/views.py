@@ -2147,15 +2147,16 @@ def personal_eveniment_home(request):
     location = Location.objects.get(user_account=request.user)
     print("Locatie:", location)
     print("Locatie:", location.id)
+
     events = Event.objects.filter(location=location)
     print("Events:", events)
 
     profiles = Profile.objects.get(user=request.user)
     print(profiles.user_type)
     
-    current_date = datetime.today()
+    current_date = datetime.today() 
 
-    past_events = Event.objects.filter(event_date__lte = current_date, location=location).order_by('event_date')
+    past_events = [ev for ev in events if ev.status == 'completed'] or []
     print("Evente din trecut", past_events)
     
     upcoming_events = Event.objects.filter(event_date__gte = current_date, location=location).order_by('event_date')
@@ -2192,7 +2193,7 @@ def personal_eveniment_home(request):
     context = {
         'events': events,
         'past_events': past_events,
-        'past_events_count': past_events.count(),
+        'past_events_count': len(past_events),
         'event_data': json.dumps(next_event_data),
         'remaining_events_data': remaining_events_data,
         'event': next_event,
@@ -2315,6 +2316,8 @@ def delete_image(request, image_id):
 @user_is_staff
 def personal_vizualizare_eveniment(request, pk):
     event = Event.objects.get(id=pk)
+    event_guests = event.guests.all()
+    print('Event guests:', event.id)
 
     if event.location.user_account != request.user:
         messages.error(request, "Acces denied: You cant acces events that are not organised at your location.")
@@ -2327,6 +2330,7 @@ def personal_vizualizare_eveniment(request, pk):
         
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event, response = "Accepted")
+    rspv_pending = RSVP.objects.filter(event = event, response = "Pending")
     print('RSPV:', rspv)
     logs = Log.objects.filter(event=event, is_correct = True)
     print('Logs:', logs)
@@ -2348,9 +2352,22 @@ def personal_vizualizare_eveniment(request, pk):
         tables_json = list(event.location.tables.values('id','table_number','capacity','shape','is_reserved','position_x','position_y','rotation','width','height','radius'))
         special_json = list(event.location.special_elements.values('type','label','position_x','position_y','rotation','width','height','radius'))
 
+    # Map guests to their assigned table numbers
+    arrangements = TableArrangement.objects.filter(event=event).select_related('guest', 'table')
+    guest_table_map = {arr.guest.id: (arr.table.table_number if arr.table else None) for arr in arrangements}
+
+    # attach attribute for easy template access
+    for g in event_guests:
+        g.table_number = guest_table_map.get(g.id)
+
+    guests_with_table_count = sum(1 for g in event_guests if g.table_number is not None)
+
     context = {
         'logs': logs,
         'event': event,
+        'event_guests': event_guests,
+        'event_guests_count': event_guests.count(),
+        'guests_with_table_count': guests_with_table_count,
         'guests_count': rspv.count(),
         'event_data': json.dumps(event_data),
         'rspv': rspv,
@@ -2834,8 +2851,7 @@ def validate_attendance(request):
             log = Log.objects.get(id=log_id)
             log.is_correct = True
             log.save()
-            created_aware = make_aware(log.created)  # convertește la aware
-
+            created_aware = make_aware(log.created)
             return JsonResponse({
                 'message': 'Attendance marked',
                 'user': {
@@ -3928,7 +3944,6 @@ def table_details_api(request, table_id):
     for arrangement in arrangements:
         guest = arrangement.guest
         user_obj = guest.profile.user
-        # Build menu grouped by category
         menu_by_cat = {'appetizer': [], 'main': [], 'dessert': [], 'drink': []}
         try:
             guest_menu = GuestMenu.objects.get(guest=user_obj, event=event)
@@ -3939,6 +3954,8 @@ def table_details_api(request, table_id):
 
         allergens_list = list(guest.allergens.values_list('name', flat=True))
         is_vegan = getattr(guest, 'vegan', False)
+        diet_type = guest.diet_preference
+        region = getattr(guest, 'region', 'none')
 
         profile = getattr(guest, 'profile', None)
         name = None
@@ -3957,10 +3974,53 @@ def table_details_api(request, table_id):
             'menu': menu_by_cat,
             'allergens': allergens_list,
             'is_vegan': is_vegan,
+            'diet_type': diet_type,
+            'region': region,
         })
     return JsonResponse({'guests': guests})
 
-# Adaug review-uri de test pentru organizatorul 'Emhasce'
+
+from django.http import JsonResponse
+from django.db.models import Q
+
+@login_required
+def guest_table_api(request):
+    query   = request.GET.get('q', '').strip().lower()
+    event_id = request.GET.get('event_id')
+
+    if not query or not event_id:
+        return JsonResponse({'error': 'Missing params'}, status=400)
+
+    try:
+        event = Event.objects.get(id=event_id)
+    except Event.DoesNotExist:
+        return JsonResponse({'error': 'Event not found'}, status=404)
+
+    # căutăm în aranjament
+    arrangement = (
+        TableArrangement.objects
+        .select_related('table', 'guest__profile')
+        .filter(
+            event=event,
+            guest__profile__first_name__icontains=query
+        ) | TableArrangement.objects.filter(
+            event=event,
+            guest__profile__last_name__icontains=query
+        )
+    ).first()
+
+    if not arrangement:
+        return JsonResponse({'found': False})
+
+    prof = arrangement.guest.profile
+    return JsonResponse({
+        'found': True,
+        'table_id': arrangement.table.id,
+        'table_number': arrangement.table.table_number,
+        'guest_fullname': f'{prof.first_name} {prof.last_name}'.strip()
+    })
+
+
 def populate_reviews_for_emhasce():
     try:
         organizer = User.objects.get(username='Emhasce')
@@ -4071,7 +4131,6 @@ def add_budget(request, event_id):
     event = get_object_or_404(Event, id=event_id)
     budget, created = EventBudget.objects.get_or_create(event=event)
     if request.method == 'POST':
-        # Update all budget fields from the form
         for field in budget._meta.fields:
             if isinstance(field, models.DecimalField) and field.name.endswith('_cost'):
                 value = request.POST.get(field.name, '0')
@@ -4254,6 +4313,84 @@ def model_status_view(request):
     except Exception as e:
         messages.error(request, f'Eroare la verificarea statusului modelului: {e}')
         return redirect('home')
+
+@csrf_exempt
+@login_required
+def manual_validate_attendance(request):
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Invalid method'}, status=400)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+
+    query = (data.get('query') or '').strip()
+    event_id = data.get('event_id')
+
+    if not query or not event_id:
+        return JsonResponse({'success': False, 'error': 'Missing parameters'}, status=400)
+
+    try:
+        event = Event.objects.get(id=event_id)
+    except Event.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Event not found'}, status=404)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Authentication required'}, status=403)
+
+    guests_qs = Guests.objects.filter(events=event).filter(
+        Q(profile__first_name__icontains=query) | Q(profile__last_name__icontains=query)
+    ).select_related('profile__user').distinct()
+
+    if not guests_qs.exists():
+        return JsonResponse({'success': False, 'error': 'Guest not found'}, status=404)
+
+    guest = guests_qs.first()
+    profile = guest.profile
+    user = profile.user if profile else None
+
+    existing_log = Log.objects.filter(event=event, profile=profile, is_correct=True).first()
+    if existing_log:
+        log = existing_log
+    else:
+        log = Log(event=event, profile=profile, is_correct=True)
+        if profile and profile.photo:
+            log.photo = profile.photo
+        else:
+            from django.core.files.base import ContentFile
+            import base64
+            transparent_png = base64.b64decode(
+                "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8Xw8AAqsB9WkQrK8AAAAASUVORK5CYII="
+            )
+            log.photo.save('placeholder.png', ContentFile(transparent_png), save=False)
+        log.save()
+
+    table_number = None
+    arrangement = TableArrangement.objects.filter(event=event, guest=guest).select_related('table').first()
+    if arrangement and arrangement.table:
+        table_number = arrangement.table.table_number
+
+    from django.utils import timezone
+    created_at = log.created
+    if timezone.is_naive(created_at):
+        created_at = timezone.make_aware(created_at)
+    created_local = timezone.localtime(created_at)
+
+    user_data = {
+        'id': user.id if user else None,
+        'name': f"{profile.first_name} {profile.last_name}" if profile else 'Unknown',
+        'email': user.email if user else '',
+        'photo_url': profile.photo.url if profile and profile.photo else '',
+        'arriving_time': created_local.strftime("%d, %H:%M"),
+        'gender': guest.gender,
+        'cuisine_preference': guest.cuisine_preference,
+        'is_vegan': guest.vegan,
+        'allergens': [a.name for a in guest.allergens.all()],
+        'table_number': table_number,
+    }
+
+    return JsonResponse({'success': True, 'user': user_data})
 
 
 

@@ -218,11 +218,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
         <div class="collapse" id="completedEventsCollapse">
           <div class="row d-flex flex-row">
           {% for event in past_events %}  
-          <div class="col-lg-4">
+          <div class="col-lg-3">
             <div class="card overflow-hidden hover-img card-hover">
               <div class="position-relative">
                 <a href="{% url 'completed_event' event.id %}">
-                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" style="max-height: 250px; object-fit: cover;" alt="matdash-img">
+                  <img src="{{ MEDIA_URL }}{{event.location.gallery}}" class="card-img-top" style="max-height: 200px; object-fit: cover;" alt="matdash-img">
                 </a>
                 <span class="badge text-bg-light text-dark fs-2 lh-sm mb-9 me-9 py-1 px-2 fw-semibold position-absolute bottom-0 end-0">{{ next_event.event_time }}</span>
                 <img src="{{ MEDIA_URL }}{{ event.organized_by.profile_set.all.0.photo }}" alt="matdash-img" class="img-fluid rounded-circle position-absolute bottom-0 start-0 mb-n9 ms-9" style="width: 40px; max-height: 40px; object-fit: cover;" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Georgeanna Ramero">

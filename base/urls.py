@@ -91,6 +91,7 @@ urlpatterns = [
     path('api/events/<int:event_id>/upload-archive/', views.UploadArchiveAPI.as_view(), name='upload_archive_api'),
     path('delete_archive/<int:archive_id>/', views.delete_archive, name='delete_archive'),
     path('calendar/events/', views.event_list_json, name='event_list_json'),
+    path('api/guest-table/', views.guest_table_api, name='guest_table_api'),
 
 
     #Personal sistem mese
@@ -114,6 +115,7 @@ urlpatterns = [
     #Face_recog
     path('find_user_view/', views.find_user_view, name='find_user_view'),
     path("validate_attendance/", views.validate_attendance, name='validate_attendance'),
+    path("manual_validate_attendance/", views.manual_validate_attendance, name='manual_validate_attendance'),
     path('generate-menu/', views.generate_menu, name='generate-menu'),
     path('save_ratings/', views.save_menu_ratings, name='save_menu_ratings'),
 

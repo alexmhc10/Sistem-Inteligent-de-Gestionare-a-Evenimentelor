@@ -35,7 +35,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <div class="container-fluid">
         <div class="row">
 
-        <div class="col-lg-6">
+        <div class="col-lg-9">
             <div class="row d-flex flex-column flex-wrap">
                 <div class="col-lg-12">
                     <div class="card">
@@ -68,12 +68,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>    
         </div>
         
-        <div class="col-lg-3">
+        <!-- <div class="col-lg-3">
             <div class="card">
                 <img src="{{ MEDIA_URL }}{{ event.location.gallery }}" class="card-img" style="max-height: 300px; object-fit: cover;">
                 <div class="card-img-overlay"></div>
             </div>
-        </div>
+        </div> -->
 
         <div class="col-lg-3">
             <div class="card">
@@ -87,7 +87,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             <option value="organizer">The organiser</option>
                             <option value="everyone">Organiser and guests</option>
                         </select>
-                        <textarea class="form-control mb-2" name="message" id="message" cols="30" rows="5"></textarea>
+                        <textarea class="form-control mb-2" name="message" id="message" cols="30" rows="2"></textarea>
                         <button type="submit" name="submit" class="btn btn-primary">Send</button>
                     </form>
                 </div>
@@ -249,7 +249,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                     </div>
                                                 `;
 
-                                                // Buton de validare
                                                 document.getElementById('validate-btn').addEventListener('click', () => {
                                                     $.ajax({
                                                         type: 'POST',
@@ -267,7 +266,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                     });
                                                 });
 
-                                                // Buton de respingere
                                                 document.getElementById('reject-btn').addEventListener('click', () => {
                                                     resultDiv.innerHTML = '<p class="text-warning">Invitatul nu a fost recunoscut corect. Te rugăm să încerci din nou.</p>';
                                                 });
@@ -351,8 +349,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 {% if guests_count == logs.count %}
                                 <span class="badge bg-success-subtle text-success text-uppercase">All guests arrived</span>
                                 {% else %}
-                                <p class="text-dark">{{ logs.count }} / {{guests_count}} guests arrived</p>
+                                <p class="text-dark">{{ logs.count }} / {{event_guests_count}} guests arrived</p>
                                 {% endif %} 
+                            </div>
+                            <div class="table-header-validation">
+                                <button class="btn btn-primary" id="validation-btn">Manual validation</button>
                             </div>
                         </div>    
                         <div class="table-responsive">
@@ -366,7 +367,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <th scope="col" class="text-center">Arriving time</th>
                                     <th scope="col" class="text-center">Gender</th>
                                     <th scope="col" class="text-center">Cuisine preference</th>
-                                    <th scope="col" class="text-center">Vegan</th>
+                                    <th scope="col" class="text-center">Diet</th>
                                     <th scope="col" class="text-center">Allergens</th>
                                     <th scope="col" class="text-center">Table no.</th>
                                 </tr>
@@ -385,18 +386,22 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                 </td>
                                                 <td class="text-center fw-medium">{{ log.created|date:"d, H:i" }}</td>
                                                 <td class="text-center fw-medium">{{ log.profile.guest_profile.gender }}</td>
+                                                {% if log.profile.guest_profile.cuisine_preference %}
                                                 <td class="text-center fw-medium">{{ log.profile.guest_profile.cuisine_preference }}</td>
-                                                {% if log.profile.guest_profile.is_vegan %}
-                                                <td class="text-center fw-medium">vegan</td>
                                                 {% else %}
-                                                <td class="text-center fw-medium">non-vegan</td>
+                                                <td class="text-center fw-medium">No preference</td>
+                                                {% endif %}
+                                                {% if log.profile.guest_profile.diet_preference %}
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.diet_preference }}</td>
+                                                {% else %}
+                                                <td class="text-center fw-medium">No preference</td>
                                                 {% endif %}
                                                 {% if log.profile.guest_profile.allergens.all %}
                                                 <td class="text-center fw-medium">{{ log.profile.guest_profile.allergens.all|join:", " }}</td>
                                                 {% else %}
                                                 <td class="text-center fw-medium">None</td>
                                                 {% endif %}
-                                                <td class="text-center fw-medium">{{ log.table_number }}</td>
+                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.table_number|default:"-" }}</td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}
@@ -414,6 +419,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <div class="card glass-effect">
                         <div class="card-body">
                             <h3 class="text-center mb-3">Room Layout - click on the table to see the guests</h3>
+                            <div class="d-flex justify-content-start">
+                                <input type="text" class="form-control mb-3" style="width: 200px;" id="search-input" placeholder="Search for a guest">
+                            
+                            </div>
                             <div id="layout-container" style="width:100%;height:600px;border:1px solid #ccc;background:#f8f9fa;border-radius:15px;"></div>
                         </div>
                     </div>
@@ -467,13 +476,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
     <div id="tablePanelContent"></div>
 </div>
 
-<!-- Tooltip kept for future fallback but hidden -->
 <div id="tableTooltip" style="position:absolute;display:none;"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/konva@9.2.2/konva.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-    const tooltip = document.getElementById('tableTooltip'); // legacy, hidden
+    const tooltip = document.getElementById('tableTooltip');
     const panel = document.getElementById('tablePanel');
     const panelTitle = document.getElementById('tablePanelTitle');
     const panelContent = document.getElementById('tablePanelContent');
@@ -485,7 +493,6 @@ document.addEventListener('DOMContentLoaded', function(){
     let width = container.offsetWidth;
     const height = 600;
 
-    // Stage & layers
     const stage = new Konva.Stage({ container:'layout-container', width:width, height:height });
     const gridLayer = new Konva.Layer({ listening:false });
     const layer = new Konva.Layer();
@@ -537,7 +544,6 @@ document.addEventListener('DOMContentLoaded', function(){
         });
         group.add(shape); group.add(text);
         group._tableId = t.id;
-        // OPEN PANEL ON CLICK
         group.on('click',()=>{
             fetch(`/api/table-details/${t.id}/?event_id={{ event.id }}`)
                 .then(resp=>resp.json()).then(data=>{
@@ -545,7 +551,6 @@ document.addEventListener('DOMContentLoaded', function(){
                     if(data.guests && data.guests.length){
                         html += '<ul class="list-group list-group-flush">';
                         data.guests.forEach((g)=>{
-                            // Build menu by categories
                             let menuPart = '';
                             if(g.menu){
                                 const order = ['appetizer','main','dessert','drink'];
@@ -557,12 +562,11 @@ document.addEventListener('DOMContentLoaded', function(){
                                 });
                             }
 
-                            // Allergens & vegan
                             let dietary = '';
                             if(g.allergens && g.allergens.length){
                                 dietary += `<br/><small class='text-danger'>Allergens: ${g.allergens.join(', ')}</small>`;
                             }
-                            dietary += `<br/><small class='${g.is_vegan ? 'text-success' : 'text-secondary'}'>${g.is_vegan ? 'Vegan' : 'Non-vegan'}</small>`;
+                            dietary += `<br/><small class='${g.diet_type ? 'text-success' : 'text-secondary'}'>${g.diet_type}</small>`;
 
                             const photoTag = g.photo ? `<img src="${g.photo}" class="rounded-circle me-2" width="35" height="35" alt="${g.name}">` : '';
                             html+=`<li class="list-group-item d-flex align-items-start">${photoTag}<div><strong>${g.name}</strong>${menuPart}${dietary}</div></li>`;
@@ -579,7 +583,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
     tablesRaw.forEach(drawTable);
 
-    // special elements (same defs as before)
     const defs={
         entrance:{shape:'rect',color:'green',width:60,height:20,label:'Entrance'},
         dancefloor:{shape:'rect',color:'#b39ddb',width:200,height:120,opacity:0.3,label:'Dance Floor'},
@@ -600,7 +603,6 @@ document.addEventListener('DOMContentLoaded', function(){
             if(def.opacity) shape.opacity(def.opacity);
         }else{const r=el.radius||def.radius;shape=new Konva.Circle({radius:r,fill:def.color}); if(def.opacity) shape.opacity(def.opacity);} 
 
-        // Add descriptive label under each special element
         const labelText = el.label || (def && def.label) || el.type;
         let labelX, labelY, labelWidth;
         if(def.shape === 'rect'){
@@ -631,8 +633,110 @@ document.addEventListener('DOMContentLoaded', function(){
     });
 
     layer.draw();
+   
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('keyup', function(e){
+        if(e.key !== 'Enter'){ return; }
+        const query = this.value.trim();
+        if(!query){ return; }
+
+        fetch(`/api/guest-table/?event_id={{ event.id }}&q=${encodeURIComponent(query)}`)
+        .then(resp=>resp.json())
+        .then(data=>{
+            if(!data.found){
+                if(window.Swal){
+                    Swal.fire('Not found','No guest matches this name','info');
+                } else {
+                    alert('Guest not found');
+                }
+                return;
+            }
+
+            const grp = layer.findOne(node => node._tableId === data.table_id);
+            if(grp){ grp.fire('click'); }
+
+            setTimeout(()=>{
+                const rows = panelContent.querySelectorAll('li');
+                rows.forEach(li => li.classList.remove('flash-row'));
+                const target = Array.from(rows).find(li => li.textContent.toLowerCase().includes(data.guest_fullname.toLowerCase()));
+                if(target){
+                    target.classList.add('flash-row');
+                    target.scrollIntoView({block:'center', behavior:'smooth'});
+                }
+            }, 400);
+        })
+        .catch(err=>console.error(err));
+    });
+
+    const validationBtn = document.getElementById('validation-btn');
+    if(validationBtn){
+        validationBtn.addEventListener('click', ()=>{
+            if(!window.Swal){
+                const name = prompt('Guest full name:');
+                if(!name){ return; }
+                manualValidate(name);
+                return;
+            }
+
+            Swal.fire({
+                title: 'Manual attendance',
+                input: 'text',
+                inputLabel: 'Enter guest full name',
+                inputPlaceholder: 'e.g. John Doe',
+                showCancelButton: true,
+                confirmButtonText: 'Validate',
+                preConfirm: (value)=>{
+                    if(!value.trim()){
+                        Swal.showValidationMessage('Please type a name');
+                    }
+                    return value.trim();
+                }
+            }).then(result=>{
+                if(result.isConfirmed && result.value){
+                    manualValidate(result.value);
+                }
+            });
+        });
+    }
+
+    function manualValidate(name){
+        fetch('/manual_validate_attendance/', {
+            method: 'POST',
+            headers: { 'Content-Type':'application/json' },
+            body: JSON.stringify({ query: name, event_id: "{{ event.id }}" })
+        })
+        .then(resp=>resp.json())
+        .then(data=>{
+            if(!data.success){
+                if(window.Swal){
+                    Swal.fire('Error', data.error || 'Unable to validate', 'error');
+                } else { alert(data.error||'Error'); }
+                return;
+            }
+            addGuestToTable(data.user);
+            if(window.Swal){
+                Swal.fire('Success', 'Guest attendance confirmed!', 'success');
+            }
+        })
+        .catch(err=>{
+            console.error(err);
+            if(window.Swal){ Swal.fire('Error','Server error','error'); } else { alert('Server error'); }
+        });
+    }
+
 });
 </script>
+
+<style>
+@keyframes flash {
+    0%,100% { background:#fff; }
+    50%     { background:#ffeaa7; }
+}
+.flash-row{
+    animation: flash 1.5s ease-in-out 2;
+}
+</style>
+
 {% endblock content %}
 
 {% block javascript %}
