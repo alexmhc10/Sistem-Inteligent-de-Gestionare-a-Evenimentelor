@@ -3725,13 +3725,18 @@ def get_notifications(request):
 
     if profil.user_type == "guest":
         rsvp = RSVP.objects.filter(guest = request.user, response = "Accepted").values_list('event', flat=True)
-        notifications = EventNotification.objects.filter(event__in=rsvp, receiver=request.user, is_read="False").order_by('-timestamp')
+        notifications = EventNotification.objects.filter(event__in=rsvp, receiver=request.user, is_read="False").order_by('-timestamp')[:5]
     elif profil.user_type == "staff":
         events = Event.objects.filter(location__user_account = request.user)
-        notifications = EventNotification.objects.filter(Q(receiver=request.user), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')
+        notifications = EventNotification.objects.filter(Q(receiver=request.user), ~Q(sender=request.user), event__in=events, is_read="False").order_by('-timestamp')[:5]
         print(notifications)
         for n in notifications:
             print(f"Notification ID: {n.id}, Event: {n.event}")
+    elif profil.user_type == "organizer":
+        # Organizers – return ultimele 5 notificări (indiferent de is_read)
+        notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')[:5]
+        # Markăm aici drept citite, dacă vrei alt comportament poți comenta linia de mai jos
+        EventNotification.objects.filter(id__in=[n.id for n in notifications], is_read=False).update(is_read=True)
 
     notifications_data = [
         {
@@ -3741,6 +3746,9 @@ def get_notifications(request):
             "event_id":n.event.id if n.event else None,
             "user_type": user_type,
             "redirect": "/guest_profile" if "Missing info" in n.message and user_type=="guest" else None,
+            "sender_photo": n.sender.profile_set.first().photo.url if n.sender and n.sender.profile_set.exists() and n.sender.profile_set.first().photo else None,
+            "sender_name": n.sender.get_full_name() if n.sender else "System",
+            "is_read": n.is_read,
         }
         for n in notifications
     ]
@@ -4499,5 +4507,5 @@ def manual_validate_attendance(request):
 
     return JsonResponse({'success': True, 'user': user_data})
 
-
+    
 

@@ -369,6 +369,38 @@
     .modern-navbar {
         animation: fadeInDown 0.6s ease-out;
     }
+
+    /* Notifications dropdown override */
+    .notifications-container .dropdown-menu {
+        right: 0;
+        left: auto;
+        top: 40px; /* clear navbar height */
+        z-index: 99999 !important; /* Ensure it's above everything */
+        position: fixed !important; /* Use fixed positioning to escape overflow:hidden parents */
+    }
+
+    /* Ensure visibility overrides the generic rule */
+    .notifications-container .dropdown-menu.show {
+        display: block !important;
+    }
+
+    /* Notification item styles */
+    .notification-dropdown-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-dropdown-item .dropdown-item {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .notification-dropdown-item .dropdown-item:hover {
+        background: linear-gradient(45deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.1));
+    }
 </style>
 
 <nav class="modern-navbar" id="modernNavbar">
@@ -431,10 +463,20 @@
         <div class="navbar-right">
             <!-- Notifications -->
             <div class="notifications-container">
-                <button class="notification-btn" onclick="toggleNotifications()">
+                <button id="navbarNotificationBtn" class="notification-btn" type="button">
                     <i class="fas fa-bell"></i>
-                    <span class="notification-badge">3</span>
+                    <span class="notification-badge d-none">0</span>
                 </button>
+
+                <!-- Notifications Dropdown -->
+                <ul class="dropdown-menu" id="navbar-notification-dropdown" style="right: 0; left: auto;">
+                    <div class="d-flex justify-content-between align-items-center w-100 px-2 py-1">
+                        <li class="dropdown-header">Notifications</li>
+                        <li class="dropdown-header"><button id="mark-as-read-navbar" class="btn p-0 m-0"><i class="fas fa-eye"></i></button></li>
+                    </div>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="text-center"><small>No new notifications</small></li>
+                </ul>
             </div>
             
             <!-- Profile Section -->
@@ -490,26 +532,140 @@
         }
     });
 
-    // Notifications toggle (placeholder function)
-    function toggleNotifications() {
-        // Implementare pentru afișarea notificărilor
-        console.log('Toggle notifications');
-        
-        // Poți adăuga aici logica pentru afișarea unui dropdown cu notificări
-        // Sau redirectare către o pagină de notificări
-        
-        // Exemplu de reducere a badge-ului
-        const badge = document.querySelector('.notification-badge');
-        if (badge) {
-            let count = parseInt(badge.textContent);
-            if (count > 0) {
-                badge.textContent = count - 1;
-                if (count - 1 === 0) {
-                    badge.style.display = 'none';
+    // === Notifications Logic ===
+    document.addEventListener('DOMContentLoaded', function () {
+        const notificationBtn = document.getElementById('navbarNotificationBtn');
+        const notificationDropdown = document.getElementById('navbar-notification-dropdown');
+        const notificationBadge = document.querySelector('.notification-badge');
+
+        // Toggle dropdown visibility
+        notificationBtn?.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isVisible = notificationDropdown.classList.contains('show');
+            if (isVisible) {
+                notificationDropdown.classList.remove('show');
+                notificationDropdown.style.display = 'none';
+                console.log('Notifications dropdown hidden');
+            } else {
+                notificationDropdown.classList.add('show');
+                notificationDropdown.style.display = 'block';
+                // Calculate position for fixed dropdown
+                const btnRect = notificationBtn.getBoundingClientRect();
+                notificationDropdown.style.top = (btnRect.bottom + 5) + 'px';
+                notificationDropdown.style.right = (window.innerWidth - btnRect.right) + 'px';
+                console.log('Notifications dropdown shown');
+                fetchNavbarNotifications();
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.notifications-container')) {
+                notificationDropdown.classList.remove('show');
+                notificationDropdown.style.display = 'none';
+            }
+        });
+
+        // Periodically refresh notifications
+        setInterval(fetchNavbarNotifications, 10000);
+
+        function fetchNavbarNotifications() {
+            fetch('/get_notifications/', { credentials: 'same-origin' })
+                .then(resp => {
+                    if(!resp.ok){ console.error('Notifications fetch status', resp.status); }
+                    return resp.json();
+                })
+                .then(data => {
+                    console.log('Notifications data', data);
+                    // Reset dropdown content (keep header & divider)
+                    notificationDropdown.innerHTML = '<div class="d-flex justify-content-between align-items-center w-100 px-2 py-1"><li class="dropdown-header">Notifications</li><li class="dropdown-header"><button id="mark-as-read-navbar" class="btn p-0 m-0"><i class="fas fa-eye"></i></button></li></div><li><hr class="dropdown-divider"></li>';
+
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(n => {
+                            let targetUrl = n.redirect;
+                            if (!targetUrl) {
+                                const eventId = n.event_id;
+                                if (n.user_type === 'staff') {
+                                    targetUrl = `/personal_vizualizare_eveniment/${eventId}`;
+                                } else if (n.user_type === 'guest') {
+                                    targetUrl = `/guest_event_view/${eventId}`;
+                                } else if (n.user_type === 'organizer') {
+                                    targetUrl = `/event_details/${eventId}`;
+                                }
+                            }
+
+                            const item = document.createElement('li');
+                            item.className = 'notification-dropdown-item';
+                            item.innerHTML = `
+                                <div class="dropdown-item d-flex align-items-start p-3" style="cursor: default;">
+                                    ${n.sender_photo ? `
+                                        <img src="${n.sender_photo}" 
+                                             class="rounded-circle me-3" 
+                                             width="40" height="40" 
+                                             alt="${n.sender_name || 'Sender'}"
+                                             onerror="this.src='/media/poze_invitati/ProfilePicDefault.jpg'">
+                                    ` : `
+                                        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                                             style="width: 40px; height: 40px; background: #e9ecef;">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                    `}
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">${n.message}</div>
+                                        <small class="text-muted">${n.timestamp}</small>
+                                        ${!n.is_read ? '<span class="badge bg-warning text-dark ms-2">New</span>' : ''}
+                                    </div>
+                                </div>
+                            `;
+                            notificationDropdown.appendChild(item);
+                        });
+
+                        notificationBadge.classList.remove('d-none');
+                        notificationBadge.textContent = data.notifications.length;
+                    } else {
+                        notificationDropdown.innerHTML += '<li class="text-center"><small>No new notifications</small></li>';
+                        notificationBadge.classList.add('d-none');
+                    }
+
+                    // Reattach mark-as-read listener
+                    const markBtn = document.getElementById('mark-as-read-navbar');
+                    markBtn?.addEventListener('click', markNavbarNotificationsRead);
+                })
+                .catch(err => console.error('Notifications fetch error', err));
+        }
+
+        function markNavbarNotificationsRead() {
+            fetch('/mark_notifications_as_read/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({})
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notificationBadge.classList.add('d-none');
+                    }
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-    }
+    });
 
     // Simple Dropdown functionality
     document.addEventListener('DOMContentLoaded', function() {

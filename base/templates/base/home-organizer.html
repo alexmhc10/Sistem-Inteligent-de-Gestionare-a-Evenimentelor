@@ -1398,57 +1398,10 @@
         <div class="col-md-6 mb-3 d-flex align-items-stretch">
             <div class="card full-height-card w-100" style="background-color: var(--background-light); color: var(--primary-dark); border-radius: 8px;">
           <div class="tabs-container mb-3 d-flex justify-content-center">
-              <button class="tab-button active" data-tab="1">Notifications</button>
-              <button class="tab-button" data-tab="2">Event Analytics</button>
+              <button class="tab-button active" data-tab="2">Event Analytics</button>
               <button class="tab-button" data-tab="3">Revenue Analytics</button>
           </div>
-          <div class="tab-content" data-tab="1" id="tab1">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h2 class="mb-0">Notifications</h2>
-                <span class="badge bg-primary">
-              {{ notifications|length }} total
-                </span>
-            </div>
-            
-            <div class="notifications-container" style="max-height: 500px; overflow-y: auto;">
-                {% for notification in notifications %}
-                <div class="notification-card mb-3 p-3 rounded {% if not notification.is_read %}unread{% endif %}"
-               style="background-color: #f8f9fa; border-left: 4px solid {% if not notification.is_read %}#D4AF37{% else %}#6c757d{% endif %};">
-              <div class="d-flex justify-content-between">
-                  <div class="d-flex align-items-start">
-                {% if notification.sender.profile_set.first.photo %}
-                <img src="{{ notification.sender.profile_set.first.photo.url }}" 
-                     class="rounded-circle me-3" 
-                     width="40" height="40" 
-                     alt="{{ notification.sender.get_full_name }}"
-                     onerror="this.style.display='none'">
-                {% endif %}
-                <div>
-                    <h6 class="mb-1">
-                  <strong>{{ notification.message }}</strong>
-                    </h6>
-                    <small class="text-muted">
-                  {{ notification.timestamp|timesince }} ago
-                  {% if not notification.is_read %}
-                  <span class="badge bg-warning text-dark ms-2">New</span>
-                  {% endif %}
-                    </small>
-                </div>
-                  </div>
-                  {% if notification.event %}
-                  
-                  {% endif %}
-              </div>
-                </div>
-                {% empty %}
-                <div class="text-center py-4 text-muted">
-              <i class="fas fa-bell-slash fa-2x mb-2"></i>
-              <p>No notifications yet</p>
-                </div>
-                {% endfor %}
-            </div>
-              </div>
-          <div class="tab-content" data-tab="2" style="display: none;">
+          <div class="tab-content" data-tab="2" id="tab2">
               <div class="analytics-container p-3">
                   <h5 class="card-title mb-4">Event Analytics</h5>
                   
