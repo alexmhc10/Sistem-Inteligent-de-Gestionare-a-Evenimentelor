@@ -277,131 +277,128 @@
       --gold-gradient: linear-gradient(135deg, #D4AF37 0%, #C5B28A 100%);
     }
   
-    .button {
-      --border-radius: 9999px;
-      --transition: 0.3s ease-in-out;
-      --offset: 2px;
-  
-      cursor: pointer;
+    /* Modern Create Button */
+    .modern-create-button {
       position: relative;
-      margin: 2rem auto;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 0.5rem;
-      padding: 1.5rem 3rem;
-      background-color: transparent;
+      margin: 2rem auto;
+      padding: 0;
       border: none;
-      border-radius: var(--border-radius);
-      transform: scale(calc(1 + (var(--active, 0) * 0.1)));
-      transition: transform var(--transition);
-    }
-  
-    .button::before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      background: transparent;
+      text-decoration: none;
+      cursor: pointer;
+      border-radius: 50px;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      max-width: 280px;
       width: 100%;
-      height: 100%;
-      background-color: var(--primary-dark);
-      border-radius: var(--border-radius);
-      box-shadow: 
-        inset 0 0.5px var(--neutral-gray), 
-        inset 0 -1px 2px 0 rgba(0, 0, 0, 0.2),
-        0px 4px 10px -4px hsla(0, 0%, 0%, calc(1 - var(--active, 0))),
-        0 0 0 calc(var(--active, 0) * 0.375rem) var(--primary-gold);
-      transition: all var(--transition);
-      z-index: 0;
     }
-  
-    .button::after {
-      content: "";
+
+    .modern-create-button:hover {
+      transform: translateY(-3px);
+      text-decoration: none;
+    }
+
+    .button-background {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gold-gradient);
+      border-radius: 50px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 8px 25px -8px rgba(212, 175, 55, 0.4);
+    }
+
+    .modern-create-button:hover .button-background {
+      box-shadow: 0 15px 35px -5px rgba(212, 175, 55, 0.6);
+      transform: scale(1.02);
+    }
+
+    .button-content {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 25px;
       width: 100%;
-      height: 100%;
-      background-color: var(--primary-gold);
-      background-image: 
-        radial-gradient(at 51% 89%, hsl(45, 100%, 75%) 0px, transparent 50%),
-        radial-gradient(at 100% 100%, hsl(45, 100%, 60%) 0px, transparent 50%),
-        radial-gradient(at 22% 91%, hsl(45, 100%, 60%) 0px, transparent 50%);
-      opacity: var(--active, 0);
-      border-radius: var(--border-radius);
-      transition: opacity var(--transition);
       z-index: 2;
     }
-  
-    .button:is(:hover, :focus-visible) {
-      --active: 1;
+
+    .button-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      color: white;
+      font-size: 16px;
+      transition: transform 0.3s ease;
     }
-  
-    .button:active {
-      transform: scale(1);
+
+    .modern-create-button:hover .button-icon {
+      transform: scale(1.2) rotate(5deg);
     }
-  
-    .button .dots_border {
-      --size-border: calc(100% + 2px);
-      overflow: hidden;
+
+    .button-text {
+      flex: 1;
+      text-align: center;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+      margin: 0 15px;
+    }
+
+    .button-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      color: white;
+      font-size: 14px;
+      transition: transform 0.3s ease;
+      opacity: 0.8;
+    }
+
+    .modern-create-button:hover .button-arrow {
+      transform: translateX(5px);
+      opacity: 1;
+    }
+
+    .button-glow {
       position: absolute;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: var(--size-border);
-      height: var(--size-border);
-      background-color: transparent;
-      border-radius: var(--border-radius);
-      z-index: -10;
-    }
-  
-    .button .dots_border::before {
-      content: "";
-      position: absolute;
-      top: 30%;
-      left: 50%;
-      transform: translate(-50%, -50%);
       width: 100%;
-      height: 2rem;
-      background-color: white;
-      mask: linear-gradient(transparent 0%, white 120%);
-      animation: rotate 2s linear infinite;
+      height: 100%;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.3) 0%, transparent 70%);
+      border-radius: 50px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      z-index: 1;
     }
-  
-    @keyframes rotate {
-      to {
-        transform: rotate(360deg);
+
+    .modern-create-button:hover .button-glow {
+      opacity: 1;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
       }
     }
-  
-    .button .sparkle {
-      position: relative;
-      z-index: 10;
-      width: 1.75rem;
-    }
-  
-    .button .sparkle .path {
-      fill: currentColor;
-      stroke: currentColor;
-      transform-origin: center;
-      color: var(--neutral-gray);
-      transition: color 0.3s ease;
-    }
-  
-    .button:hover .sparkle .path {
-      color: var(--primary-dark);
-    }
-  
-    .button .text_button {
-      position: relative;
-      z-index: 10;
-      background-image: linear-gradient(90deg, var(--neutral-gray) 0%, hsla(0, 0%, 100%, var(--active, 0)) 120%);
-      background-clip: text;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: transparent;
+
+    .modern-create-button:hover .button-glow {
+      animation: pulse 2s infinite;
     }
   
     /* Flip Card */
@@ -1628,14 +1625,18 @@
 
     <!-- create -->
     <div class="create-event-wrapper" style="margin-top: -70px; margin-bottom: 20px;">
-        <a href="{% url 'event_builder' %}" class="button">
-            <div class="dots_border"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="sparkle">
-                <path class="path" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" fill="currentColor" d="M14.187 2.177a1.75 1.75 0 0 0-3.374 0l-.701 2.03-1.973.701a1.75 1.75 0 0 0 0 3.374l1.973.701.701 2.03a1.75 1.75 0 0 0 3.374 0l.701-2.03 1.973-.701a1.75 1.75 0 0 0 0-3.374l-1.973-.701-.701-2.03z"></path>
-                <path class="path" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" fill="currentColor" d="M6 16.326l-.698 2.025a1.75 1.75 0 0 1-3.374 0L1.23 16.326a1.75 1.75 0 0 1 0-1.152l.698-2.025a1.75 1.75 0 0 1 3.374 0l.698 2.025a1.75 1.75 0 0 1 0 1.152z"></path>
-                <path class="path" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" fill="currentColor" d="M6.5 4a1.5 1.5 0 0 1 1.5 1.5v1a1.5 1.5 0 0 1-3 0v-1A1.5 1.5 0 0 1 6.5 4z"></path>
-            </svg>
-            <span class="text_button">Create a New Event</span>
+        <a href="{% url 'event_builder' %}" class="modern-create-button">
+            <div class="button-background"></div>
+            <div class="button-content">
+                <div class="button-icon">
+                    <i class="fas fa-calendar-plus"></i>
+                </div>
+                <span class="button-text">Create a New Event</span>
+                <div class="button-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+            <div class="button-glow"></div>
         </a>
     </div>
 </div>
