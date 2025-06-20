@@ -95,10 +95,85 @@
                                     <label for="image" class="h6 text-dark mt-2">Photo:</label>
                                     <input type="file" id="image" name="image" class="form-control" required>
 
-                                    <div class="d-flex justify-content-between align-items-center">
-                                      <label for="allergens" class="h6 text-dark mt-2">Choose all allergens:</label>
-                                        <a href="#" role="button" data-bs-target="#addAllergenModal" data-bs-toggle="modal">
-                                          <i class="bi bi-plus-circle h5"></i>
+                                    <!-- Category -->
+                                    <label for="category" class="h6 text-dark mt-2">Category:</label>
+                                    <select id="category" name="category" class="form-select">
+                                        {% for value, label in category_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Cuisine -->
+                                    <label for="item_cuisine" class="h6 text-dark mt-2">Cuisine:</label>
+                                    <select id="item_cuisine" name="item_cuisine" class="form-select">
+                                        {% for value, label in region_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Diet type -->
+                                    <label for="diet_type" class="h6 text-dark mt-2">Diet type:</label>
+                                    <select id="diet_type" name="diet_type" class="form-select">
+                                        {% for value, label in diet_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Spicy level -->
+                                    <label for="spicy_level" class="h6 text-dark mt-2">Spicy level:</label>
+                                    <select id="spicy_level" name="spicy_level" class="form-select">
+                                        {% for value, label in spicy_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Cooking method -->
+                                    <label for="cooking_method" class="h6 text-dark mt-2">Cooking method:</label>
+                                    <select id="cooking_method" name="cooking_method" class="form-select">
+                                        {% for value, label in cooking_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Serving temperature -->
+                                    <label for="serving_temp" class="h6 text-dark mt-2">Serving temperature:</label>
+                                    <select id="serving_temp" name="serving_temp" class="form-select">
+                                        {% for value, label in temp_choices %}
+                                            <option value="{{value}}">{{label}}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <!-- Nutritional information -->
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <label for="calories" class="h6 text-dark">Calories (kcal):</label>
+                                            <input type="number" id="calories" name="calories" class="form-control" min="0">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="protein_g" class="h6 text-dark">Protein (g):</label>
+                                            <input type="number" id="protein_g" name="protein_g" class="form-control" min="0">
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-6">
+                                            <label for="carbs_g" class="h6 text-dark">Carbs (g):</label>
+                                            <input type="number" id="carbs_g" name="carbs_g" class="form-control" min="0">
+                                        </div>
+                                        <div class="col-6">
+                                            <label for="fat_g" class="h6 text-dark">Fat (g):</label>
+                                            <input type="number" id="fat_g" name="fat_g" class="form-control" min="0">
+                                        </div>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <label for="description" class="h6 text-dark mt-2">Description:</label>
+                                    <textarea id="description" name="description" rows="3" class="form-control"></textarea>
+
+                                    <!-- Allergens section (unchanged) -->
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                      <label for="allergens" class="h6 text-dark">Choose allergens:</label>
+                                        <a href="#" role="button" class="text-dark" data-bs-target="#addAllergenModal" data-bs-toggle="modal">
+                                          add <i class="bi bi-plus-circle h5"></i>
                                         </a>
                                     </div>
 
@@ -140,13 +215,8 @@
                                         </div>  
                                       {% endfor %}
                                     </div>
-                                    <div class="d-flex flex-row mt-2">      
-                                      <h6 class="h6 me-4">It is vegan?:</h6>
-                                      <label for="is_vegetarian" class="form-check-label me-1">Yes</label>
-                                      <input type="checkbox" id="is_vegetarian" class="form-check-input" name="is_vegetarian">
-                                    </div>
-                                    
-                                
+                                     
+                                 
                                     <button type="submit" class="btn btn-success mt-4">Add</button>
                                 </form>
                             </div>
@@ -231,7 +301,7 @@
                     
                       <ul class="dropdown-menu">
                         <li class="d-flex flex-row justify-content-center align-items-center"><a class="dropdown-item edit-food-btn text-primary-emphasis"  data-bs-toggle="modal" data-bs-target="#exampleModal"  data-id="{{ item.id }}"><i class="bi bi-pencil me-2"></i>Edit dish</a></li>
-                        <input type="text" class="edit-food-btn" id="foodId" value="{{ item.id }}" hidden>
+                        <li class="d-flex flex-row justify-content-center align-items-center"><a class="dropdown-item info-food-btn text-info" data-bs-toggle="modal" data-bs-target="#foodInfoModal" data-id="{{ item.id }}"><i class="bi bi-info-circle me-2"></i>Info</a></li>
                         <li class="d-flex flex-row justify-content-center align-items-center"><a class="dropdown-item text-danger" role="button" onclick="confirmDeleteDish({{ item.id }})"><i class="bi bi-trash3 me-2"></i>Delete dish</a></li>                      
                       </ul>
                     </div>
@@ -291,10 +361,8 @@
 
                         </div>
                         <div class="d-flex align-items-center gap-1">
-                            {% if item.item_vegan %}
-                          <i class="ti ti-message-2 text-dark fs-5"></i> vegan
-                            {% else %}
-                          <i class="ti ti-message-2 text-dark fs-5"></i> non-vegan
+                            {% if item.diet_type %}
+                            <i class="ti ti-message-2 text-dark fs-5"></i> {{ item.diet_type }}
                             {% endif %}
                         </div>
                         <div class="d-flex align-items-center fs-3">
@@ -378,8 +446,11 @@
                     let initialImageSrc = "";
 
                     document.body.addEventListener("click", function (event) {
-                        if (event.target.classList.contains("edit-food-btn")) {
-                            let foodId = event.target.getAttribute("data-id");
+                        const editBtn = event.target.closest(".edit-food-btn");
+                        const infoBtn = event.target.closest(".info-food-btn");
+
+                        if (editBtn) {
+                            let foodId = editBtn.getAttribute("data-id");
                             console.log("Food ID extras:", foodId);
 
                             if (!foodId || foodId === "null") {
@@ -407,14 +478,28 @@
 
                                     document.getElementById("foodCuisine").value = data.cuisine;
                                     document.getElementById("foodCuisine").innerText = data.cuisine;
-                                    if (data.type === "Vegan") {
-                                        document.getElementById("foodVegan").checked = true;
-                                    } else {
-                                        document.getElementById("foodVegan").checked = false;
-                                    }           
-                                    document.getElementById("foodVegan").value = data.type;
+                                    document.getElementById("foodVegan").checked = data.diet_type.toLowerCase()==="vegan";
+                                    document.getElementById("foodVegan").value = data.diet_type;
                                 })
                                 .catch(error => console.error("Eroare la fetch:", error));
+                        }
+
+                        if(infoBtn){
+                            let foodId = infoBtn.getAttribute("data-id");
+                            fetch(`/get_food_details/${foodId}/`).then(r=>r.json()).then(d=>{
+                                document.getElementById("infoModalTitle").innerText = d.name;
+                                document.getElementById("infoImage").src = d.image;
+                                document.getElementById("infoCategory").innerText = d.category;
+                                document.getElementById("infoCuisine").innerText = d.cuisine;
+                                document.getElementById("infoDiet").innerText = d.diet_type;
+                                document.getElementById("infoSpicy").innerText = d.spicy_level;
+                                document.getElementById("infoCooking").innerText = d.cooking_method || '-';
+                                document.getElementById("infoTemp").innerText = d.serving_temp;
+                                const macrosStr = (d.calories || 0) + ' kcal | P:' + (d.protein_g || 0) + 'g C:' + (d.carbs_g || 0) + 'g F:' + (d.fat_g || 0) + 'g';
+                                document.getElementById("infoMacros").innerText = macrosStr;
+                                document.getElementById("infoAllergens").innerText = (d.allergen_names || []).join(", ") || 'None';
+                                document.getElementById("infoDescription").innerText = d.description;
+                            }).catch(err=>console.error(err));
                         }
                     });
 
@@ -502,6 +587,35 @@
 
 
                 </script>
+
+                <!-- Info modal -->
+                <div class="modal fade" id="foodInfoModal" tabindex="-1" aria-labelledby="foodInfoModalLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="infoModalTitle">Dish info</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                          <img src="" id="infoImage" class="card-img-top" style="max-height: 200px; object-fit: cover;">
+                          <ul class="list-group mt-3">
+                            <li class="list-group-item"><strong>Category:</strong> <span id="infoCategory"></span></li>
+                            <li class="list-group-item"><strong>Cuisine:</strong> <span id="infoCuisine"></span></li>
+                            <li class="list-group-item"><strong>Diet:</strong> <span id="infoDiet"></span></li>
+                            <li class="list-group-item"><strong>Spicy level:</strong> <span id="infoSpicy"></span></li>
+                            <li class="list-group-item"><strong>Cooking method:</strong> <span id="infoCooking"></span></li>
+                            <li class="list-group-item"><strong>Serving temp:</strong> <span id="infoTemp"></span></li>
+                            <li class="list-group-item"><strong>Macros:</strong> <span id="infoMacros"></span></li>
+                            <li class="list-group-item"><strong>Allergens:</strong> <span id="infoAllergens"></span></li>
+                            <li class="list-group-item"><strong>Description:</strong> <p id="infoDescription" class="m-0"></p></li>
+                          </ul>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
             </div>
             

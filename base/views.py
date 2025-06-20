@@ -65,6 +65,7 @@ from django.utils.decorators import method_decorator
 import os
 from .models import EventBudget
 from .recommender import get_recommendations_for_guest, get_similar_dishes_for_dish, get_recommender
+from .constants import TEMP_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, DIET_CHOICES, REGION_CHOICES, COOKING_METHOD_CHOICES
 
 
 
@@ -2562,11 +2563,21 @@ def personal_menu(request):
     menu_items = Menu.objects.all()
     allergens = Allergen.objects.all()
     region_choices = REGION_CHOICES
+    category_choices = Menu.CATEGORY_CHOICES
+    diet_choices = DIET_CHOICES
+    spicy_choices = Menu.SPICY_LEVELS
+    temp_choices = TEMP_CHOICES
+    cooking_choices = COOKING_METHOD_CHOICES
     context = {
         'profile':profile,
         'menu_items': menu_items,
         'allergens': allergens,
-        'region_choices': region_choices
+        'region_choices': region_choices,
+        'category_choices': category_choices,
+        'diet_choices': diet_choices,
+        'spicy_choices': spicy_choices,
+        'temp_choices': temp_choices,
+        'cooking_choices': cooking_choices,
     }
     return render(request, 'base/personal_menu.html', context)
 
@@ -2591,17 +2602,41 @@ def add_food(request):
 
         location = request.user.location_set.first()
         name = request.POST.get("name")
+        category = request.POST.get("category", "main")
+        item_cuisine = request.POST.get("item_cuisine", "no_region")
+        diet_type = request.POST.get("diet_type", "none")
+        spicy_level = request.POST.get("spicy_level", "none")
+        cooking_method = request.POST.get("cooking_method") or None
+        serving_temp = request.POST.get("serving_temp", "hot")
+        calories = request.POST.get("calories") or None
+        protein_g = request.POST.get("protein_g") or None
+        carbs_g = request.POST.get("carbs_g") or None
+        fat_g = request.POST.get("fat_g") or None
+        description = request.POST.get("description") or ""
+
         allergens_data = request.POST.getlist('allergens')
-        is_vegetarian = request.POST.get("is_vegetarian") == "on"
         image = request.FILES.get("image")
 
-        print(f"Date primite: nume={name}, alergeni={allergens_data}, vegetarian={is_vegetarian}, image={image}")
+        print(
+            f"Date primite: nume={name}, category={category}, cuisine={item_cuisine}, diet={diet_type}, spicy={spicy_level}, "
+            f"cooking={cooking_method}, temp={serving_temp}, alergeni={allergens_data}, image={image}"
+        )
 
         if name:
             food = Menu.objects.create(
                 at_location=location,
                 item_name=name,
-                item_vegan=is_vegetarian,
+                category=category,
+                item_cuisine=item_cuisine,
+                diet_type=diet_type,
+                spicy_level=spicy_level,
+                cooking_method=cooking_method,
+                serving_temp=serving_temp,
+                calories=calories or None,
+                protein_g=protein_g or None,
+                carbs_g=carbs_g or None,
+                fat_g=fat_g or None,
+                description=description,
                 item_picture=image
             )
 
@@ -2647,7 +2682,13 @@ def search_food(request):
         "query": query,
         "selected_allergens": selected_allergens,
         "profile": profile,
-        "allergens": allergens_db
+        "allergens": allergens_db,
+        "region_choices": REGION_CHOICES,
+        "category_choices": Menu.CATEGORY_CHOICES,
+        "diet_choices": DIET_CHOICES,
+        "spicy_choices": Menu.SPICY_LEVELS,
+        "temp_choices": TEMP_CHOICES,
+        "cooking_choices": COOKING_METHOD_CHOICES,
     }
     return render(request, "base/personal_menu.html", context)   
 
@@ -3532,14 +3573,31 @@ def event_status_api(request, pk):
 
 def get_food_details(request, food_id):
     food = get_object_or_404(Menu, id=food_id)
-    return JsonResponse({
+
+    allergen_qs = food.allergens.all()
+    allergen_names = [a.name for a in allergen_qs]
+    allergen_ids = [a.id for a in allergen_qs]
+
+    data = {
         "id": food.id,
         "name": food.item_name,
-        "allergens": [allergen.id for allergen in food.allergens.all()],
-        "type": "Vegan" if food.item_vegan else "Non-Vegan",
+        "category": food.get_category_display(),
+        "cuisine": dict(REGION_CHOICES).get(food.item_cuisine, food.item_cuisine),
+        "diet_type": dict(DIET_CHOICES).get(food.diet_type, food.diet_type),
+        "spicy_level": food.spicy_level,
+        "cooking_method": food.cooking_method,
+        "serving_temp": food.serving_temp,
+        "calories": food.calories,
+        "protein_g": food.protein_g,
+        "carbs_g": food.carbs_g,
+        "fat_g": food.fat_g,
+        "description": food.description or "",
+        "allergens": allergen_ids,
+        "allergen_names": allergen_names,
         "image": food.item_picture.url if food.item_picture else "",
-        "cuisine": food.item_cuisine
-    })
+    }
+
+    return JsonResponse(data)
 
 
 def update_food(request, food_id):
