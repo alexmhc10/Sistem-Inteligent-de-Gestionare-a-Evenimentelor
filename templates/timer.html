@@ -6,7 +6,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             try {
-                var eventDataArray = JSON.parse('{{ event_data|safe }}');
+                var eventDataArray = JSON.parse('{{ event_data|escapejs }}');
                 const user_type = '{{ profile.user_type }}';
                 console.log("User Type:", user_type);
 
@@ -41,7 +41,7 @@
                         if (user_type === "guest") {
                             if (hours < 2 && days < 1 && minutes > 1 && seconds > 1) {
                                 countdownElement.style.color = "red";
-                                countdownElement.innerHTML += '<br>' + `The event is about to begin. You won’t be able to modify your preferences one hour prior to the event!`;
+                                countdownElement.innerHTML += '<br>' + `The event is about to begin. You won't be able to modify your preferences one hour prior to the event!`;
                             }
                             if (hours < 1 && days < 1 && minutes > 1 && seconds > 1) {
                                 countdownElement.style.color = "red";

@@ -99,7 +99,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       </ul>
                       </div>
                       <div class="tab-content">
-                        <div id="general" class="tab-pane fade show active">
+                        <div id="general" class="tab-pane fade show active" data-event-status="{{ event.status }}">
                           <div id="menuGrid" class="row g-4">
                             <div class="col-lg-12 d-flex flex-column" style="min-height: 200px;">
                               <h3 class="ms-2">Preferences:</h3>
@@ -140,7 +140,13 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 <h3 class="">Attendence status:</h3>
                                 <div class="d-flex justify-content-start align-items-center">
                                   <p class="h2">Your current status: </p>
-                                  <p class="btn btn-secondary p-2 ms-2" disabled>{{ rsvp.response }}</p>
+                                  {% if rsvp.response == "Pending" %}
+                                    <p class="btn btn-warning p-2 ms-2" disabled>Pending</p>
+                                  {% elif rsvp.response == "Accepted" %}
+                                    <p class="btn btn-success p-2 ms-2" disabled>Accepted</p>
+                                  {% elif rsvp.response == "Declined" %}
+                                    <p class="btn btn-danger p-2 ms-2" disabled>Declined</p>
+                                  {% endif %}
                                   <div class="p-2 ms-auto">
                                     <form action="" method="POST">
                                       {% csrf_token %}
@@ -184,17 +190,30 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </script>
                             <div class="col-lg-12">
     
-                              <div class="d-flex justify-content-center">
+                              <div class="d-flex flex-column justify-content-center">
                                 <h1 class="h1 text-center">Configure the menu for this event</h1>
+                                {% if rsvp.response == "Pending" %}
+                                  <p class="p-2 ms-2 text-center" disabled>Aceept the invitation so you can configure the menu</p>
+                                {% elif rsvp.response == "Accepted" %}
+                                  <p class="p-2 ms-2 text-center" disabled>Down below you can configure the menu for this event</p>
+                                {% elif rsvp.response == "Declined" %}
+                                  <p class="p-2 ms-2 text-center" disabled>Declined the invitation so you can't configure the menu</p>
+                                {% endif %}
                               </div>
             
                               <hr>
                               <div class="d-flex justify-content-center mt-1 mb-2">
                                 <!-- <button class="btn btn-primary me-2" id="explore-menu-btn">Explore the menu by yourself</button> -->
-                                <button class="btn btn-primary" id="generate-menu">Generate personalised menu for you</button>
+                                 {% if rsvp.response == "Accepted" %}
+                                  {% if event.status == "completed" or event.status == "ongoing" %}
+                                    <p class="p-2 ms-2 text-center" disabled>The event is completed so you can't generate a menu</p>
+                                  {% else %}
+                                  <button class="btn btn-primary" id="generate-menu">Generate personalised menu for you</button>
+                                  {% endif %}
+                                {% endif %}
                               </div>
     
-                              <form action="" method="POST" id="menu-configuration" hidden>
+                              <!-- <form action="" method="POST" id="menu-configuration" hidden>
                                   {% csrf_token %}
                               <div class="row d-flex flex-row mt-4">
     
@@ -283,7 +302,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <button type="submit" id="confirmSelection" class="btn btn-success">Confirm</button>
                                 </div>
                               </div>
-                              </form>
+                              </form> -->
                               
                               <div id="suggested-menu" class="row g-3">
                               </div>
@@ -301,22 +320,29 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 const container = document.getElementById("suggested-menu");
                                 container.innerHTML = "";
     
-                              const MEDIA_URL = "{{ MEDIA_URL }}"
+                              const MEDIA_URL = "{{ MEDIA_URL }}";
+                              const ALL_DISHES = JSON.parse('{{ all_dishes_json|escapejs }}');
+                              const GUEST_ALLERGENS = JSON.parse('{{ guest_allergens_json|escapejs }}');
     
                               for (const [category, dishes] of Object.entries(data.menu)) {
+                                  const headerRow = document.createElement("div");
+                                  headerRow.className = "d-flex align-items-center justify-content-between mt-4 w-100";
+
                                   const title = document.createElement("h4");
-                                  title.className = "text-primary fw-bold text-capitalize mt-4";
+                                  title.className = "text-primary fw-bold text-capitalize m-0";
                                   title.textContent = category;
-                                  container.appendChild(title);
-    
+
                                   const subTitle = document.createElement("h5");
-                                  subTitle.className = "text-secondary";
+                                  subTitle.className = "text-secondary m-0 ms-3";
                                   subTitle.textContent = `You have ${dishes.length} suggestions for this category. Please choose one.`;
-                                  container.appendChild(subTitle);
-    
+
+                                  headerRow.appendChild(title);
+                                  headerRow.appendChild(subTitle);
+                                  container.appendChild(headerRow);
+
                                   const row = document.createElement("div");
                                   row.className = "row g-3 mb-4 dish-row";
-                                  row.setAttribute("data-category", category);
+                                  row.setAttribute("data-category", category.toLowerCase());
     
                                   if (dishes.length) {
                                       dishes.forEach(item => {
@@ -339,18 +365,14 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                           <img src="${item.image || MEDIA_URL + 'placeholder.jpg'}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="dish image">
                                       </div>
                                       <div class="card-body p-3">
-                                          <div class="d-flex flex-row justify-content-between">
-                                              <a class="d-block fs-5 m-0 text-dark fw-semibold link-primary" href="#">${item.name}</a>
-                                              <input type="radio" name="${category}" class="dish-option form-check-input" data-id="${item.id}" value="${item.id}">
-                                          </div>
-    
+                                          <a class="d-block fs-5 m-0 text-dark fw-semibold link-primary" href="#">${item.name}</a>
                                           <div class="d-flex align-items-center gap-2 mt-3">
                                               <div class="d-flex align-items-center flex-wrap gap-1">
                                                   <p class="m-0 text-primary">Allergens:</p>
                                                   ${allergenHTML}
                                               </div>
                                               <div class="d-flex align-items-center flex-wrap gap-1">
-                                                  <p>Is vegan?</p>
+                                                  <p>Diet:</p>
                                                   ${item.diet_type}
                                               </div>
                                               <div class="d-flex align-items-center flex-wrap gap-1">
@@ -358,16 +380,19 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                   <i class="ti ti-point text-dark me-1"></i>${item.region}
                                               </div>
                                           </div>
-    
+                                      </div>
+                                      <div class="text-center mb-2 mt-2">
+                                          <input type="radio" id="dish-${item.id}" name="${category.toLowerCase()}" class="dish-option form-check-input" data-id="${item.id}" value="${item.id}">
+                                          <label class="form-check-label" for="dish-${item.id}">Select</label>
                                       </div>
                                   </div>
-                              `;
+                                  `;
                               row.appendChild(col);
                           });                      
                       } else {
                           const msg = document.createElement("div");
                           msg.className = "alert alert-danger fade-in-top mt-2";
-                          msg.textContent = `Nicio sugestie pentru categoria: ${category}.`;
+                          msg.textContent = `Nicio sugestie pentru categoria: ${category.toLowerCase()}.`;
                           const button = document.createElement("button");
                           button.className = "btn-close";
                           button.setAttribute("data-bs-dismiss", "alert");
@@ -397,90 +422,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         });
                     });
     
-                    const selections = {};
-    
-                    document.querySelectorAll(".dish-option").forEach(option => {
-                      option.addEventListener("click", function() {
-                        const categoryRow = option.closest(".dish-row");
-                        const category = categoryRow.dataset.category;
-                        const id = parseInt(option.dataset.id);
-    
-                        selections[category] = id;
-    
-                        categoryRow.querySelectorAll(".dish-option").forEach(el => el.classList.remove("selected"));
-    
-                        option.classList.add("selected");
-                      });
-                    });
-    
-                    const selectedDishes = {};
-    
-    document.addEventListener("change", function (e) {
-        if (e.target.classList.contains("dish-option")) {
-            const category = e.target.name;
-            const dishId = e.target.value;
-            selectedDishes[category] = dishId;
-    
-            const requiredCategories = ["appetizer", "main", "dessert", "drink"];
-            const allSelected = requiredCategories.every(cat => selectedDishes[cat]);
-    
-            console.log("Selected dishes:", selectedDishes);
-    
-            const btnId = "submit-menu-btn";
-            const existingBtn = document.getElementById(btnId);
-    
-            if (allSelected && !existingBtn) {
-                const submitBtn = document.createElement("button");
-                submitBtn.id = btnId;
-                submitBtn.textContent = "Submit Menu";
-                submitBtn.className = "btn btn-success mt-3";
-                submitBtn.addEventListener("click", function () {
-                    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    
-                    const dishIds = Object.values(selectedDishes);
-                    const dataDiv = document.getElementById('menu-data');
-                    const eventId = dataDiv.getAttribute('data-event-id');
-                    const locationId = dataDiv.getAttribute('data-location-id');
-                    const payload = {
-                        event_id: eventId,
-                        location_id: locationId,
-                        menu_choices: dishIds
-                    };
-    
-                    fetch("/save_guest_menu/", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRFToken": csrfToken
-                        },
-                        body: JSON.stringify(payload)
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error("Network response was not ok");
-                        return response.json();
-                    })
-                    .then(data => {
-                        if(data.success){
-                            alert("Meniul a fost salvat cu succes!");
-                            buildMenuSummary(data.menu);
-                            document.getElementById('suggested-menu').classList.add('d-none');
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Eroare la salvare:", error);
-                        alert("A apărut o eroare la salvarea meniului.");
-                    });
-                    console.log("Submitting menu:", selectedDishes);
-                });
-                document.getElementById("submit-menu-container").appendChild(submitBtn);
-            }
-    
-            if (!allSelected && existingBtn) {
-                existingBtn.remove();
-            }
-        }
-    });
-    
+                    
                         </script>
     
     <style>
@@ -500,16 +442,22 @@ data-sidebar-position="fixed" data-header-position="fixed">
     </style>
     
                             <script>
-                              document.getElementById('explore-menu-btn').addEventListener('click', function () {
-                                const form = document.getElementById('menu-configuration');
-                                form.removeAttribute('hidden');
-                                form.scrollIntoView({ behavior: 'smooth' });
-                              });
+                              const exploreBtn=document.getElementById('explore-menu-btn');
+                              if(exploreBtn){
+                                exploreBtn.addEventListener('click', function () {
+                                    const formElem = document.getElementById('menu-configuration');
+                                    if(formElem){
+                                      formElem.removeAttribute('hidden');
+                                      formElem.scrollIntoView({ behavior: 'smooth' });
+                                    }
+                                });
+                              }
                             </script>
     
                             <script>
                               document.addEventListener('DOMContentLoaded', function() {
                                 const form = document.getElementById('menu-configuration');
+                                if(!form) return;
                                 const selects = form.querySelectorAll('select');
                                 const selectionsList = document.getElementById('selections-list');
     
@@ -578,7 +526,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
     
                               <script>
                                 function setupFoodSelection(selectId, detailsContainerId, nameId, allergensId, typeId, imageId, stepId) {
-                                  document.getElementById(selectId).addEventListener("change", function() {
+                                  const selectElem = document.getElementById(selectId);
+                                  if(!selectElem) return; // element missing
+
+                                  selectElem.addEventListener("change", function() {
                                     let foodId = this.value;
                                     let detailsContainer = document.getElementById(detailsContainerId);
                                     let nameElement = document.getElementById(nameId);
@@ -956,8 +907,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                               {{ form.title.errors.as_text }}
                                           </div>
                                           {% endif %}
-                                      </div>
-                                        
+                                    </div>
+                                      
                                         <div class="mb-3">
                                           {{ form.content.label_tag }}
                                           {{ form.content }}
@@ -966,17 +917,17 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                               {{ form.content.errors.as_text }}
                                           </div>
                                           {% endif %}
-                                      </div>
+                                    </div>
               
-                                      <div class="mb-3">
-                                        <label for="id_images">Images (maximum 10)</label>
-                                        <input type="file" name="images" id="id_images" 
-                                              class="form-control" multiple
-                                              accept="image/jpeg, image/png, image/gif">
-                                        {{ form.images.errors }}
-                                        <div id="image-preview" class="mt-2"></div>
-                                      </div>
-                                        
+                                    <div class="mb-3">
+                                      <label for="id_images">Images (maximum 10)</label>
+                                      <input type="file" name="images" id="id_images" 
+                                            class="form-control" multiple
+                                            accept="image/jpeg, image/png, image/gif">
+                                      {{ form.images.errors }}
+                                      <div id="image-preview" class="mt-2"></div>
+                                    </div>
+                                      
                                         <button type="submit" name="form_type" value="add_post" class="btn btn-primary">Create Post</button>
                                         <a href="{% url 'guest_event_view' event.id %}" class="btn btn-danger">Cancel</a>
                                     </form>
@@ -1315,176 +1266,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div> 
                 </div> 
               </div>           
-          <!-- <link rel="stylesheet" href="{% static 'css/output.css' %}">
-            <div class="card box">
-              <h1 class="h3 text-center mt-2 mb-2">This is you're custom timeline trough the event!</h1>
-              <div class="container">
-                
-                <div class="timeline">
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        {{event.event_time}}<small>{{event.event_date}}</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-attachment"></i>
-                        <h4>Welcoming message!</h4>
-                        <p>Welcome to {{event.event_name}} event! We hope you have a great time.</p>
-                        <div class="thumbs">
-                          <img class="img-fluid rounded" src="{{MEDIA_URL}}{{organiser.photo}}" alt="Organiser">
-                        </div>
-                        <div class="">
-                          <span class="badge badge-pill">Organiser</span>
-                          <span class="badge badge-pill">{{organiser.username}}</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        {{event.event_time}} <small> event start time!</small> <small>{{event.event_date}}</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-code"></i>
-                        <h4>Arrive at event location!</h4>
-                        <p>
-                          Checkout the map down below for directions.
-                        </p>
-                        <div class="thumbs">
-                          <div class="thumbs">
-                            <div class="mapouter" style="flex: 1;">
-                              <div class="gmap_canvas">
-                                  <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-                                    src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
-                              </div>
-                              <style>
-                                  .mapouter {
-                                      position: relative;
-                                      text-align: right;
-                                      width: 100%;
-                                  }
-                      
-                                  .gmap_canvas {
-                                      overflow: hidden;
-                                      background: none !important;
-                                      width: 100%; 
-                                      height: 100%; 
-                                  }
-                      
-                                  .gmap_iframe {
-                                      width: 100% !important; 
-                                      height: 100% !important; 
-                                  }
-                              </style>
-                          </div>
-                        </div>
-                        </div>
-                        <div class="">
-                          <span class="badge badge-pill">Location</span>
-                          <span class="badge badge-pill">{{event.location}}</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        7:25 PM<small>Dec 6</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-turned_in_not"></i>
-                        <h4>Validate your presence!</h4>
-                        <p>Scan your face at the entrance so we know you made it!</p>
-                        <div class="thumbs">
-                          <img class="img-fluid rounded" id="face-id-img" src="{% static 'images/Face.png' %}" alt="Face-id">
-                        </div>
-                        <div>
-                          <span class="badge badge-pill">Pass</span>
-                          <span class="badge badge-pill">Face Recognition</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        3:55 PM<small>Dec 26</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-directions"></i>     
-                        <h4>Your seating!</h4>
-                        <p>Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar, drag &amp; drop and ion slider.</p>
-                        <div>
-                          <span class="badge badge-pill">Profile</span>
-                          <span class="badge badge-pill">Sales</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        5:24 PM<small>Dec 12</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-change_history"></i>
-                        <h4>Your experience!</h4>
-                        <p class="no-margin">Review <a href="" data-bs-toggle="modal" data-bs-target="#staticBackdrop"> your personalised menu </a>, also you will be able to browse the menu available at the location.</p>
-  
-                        <div class="thumbs">
-                        </div>
-                        <div>
-                          <span class="badge badge-pill">Menu</span>
-                          <span class="badge badge-pill">Food</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        8:00 AM<small>Dec 18</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-code"></i>
-                        <h4>Admin Dashboard!</h4>
-                        <p>
-                          Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar.
-                        </p>
-                        <div class="thumbs">
-                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Maxwell Admin">
-                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar4.png" alt="Maxwell Admin">
-                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Maxwell Admin">
-                        </div>
-                        <div class="">
-                          a<span class="badge badge-pill">Ecommerce</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-time">
-                        7:45PM<small>Dec 21</small>
-                      </div>
-                      <div class="timeline-content">
-                        <i class="icon-attachment"></i>
-                        <h4>Admin Template!</h4>
-                        <p>Maxwell Admin Dashboard contains C3 graphs, flot graphs, data tables, calendar, drag &amp; drop and ion slider.</p>
-                        <div class="thumbs">
-                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar2.png" alt="Maxwell Admin">
-                          <img class="img-fluid rounded" src="https://bootdey.com/img/Content/avatar/avatar3.png" alt="Maxwell Admin">
-                        </div>
-                        <div class="">
-                          <span class="badge badge-pill">Orders</span>
-                          <span class="badge badge-pill">Sales</span>
-                        </div>
-                      </div>
-                    </div>
-                
-                    <div class="timeline-row">
-                      <div class="timeline-content">
-                        <p class="m-0">No new anouncements for now...</p>
-                      </div>
-                    </div>
-                
-                  </div>
-                </div>
-            </div> -->
       </div>
       
         <!-- {% include 'event_status_content.html' %} -->
@@ -1509,6 +1290,30 @@ data-sidebar-position="fixed" data-header-position="fixed">
         
         document.addEventListener('DOMContentLoaded', checkEventStatus);
       </script>
+
+      <!-- Remember active tab across reload -->
+      <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          const key = 'guestEventActiveTab_{{ event.id }}';
+
+          // Restore
+          const stored = localStorage.getItem(key);
+          if(stored){
+            const someTabTrigger = document.querySelector(`#eventTabs a[href="${stored}"]`);
+            if(someTabTrigger){
+              const tab = new bootstrap.Tab(someTabTrigger);
+              tab.show();
+            }
+          }
+
+          // Listen for tab changes
+          document.querySelectorAll('#eventTabs a[data-bs-toggle="pill"]').forEach(el=>{
+            el.addEventListener('shown.bs.tab', function(e){
+              localStorage.setItem(key, e.target.getAttribute('href'));
+            });
+          });
+        });
+      </script>
     </div>  
   </div>
         
@@ -1529,12 +1334,95 @@ data-sidebar-position="fixed" data-header-position="fixed">
     </div>
   </div>
 </div>
+  <!-- Edit Dish Modal -->
+<div class="modal fade" id="editDishModal" tabindex="-1" aria-labelledby="editDishLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editDishLabel">Choose another dish</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="dish-list" class="row g-3"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="save-dish-btn">Save selection</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
+  // Global constants accessible to all functions
+  const GLOBAL_MEDIA_URL = "{{ MEDIA_URL }}";
+  const ALL_DISHES = JSON.parse('{{ all_dishes_json|escapejs }}');
+  const GUEST_ALLERGENS = JSON.parse('{{ guest_allergens_json|escapejs }}');
+  let chosenMenu = JSON.parse('{{ chosen_menu_json|escapejs }}');
+  const selectedDishes = {};
+  function syncSelectedDishes(){
+      chosenMenu.forEach(d=>{ selectedDishes[d.category]=d.id; });
+  }
+  syncSelectedDishes();
+
+  document.addEventListener('click', e=>{
+        const btn=e.target.closest('.edit-choice');
+        if(btn){
+           console.log('cat:', btn.closest('tr').dataset.category);
+           openEditModal(btn.closest('tr').dataset.category);
+        }
+     });
+
+  // Delegated change handler for initial dish selection grid (generate-menu flow)
+  document.addEventListener('change',function(e){
+      if(!e.target.classList.contains('dish-option')) return;
+      const radio=e.target;
+      const cat = radio.name; // name attribute holds category in initial grid
+      selectedDishes[cat]=parseInt(radio.value);
+
+      const required=["appetizer","main","dessert","drink"];
+      const allSelected=required.every(c=>selectedDishes[c]);
+
+      const btnId='submit-menu-btn';
+      let submitBtn=document.getElementById(btnId);
+      if(allSelected && !submitBtn){
+          submitBtn=document.createElement('button');
+          submitBtn.id=btnId;
+          submitBtn.className='btn btn-success mt-3';
+          submitBtn.textContent='Save Menu';
+          submitBtn.onclick=saveCurrentMenu;
+          document.getElementById('submit-menu-container').appendChild(submitBtn);
+      }else if(!allSelected && submitBtn){
+          submitBtn.remove();
+      }
+  });
+
+  function saveCurrentMenu(){
+      const csrftoken=document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+      const dataDiv=document.getElementById('menu-data');
+      const payload={
+          event_id:dataDiv.dataset.eventId,
+          location_id:dataDiv.dataset.locationId,
+          menu_choices:Object.values(selectedDishes)
+      };
+      fetch('/save_guest_menu/',{
+           method:'POST',
+           headers:{'Content-Type':'application/json','X-CSRFToken':csrftoken},
+           body:JSON.stringify(payload)
+      }).then(r=>r.json()).then(d=>{
+          if(d.success){
+              Swal.fire('Saved','Your menu was saved successfully','success');
+              buildMenuSummary(d.menu);
+              document.getElementById('suggested-menu').classList.add('d-none');
+          }else{
+              Swal.fire('Error',d.error||'An error occurred','error');
+          }
+      }).catch(()=>Swal.fire('Error','Network error','error'));
+  }
+
   function buildMenuSummary(menu){
     const container = document.getElementById('submit-menu-container');
     container.innerHTML='';
-    const MEDIA="{{ MEDIA_URL }}";
     const table=document.createElement('table');
     table.className='table table-bordered mt-3';
     table.innerHTML=`<thead><tr><th>Category</th><th>Image</th><th>Dish</th><th>Allergens</th><th>Diet</th><th>Action</th></tr></thead><tbody></tbody>`;
@@ -1542,101 +1430,162 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
     menu.forEach(item=>{
       const tr=document.createElement('tr');
-      tr.dataset.category=item.category;
-      const imgSrc = item.image || MEDIA + 'placeholder.jpg';
-      tr.innerHTML=`<td class='text-capitalize'>${item.category}</td><td><img src="${imgSrc}" class="img-thumbnail" style="max-width:80px; max-height:80px; object-fit:cover;"></td><td>${item.name} ${item.region ? `, ${item.region}` : ''}</td><td>${item.allergens.length?item.allergens.join(', '):'None'}</td><td>${item.diet_type}</td><td><button class='btn btn-sm btn-primary edit-choice'>Edit  <i class="bi bi-pencil-square"></i></button></td>`;
+      tr.dataset.category=item.category.toLowerCase();
+      const imgSrc = item.image || GLOBAL_MEDIA_URL + 'placeholder.jpg';
+      tr.innerHTML=`<td class='text-capitalize'>${item.category}</td>
+        <td><img src="${imgSrc}" onerror="this.src='${GLOBAL_MEDIA_URL}placeholder.png'" class="img-thumbnail" style="max-width:80px; max-height:80px; object-fit:cover;"></td>
+        <td>${item.name}${item.region ? ', ' + item.region : ''}</td>
+        <td>${item.allergens.length ? item.allergens.join(', ') : 'None'}</td>
+        <td>${item.diet_type}</td>
+        <td><button class='btn btn-sm btn-primary edit-choice'>Edit  <i class="bi bi-pencil-square"></i></button></td>`;
       tbody.appendChild(tr);
     });
     container.appendChild(table);
 
-    document.getElementById('menu-configuration').style.display='none';
-
-    container.querySelectorAll('.edit-choice').forEach(btn=>{
-      btn.addEventListener('click',function(){
-        const cat=this.closest('tr').dataset.category;
-        const form=document.getElementById('menu-configuration');
-        form.style.display='block';
-        document.getElementById('suggested-menu').classList.remove('d-none');
-
-        document.querySelectorAll('.dish-row').forEach(r=>{
-          r.style.display=(r.dataset.category===cat)?'flex':'none';
-        });
-
-        form.scrollIntoView({behavior:'smooth'});
-      });
-    });
+    const mc=document.getElementById('menu-configuration');
+    if(mc) mc.style.display='none';
   }
 
-  document.addEventListener('DOMContentLoaded',function(){
-    const chosenMenu = JSON.parse('{{ chosen_menu_json|escapejs }}');
-    if(chosenMenu.length){
-       buildMenuSummary(chosenMenu);
-    }
+  function openEditModal(category){
+    category = category.toLowerCase(); // normalizează cheia
+    console.log('category:', category);
+    if(!ALL_DISHES[category]){
+         console.error('No dishes list for category',category);
+         Swal.fire('Error','No dishes available for '+category,'error');
+         return;
+     }
+      const modal = new bootstrap.Modal(document.getElementById('editDishModal'));
+      modal.show();
+      const list = document.getElementById('dish-list');
+      list.innerHTML='';
+      console.log('ALL_DISHES:', ALL_DISHES);
+      ALL_DISHES[category].forEach(dish=>{
+          const unsafe = dish.allergens.some(al=>GUEST_ALLERGENS.includes(al));
+          const col=document.createElement('div');
+          col.className='col-md-4';
+          col.innerHTML=`
+              <div class="card h-100 border-2 ${unsafe?'border-danger':'border-success'}">
+                  <img src="${dish.image || GLOBAL_MEDIA_URL+'placeholder.jpg'}" class="card-img-top" style="max-height:140px;object-fit:cover;">
+                  <div class="card-body text-center">
+                      <h6 class="card-title">${dish.name}</h6>
+                      <span class="badge ${unsafe?'bg-danger':'bg-success'}">${unsafe?'Unsafe':'Safe'}</span>
+                      <input type="radio" name="dish-choice" value="${dish.id}" class="form-check-input">
+                  </div>
+              </div>
+          `;
+          list.appendChild(col);
+      });
+
+      console.log('chosenMenu:', chosenMenu);
+      const currentDish = chosenMenu.find(m=>m.category===category);
+      if(currentDish){
+         const radio = list.querySelector(`input[value='${currentDish.id}']`);
+         if(radio) radio.checked = true;
+      }
+
+      // Save handler
+      document.getElementById('save-dish-btn').onclick=function(){
+          const selected = list.querySelector("input[name='dish-choice']:checked");
+          if(!selected){Swal.fire('Select a dish first'); return;}
+          const dishId=parseInt(selected.value);
+          const dishObj = ALL_DISHES[category].find(d=>d.id===dishId);
+          // Update chosenMenu array
+          const idx = chosenMenu.findIndex(m=>m.category===category);
+          if(idx>-1){
+             chosenMenu[idx]={
+               id:dishObj.id,
+               name:dishObj.name,
+               category:category,
+               image:dishObj.image,
+               allergens:dishObj.allergens,
+               diet_type:dishObj.diet_type
+             };
+          }
+          // update chosenMenu + table
+          buildMenuSummary(chosenMenu);
+          syncSelectedDishes();
+
+          // if all categories selected, persist to server immediately
+          const required=["appetizer","main","dessert","drink"];
+          const allSelected = required.every(cat=>selectedDishes[cat]);
+          if(allSelected){
+              const csrftoken=document.querySelector('[name=csrfmiddlewaretoken]')?.value || '';
+              const dataDiv=document.getElementById('menu-data');
+              const payload={
+                  event_id:dataDiv.dataset.eventId,
+                  location_id:dataDiv.dataset.locationId,
+                  menu_choices:Object.values(selectedDishes)
+              };
+              fetch('/save_guest_menu/',{
+                  method:'POST',
+                  headers:{'Content-Type':'application/json','X-CSRFToken':csrftoken},
+                  body:JSON.stringify(payload)
+              }).then(r=>r.json()).then(d=>{
+                  if(d.success){ console.log('Menu saved'); }
+              });
+          }
+
+          modal.hide();
+      };
+  }
+
+  // Build menu table on first load so it appears after refresh
+  document.addEventListener('DOMContentLoaded',()=>{
+      if(Array.isArray(chosenMenu) && chosenMenu.length){
+          buildMenuSummary(chosenMenu);
+      }
   });
 </script>
 
+<!-- RSVP auto-prompt (re-added) -->
 <script>
-  // RSVP auto-prompt
-  document.addEventListener("DOMContentLoaded", function () {
-      const rsvpStatus = "{{ rsvp.response }}";
+ document.addEventListener("DOMContentLoaded", () => {
+   const rsvpStatus = "{{ rsvp.response }}";
+   const key = `rsvpPromptDismissed_{{ event.id }}`;
 
-      const suppressKey = `rsvpPromptDismissed_{{ event.id }}`;
+   if (rsvpStatus === "Pending" && !sessionStorage.getItem(key)) {
+     Swal.fire({
+       title: "Do you want to participate?",
+       text: "Please confirm your attendance.",
+       icon: "question",
+       showDenyButton: true,
+       showCancelButton: true,
+       confirmButtonText: "Accept",
+       denyButtonText: "Decline",
+       cancelButtonText: "Later"
+     }).then(r => {
+       if (r.isConfirmed) sendRsvp("Accepted");
+       else if (r.isDenied) sendRsvp("Declined");
+       else sessionStorage.setItem(key, "true");
+     });
+   }
 
-      if (rsvpStatus === "Pending" && !sessionStorage.getItem(suppressKey)) {
-          Swal.fire({
-              title: "Do you want to participate?",
-              text: "You were invited to this event. Please confirm your attendance.",
-              icon: "question",
-              showDenyButton: true,        
-              showCancelButton: true,    
-              confirmButtonText: "Accept", 
-              denyButtonText: "Decline",
-              cancelButtonText: "Respond later"
-          }).then((result) => {
-              if (result.isConfirmed) {
-                  sendRsvpResponse("Accepted");
-              } else if (result.isDenied) {
-                  sendRsvpResponse("Declined");
-              } else if (result.dismiss === Swal.DismissReason.cancel) {
-                  sessionStorage.setItem(suppressKey, "true");
-              }
-          });
-      }
+   function getCookie(n){return document.cookie.split('; ').find(row=>row.startsWith(n+'='))?.split('=')[1];}
+   function sendRsvp(val){
+     fetch(location.pathname,{
+       method:"POST",
+       headers:{
+         "Content-Type":"application/x-www-form-urlencoded",
+         "X-CSRFToken":getCookie("csrftoken")
+       },
+       body:new URLSearchParams({response:val})
+     }).then(()=>location.reload());
+   }
+ });
+</script>
 
-      function getCookie(name) {
-          let cookieValue = null;
-          if (document.cookie && document.cookie !== '') {
-              const cookies = document.cookie.split(';');
-              for (let i = 0; i < cookies.length; i++) {
-                  const cookie = cookies[i].trim();
-                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                      break;
-                  }
-              }
-          }
-          return cookieValue;
-      }
-
-      function sendRsvpResponse(status) {
-          const csrftoken = getCookie('csrftoken');
-          fetch(window.location.pathname, {
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'application/x-www-form-urlencoded',
-                  'X-CSRFToken': csrftoken
-              },
-              body: new URLSearchParams({
-                  'response': status
-              })
-          }).then(() => {
-              window.location.reload();
-          }).catch((err) => {
-              console.error('Failed to update RSVP', err);
-              Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
-          });
-      }
-  });
+<!-- Disable interactions if event completed -->
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  const generalTab=document.querySelector('#general');
+  if(generalTab && generalTab.dataset.eventStatus==='completed'){
+      const elements=generalTab.querySelectorAll('input, select, textarea, button');
+      elements.forEach(el=>{
+          el.setAttribute('disabled','disabled');
+          el.classList.add('disabled');
+      });
+  }
+});
 </script>
 
 {% endblock %}
