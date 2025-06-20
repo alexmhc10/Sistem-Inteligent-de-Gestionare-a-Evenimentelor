@@ -10,7 +10,7 @@ import os
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .constants import REGION_CHOICES, DIET_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, TEMP_CHOICES, COOKING_METHOD_CHOICES
-
+import uuid
 
 
 class EventHistory(models.Model):
@@ -377,6 +377,88 @@ class Event(models.Model):
             return 'ongoing'
         else:
             return 'completed'
+class OptimisedEvent(models.Model):
+
+    event = models.ForeignKey(
+        'Event',
+        on_delete=models.CASCADE,
+        related_name='optimisation_results',
+        verbose_name="Eveniment"
+    )
+
+    original_location = models.ForeignKey(
+        'Location',
+        on_delete=models.SET_NULL, 
+        null=True,
+        blank=True,
+        related_name='optimised_original_events',
+        verbose_name="Locație inițială"
+    )
+    original_location_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Cost locație inițială"
+    )
+
+    optimized_location = models.ForeignKey(
+        'Location',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='optimised_new_events',
+        verbose_name="Locație optimizată"
+    )
+    optimized_location_cost = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Cost locație optimizată"
+    )
+
+    event_gross_profit = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Profit brut eveniment"
+    )
+
+    profit_net_old = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Profit net inițial"
+    )
+
+    profit_net_new = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Profit net optimizat"
+    )
+
+    optimized_at = models.DateTimeField(
+        default=timezone.now,
+        verbose_name="Data optimizării"
+    )
+
+    run_id = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False, 
+        unique=False,
+        verbose_name="ID Rulare Optimizare"
+    )
+
+    class Meta:
+        ordering = ['-optimized_at', 'event__event_date']
+        verbose_name = "Eveniment Optimizat"
+        verbose_name_plural = "Evenimente Optimizate"
+
+    def __str__(self):
+        return (
+            f"Optimizare pentru '{self.event.event_name}' (ID: {self.event.id}) "
+            f"la {self.optimized_at.strftime('%Y-%m-%d %H:%M')}"
+        )
 
 
 class GuestMenu(models.Model):

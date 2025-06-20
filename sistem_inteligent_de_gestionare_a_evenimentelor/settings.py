@@ -86,11 +86,17 @@ TEMPLATES = [
 ]
 
 ASGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.asgi.application'
-
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Europe/Bucharest'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+BROKER_TRANSPORT = 'redis'
 
 DATABASES = {
     'default': {

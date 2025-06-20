@@ -1,5 +1,6 @@
 from django.db.models.signals import pre_save
 from django.db.models.signals import post_save
+from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils.timezone import now
 from .models import Event
@@ -7,7 +8,7 @@ from .models import Profile, Guests
 from .models import *
 from django.db.models.signals import post_save
 from decimal import Decimal
-
+from base.tasks import run_optimization_task
 
 @receiver(pre_save, sender=Event)
 def update_completed_status(sender, instance, **kwargs):
@@ -45,3 +46,21 @@ def update_completed_event(sender, instance, **kwargs):
             salary, created = Salary.objects.get_or_create(user=organizer)
             salary.update_bonus_for_event(event_cost)
 
+@receiver(post_save, sender=Event)
+def event_changed_handler(sender, instance, created, **kwargs):
+
+    print(f"DEBUG: Semnal post_save pentru Eveniment '{instance.event_name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
+    run_optimization_task.delay() 
+
+@receiver(post_save, sender=Location)
+def location_changed_handler(sender, instance, created, **kwargs):
+    """
+    Declanșează sarcina de optimizare când un obiect Location este salvat (creat sau actualizat).
+    """
+    print(f"DEBUG: Semnal post_save pentru Locație '{instance.name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
+    run_optimization_task.delay() 
+
+@receiver(post_delete, sender=Event)
+def event_deleted_handler(sender, instance, **kwargs):
+    print(f"DEBUG: Semnal post_delete pentru Eveniment '{instance.event_name}' detectat. Se declanșează sarcina de optimizare.")
+    run_optimization_task.delay()
