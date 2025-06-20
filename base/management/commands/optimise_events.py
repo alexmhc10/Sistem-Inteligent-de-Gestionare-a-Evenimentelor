@@ -28,20 +28,29 @@ class Command(BaseCommand):
                     'accepted_types': [t.id for t in loc_obj.types.all()],
                     'owner': loc_obj.owner # Presupunem că owner este un obiect User
                 })
+            locations_by_id = {loc['id']: loc for loc in db_locations} # Add this for easy lookup
+
 
             # Fetch all events initially
             db_events_raw = []
             for event_obj in Event.objects.prefetch_related('types').select_related('location', 'organized_by').all():
+                original_location_data = None
+                if event_obj.location:
+                    original_location_data = {
+                        'id': event_obj.location.id,
+                        'name': event_obj.location.name,
+                        'cost': float(event_obj.location.cost)
+                    }
                 db_events_raw.append({
                     'id': event_obj.id,
                     'name': event_obj.event_name,
                     'type_ids': [t.id for t in event_obj.types.all()],
-                    'cost': float(event_obj.cost),
+                    'cost': float(event_obj.cost), # This is the event's profit/revenue
                     'date': event_obj.event_date,
                     'organized_by': event_obj.organized_by, # Obiect User
                     'completed': event_obj.completed,
                     'is_canceled': event_obj.is_canceled,
-                    'location_id': event_obj.location.id if event_obj.location else -1 # Store original location ID
+                    'original_location': original_location_data # Store original location data
                 })
             
             # Separate events into optimizable and fixed categories
@@ -71,12 +80,14 @@ class Command(BaseCommand):
                 organizer_username = event['organized_by'].username if event['organized_by'] else 'N/A'
                 # is_locked_for_display includes past date, completed, canceled
                 is_locked_for_display = event['completed'] or event['is_canceled'] or event['date'] <= date.today()
-                self.stdout.write(self.style.NOTICE(f"    - {event['name']} (ID: {event['id']}, Types IDs: {event['type_ids']}, Date: {event['date']}, Locked: {is_locked_for_display}, Location ID: {event['location_id']}, Organized By: {organizer_username})"))
+                original_loc_name = event['original_location']['name'] if event['original_location'] else 'Unassigned/Invalid'
+                original_loc_id = event['original_location']['id'] if event['original_location'] else -1
+                self.stdout.write(self.style.NOTICE(f"    - {event['name']} (ID: {event['id']}, Types IDs: {event['type_ids']}, Date: {event['date']}, Locked: {is_locked_for_display}, Original Location: {original_loc_name} (ID: {original_loc_id}), Organized By: {organizer_username})"))
 
-            return all_users, all_types, db_locations, optimizable_events, fixed_events, event_id_to_original_index, db_events_raw
+            return all_users, all_types, db_locations, locations_by_id, optimizable_events, fixed_events, event_id_to_original_index, db_events_raw
 
         # Assign fetched data to variables
-        users, types, locations, optimizable_events, fixed_events, event_id_to_original_index, all_events_for_report = fetch_data_from_db_for_command(self)
+        users, types, locations, locations_by_id, optimizable_events, fixed_events, event_id_to_original_index, all_events_for_report = fetch_data_from_db_for_command(self)
 
         BUDGET = 100000
         MAX_GENERATIONS = 30
@@ -95,12 +106,13 @@ class Command(BaseCommand):
 
             # First, populate the schedule with fixed events to avoid conflicts
             for event in fixed_events:
-                loc_id = event['location_id']
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
+
                 if loc: # Only consider if the original location actually exists
                     # Check type compatibility for fixed events (important for schedule tracking)
                     if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                        event_date_key = (loc_id, event['date'])
+                        event_date_key = (loc['id'], event['date'])
                         # Only add if not already taken by another fixed event (though rare if initial data is clean)
                         if event_date_key not in schedule_slots_taken:
                             schedule_slots_taken[event_date_key] = event['id']
@@ -133,8 +145,8 @@ class Command(BaseCommand):
 
             # First, incorporate fixed events into the schedule and calculate their contribution
             for event in fixed_events:
-                loc_id = event['location_id']
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
 
                 if loc: # If the fixed event has an assigned location
                     # Check type compatibility for fixed events
@@ -152,7 +164,7 @@ class Command(BaseCommand):
                         total_profit += event['cost'] # Assuming event['cost'] is profit
                 else: # If a fixed event was unassigned or had an invalid original location
                     penalty += 5000 # Penalty for an unassigned fixed event
-                    infeasible_event_details.append(f"Fixed Event {event['name']} (ID: {event['id']}) - Original location {loc_id} not found or invalid/unassigned!")
+                    infeasible_event_details.append(f"Fixed Event {event['name']} (ID: {event['id']}) - Original location not found or invalid/unassigned!")
 
 
             # Then, evaluate optimizable events based on the proposed solution
@@ -164,7 +176,7 @@ class Command(BaseCommand):
                     infeasible_event_details.append(f"Optimizable Event {event['name']} (ID: {event['id']}) - No valid location assigned (-1 ID)")
                     continue
 
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                loc = locations_by_id.get(loc_id)
                 if not loc: # Should not happen if repair_solution works, but as a safeguard
                     penalty += 50000 
                     infeasible_event_details.append(f"Optimizable Event {event['name']} (ID: {event['id']}) - Assigned to non-existent location ID {loc_id}")
@@ -222,17 +234,17 @@ class Command(BaseCommand):
             # This is crucial to ensure mutations don't cause conflicts with fixed events or other optimizable events
             current_schedule = {}
             for event in fixed_events:
-                loc_id = event['location_id']
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
                 if loc and all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                    event_date_key = (loc_id, event['date'])
+                    event_date_key = (loc['id'], event['date'])
                     current_schedule[event_date_key] = event['id']
 
             for idx, loc_id in enumerate(mutated_solution):
                 event = optimizable_events[idx]
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                loc = locations_by_id.get(loc_id)
                 if loc and all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                    event_date_key = (loc_id, event['date'])
+                    event_date_key = (loc['id'], event['date'])
                     if event_date_key not in current_schedule: # Only add if not already taken by fixed
                         current_schedule[event_date_key] = event['id']
 
@@ -280,11 +292,11 @@ class Command(BaseCommand):
             
             # First, add fixed events to the schedule (they are immutable)
             for event in fixed_events:
-                loc_id = event['location_id']
-                loc = next((l for l in locations if l['id'] == loc_id), None)
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
                 if loc: # Only add if location exists and types match for fixed events
                     if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                        event_date_key = (loc_id, event['date'])
+                        event_date_key = (loc['id'], event['date'])
                         if event_date_key not in schedule_slots_taken:
                             schedule_slots_taken[event_date_key] = event['id']
             
@@ -294,7 +306,7 @@ class Command(BaseCommand):
             for i in optimizable_event_indices_sorted:
                 event = optimizable_events[i]
                 current_assigned_loc_id = repaired_solution[i]
-                loc_candidate = next((l for l in locations if l['id'] == current_assigned_loc_id), None)
+                loc_candidate = locations_by_id.get(current_assigned_loc_id)
 
                 is_valid_current_assignment = False
                 # Check if the current assignment is valid and available (type match, no date conflict)
@@ -375,10 +387,24 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS("\nBest solution assignment:\n"))
         
+        total_initial_net_profit = 0.0
+        total_final_net_profit = 0.0
+
         # Report for ALL events, differentiating between fixed and optimized
         for original_event_idx, event in enumerate(all_events_for_report):
             event_types_names = [types[t_id] for t_id in event['type_ids']]
             organizer_display = event['organized_by'].get_full_name() or event['organized_by'].username if event['organized_by'] else 'N/A'
+            event_profit = event['cost'] # This is the event's inherent revenue/profit
+
+            old_location_name = "N/A (Unassigned)"
+            old_location_cost = 0.0
+            if event['original_location']:
+                old_loc_data = event['original_location']
+                old_location_name = old_loc_data['name']
+                old_location_cost = old_loc_data['cost']
+
+            current_net_profit = event_profit - old_location_cost # This is before optimization for optimizable events
+            total_initial_net_profit += current_net_profit
 
             # Determine if this event was part of the optimizable set or fixed
             if not event['completed'] and not event['is_canceled'] and event['date'] > date.today():
@@ -388,19 +414,35 @@ class Command(BaseCommand):
             else:
                 # This was a fixed event (completed, canceled, or past date)
                 # It retains its original location, or -1 if it never had one or it was invalid
-                assigned_loc_id = event['location_id']
+                assigned_loc_id = event['original_location']['id'] if event['original_location'] else -1
                 loc_note = " (fixed)" # Indicate it wasn't optimized
 
-            loc = next((l for l in locations if l['id'] == assigned_loc_id), None)
+            new_location_name = "N/A (Unassigned)"
+            new_location_cost = 0.0
+            assigned_owner_display = "N/A"
 
-            self.stdout.write(f"Event: {event['name']} (types: {event_types_names}, profit: {event['cost']}, date: {event['date']}, old organizer: {organizer_display})")
-            
-            if assigned_loc_id == -1 or not loc:
-                self.stdout.write(self.style.WARNING(f"    => No valid location found or assigned!{loc_note}\n"))
-            else:
-                location_accepted_types_names = [types[t_id] for t_id in loc['accepted_types']]
+            loc = locations_by_id.get(assigned_loc_id) # Use the map for efficient lookup
+
+            if loc:
+                new_location_name = loc['name']
+                new_location_cost = loc['cost']
                 assigned_owner_display = loc['owner'].get_full_name() or loc['owner'].username if loc['owner'] else 'N/A'
-                self.stdout.write(f"    => Assigned to: {loc['name']} (cost: {loc['cost']}, accepted_types: {location_accepted_types_names}, owner: {assigned_owner_display})")
-                self.stdout.write(f"    => New organizer: {assigned_owner_display}{loc_note}\n") # New organizer is the assigned location's owner
+            
+            # Calculate new net profit based on assigned location cost
+            new_net_profit = event_profit - new_location_cost
+            total_final_net_profit += new_net_profit
+
+            self.stdout.write(f"Event: {event['name']} (types: {event_types_names}, date: {event['date']})")
+            self.stdout.write(f"    - Locație veche: {old_location_name} (Cost: {old_location_cost:.2f} RON)")
+            self.stdout.write(f"    - Locație nouă: {new_location_name} (Cost: {new_location_cost:.2f} RON){loc_note}")
+            self.stdout.write(f"    - Profit Event (Brut): {event_profit:.2f} RON")
+            self.stdout.write(f"    - Profit Net (Vechi): {current_net_profit:.2f} RON")
+            self.stdout.write(f"    - Profit Net (Nou): {new_net_profit:.2f} RON")
+            self.stdout.write(f"    - Organizator Vechi: {organizer_display}")
+            self.stdout.write(f"    - Organizator Nou: {assigned_owner_display}\n") # New organizer is the assigned location's owner
+        
+        self.stdout.write(self.style.SUCCESS(f"Total Profit Net Initial (pentru toate evenimentele): {total_initial_net_profit:.2f} RON"))
+        self.stdout.write(self.style.SUCCESS(f"Total Profit Net Final (pentru toate evenimentele): {total_final_net_profit:.2f} RON"))
+
 
         self.stdout.write(self.style.SUCCESS('Event optimization completed.'))

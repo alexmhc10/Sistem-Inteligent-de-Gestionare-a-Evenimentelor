@@ -1,149 +1,793 @@
 <style>
-    .logo {
-        width: 60px;
-        margin-right: 10px;
-        height: auto;
-        border-radius: 40px;
-        border: 2px solid #D4AF37;
-    }
-    
-    .greeting {
-        font-size: 1.2em;
-        color: #D4AF37;
-        font-weight: bold;
-        margin-right: 20px;
-    }
-    
-    .first {
+    /* Modern Navbar Styles */
+    .modern-navbar {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+        border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        padding: 0.5rem 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 70px;
         display: flex;
-        flex-direction: row;
         align-items: center;
     }
-    
-    .first a {
-        margin-right: 15px; 
-        color: #D4AF37;
-        font-size: 1em;
-        text-decoration: none;
-        font-weight: bold;
+
+    .modern-navbar.scrolled {
+        padding: 0.25rem 0;
+        height: 60px;
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
     }
-    
-    .second {
-        margin-left: auto;
+
+    .navbar-container {
+        max-width: none;
+        margin: 0;
+        padding: 0 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        height: 100%;
+    }
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    /* Logo Section */
+    .navbar-brand {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        gap: 0.5rem;
+        transition: transform 0.3s ease;
+    }
+
+    .navbar-brand:hover {
+        transform: scale(1.02);
+    }
+
+    .navbar-logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        border: 2px solid #D4AF37;
+        transition: all 0.3s ease;
+        object-fit: cover;
+    }
+
+    .navbar-logo:hover {
+        border-color: #FFD700;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+    }
+
+    .brand-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+        background: linear-gradient(45deg, #D4AF37, #FFD700);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    /* Navigation Links */
+    .nav-links {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .nav-dropdown {
+        position: relative;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .nav-dropdown > span {
+        color: #333;
+        font-weight: 600;
+        padding: 0.5rem 0.75rem;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+    }
+
+    .nav-dropdown > span::after {
+        content: '';
+        width: 0;
+        height: 2px;
+        background: linear-gradient(45deg, #D4AF37, #FFD700);
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        transition: width 0.3s ease;
+    }
+
+    .nav-dropdown:hover > span {
+        color: #D4AF37;
+        background: rgba(212, 175, 55, 0.05);
+    }
+
+    .nav-dropdown:hover > span::after {
+        width: 80%;
+    }
+
+    .nav-dropdown .fa-chevron-down {
+        transition: transform 0.3s ease;
+    }
+
+    .nav-dropdown:hover .fa-chevron-down,
+    .nav-dropdown.active .fa-chevron-down {
+        transform: rotate(180deg);
+    }
+
+    /* Dropdown Menu */
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        min-width: 220px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        display: none !important;
+        z-index: 9999;
+        margin-top: 0.5rem;
+    }
+
+    .nav-dropdown.active .dropdown-menu {
+        display: block !important;
+        animation: fadeInDown 0.3s ease;
+    }
+
+    /* Force show for testing */
+    .nav-dropdown.active .dropdown-menu {
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .dropdown-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        color: #333;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .dropdown-item:hover {
+        background: linear-gradient(45deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.1));
+        color: #D4AF37;
+        transform: translateX(5px);
+    }
+
+    .dropdown-item i {
+        width: 18px;
+        text-align: center;
+        color: #D4AF37;
+    }
+
+    /* Right Section - Remove duplicate definition */
+
+    /* Notifications */
+    .notifications-container {
+        position: relative;
+    }
+
+    .notification-btn {
+        position: relative;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .notification-btn:hover {
+        background: rgba(212, 175, 55, 0.1);
+        color: #D4AF37;
+        transform: scale(1.1);
+    }
+
+    .notification-badge {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background: linear-gradient(45deg, #ff4757, #ff6b7a);
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.2); }
+        100% { transform: scale(1); }
+    }
+
+    /* Profile Section */
+    .profile-section {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        cursor: pointer;
+        padding: 0.3rem 0.75rem;
+        border-radius: 25px;
+        transition: all 0.3s ease;
+        background: rgba(212, 175, 55, 0.05);
+        border: 1px solid rgba(212, 175, 55, 0.1);
+    }
+
+    .profile-section:hover {
+        background: rgba(212, 175, 55, 0.1);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(212, 175, 55, 0.2);
+    }
+
+    .profile-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #D4AF37;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+
+    .profile-info {
         display: flex;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-start;
     }
-    
-    .second a {
+
+    .profile-name {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.85rem;
+    }
+
+    .profile-role {
+        font-size: 0.7rem;
+        color: #666;
+    }
+
+    .profile-chevron {
         color: #D4AF37;
-        font-size: 1em;
-        text-decoration: none;
-        margin-left: 15px;
-        font-weight: bold;
-    }
-    
-    .second a:hover {
-        color: #B08A2E;
-        text-decoration: underline;
+        transition: transform 0.3s ease;
+        margin-left: 0.5rem;
     }
 
-    .profile-dropdown, .events-dropdown, .locations-dropdown {
-        position: relative;
-        display: inline-block;
+    .profile-section:hover .profile-chevron {
+        transform: rotate(180deg);
     }
 
-    .dropdown-content {
-        display: block;
-        opacity: 0;
-        visibility: hidden;
+    /* Profile Dropdown */
+    .profile-dropdown-menu {
         position: absolute;
+        top: 100%;
         right: 0;
-        background-color: #f9f9f9;
-        min-width: 160px;
-        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-        z-index: 1;
-        transform: translateY(-10px);
-        transition: opacity 0.3s ease-out, transform 0.3s ease-out, visibility 0.3s;
+        min-width: 200px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+        display: none !important;
+        z-index: 9999;
+        margin-top: 0.5rem;
     }
 
-    .profile-dropdown:hover .dropdown-content,
-    .events-dropdown:hover .dropdown-content,
-    .locations-dropdown:hover .dropdown-content {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
+    .profile-section.active .profile-dropdown-menu {
+        display: block !important;
+        animation: fadeInDown 0.3s ease;
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 
-    .dropdown-content a {
-        color: black;
-        padding: 12px 16px;
-        text-decoration: none;
-        display: block;
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .navbar-container {
+            padding: 0 0.5rem;
+        }
+
+        .nav-links {
+            display: none;
+        }
+
+        .brand-text {
+            display: none;
+        }
+
+        .profile-info {
+            display: none;
+        }
     }
 
-    .dropdown-content a:hover {
-        background-color: #f1f1f1;
-    }
-
-    
-    .events-dropdown span, .locations-dropdown span {
-        color: #D4AF37; 
-        font-size: 1em;
-        font-weight: bold;
-        margin-right: 15px;
-    }
-
+    /* Smooth Scroll Effect */
     body {
         overflow-x: hidden;
     }
+
+    /* Loading Animation */
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .modern-navbar {
+        animation: fadeInDown 0.6s ease-out;
+    }
+
+    /* Notifications dropdown override */
+    .notifications-container .dropdown-menu {
+        right: 0;
+        left: auto;
+        top: 40px; /* clear navbar height */
+        z-index: 99999 !important; /* Ensure it's above everything */
+        position: fixed !important; /* Use fixed positioning to escape overflow:hidden parents */
+    }
+
+    /* Ensure visibility overrides the generic rule */
+    .notifications-container .dropdown-menu.show {
+        display: block !important;
+    }
+
+    /* Notification item styles */
+    .notification-dropdown-item {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .notification-dropdown-item:last-child {
+        border-bottom: none;
+    }
+
+    .notification-dropdown-item .dropdown-item {
+        white-space: normal;
+        word-wrap: break-word;
+    }
+
+    .notification-dropdown-item .dropdown-item:hover {
+        background: linear-gradient(45deg, rgba(212, 175, 55, 0.1), rgba(255, 215, 0, 0.1));
+    }
 </style>
 
-<div class="header">
-    <div class="first">
-        <a href="{% url 'home-organizer' %}">
-            <img class="logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
-        </a>
-        
-        {% if request.user.is_authenticated %}
-        <div class="events-dropdown">
-            <span>Events</span>
-            <div class="dropdown-content">
-                <a href="{% url 'event_builder' %}">Event Builder</a>
-                <a href="{% url 'my_events' %}">Event Management</a>
-                <a href="{% url 'financial_management' %}">Financial Management</a>
+<nav class="modern-navbar" id="modernNavbar">
+    <div class="navbar-container">
+        <!-- Left Section: Logo + Brand + Navigation -->
+        <div class="navbar-left">
+            <!-- Logo Section -->
+            <a href="{% url 'home-organizer' %}" class="navbar-brand">
+                <img class="navbar-logo" src="{{ MEDIA_URL }}logos/logo.jpg" alt="EventEase Logo">
+                <span class="brand-text">EventEase</span>
+            </a>
+            
+            {% if request.user.is_authenticated %}
+            <!-- Events Dropdown -->
+            <div class="nav-dropdown">
+                <span>
+                    <i class="fas fa-calendar-alt"></i>
+                    Events
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+                <div class="dropdown-menu">
+                    <a href="{% url 'event_builder' %}" class="dropdown-item">
+                        <i class="fas fa-plus-circle"></i>
+                        Event Builder
+                    </a>
+                    <a href="{% url 'my_events' %}" class="dropdown-item">
+                        <i class="fas fa-cogs"></i>
+                        Event Management
+                    </a>
+                    <a href="{% url 'financial_management' %}" class="dropdown-item">
+                        <i class="fas fa-chart-line"></i>
+                        Financial Management
+                    </a>
+                </div>
             </div>
-        </div>
-        
-        <!--dropdown locatie -->
-        <div class="locations-dropdown" style="margin-left: 2px;">
-            <span>Locations</span>
-            <div class="dropdown-content">
-                <a href="{% url 'add_location' %}">Add Location</a>
-                <a href="{% url 'locations-list' %}">Location List</a> 
+            
+            <!-- Locations Dropdown -->
+            <div class="nav-dropdown">
+                <span>
+                    <i class="fas fa-map-marker-alt"></i>
+                    Locations
+                    <i class="fas fa-chevron-down"></i>
+                </span>
+                <div class="dropdown-menu">
+                    <a href="{% url 'add_location' %}" class="dropdown-item">
+                        <i class="fas fa-plus"></i>
+                        Add Location
+                    </a>
+                    <a href="{% url 'locations-list' %}" class="dropdown-item">
+                        <i class="fas fa-list"></i>
+                        Location List
+                    </a>
+                </div>
             </div>
-        </div>
-
-        {% endif %}
-    </div>
-    
-    <div class="second">
-        {% if request.user.is_authenticated %}
-        <div class="profile-dropdown">
-            <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile Picture" style="width:30px;height:30px;border-radius:50%;">
-            <span>{{ user.username }}</span>
-            <div class="dropdown-content">
-                <a href="{% url 'organizer-profile' request.user.username %}">Profile</a>
-                <a href="{% url 'logout' %}">Logout</a>
-            </div>
-        </div>
-        {% if request.path == '/' and request.user.is_superuser %}
-            <a href="{% url 'new_users' %}">#</a>
-        {% endif %}
-        {% else %}
-            {% if request.path != '/login/' and request.path != '/register/' %}
-                <a href="{% url 'login' %}">Login</a>
             {% endif %}
+        </div>
+        
+        <!-- Right Section: Notifications + Profile -->
+        {% if request.user.is_authenticated %}
+        <div class="navbar-right">
+            <!-- Notifications -->
+            <div class="notifications-container">
+                <button id="navbarNotificationBtn" class="notification-btn" type="button">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge d-none">0</span>
+                </button>
+
+                <!-- Notifications Dropdown -->
+                <ul class="dropdown-menu" id="navbar-notification-dropdown" style="right: 0; left: auto;">
+                    <div class="d-flex justify-content-between align-items-center w-100 px-2 py-1">
+                        <li class="dropdown-header">Notifications</li>
+                        <li class="dropdown-header"><button id="mark-as-read-navbar" class="btn p-0 m-0"><i class="fas fa-eye"></i></button></li>
+                    </div>
+                    <li><hr class="dropdown-divider"></li>
+                    <li class="text-center"><small>No new notifications</small></li>
+                </ul>
+            </div>
+            
+            <!-- Profile Section -->
+            <div class="profile-section">
+                {% if request.user.profile_set.first.photo %}
+                <img src="{{ request.user.profile_set.first.photo.url }}" alt="Profile" class="profile-avatar">
+                {% else %}
+                <img src="{{ MEDIA_URL }}poze_invitati/ProfilePicDefault.jpg" alt="Profile" class="profile-avatar">
+                {% endif %}
+                <div class="profile-info">
+                    <span class="profile-name">{{ user.username }}</span>
+                    <span class="profile-role">Event Organizer</span>
+                </div>
+                <i class="fas fa-chevron-down profile-chevron"></i>
+                
+                <div class="profile-dropdown-menu">
+                    <a href="{% url 'organizer-profile' request.user.username %}" class="dropdown-item">
+                        <i class="fas fa-user"></i>
+                        My Profile
+                    </a>
+                    <a href="{% url 'home-organizer' %}" class="dropdown-item">
+                        <i class="fas fa-tachometer-alt"></i>
+                        Dashboard
+                    </a>
+                    <a href="{% url 'logout' %}" class="dropdown-item">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="navbar-right">
+            {% if request.path != '/login/' and request.path != '/register/' %}
+                <a href="{% url 'login' %}" class="dropdown-item">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </a>
+            {% endif %}
+        </div>
         {% endif %}
     </div>
-</div>
+</nav>
+
+<script>
+    // Navbar scroll effect
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('modernNavbar');
+        if (window.scrollY > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+    });
+
+    // === Notifications Logic ===
+    document.addEventListener('DOMContentLoaded', function () {
+        const notificationBtn = document.getElementById('navbarNotificationBtn');
+        const notificationDropdown = document.getElementById('navbar-notification-dropdown');
+        const notificationBadge = document.querySelector('.notification-badge');
+
+        // Toggle dropdown visibility
+        notificationBtn?.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isVisible = notificationDropdown.classList.contains('show');
+            if (isVisible) {
+                notificationDropdown.classList.remove('show');
+                notificationDropdown.style.display = 'none';
+                console.log('Notifications dropdown hidden');
+            } else {
+                notificationDropdown.classList.add('show');
+                notificationDropdown.style.display = 'block';
+                // Calculate position for fixed dropdown
+                const btnRect = notificationBtn.getBoundingClientRect();
+                notificationDropdown.style.top = (btnRect.bottom + 5) + 'px';
+                notificationDropdown.style.right = (window.innerWidth - btnRect.right) + 'px';
+                console.log('Notifications dropdown shown');
+                fetchNavbarNotifications();
+            }
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.notifications-container')) {
+                notificationDropdown.classList.remove('show');
+                notificationDropdown.style.display = 'none';
+            }
+        });
+
+        // Periodically refresh notifications
+        setInterval(fetchNavbarNotifications, 10000);
+
+        function fetchNavbarNotifications() {
+            fetch('/get_notifications/', { credentials: 'same-origin' })
+                .then(resp => {
+                    if(!resp.ok){ console.error('Notifications fetch status', resp.status); }
+                    return resp.json();
+                })
+                .then(data => {
+                    console.log('Notifications data', data);
+                    // Reset dropdown content (keep header & divider)
+                    notificationDropdown.innerHTML = '<div class="d-flex justify-content-between align-items-center w-100 px-2 py-1"><li class="dropdown-header">Notifications</li><li class="dropdown-header"><button id="mark-as-read-navbar" class="btn p-0 m-0"><i class="fas fa-eye"></i></button></li></div><li><hr class="dropdown-divider"></li>';
+
+                    if (data.notifications && data.notifications.length > 0) {
+                        data.notifications.forEach(n => {
+                            let targetUrl = n.redirect;
+                            if (!targetUrl) {
+                                const eventId = n.event_id;
+                                if (n.user_type === 'staff') {
+                                    targetUrl = `/personal_vizualizare_eveniment/${eventId}`;
+                                } else if (n.user_type === 'guest') {
+                                    targetUrl = `/guest_event_view/${eventId}`;
+                                } else if (n.user_type === 'organizer') {
+                                    targetUrl = `/event_details/${eventId}`;
+                                }
+                            }
+
+                            const item = document.createElement('li');
+                            item.className = 'notification-dropdown-item';
+                            item.innerHTML = `
+                                <div class="dropdown-item d-flex align-items-start p-3" style="cursor: default;">
+                                    ${n.sender_photo ? `
+                                        <img src="${n.sender_photo}" 
+                                             class="rounded-circle me-3" 
+                                             width="40" height="40" 
+                                             alt="${n.sender_name || 'Sender'}"
+                                             onerror="this.src='/media/poze_invitati/ProfilePicDefault.jpg'">
+                                    ` : `
+                                        <div class="rounded-circle me-3 d-flex align-items-center justify-content-center" 
+                                             style="width: 40px; height: 40px; background: #e9ecef;">
+                                            <i class="fas fa-user text-muted"></i>
+                                        </div>
+                                    `}
+                                    <div class="flex-grow-1">
+                                        <div class="mb-1">${n.message}</div>
+                                        <small class="text-muted">${n.timestamp}</small>
+                                        ${!n.is_read ? '<span class="badge bg-warning text-dark ms-2">New</span>' : ''}
+                                    </div>
+                                </div>
+                            `;
+                            notificationDropdown.appendChild(item);
+                        });
+
+                        notificationBadge.classList.remove('d-none');
+                        notificationBadge.textContent = data.notifications.length;
+                    } else {
+                        notificationDropdown.innerHTML += '<li class="text-center"><small>No new notifications</small></li>';
+                        notificationBadge.classList.add('d-none');
+                    }
+
+                    // Reattach mark-as-read listener
+                    const markBtn = document.getElementById('mark-as-read-navbar');
+                    markBtn?.addEventListener('click', markNavbarNotificationsRead);
+                })
+                .catch(err => console.error('Notifications fetch error', err));
+        }
+
+        function markNavbarNotificationsRead() {
+            fetch('/mark_notifications_as_read/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({})
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        notificationBadge.classList.add('d-none');
+                    }
+                });
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    });
+
+    // Simple Dropdown functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log('Navbar JavaScript loaded');
+        
+        // Handle Events dropdown
+        const eventsDropdown = document.querySelector('.nav-dropdown:nth-child(2)');
+        if (eventsDropdown) {
+            const eventsSpan = eventsDropdown.querySelector('span');
+            if (eventsSpan) {
+                eventsSpan.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Events clicked');
+                    
+                    // Close other dropdowns first
+                    document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+                        if (dropdown !== eventsDropdown) dropdown.classList.remove('active');
+                    });
+                    document.querySelector('.profile-section')?.classList.remove('active');
+                    
+                    // Toggle current dropdown
+                    const isCurrentlyActive = eventsDropdown.classList.contains('active');
+                    if (isCurrentlyActive) {
+                        eventsDropdown.classList.remove('active');
+                        const menu = eventsDropdown.querySelector('.dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    } else {
+                        eventsDropdown.classList.add('active');
+                        const menu = eventsDropdown.querySelector('.dropdown-menu');
+                        if (menu) {
+                            menu.style.display = 'block';
+                            menu.style.opacity = '1';
+                            menu.style.visibility = 'visible';
+                        }
+                    }
+                    console.log('Events dropdown active:', eventsDropdown.classList.contains('active'));
+                });
+            }
+        }
+
+        // Handle Locations dropdown
+        const locationsDropdown = document.querySelector('.nav-dropdown:nth-child(3)');
+        if (locationsDropdown) {
+            const locationsSpan = locationsDropdown.querySelector('span');
+            if (locationsSpan) {
+                locationsSpan.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Locations clicked');
+                    
+                    // Close other dropdowns first
+                    document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+                        if (dropdown !== locationsDropdown) dropdown.classList.remove('active');
+                    });
+                    document.querySelector('.profile-section')?.classList.remove('active');
+                    
+                    // Toggle current dropdown
+                    const isCurrentlyActive = locationsDropdown.classList.contains('active');
+                    if (isCurrentlyActive) {
+                        locationsDropdown.classList.remove('active');
+                        const menu = locationsDropdown.querySelector('.dropdown-menu');
+                        if (menu) menu.style.display = 'none';
+                    } else {
+                        locationsDropdown.classList.add('active');
+                        const menu = locationsDropdown.querySelector('.dropdown-menu');
+                        if (menu) {
+                            menu.style.display = 'block';
+                            menu.style.opacity = '1';
+                            menu.style.visibility = 'visible';
+                        }
+                    }
+                    console.log('Locations dropdown active:', locationsDropdown.classList.contains('active'));
+                });
+            }
+        }
+
+        // Handle Profile dropdown
+        const profileSection = document.querySelector('.profile-section');
+        if (profileSection) {
+            profileSection.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Profile clicked');
+                this.classList.toggle('active');
+                
+                // Close nav dropdowns
+                document.querySelectorAll('.nav-dropdown').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            });
+        }
+
+        // Prevent dropdown menus from closing when clicked
+        document.querySelectorAll('.dropdown-menu, .profile-dropdown-menu').forEach(menu => {
+            menu.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('Dropdown menu clicked - preventing close');
+            });
+        });
+
+        // Close all dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+            const isClickInsideDropdown = e.target.closest('.nav-dropdown') || e.target.closest('.profile-section');
+            if (!isClickInsideDropdown) {
+                console.log('Clicking outside - closing dropdowns');
+                document.querySelectorAll('.nav-dropdown, .profile-section').forEach(dropdown => {
+                    dropdown.classList.remove('active');
+                });
+            }
+        });
+    });
+
+    // Add loading animation
+    document.addEventListener('DOMContentLoaded', function() {
+        const navbar = document.querySelector('.modern-navbar');
+        navbar.style.opacity = '0';
+        navbar.style.transform = 'translateY(-50px)';
+        
+        setTimeout(() => {
+            navbar.style.transition = 'all 0.6s ease-out';
+            navbar.style.opacity = '1';
+            navbar.style.transform = 'translateY(0)';
+        }, 100);
+    });
+</script>
