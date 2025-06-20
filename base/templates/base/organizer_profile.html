@@ -1,34 +1,40 @@
 {% extends 'main.html' %}
 {% block content %}
+<div class="organizer-profile-page">
 <style>
-    .profile-container {
+    /* Scope all styles to prevent navbar conflicts */
+    .organizer-profile-page {
+        /* Page specific styles */
+    }
+
+    .organizer-profile-page .profile-container {
         max-width: 1000px;
         margin: 40px auto;
         padding: 0 20px;
     }
 
-    .profile-card {
+    .organizer-profile-page .profile-card {
         background: white;
         border-radius: 20px;
         box-shadow: 0 10px 30px rgba(0,0,0,0.1);
         overflow: hidden;
     }
 
-    .profile-header {
+    .organizer-profile-page .profile-header {
         background: linear-gradient(135deg, var(--primary-gold) 0%, #E5C87D 100%);
         padding: 40px 20px;
         position: relative;
         text-align: center;
     }
 
-    .profile-photo-container {
+    .organizer-profile-page .profile-photo-container {
         position: relative;
         width: 180px;
         height: 180px;
         margin: 0 auto;
     }
 
-    .profile-photo {
+    .organizer-profile-page .profile-photo {
         width: 100%;
         height: 100%;
         border-radius: 50%;
@@ -37,20 +43,20 @@
         object-fit: cover;
     }
 
-    .profile-name {
+    .organizer-profile-page .profile-name {
         font-size: 32px;
         font-weight: 700;
         margin: 20px 0 5px;
         color: #333;
     }
 
-    .profile-username {
+    .organizer-profile-page .profile-username {
         font-size: 18px;
         margin-bottom: 25px;
         color: #666;
     }
 
-    .edit-profile-btn {
+    .organizer-profile-page .edit-profile-btn {
         background: #FFD700;
         color: #333;
         border: none;
@@ -61,16 +67,16 @@
         transition: all 0.3s ease;
     }
 
-    .edit-profile-btn:hover {
+    .organizer-profile-page .edit-profile-btn:hover {
         background: #E5C87D;
         transform: translateY(-2px);
     }
 
-    .profile-content {
+    .organizer-profile-page .profile-content {
         padding: 40px;
     }
 
-    .info-section {
+    .organizer-profile-page .info-section {
         background: #f8f9fa;
         border-radius: 15px;
         padding: 30px;
@@ -78,7 +84,7 @@
         box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
 
-    .section-title {
+    .organizer-profile-page .section-title {
         color: var(--primary-gold);
         font-size: 24px;
         font-weight: 600;
@@ -88,17 +94,17 @@
         gap: 12px;
     }
 
-    .section-title i {
+    .organizer-profile-page .section-title i {
         font-size: 24px;
     }
 
-    .info-grid {
+    .organizer-profile-page .info-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         gap: 20px;
     }
 
-    .info-item {
+    .organizer-profile-page .info-item {
         background: white;
         padding: 20px;
         border-radius: 12px;
@@ -106,30 +112,30 @@
         transition: all 0.3s ease;
     }
 
-    .info-item:hover {
+    .organizer-profile-page .info-item:hover {
         transform: translateY(-3px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
 
-    .info-label {
+    .organizer-profile-page .info-label {
         color: #666;
         font-size: 14px;
         margin-bottom: 5px;
     }
 
-    .info-value {
+    .organizer-profile-page .info-value {
         color: #333;
         font-size: 16px;
         font-weight: 500;
     }
 
-    .social-links {
+    .organizer-profile-page .social-links {
         display: flex;
         flex-wrap: wrap;
         gap: 15px;
     }
 
-    .social-link {
+    .organizer-profile-page .social-link {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -141,21 +147,21 @@
         transition: all 0.3s ease;
     }
 
-    .social-link:hover {
+    .organizer-profile-page .social-link:hover {
         background: var(--primary-gold);
         color: white;
     }
 
-    .edit-form {
+    .organizer-profile-page .edit-form {
         display: none;
         padding: 30px;
     }
 
-    .form-group {
+    .organizer-profile-page .form-group {
         margin-bottom: 20px;
     }
 
-    .form-control {
+    .organizer-profile-page .form-control {
         width: 100%;
         padding: 12px;
         border: 1px solid #ddd;
@@ -163,18 +169,19 @@
         transition: all 0.3s ease;
     }
 
-    .form-control:focus {
+    .organizer-profile-page .form-control:focus {
         border-color: var(--primary-gold);
         box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
     }
 
-    .btn-group {
+    .organizer-profile-page .btn-group {
         display: flex;
         gap: 15px;
         margin-top: 30px;
     }
 
-    .btn-save, .btn-cancel {
+    .organizer-profile-page .btn-save, 
+    .organizer-profile-page .btn-cancel {
         flex: 1;
         padding: 12px;
         border-radius: 8px;
@@ -184,33 +191,27 @@
         transition: all 0.3s ease;
     }
 
-    .btn-save {
+    .organizer-profile-page .btn-save {
         background: #28a745;
         color: white;
-        border: none;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-weight: 500;
-        flex: 1;
-        transition: all 0.3s ease;
     }
 
-    .btn-save:hover {
+    .organizer-profile-page .btn-save:hover {
         background: #218838;
         transform: translateY(-2px);
     }
 
-    .btn-cancel {
+    .organizer-profile-page .btn-cancel {
         background: #dc3545;
         color: white;
     }
 
-    .btn-cancel:hover {
+    .organizer-profile-page .btn-cancel:hover {
         transform: translateY(-2px);
     }
 
     /* Stiluri pentru secțiunea de review-uri */
-    .reviews-summary {
+    .organizer-profile-page .reviews-summary {
         background: #f8f9fa;
         padding: 20px;
         border-radius: 10px;
@@ -218,142 +219,81 @@
         box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
-    .average-rating {
+    .organizer-profile-page .average-rating {
         display: flex;
         align-items: center;
-        gap: 15px;
+        justify-content: center;
+        gap: 10px;
     }
 
-    .stars {
-        display: flex;
-        gap: 5px;
-    }
-
-    .star {
+    .organizer-profile-page .stars {
+        font-size: 28px;
         color: #ddd;
-        font-size: 24px;
     }
 
-    .star.filled {
-        color: #ffc107;
+    .organizer-profile-page .star {
+        cursor: pointer;
+        transition: all 0.2s ease;
     }
 
-    .rating-value {
+    .organizer-profile-page .star.filled {
+        color: var(--primary-gold);
+    }
+
+    .organizer-profile-page .rating-value {
         font-size: 24px;
-        font-weight: bold;
+        font-weight: 600;
         color: #333;
     }
 
-    .total-reviews {
+    .organizer-profile-page .total-reviews {
         color: #666;
         font-size: 16px;
     }
 
-    .review-form {
-        background: #fff;
+    .organizer-profile-page .reviews-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .organizer-profile-page .review-item {
+        background: white;
         padding: 20px;
         border-radius: 10px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .review-form input[type="text"] {
-        width: 100%;
-        padding: 12px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
         margin-bottom: 15px;
-        font-size: 16px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .rating {
-        display: flex;
-        flex-direction: row-reverse;
-        justify-content: flex-end;
-        gap: 5px;
-        margin-bottom: 15px;
-    }
-
-    .rating input {
-        display: none;
-    }
-
-    .rating label {
-        cursor: pointer;
-        font-size: 30px;
-        color: #ddd;
-        transition: color 0.2s;
-    }
-
-    .rating label:hover,
-    .rating label:hover ~ label,
-    .rating input:checked ~ label {
-        color: #ffc107;
-    }
-
-    .review-form button {
-        background: #007bff;
-        color: white;
-        border: none;
-        padding: 12px 25px;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-
-    .review-form button:hover {
-        background: #0056b3;
-    }
-
-    .reviews-list {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .review-item {
-        background: #fff;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-
-    .review-header {
+    .organizer-profile-page .review-header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         margin-bottom: 10px;
     }
 
-    .reviewer-name {
-        font-weight: bold;
+    .organizer-profile-page .reviewer-name {
+        font-weight: 600;
         color: #333;
-        font-size: 16px;
     }
 
-    .review-date {
-        color: #666;
+    .organizer-profile-page .review-date {
+        color: #999;
         font-size: 14px;
     }
 
-    .review-stars {
+    .organizer-profile-page .review-stars {
+        font-size: 18px;
         margin-bottom: 10px;
     }
 
-    .review-comment {
-        color: #444;
-        line-height: 1.5;
-        font-size: 15px;
+    .organizer-profile-page .review-comment {
+        color: #666;
+        line-height: 1.6;
     }
 
-    .no-reviews {
+    .organizer-profile-page .no-reviews {
         text-align: center;
-        color: #666;
-        padding: 20px;
-        background: #f8f9fa;
-        border-radius: 10px;
-        font-style: italic;
+        color: #999;
+        padding: 40px 0;
     }
 </style>
 
@@ -563,5 +503,6 @@
         document.getElementById("edit-btn").style.display = "block";
     });
 </script>
+</div>
 {% endblock %}
     
