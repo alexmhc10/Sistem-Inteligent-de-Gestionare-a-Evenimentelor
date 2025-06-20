@@ -3176,6 +3176,7 @@ def guest_home(request):
 def guest_event_view(request, pk):
     
     event=Event.objects.get(id=pk)
+    print(event.status)
     location = event.location
     oragniser_profile = event.organized_by.profile_set.first()
     rsvp = RSVP.objects.get(event=event, guest=request.user)
@@ -3187,6 +3188,29 @@ def guest_event_view(request, pk):
     desserts = Menu.objects.filter(category='dessert')
     drinks = Menu.objects.filter(category='drink')
 
+    # Prepare complete dish catalog per category (for edit modal)
+    categories_map = {
+        'appetizer': appetizers,
+        'main': main_courses,
+        'dessert': desserts,
+        'drink': drinks,
+    }
+    all_dishes_catalog = {}
+    for cat, qs in categories_map.items():
+        dishes_serialized = []
+        for d in qs:
+            dishes_serialized.append({
+                'id': d.id,
+                'name': d.item_name,
+                'diet_type': d.diet_type,
+                'image': d.item_picture.url if d.item_picture else '',
+                'allergens': [a.name for a in d.allergens.all()],
+                'region': d.item_cuisine,
+            })
+        all_dishes_catalog[cat] = dishes_serialized
+
+    guest_allergens = [a.name for a in preferences.allergens.all()]
+
     if request.method == "POST" and request.POST.get("response"):
         print(request.POST)
         value = request.POST.get("response")
@@ -3195,6 +3219,9 @@ def guest_event_view(request, pk):
             rsvp.response = value
             rsvp.responded = True
             rsvp.save() 
+
+            # Redirect to avoid form-resubmission prompt (POST-Redirect-GET)
+            return redirect('guest_event_view', pk=pk)
 
     if request.method == 'POST' and request.POST.get("form_type") == "add_post":
         print("se executa")
@@ -3214,12 +3241,14 @@ def guest_event_view(request, pk):
                         order=i
                     )
                 print("Post saved successfully")
+                return redirect('guest_event_view', pk=pk)
             except Exception as e:
                 print("Error saving post:", e)
-                return JsonResponse({'success': False, 'error': str(e)}, status=400)
+                return redirect('guest_event_view', pk=pk)
         else:
             print("Form not valid but sent trimite")
             print(form.errors)
+            # fall through to render template without redirect
     else:
         form = EventPostForm()
         print("Form not valid")
@@ -3303,7 +3332,9 @@ def guest_event_view(request, pk):
         'review_organizer': review_organizer,
         'review_location': review_location,
         'gallery': gallery,
-        'rated_item_count': rated_item_count
+        'rated_item_count': rated_item_count,
+        'all_dishes_json': json.dumps(all_dishes_catalog),
+        'guest_allergens_json': json.dumps(guest_allergens),
     }
     return render(request,'base/guest_event_view.html', context)
 
@@ -3459,7 +3490,7 @@ def generate_menu(request):
     return JsonResponse({'menu': menu, 'messages': messages})
 
 
-@csrf_exempt  # dacă nu trimiți CSRFToken, altfel poți folosi @login_required + token
+@csrf_exempt
 @require_POST
 def save_guest_menu(request):
     try:
