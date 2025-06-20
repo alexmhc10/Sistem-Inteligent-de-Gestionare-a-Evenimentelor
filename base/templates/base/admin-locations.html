@@ -153,7 +153,7 @@
                                 <div class="formCost d-flex gap-2 align-items-center mt-3">
                                     <input class="form-control form-control-sm" type="text" id="minCost" value="0">
                                     <span class="fw-semibold text-muted">to</span>
-                                    <input class="form-control form-control-sm" type="text" id="maxCost" value="3500">
+                                    <input class="form-control form-control-sm" type="text" id="maxCost" value="5000">
                                 </div>
                             </div>
                             
@@ -911,11 +911,11 @@
 
 
     noUiSlider.create(slider, {
-        start: [0, 3500],
+        start: [0, 5000],
         connect: true,
         range: {
             'min': 0,
-            'max': 3500
+            'max': 5000
         },
         step: 1,
         format: {
@@ -961,7 +961,7 @@
         let rows = getActiveRows();
         let searchFilter = document.getElementById("searchlocationList").value.toLowerCase();
         let minPrice = parseFloat(document.getElementById('minCost').value || 0);
-        let maxPrice = parseFloat(document.getElementById('maxCost').value || 3500);
+        let maxPrice = parseFloat(document.getElementById('maxCost').value || 5000);
         let checkedOrganizers = Array.from(document.querySelectorAll('.org-filter-check .form-check-input:checked'))
         .map(checkbox => checkbox.parentElement.querySelector("label").textContent.trim().toLowerCase());
         let checkedRatings = Array.from(document.querySelectorAll('.star-filter-check .form-check-input:checked'))
