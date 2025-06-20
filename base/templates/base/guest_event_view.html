@@ -1039,7 +1039,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
               
                                     {% if post.images.all %}
                                       {% for photo in post.images.all %}
-                                        <img class="img-fluid rounded m-1" src="{{MEDIA_URL}}{{photo.image}}" alt="Post Image" onclick="openLightbox(this)" style="max-width: 150px; max-height: 100px; object-fit: cover;">
+                                        <img class="img-fluid rounded m-1" src="{{MEDIA_URL}}{{photo.image}}" alt="Post Image" onclick="openLightbox(this)" style="max-width: 150px; max-height: 100px; object-fit: cover;" onerror="this.style.display='none';">
                                       {% endfor %}
                                     {% endif %}
                                   </div>
@@ -1572,6 +1572,70 @@ data-sidebar-position="fixed" data-header-position="fixed">
     if(chosenMenu.length){
        buildMenuSummary(chosenMenu);
     }
+  });
+</script>
+
+<script>
+  // RSVP auto-prompt
+  document.addEventListener("DOMContentLoaded", function () {
+      const rsvpStatus = "{{ rsvp.response }}";
+
+      const suppressKey = `rsvpPromptDismissed_{{ event.id }}`;
+
+      if (rsvpStatus === "Pending" && !sessionStorage.getItem(suppressKey)) {
+          Swal.fire({
+              title: "Do you want to participate?",
+              text: "You were invited to this event. Please confirm your attendance.",
+              icon: "question",
+              showDenyButton: true,        
+              showCancelButton: true,    
+              confirmButtonText: "Accept", 
+              denyButtonText: "Decline",
+              cancelButtonText: "Respond later"
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  sendRsvpResponse("Accepted");
+              } else if (result.isDenied) {
+                  sendRsvpResponse("Declined");
+              } else if (result.dismiss === Swal.DismissReason.cancel) {
+                  sessionStorage.setItem(suppressKey, "true");
+              }
+          });
+      }
+
+      function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              const cookies = document.cookie.split(';');
+              for (let i = 0; i < cookies.length; i++) {
+                  const cookie = cookies[i].trim();
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+
+      function sendRsvpResponse(status) {
+          const csrftoken = getCookie('csrftoken');
+          fetch(window.location.pathname, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'X-CSRFToken': csrftoken
+              },
+              body: new URLSearchParams({
+                  'response': status
+              })
+          }).then(() => {
+              window.location.reload();
+          }).catch((err) => {
+              console.error('Failed to update RSVP', err);
+              Swal.fire('Error', 'Something went wrong. Please try again.', 'error');
+          });
+      }
   });
 </script>
 

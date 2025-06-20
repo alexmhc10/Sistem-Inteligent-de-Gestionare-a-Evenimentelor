@@ -18,230 +18,234 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
     <div class="container-fluid">
         <div class="row d-flex flex-wrap">
-          <div class="col-lg-8 mt-4">
+          <style>
+          </style>
+          <div class="row d-flex flex-wrap">
+            <div class="col-lg-8 mt-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Guest arrival timeline</h5>
+                  <div id="arrivalChart"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="card">
+                <div class="card-body text-center">
+                  <i class="bi bi-camera h1 text-primary"></i>
+                  <h4 class="mt-7">Event gallery upload!</h4>
+                  <p class="card-subtitle mt-2 mb-3">Here you can upload the photos taken at your location and share them with the rest of the guests.</p>
+                    <form id="uploadForm" data-event-id="{{ event.id }}">
+                      <input type="file" class="form-control mb-2" id="archiveFile" name="archive" accept=".zip" required>
+                      <button type="submit" class="btn btn-success">Upload</button>
+                    </form>
+
+                    <div id="status"></div>
+                </div>
+              </div>
+            </div>
+          <script>
+            const uploadForm = document.getElementById("uploadForm");
+            uploadForm.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const eventId = this.dataset.eventId;
+                const fileInput = document.getElementById("archiveFile");
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    document.getElementById("status").textContent = "Selectează un fișier!";
+                    return;
+                }
+
+                const formData = new FormData();
+                formData.append("archive", file);
+
+                fetch(`/api/events/${eventId}/upload-archive/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("status").textContent = "Arhiva a fost încărcată cu succes!";
+                        fileInput.value = '';
+                        addArchiveRow(data.archive);
+                        document.getElementById("no-archives").style.display = "none";
+                    } else {
+                        throw new Error(data.error || 'Eroare la trimitere!');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("status").textContent = "Eroare: " + error.message;
+                });
+            });
+            </script>
+
+          <div class="col-lg-8">
+            <div class="card">
+                      <div class="card-body">
+                          <div class="d-flex flex-row justify-content-between align-items-center mb-2">
+                            <h5 class="card-title">Guest list</h5>
+                            <form method="GET" class="d-flex flex-row">
+                              <div class="input-group">
+                                  <input type="text" name="search" class="form-control me-2" placeholder="Search by name..." value="{{ request.GET.search }}">
+                                  <button class="btn btn-primary" type="submit">
+                                      <i class="fas fa-search"></i> Search
+                                  </button>
+                                  {% if request.GET.search %}
+                                      <a href="{% url 'completed_event' event.id %}" class="btn btn-secondary">
+                                          <i class="fas fa-times"></i> Clear
+                                      </a>
+                                  {% endif %}
+                              </div>
+                            </form>
+                          </div>
+                          <div class="table-responsive"{% if total_guests > 10 %} style="max-height:500px; overflow-y:auto;"{% endif %}>
+                              <table class="table text-nowrap align-middle mb-0">
+                              <thead>
+                                  <tr class="border-2 border-bottom border-primary justify-content-center border-0">
+                                      <th scope="col" class="ps-0 text-center">Id</th>
+                                      <th scope="col" class="text-center">Photo</th>
+                                      <th scope="col" class="ps-0 text-center">Full name</th>
+                                      <th scope="col" class="text-center">Status</th>
+                                  </tr>
+                              </thead>
+                              <tbody class="table-group-divider">
+                                {% if present_guests %}
+                                          {% for log in present_guests %}
+                                              <tr style="background-color: #a8e05f !important;" class="ps-1 pe-1">
+                                                  <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <img src="{{ log.profile.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                  </td>
+                                                  <td class="text-center"><span>{{ log.profile.first_name }} {{ log.profile.last_name }}</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span>
+                                                  </td>
+                                              </tr>
+                                          {% endfor %}
+                                      {% endif %}
+                                      {% if confirmed_but_absent %}
+                                          {% for guest in confirmed_but_absent %}
+                                              <tr style="background-color: #f03f3f !important;">
+                                                  <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                  </td>
+                                                  <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <span class="badge bg-success-subtle text-danger text-uppercase">Absent</span>
+                                                  </td>
+                                              </tr>
+                                          {% endfor %}
+                                      {% endif %}
+                                      {% if absent_guests %}
+                                          {% for guest in absent_guests %}
+                                              <tr style="background-color: #daa04b !important;">
+                                                  <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                  </td>
+                                                  <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <span class="badge bg-danger-subtle text-danger text-uppercase">Rejected invitation</span>
+                                                  </td>
+                                              </tr>
+                                          {% endfor %}
+                                      {% endif %}
+                                      {% if pending_guests %}
+                                          {% for guest in pending_guests %}
+                                              <tr style="background-color: #686363 !important;">
+                                                  <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
+                                                  <td class="text-center fw-medium"></td>
+                                                      <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
+                                                  </td>
+                                                  <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
+                                                  <td class="text-center fw-medium">
+                                                      <span class="badge bg-warning-subtle text-warning text-uppercase">Didn't respond</span>
+                                                  </td>
+                                              </tr>
+                                          {% endfor %}
+                                      {% endif %}
+                                    
+                              </tbody>
+
+                            </table>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="col-lg-4">
             <div class="card">
               <div class="card-body">
-                <h5 class="card-title">Guest arrival timeline</h5>
-                <div id="arrivalChart"></div>
-              </div>
-            </div>
-          </div>
-        <div class="col-lg-4">
-          <div class="card">
-            <div class="card-body text-center">
-              <i class="bi bi-camera h1 text-primary"></i>
-              <h4 class="mt-7">Event gallery upload!</h4>
-              <p class="card-subtitle mt-2 mb-3">Here you can upload the photos taken at your location and share them with the rest of the guests.</p>
-                <form id="uploadForm" data-event-id="{{ event.id }}">
-                  <input type="file" class="form-control mb-2" id="archiveFile" name="archive" accept=".zip" required>
-                  <button type="submit" class="btn btn-success">Upload</button>
-                </form>
+                <h5 class="card-title d-flex align-items-center gap-2">Attendance metrics<span><iconify-icon icon="solar:question-circle-bold" class="fs-7 d-flex text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Locations"></iconify-icon></span>
+                </h5>
+                <span class="fs-11 mt-2 d-block text-nowrap mb-3">Total guests number: <h1>{{ event.guests.count }}</h1></span>
+                <div class="row">
+                  <div class="col-4">
+                    <iconify-icon icon="solar:laptop-minimalistic-line-duotone" class="fs-7 d-flex text-primary"></iconify-icon>
+                    <span class="fs-11 mt-2 d-block text-nowrap">Attended</span>
+                    <h4 class="mb-0 mt-1">{{ present_guests_percentage }}%</h4>
+                  </div>
+                  <div class="col-4">
+                    <iconify-icon icon="solar:smartphone-line-duotone" class="fs-7 d-flex text-secondary"></iconify-icon>
+                    <span class="fs-11 mt-2 d-block text-nowrap">Didn't attend</span>
+                    <h4 class="mb-0 mt-1">{{ confirmed_but_absent_percentage }}%</h4>
+                  </div>
+                  <div class="col-4">
+                    <iconify-icon icon="solar:tablet-line-duotone" class="fs-7 d-flex text-success"></iconify-icon>
+                    <span class="fs-11 mt-2 d-block text-nowrap">Rejected invitation</span>
+                    <h4 class="mb-0 mt-1">{{ absent_guests_percentage }}%</h4>
+                  </div>
+                  <div class="col-4">
+                    <iconify-icon icon="solar:tablet-line-duotone" class="fs-7 d-flex text-success"></iconify-icon>
+                    <span class="fs-11 mt-2 d-block text-nowrap">Didn't respond</span>
+                    <h4 class="mb-0 mt-1">{{ pending_guests_percentage }}%</h4>
+                  </div>
+                </div>
 
-                <div id="status"></div>
-            </div>
-          </div>
-        </div>
-        <script>
-          const uploadForm = document.getElementById("uploadForm");
-          uploadForm.addEventListener("submit", function (e) {
-              e.preventDefault();
-
-              const eventId = this.dataset.eventId;
-              const fileInput = document.getElementById("archiveFile");
-              const file = fileInput.files[0];
-
-              if (!file) {
-                  document.getElementById("status").textContent = "Selectează un fișier!";
-                  return;
-              }
-
-              const formData = new FormData();
-              formData.append("archive", file);
-
-              fetch(`/api/events/${eventId}/upload-archive/`, {
-                  method: "POST",
-                  headers: {
-                      "X-CSRFToken": "{{ csrf_token }}",
-                  },
-                  body: formData,
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.success) {
-                      document.getElementById("status").textContent = "Arhiva a fost încărcată cu succes!";
-                      fileInput.value = '';
-                      addArchiveRow(data.archive);
-                      document.getElementById("no-archives").style.display = "none";
-                  } else {
-                      throw new Error(data.error || 'Eroare la trimitere!');
-                  }
-              })
-              .catch(error => {
-                  document.getElementById("status").textContent = "Eroare: " + error.message;
-              });
-          });
-          </script>
-
-        <div class="col-lg-8">
-           <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex flex-row justify-content-between align-items-center mb-2">
-                          <h5 class="card-title">Guest list</h5>
-                          <form method="GET" class="d-flex flex-row">
-                            <div class="input-group">
-                                <input type="text" name="search" class="form-control me-2" placeholder="Search by name..." value="{{ request.GET.search }}">
-                                <button class="btn btn-primary" type="submit">
-                                    <i class="fas fa-search"></i> Search
-                                </button>
-                                {% if request.GET.search %}
-                                    <a href="{% url 'completed_event' event.id %}" class="btn btn-secondary">
-                                        <i class="fas fa-times"></i> Clear
-                                    </a>
-                                {% endif %}
-                            </div>
-                          </form>
-                        </div>
-                        <div class="table-responsive"{% if total_guests > 10 %} style="max-height:500px; overflow-y:auto;"{% endif %}>
-                            <table class="table text-nowrap align-middle mb-0">
-                            <thead>
-                                <tr class="border-2 border-bottom border-primary justify-content-center border-0">
-                                    <th scope="col" class="ps-0 text-center">Id</th>
-                                    <th scope="col" class="text-center">Photo</th>
-                                    <th scope="col" class="ps-0 text-center">Full name</th>
-                                    <th scope="col" class="text-center">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody class="table-group-divider">
-                               {% if present_guests %}
-                                        {% for log in present_guests %}
-                                            <tr style="background-color: #a8e05f !important;" class="ps-1 pe-1">
-                                                <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <img src="{{ log.profile.photo.url }}" class="rounded-circle" width="35" height="35">
-                                                </td>
-                                                <td class="text-center"><span>{{ log.profile.first_name }} {{ log.profile.last_name }}</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <span class="badge bg-success-subtle text-success text-uppercase">Confirmed</span>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if confirmed_but_absent %}
-                                        {% for guest in confirmed_but_absent %}
-                                            <tr style="background-color: #f03f3f !important;">
-                                                <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
-                                                </td>
-                                                <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <span class="badge bg-success-subtle text-danger text-uppercase">Absent</span>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if absent_guests %}
-                                        {% for guest in absent_guests %}
-                                            <tr style="background-color: #daa04b !important;">
-                                                <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
-                                                </td>
-                                                <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <span class="badge bg-danger-subtle text-danger text-uppercase">Rejected invitation</span>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                    {% if pending_guests %}
-                                        {% for guest in pending_guests %}
-                                            <tr style="background-color: #686363 !important;">
-                                                <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
-                                                <td class="text-center fw-medium"></td>
-                                                    <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
-                                                </td>
-                                                <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
-                                                <td class="text-center fw-medium">
-                                                    <span class="badge bg-warning-subtle text-warning text-uppercase">Didn't respond</span>
-                                                </td>
-                                            </tr>
-                                        {% endfor %}
-                                    {% endif %}
-                                  
-                            </tbody>
-
-                          </table>
+                <div class="vstack gap-4 mt-7 pt-2">
+                  <div>
+                    <div class="hstack justify-content-between">
+                      <span class="fs-3 fw-medium">Attended</span>
+                      <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{present_guests_percentage}}%</h6>
                     </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title d-flex align-items-center gap-2">Attendance metrics<span><iconify-icon icon="solar:question-circle-bold" class="fs-7 d-flex text-muted" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-custom-class="tooltip-success" data-bs-title="Locations"></iconify-icon></span>
-              </h5>
-              <span class="fs-11 mt-2 d-block text-nowrap mb-3">Total guests number: <h1>{{ event.guests.count }}</h1></span>
-              <div class="row">
-                <div class="col-4">
-                  <iconify-icon icon="solar:laptop-minimalistic-line-duotone" class="fs-7 d-flex text-primary"></iconify-icon>
-                  <span class="fs-11 mt-2 d-block text-nowrap">Attended</span>
-                  <h4 class="mb-0 mt-1">{{ present_guests_percentage }}%</h4>
-                </div>
-                <div class="col-4">
-                  <iconify-icon icon="solar:smartphone-line-duotone" class="fs-7 d-flex text-secondary"></iconify-icon>
-                  <span class="fs-11 mt-2 d-block text-nowrap">Didn't attend</span>
-                  <h4 class="mb-0 mt-1">{{ confirmed_but_absent_percentage }}%</h4>
-                </div>
-                <div class="col-4">
-                  <iconify-icon icon="solar:tablet-line-duotone" class="fs-7 d-flex text-success"></iconify-icon>
-                  <span class="fs-11 mt-2 d-block text-nowrap">Rejected invitation</span>
-                  <h4 class="mb-0 mt-1">{{ absent_guests_percentage }}%</h4>
-                </div>
-                <div class="col-4">
-                  <iconify-icon icon="solar:tablet-line-duotone" class="fs-7 d-flex text-success"></iconify-icon>
-                  <span class="fs-11 mt-2 d-block text-nowrap">Didn't respond</span>
-                  <h4 class="mb-0 mt-1">{{ pending_guests_percentage }}%</h4>
-                </div>
-              </div>
+                    <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{present_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar bg-primary" style="width: {{present_guests_percentage}}%"></div>
+                    </div>
+                  </div>
 
-              <div class="vstack gap-4 mt-7 pt-2">
-                <div>
-                  <div class="hstack justify-content-between">
-                    <span class="fs-3 fw-medium">Attended</span>
-                    <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{present_guests_percentage}}%</h6>
+                  <div>
+                    <div class="hstack justify-content-between">
+                      <span class="fs-3 fw-medium">Didn't attend</span>
+                      <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{confirmed_but_absent_percentage}}%</h6>
+                    </div>
+                    <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{confirmed_but_absent_percentage}}" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar bg-secondary" style="width: {{confirmed_but_absent_percentage}}%"></div>
+                    </div>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{present_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-primary" style="width: {{present_guests_percentage}}%"></div>
-                  </div>
-                </div>
 
-                <div>
-                  <div class="hstack justify-content-between">
-                    <span class="fs-3 fw-medium">Didn't attend</span>
-                    <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{confirmed_but_absent_percentage}}%</h6>
+                  <div>
+                    <div class="hstack justify-content-between">
+                      <span class="fs-3 fw-medium">Didn't confirm</span>
+                      <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{absent_guests_percentage}}%</h6>
+                    </div>
+                    <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{absent_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar bg-success" style="width: {{absent_guests_percentage}}%"></div>
+                    </div>
                   </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{confirmed_but_absent_percentage}}" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-secondary" style="width: {{confirmed_but_absent_percentage}}%"></div>
-                  </div>
-                </div>
-
-                <div>
-                  <div class="hstack justify-content-between">
-                    <span class="fs-3 fw-medium">Didn't confirm</span>
-                    <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{absent_guests_percentage}}%</h6>
-                  </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{absent_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-success" style="width: {{absent_guests_percentage}}%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="hstack justify-content-between">
-                    <span class="fs-3 fw-medium">Didn't respond</span>
-                    <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{pending_guests_percentage}}%</h6>
-                  </div>
-                  <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{pending_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
-                    <div class="progress-bar bg-success" style="width: {{pending_guests_percentage}}%"></div>
+                  <div>
+                    <div class="hstack justify-content-between">
+                      <span class="fs-3 fw-medium">Didn't respond</span>
+                      <h6 class="fs-3 fw-medium text-dark lh-base mb-0">{{pending_guests_percentage}}%</h6>
+                    </div>
+                    <div class="progress mt-6" role="progressbar" aria-label="Warning example" aria-valuenow="{{pending_guests_percentage}}" aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar bg-success" style="width: {{pending_guests_percentage}}%"></div>
+                    </div>
                   </div>
                 </div>
               </div>
