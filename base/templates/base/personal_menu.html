@@ -10,6 +10,14 @@
   .dowpdown-menu {
     z-index: 1000 !important;
   }
+  .food-cards-wrapper{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+    gap:1rem;
+    max-height:1050px; /* ~3 rânduri a câte ~350px înălţime */
+    overflow-y:auto;
+  }
+  .food-cards-wrapper > .card-col{width:auto;}
 </style> 
 <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
@@ -283,8 +291,9 @@
                 </script>
                     
 
+                <div class="food-cards-wrapper mt-3 w-100">
                 {% for item in menu_items %}
-                <div class="col-lg-3">
+                <div class="card-col">
                   <div class="card overflow-hidden hover-img card-hover">
                     <div class="position-relative">
                         <img src="{{ MEDIA_URL }}{{ item.item_picture }}" class="card-img-top" style="max-height: 150px; object-fit: cover;" alt="matdash-img">
@@ -368,13 +377,14 @@
                         <div class="d-flex align-items-center fs-3">
                           <i class="ti ti-point text-dark"></i>{{ item.item_cuisine }}
                         </div>
-
                       </div>
                     </div>
                   </div>
                 </div>
                 {% endfor %}
-               <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                </div>
+
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                       <div class="modal-header">
@@ -588,7 +598,6 @@
 
                 </script>
 
-                <!-- Info modal -->
                 <div class="modal fade" id="foodInfoModal" tabindex="-1" aria-labelledby="foodInfoModalLabel" aria-hidden="true">
                   <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
@@ -618,9 +627,62 @@
                 </div>
 
             </div>
-            
+            <div class="podium-section mt-5">
+              <h3 class="text-center">Most chosen dishes at your restaurant</h3>
+              {% for cat in top_stats %}
+                <h5 class="mt-4">{{ cat.label }}</h5>
+                <div class="podium">
+                  {% for dish in cat.dishes %}
+                    <div class="podium-card podium-{{ forloop.counter }}">
+                      <div class="position-relative w-100">
+                        <img src="{{ MEDIA_URL }}{{ dish.item_picture }}" alt="{{ dish.item_name }}">
+                        <span class="badge bg-primary position-absolute top-0 start-0 m-2 fs-6">#{{ forloop.counter }}</span>
+                      </div>
+                      <div class="p-2 text-center">
+                        <strong>{{ dish.item_name }}</strong><br>
+                        <small class="text-muted">{{ dish.sel_count }} selections</small><br>
+                        <span class="d-flex justify-content-center align-items-center gap-1">
+                           <i class="bi bi-star-fill text-warning"></i>
+                           {% if dish.avg_rating %}{{ dish.avg_rating|floatformat:1 }} / 5{% else %}No rating{% endif %}
+                        </span>
+                      </div>
+                    </div>
+                  {% endfor %}
+                </div>
+              {% endfor %}
+            </div>
         </div>
     </div>
 </div>
+
+<style>
+  .podium-card strong{
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:0.95rem; 
+    line-height:1.2;
+    min-height:2.4em;   
+    width:100%;
+}
+  .podium-section h3{font-weight:700}
+  .podium{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap}
+  .podium-card{background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);overflow:hidden;display:flex;flex-direction:column;align-items:center}
+  .podium-card img{width:100%;height:180px;object-fit:cover}
+  .podium-1{width:260px}
+  .podium-1 img{height:180px;object-fit:cover}
+  .podium-2{width:220px}
+  .podium-2 img{height:160px;object-fit:cover}
+  .podium-3{width:200px}
+  .podium-3 img{height:140px;object-fit:cover}
+  .podium-4{width:160px}
+  .podium-4 img{height:100px;object-fit:cover}
+  .podium-5{width:160px}
+  .podium-5 img{height:100px;object-fit:cover}
+</style>
+
+
 
 {% endblock %}

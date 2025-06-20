@@ -27,7 +27,7 @@ from .decorators import user_is_organizer, user_is_staff, user_is_guest
 from django.contrib.auth.hashers import check_password
 from django.utils.timezone import make_aware
 from django.db.models.functions import TruncMonth
-from django.db.models import Count
+from django.db.models import Count, Avg
 from .models import Profile
 from django.http import JsonResponse
 from .forms import ProfileEditForm
@@ -2568,6 +2568,17 @@ def personal_menu(request):
     spicy_choices = Menu.SPICY_LEVELS
     temp_choices = TEMP_CHOICES
     cooking_choices = COOKING_METHOD_CHOICES
+
+    top_stats = []
+    for code, label in category_choices:
+        podium = (
+            Menu.objects.filter(category=code)
+            .annotate(sel_count=Count('menu_choices', distinct=True), avg_rating=Avg('ratings__rating'))
+            .order_by('-sel_count')[:5]
+        )
+        if podium:
+          top_stats.append({'code': code, 'label': label, 'dishes': list(podium)})
+
     context = {
         'profile':profile,
         'menu_items': menu_items,
@@ -2578,6 +2589,7 @@ def personal_menu(request):
         'spicy_choices': spicy_choices,
         'temp_choices': temp_choices,
         'cooking_choices': cooking_choices,
+        'top_stats': top_stats,
     }
     return render(request, 'base/personal_menu.html', context)
 
@@ -2659,7 +2671,7 @@ def search_food(request):
     selected_allergens = request.GET.getlist("allergens")
     
 
-    foods = Menu.objects.all()
+    foods = Menu.objects.annotate(avg_rating=Avg('ratings__rating'))
 
     if query:
         foods = foods.filter(
@@ -2668,7 +2680,6 @@ def search_food(request):
         ).distinct()
 
     if vegetarian:
-        # Afişează preparate potrivite pentru vegetarieni (includem şi vegan)
         foods = foods.filter(diet_type__in=["vegetarian", "vegan"])
 
     if selected_allergens:
@@ -3000,6 +3011,7 @@ def guest_profile(request):
                 profil.last_name = request.POST.get('lastname')
                 profil.email = request.POST.get('email')
                 profil.age = request.POST.get('age')
+                profil.photo = request.FILES.get('photo')
                 
                 preferences = profil.guest_profile
                 preferences.age = request.POST.get('age')

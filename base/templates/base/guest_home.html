@@ -202,7 +202,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
                   {% if past_events %}
                   <link rel="stylesheet" href="{% static 'css/output.css' %}">
-                    {% for event in past_events %}
                     
                     <div class="table-responsive shadow-sm rounded-4 overflow-hidden">
                       <table class="table align-middle mb-0">
@@ -214,8 +213,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                           </tr>
                         </thead>
                         <tbody class="table-group-divider">
+                          {% for event in past_events %}
                           <tr class="table-row-hover">
-                            <td class="fw-medium">{{ event.event_name }}</td>
+                            <td class="fw-medium"><a href="{% url 'guest_event_view' event.id %}">{{ event.event_name }}</a></td>
                             <td>{{ event.event_date|date:"F j, Y" }}</td>
                             <td>
                               {% if event.status == "upcoming" %}
@@ -234,7 +234,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     </div>
                     
                     <style>
-                    /* --- mic polish adiţional --- */
                     .table-row-hover:hover { background-color:#f8f9fa; transition:.2s; }
                     .table-responsive { background:#fff; }
                     .table-light { background:linear-gradient(90deg,#f0f0f0 0%,#fafafa 100%); }
