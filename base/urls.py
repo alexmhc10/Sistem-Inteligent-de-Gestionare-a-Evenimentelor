@@ -2,7 +2,7 @@ from django.urls import path
 from . import views
 from django.conf import settings
 from django.conf.urls.static import static
-from .views import table_details_api
+from .views import *
 
 urlpatterns = [
     # Paginile principale și autentificare
@@ -27,6 +27,7 @@ urlpatterns = [
 
     # Evenimente
     path('edit_event/<int:event_id>/', views.edit_event, name='edit_event'),
+    path('admin-events/trigger-task/', trigger_optimization_task, name='trigger-optimization-task'),
     path('event/<int:event_id>/guest_list/', views.guest_list, name='guest_list'),
     path('event/<int:event_id>/details/', views.event_details, name='event_details'),
     path('feedback_eveniment/', views.feedback_event, name='feedback_event'),

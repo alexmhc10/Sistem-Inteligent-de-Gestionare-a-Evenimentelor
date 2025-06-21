@@ -66,6 +66,10 @@ import os
 from .models import EventBudget
 from .recommender import get_recommendations_for_guest, get_similar_dishes_for_dish, get_recommender
 from .constants import TEMP_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, DIET_CHOICES, REGION_CHOICES, COOKING_METHOD_CHOICES
+from django.http import JsonResponse
+from base.tasks import run_optimization_task
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 
 
@@ -856,6 +860,14 @@ def admin_locations(request):
 
 
 @login_required(login_url='login')
+@user_passes_test(lambda u: u.is_superuser)
+def trigger_optimization_task(request):
+    if request.method == 'POST':
+        run_optimization_task.delay()
+        return JsonResponse({'status': 'started'})
+    return JsonResponse({'error': 'Only POST allowed'}, status=405)
+
+@login_required(login_url='login')
 def admin_events(request):
     if not request.user.is_superuser:
         return HttpResponseForbidden("You do not have permission to access this page.")
@@ -905,42 +917,39 @@ def admin_events(request):
             detailed_incompleted_events.append(item)
 
     if request.method == 'POST':
+        if request.POST.get('trigger_optimization') == '1':
+            run_optimization_task.delay()
+            messages.success(request, "Optimization task triggered successfully.")
+            return redirect('admin-events')
+
         if request.POST.get('form_delete') == 'form_delete':
             event_id = request.POST.get('event_id')
             Event.objects.filter(id=event_id).delete()
             return redirect('admin-events')
 
-        organizer = request.POST.get('organizer')
-        event_name = request.POST.get('event_name')
-        event_location = request.POST.get('event_location')
-        location = Location.objects.get(id=event_location)
-        date_str = request.POST.get('event_date')
-        print("Data din post: ", date_str)
 
-        event_date = datetime.strptime(date_str, '%d %b, %Y').date()
-        print("Data dupa convertire: ", event_date)
+        if all(key in request.POST for key in ['organizer', 'event_name', 'event_location', 'event_date', 'event_id']):
+            organizer = request.POST.get('organizer')
+            event_name = request.POST.get('event_name')
+            event_location = request.POST.get('event_location')
+            location = Location.objects.get(id=event_location)
+            date_str = request.POST.get('event_date')
+            event_date = datetime.strptime(date_str, '%d %b, %Y').date()
+            id = request.POST.get('event_id')
+            event = Event.objects.get(id=id)
 
-        id = request.POST.get('event_id')
-        event = Event.objects.get(id=id)
-        print("Data evenimentului in formatul ei: ", event.event_date)
+            try:
+                organizer_user = User.objects.get(id=organizer)
+            except User.DoesNotExist:
+                organizer_user = None
 
-        try:
-            organizer_user = User.objects.get(id=organizer)
-        except User.DoesNotExist:
-            organizer_user = None
-        print(
-            "Nume: ",event_name,"\n"
-            "Date: ",event_date,"\n"
-            "Location: ",location,"\n"
-            "Organizer: ", organizer_user
-        )
-        event.event_name = event_name
-        event.event_date = event_date
-        event.location = location
-        event.organized_by = organizer_user
-        event.save()
+            event.event_name = event_name
+            event.event_date = event_date
+            event.location = location
+            event.organized_by = organizer_user
+            event.save()
 
-        return redirect('admin-events')
+            return redirect('admin-events')
     locations = Location.objects.all()
     completed = "completed"
     context = {
@@ -1871,7 +1880,7 @@ def MenuForEvent(request, event_id):
     return render(request, 'base/event_menu.html', context)
 
 
-
+from django.http import Http404
 @login_required(login_url='/login')
 def profilePage(request, username):
     profile = Profile.objects.get(user__username=username)

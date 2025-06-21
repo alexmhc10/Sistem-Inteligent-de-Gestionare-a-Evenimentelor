@@ -189,7 +189,40 @@
         </li>
     </div>
 
-    <div class="ms-auto me-4">
+<div class="ms-auto me-2">
+<form method="POST" id="optimizeForm">
+    {% csrf_token %}
+    <input type="hidden" name="trigger_optimization" value="1">
+    <button type="submit" style="background: none; padding:9px; border-radius:50px; border:1px solid greenyellow;" class="fs-4 mb-0 text-success">
+        Optimise events
+    </button>
+</form>
+<script>
+    document.getElementById("trigger-task-btn").addEventListener("click", function () {
+        fetch("{% url 'trigger-optimization-task' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'started') {
+                alert("Optimization task has been started.");
+            } else {
+                alert("Something went wrong.");
+            }
+        })
+        .catch(error => {
+            console.error("Error triggering task:", error);
+            alert("Error starting task.");
+        });
+    });
+</script>
+
+    </div>
+    <div class=" me-4">
         <a style="
             padding:10px;
             border-radius:50px;
