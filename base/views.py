@@ -951,9 +951,7 @@ def admin_events(request):
 
             return redirect('admin-events')
     locations = Location.objects.all()
-    completed = "completed"
     context = {
-        'completed':completed,
         'locations':locations,
         'cancelled_count':cancelled_count,
         'today_date':today_date,
@@ -969,9 +967,15 @@ def admin_events(request):
     return render(request, 'base/admin-events.html', context)
 
 @login_required(login_url='login')
-def admin_optimise_events(request, pk):
+def admin_optimise_events(request):
     completed = "completed"
-    events = Event.objects.all()
+    last_optimization = OptimisedEvent.objects.order_by('id').last()
+
+    if last_optimization:
+        events = OptimisedEvent.objects.filter(optimized_at=last_optimization.optimized_at)
+    else:
+        events = []
+    print("Optimizari: ", events)
     users = User.objects.filter(
     is_superuser=False,
     profile__user_type='organizer'
@@ -984,29 +988,28 @@ def admin_optimise_events(request, pk):
         event_count = Event.objects.filter(types=type).count()
         types_with_event_count.append({'type': type.name, 'count': event_count})
     
-    events_count = events.count()
     users = User.objects.filter(
     is_superuser=False,
     profile__user_type='organizer'
 ).exclude(username='defaultuser')
     detailed_events = []
     today = datetime.today()
-    for event in events:
-        guest_count = event.guests.count()  
-        event_types = [type.name for type in event.types.all()] 
-        detailed_events.append({
-            'id':event.id,
-            'cost':event.cost,
-            'name': event.event_name,
-            'location': event.location,
-            'event_date': event.event_date,
-            'event_time': event.event_time,
-            'completed': event.completed,
-            'cancelled': event.is_canceled,
-            'types': event_types,
-            'guest_count': guest_count,
-            'organized_by':event.organized_by
-        })
+    # for event in events:
+    #     guest_count = event.guests.count()  
+    #     event_types = [type.name for type in event.types.all()] 
+    #     detailed_events.append({
+    #         'id':event.id,
+    #         'cost':event.cost,
+    #         'name': event.event_name,
+    #         'location': event.location,
+    #         'event_date': event.event_date,
+    #         'event_time': event.event_time,
+    #         'completed': event.completed,
+    #         'cancelled': event.is_canceled,
+    #         'types': event_types,
+    #         'guest_count': guest_count,
+    #         'organized_by':event.organized_by
+    #     })
     context = {
         'detailed_events':detailed_events,
         'completed':completed,

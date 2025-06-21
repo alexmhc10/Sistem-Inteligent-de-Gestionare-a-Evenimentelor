@@ -248,7 +248,7 @@ def run_genetic_optimization(stdout, style):
 
             if not is_valid_current_assignment:
                 valid_and_available_alternatives = []
-                for alt_loc in db_locations: # Folosește db_locations aici
+                for alt_loc in db_locations:
                     if all(event_type_id in alt_loc['accepted_types'] for event_type_id in event['type_ids']):
                         if (alt_loc['id'], event['date']) not in schedule_slots_taken:
                             valid_and_available_alternatives.append(alt_loc['id'])
