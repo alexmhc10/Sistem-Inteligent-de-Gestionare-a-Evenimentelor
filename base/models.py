@@ -557,15 +557,20 @@ class Budget(models.Model):
         self.total_revenue += event_cost
         self.final_budget += event_cost 
         self.save()
-    def update_locations(self, locations):
-        locations = Location.objects.all()
-        current_month = now().date().replace(day=1)
-        if self.last_location_update != current_month:
+    def update_locations(self, locations_param_unused): 
+        current_month_start_date = now().date().replace(day=1)
+
+        if self.last_location_update is None or self.last_location_update < current_month_start_date:
             self.initial_budget = self.total_budget
-            total_location_cost = sum(location.cost for location in locations)
-            self.total_expenses += total_location_cost
-            self.final_budget = self.total_budget - self.total_expenses
-            self.last_location_update = current_month
+
+            all_active_locations = Location.objects.all()
+            monthly_location_cost = sum(location.cost for location in all_active_locations)
+
+            self.total_expenses += monthly_location_cost
+
+            self.final_budget = self.initial_budget - monthly_location_cost
+
+            self.last_location_update = current_month_start_date
             self.save()
     
     def add_new_location(self, location_cost):
