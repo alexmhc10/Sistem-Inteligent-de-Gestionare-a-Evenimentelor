@@ -143,27 +143,37 @@
                                                 </tr>
                                             </thead>
                                             <tbody class="list form-check-all">
-                                                {% for item in detailed_events %}
+                                                {% for item in events %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
                                                                     <input class="form-check-input" type="checkbox" name="checkAll" value="option{{ forloop.counter0 }}">
                                                                 </div>
                                                             </th>
-                                                            <td class="id"><a href="{% url 'admin-view-event' item.id %}" class="fw-medium link-primary"> # {{ item.id }} </a></td>
-                                                            <td class="event_organizer"> {{ item.organized_by }} </td>
-                                                            <td class="event_name"> {{ item.name }} </td>
-                                                            <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
-                                                            <td class="amount"> {{ item.guest_count }} </td>
-                                                            <td class="payment"> {{ item.cost }}$ </td>
-                                                            {% if item.cancelled %}
+                                                            <td class="id"><a href="{% url 'admin-view-event' item.event.id %}" class="fw-medium link-primary"> # {{ item.event.id }} </a></td>
+                                                            <td class="event_organizer"> {{ item.event.event_name }} </td>
+                                                            <td class="event_name"> {{ item.profit_net_old  }} $ </td>
+                                                            <td class="event_date"> {{ item.profit_net_new  }} $ 
+                                                                {% if item.profit_net_old < item.profit_net_new %}
+                                                                <i class="h5 ms-2 text-success bi bi-graph-up-arrow"></i>
+                                                                {% else %}
+                                                                <i class="h5 ms-2 text-danger bi bi-graph-down-arrow"></i>
+                                                                {% endif %}
+                                                            </td>
+                                                            <td class="amount"> {{ item.original_location.name }} </td>
+                                                            <td class="payment"> {{ item.optimized_location.name }} </td>
+                                                            {% if item.event.cancelled %}
                                                             <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
-                                                        {% elif item.event_date > today_date %}
+                                                        {% elif item.event.event_date > today_date %}
                                                             <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
-                                                        {% elif item.event_date < today_date %}
+                                                        {% elif item.event.event_date < today_date %}
                                                             <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Completed</span></td>
-                                                        {% elif item.event_date == today_date %}
+                                                        {% elif item.event.event_date == today_date %}
+                                                            {% if item.event.event_time <= today_time %}
                                                             <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
+                                                            {% else %}
+                                                            <td class="status"><span class="badge bg-info-subtle text-info text-uppercase">Upcoming</span></td>
+                                                            {% endif %}
                                                         {% endif %}
                                                             <td>
                                                                

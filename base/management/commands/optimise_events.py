@@ -87,7 +87,7 @@ def run_genetic_optimization(stdout, style):
 
         for i, event in enumerate(optimizable_events):
             valid_and_available_locs = []
-            for loc in db_locations: # Folosește db_locations aici
+            for loc in db_locations:
                 if all(event_type_id in loc['accepted_types'] for event_type_id in event['type_ids']):
                     if (loc['id'], event['date']) not in schedule_slots_taken:
                         valid_and_available_locs.append(loc['id'])

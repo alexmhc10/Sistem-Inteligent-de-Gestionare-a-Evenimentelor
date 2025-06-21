@@ -968,51 +968,17 @@ def admin_events(request):
 
 @login_required(login_url='login')
 def admin_optimise_events(request):
-    completed = "completed"
-    last_optimization = OptimisedEvent.objects.order_by('id').last()
-
-    if last_optimization:
-        events = OptimisedEvent.objects.filter(optimized_at=last_optimization.optimized_at)
+    last_optimisation = OptimisedEvent.objects.order_by('-optimized_at').first()
+    if last_optimisation:
+        events = OptimisedEvent.objects.filter(run_id=last_optimisation.run_id)
     else:
         events = []
-    print("Optimizari: ", events)
-    users = User.objects.filter(
-    is_superuser=False,
-    profile__user_type='organizer'
-).exclude(username='defaultuser')
-
-    types = Type.objects.all()
-    types_with_event_count = []
-    
-    for type in types:
-        event_count = Event.objects.filter(types=type).count()
-        types_with_event_count.append({'type': type.name, 'count': event_count})
-    
-    users = User.objects.filter(
-    is_superuser=False,
-    profile__user_type='organizer'
-).exclude(username='defaultuser')
-    detailed_events = []
-    today = datetime.today()
-    # for event in events:
-    #     guest_count = event.guests.count()  
-    #     event_types = [type.name for type in event.types.all()] 
-    #     detailed_events.append({
-    #         'id':event.id,
-    #         'cost':event.cost,
-    #         'name': event.event_name,
-    #         'location': event.location,
-    #         'event_date': event.event_date,
-    #         'event_time': event.event_time,
-    #         'completed': event.completed,
-    #         'cancelled': event.is_canceled,
-    #         'types': event_types,
-    #         'guest_count': guest_count,
-    #         'organized_by':event.organized_by
-    #     })
+    today_date = datetime.today().date()
+    today_time = datetime.now().time()
     context = {
-        'detailed_events':detailed_events,
-        'completed':completed,
+        'today_date':today_date,
+        'today_time':today_time,
+        'events':events,
     }
     return render(request, 'base/optimise_events.html', context)
 
