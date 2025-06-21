@@ -48,17 +48,15 @@ def update_completed_event(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Event)
 def event_changed_handler(sender, instance, created, **kwargs):
-
-    print(f"DEBUG: Semnal post_save pentru Eveniment '{instance.event_name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
-    run_optimization_task.delay() 
+    if not created:
+        print(f"DEBUG: Semnal post_save (update) pentru Eveniment '{instance.event_name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
+        run_optimization_task.delay()
 
 @receiver(post_save, sender=Location)
 def location_changed_handler(sender, instance, created, **kwargs):
-    """
-    Declanșează sarcina de optimizare când un obiect Location este salvat (creat sau actualizat).
-    """
-    print(f"DEBUG: Semnal post_save pentru Locație '{instance.name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
-    run_optimization_task.delay() 
+    if not created:
+        print(f"DEBUG: Semnal post_save (update) pentru Locație '{instance.name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
+        run_optimization_task.delay()
 
 @receiver(post_delete, sender=Event)
 def event_deleted_handler(sender, instance, **kwargs):
