@@ -1,7 +1,7 @@
 from sistem_inteligent_de_gestionare_a_evenimentelor.celery import app
 import logging
 from base.management.commands.optimise_events import run_genetic_optimization 
-
+from base.models import *
 logger = logging.getLogger(__name__)
 
 class DummyOut:
@@ -26,3 +26,21 @@ def run_optimization_task(self):
     except Exception as e:
         logger.error(f"Optimization task failed: {e}", exc_info=True)
         raise
+@app.task(bind=True)
+def calculate_monthly_profit_task():
+
+    logger.info("Începerea task-ului de calcul al profitului lunar.")
+
+    try:
+        budget = Budget.objects.first()
+
+        if not budget:
+            logger.warning("Niciun obiect Budget găsit în baza de date. Nu se poate calcula profitul.")
+            return
+
+        budget.calc_profit()
+
+        logger.info(f"Task de calcul profit lunar executat cu succes. Profit calculat: {budget.profit}")
+
+    except Exception as e:
+        logger.error(f"Eroare critică la executarea task-ului calculate_monthly_profit_task: {e}", exc_info=True)

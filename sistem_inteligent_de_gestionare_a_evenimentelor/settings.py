@@ -97,7 +97,21 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 BROKER_TRANSPORT = 'redis'
-
+CELERY_BEAT_SCHEDULE = {
+   
+    'calculate-monthly-profit': {
+        'task': 'base.tasks.calculate_monthly_profit_task',
+        'schedule': {
+            'minute': 1,
+            'hour': 0,
+            'day_of_month': 1,
+            'month_of_year': '*',
+            'day_of_week': '*',
+        },
+        'args': (),
+        'options': {'queue': 'default'}
+    },
+}
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',

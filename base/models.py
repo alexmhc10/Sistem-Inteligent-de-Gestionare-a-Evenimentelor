@@ -570,7 +570,7 @@ class Budget(models.Model):
     
     def add_new_location(self, location_cost):
         self.total_expenses += location_cost
-        self.final_budget -= self.total_expenses
+        self.final_budget -= self.location_cost
         self.save()
     
     def calc_profit(self):
