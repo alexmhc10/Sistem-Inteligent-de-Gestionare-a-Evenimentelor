@@ -34,55 +34,58 @@ data-sidebar-position="fixed" data-header-position="fixed">
                     <div class="title text-center"><p class="h2 fs-5">{{ event.event_name }}</p></div>             
               </div>
           </div>
-            <div class="card">
-              <div class="card-body">
                 <div class="row">
+
                   <div class="col-lg-3">
-                    <div class="image d-flex flex-column justify-content-center">
-                        <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid border border-radius-2" style="max-height: 300px;">
-                        <h3 class="text-center">{{ event.location.name }}</h3>
-                      </div>
-                    <hr>
-                    <div class="col-lg-12 d-flex flex-column justify-content-center">
-                      <h4 class="text-center gap-2">
-                        Time left until event start!
-                      </h4>
-                      <h1 class="text-center"><i class="bi bi-clock"></i></h1>
-                      {% include 'timer.html' %}
-                    </div>
-                    <hr>
-                    <div class="col-lg-12 p-1">
-                      <h3 class="text-center">Location map</h3>
-                      <div class="mapouter" style="flex: 1;">
-                        <div class="gmap_canvas">
-                            <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
-                              src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                        <div class="card">
+                          <div class="card-body" style="padding: 20px;">
+                        <div class="image d-flex flex-column justify-content-center">
+                            <img src="{{MEDIA_URL}}{{ event.location.gallery }}" alt="" srcset="" class="img-fluid border border-radius-2" style="max-height: 300px;">
+                            <h3 class="text-center">{{ event.location.name }}</h3>
+                          </div>
+                        <hr>
+                        <div class="col-lg-12 d-flex flex-column justify-content-center">
+  
+                          <h1 class="text-center"><i class="bi bi-clock"></i></h1>
+                          {% include 'timer.html' %} - left
                         </div>
-                        <style>
-                            .mapouter {
-                                position: relative;
-                                text-align: right;
-                                width: 100%;
-                            }
-                
-                            .gmap_canvas {
-                                overflow: hidden;
-                                background: none !important;
-                                width: 100%; 
-                                height: 100%; 
-                            }
-                
-                            .gmap_iframe {
-                                width: 100% !important; 
-                                height: 100% !important; 
-                            }
-                        </style>
+                        <hr>
+                        <div class="col-lg-12 p-1">
+                          <h4 class="text-center">Location on map</h4>
+                          <div class="mapouter" style="flex: 1;">
+                            <div class="gmap_canvas">
+                                <iframe class="gmap_iframe" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"
+                                  src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q={{ event.location.name|urlencode }}&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"></iframe>
+                            </div>
+                            <style>
+                                .mapouter {
+                                    position: relative;
+                                    text-align: right;
+                                    width: 100%;
+                                }
+                    
+                                .gmap_canvas {
+                                    overflow: hidden;
+                                    background: none !important;
+                                    width: 100%; 
+                                    height: 100%; 
+                                }
+                    
+                                .gmap_iframe {
+                                    width: 100% !important; 
+                                    height: 100% !important; 
+                                }
+                            </style>
+                        </div>
+                      </div>
+                      </div>
                     </div>
                   </div>
-                  </div>
-                  
+
                   <div class="col-lg-9" style="border-left:2px solid #dee2e6;">
-                    <div class="row">
+                    <div class="card">
+                      <div class="card-body">
+                        <div class="row">
                         <h2 class="text-center">You are invited to {{ event.event_name }} at {{ event.location.name }}!</h2>
                         {% if rsvp.response == "Pending" %}
                           <p class="text-center">You have not confirmed your attendance yet. Please confirm your attendance to explore the menu available for you!</p>
@@ -202,7 +205,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               </div>
             
                               <hr>
-                              <div class="d-flex justify-content-center mt-1 mb-2">
+                              <div class="d-flex justify-content-center mt-1 mb-2" id="menuGrid">
                                 <!-- <button class="btn btn-primary me-2" id="explore-menu-btn">Explore the menu by yourself</button> -->
                                  {% if rsvp.response == "Accepted" %}
                                   {% if event.status == "completed" or event.status == "ongoing" %}
@@ -1265,8 +1268,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         </div>
                     </div> 
                 </div> 
-              </div>           
-      </div>
+
       
         <!-- {% include 'event_status_content.html' %} -->
       </div>
@@ -1291,12 +1293,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
         document.addEventListener('DOMContentLoaded', checkEventStatus);
       </script>
 
-      <!-- Remember active tab across reload -->
       <script>
         document.addEventListener('DOMContentLoaded', function(){
           const key = 'guestEventActiveTab_{{ event.id }}';
 
-          // Restore
           const stored = localStorage.getItem(key);
           if(stored){
             const someTabTrigger = document.querySelector(`#eventTabs a[href="${stored}"]`);
@@ -1306,7 +1306,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
             }
           }
 
-          // Listen for tab changes
           document.querySelectorAll('#eventTabs a[data-bs-toggle="pill"]').forEach(el=>{
             el.addEventListener('shown.bs.tab', function(e){
               localStorage.setItem(key, e.target.getAttribute('href'));

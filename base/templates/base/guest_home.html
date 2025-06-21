@@ -73,40 +73,50 @@ data-sidebar-position="fixed" data-header-position="fixed">
                   {% if next_confirmed_event is not none %}
                     <div class="col-lg-12">
                             <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                              <a href="#" class="alert-link">Looks like you have an Upcoming event!</a>
+                              <a href="{% url 'guest_event_view' next_confirmed_event.id %}#menuGrid" class="alert-link">Looks like you have an Upcoming event!</a>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
-                            <a href="{% url 'guest_event_view' next_confirmed_event.id %}">
                               <div class="card glowing-card mb-3">
                                 <div class="row g-0">
                                     <div class="col-md-4 h-100">
                                       <img src="{{ MEDIA_URL }}{{ next_confirmed_event.location.gallery }}" class="img-fluid rounded-start" style="object-fit: cover;" alt="...">
                                     </div>
                                   <div class="col-md-8 h-100">
-                                    <div class="card-body pb-0 pt-2">
+                                    <div class="card-body">
+                                      <a href="{% url 'guest_event_view' next_confirmed_event.id %}">
                                       <h5 class="card-title">{{ next_confirmed_event.event_name }}</h5>
+                                      </a>
                                       <p class="card-text">{{ next_confirmed_event.event_description }}</p>
-                                      <p class="card-text"><small class="text-body-secondary">Date: {{ next_confirmed_event.event_date }}</small></p>
-                                      <p class="card-text">
+                                      <p class="card-text"><small class="text-body-secondary"> <i class="bi bi-calendar-event me-1"></i> Date: {{ next_confirmed_event.event_date }}</small></p>
+                                      <p class="card-text"><small class="text-body-secondary"> <i class="bi bi-geo-alt me-1"></i> {{ next_confirmed_event.location.location }}</small></p>
+                                      <div class="card-text d-flex justify-content-start">
                                         {% include 'timer.html' %}
-                                      </p>
+                                      </div>
+                                      <div class="d-flex flex-row m-0">
+                                        {% if rsvp.status == "confirmed" %}
+                                          <span class="badge bg-success">RSVP: Confirmed</span>
+                                          <span class="badge bg-success">My menu</span>
+                                        {% else %}
+                                          <span class="badge bg-warning text-dark">RSVP: Pending</span>
+                                        {% endif %}
+                                        <a href="https://www.google.com/maps/search/?api=1&query={{ next_confirmed_event.location.location|urlencode }}" target="_blank"  class="btn btn-outline-secondary btn-sm">Map</a>
+                                        <a href="{% url 'guest_event_view' next_confirmed_event.id %}#menuGrid" class="btn btn-outline-secondary btn-sm">My menu</a>
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
                               </div>
-                            </a>  
+                    </div>
+                  {% else %}
+                    <div class="col-lg-8">
+                      <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        You have no upcoming events at the moment.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                       </div>
-                    {% else %}
-                      <div class="col-lg-8">
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                          You have no upcoming events at the moment.
-                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                      </div>
+                    </div>
                   {% endif %}
-                  <div class="col-lg-4 mb-4">
-                    
-                  </div>
+
+                  
           
               {% if upcoming_events %}
                 <div class="col-lg-12">
