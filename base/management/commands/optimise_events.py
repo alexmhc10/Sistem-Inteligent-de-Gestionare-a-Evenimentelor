@@ -77,13 +77,14 @@ def run_genetic_optimization(stdout, style):
         schedule_slots_taken = {}
 
         for event in fixed_events:
-            original_loc_data = event['original_location']
-            loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
-            if loc:
-                if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                    event_date_key = (loc['id'], event['date'])
-                    if event_date_key not in schedule_slots_taken:
-                        schedule_slots_taken[event_date_key] = event['id']
+             if event['date'] >= date.today(): 
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
+                if loc:
+                    if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
+                        event_date_key = (loc['id'], event['date'])
+                        if event_date_key not in schedule_slots_taken:
+                            schedule_slots_taken[event_date_key] = event['id']
 
         for i, event in enumerate(optimizable_events):
             valid_and_available_locs = []
@@ -176,11 +177,12 @@ def run_genetic_optimization(stdout, style):
 
         current_schedule = {}
         for event in fixed_events:
-            original_loc_data = event['original_location']
-            loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
-            if loc and all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                event_date_key = (loc['id'], event['date'])
-                current_schedule[event_date_key] = event['id']
+            if event['date'] >= date.today(): 
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
+                if loc and all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
+                    event_date_key = (loc['id'], event['date'])
+                    current_schedule[event_date_key] = event['id']
 
         for idx, loc_id in enumerate(mutated_solution):
             event = optimizable_events[idx]
@@ -224,13 +226,14 @@ def run_genetic_optimization(stdout, style):
         schedule_slots_taken = {}
         
         for event in fixed_events:
-            original_loc_data = event['original_location']
-            loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
-            if loc:
-                if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
-                    event_date_key = (loc['id'], event['date'])
-                    if event_date_key not in schedule_slots_taken:
-                        schedule_slots_taken[event_date_key] = event['id']
+            if event['date'] >= date.today(): 
+                original_loc_data = event['original_location']
+                loc = locations_by_id.get(original_loc_data['id']) if original_loc_data else None
+                if loc:
+                    if all(t_id in loc['accepted_types'] for t_id in event['type_ids']):
+                        event_date_key = (loc['id'], event['date'])
+                        if event_date_key not in schedule_slots_taken:
+                            schedule_slots_taken[event_date_key] = event['id']
             
         optimizable_event_indices_sorted = sorted(range(len(optimizable_events)), key=lambda i: optimizable_events[i]['id'])
 
