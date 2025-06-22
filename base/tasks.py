@@ -3,6 +3,8 @@ import logging
 from base.management.commands.optimise_events import run_genetic_optimization 
 from base.models import *
 logger = logging.getLogger(__name__)
+from celery import shared_task
+from django.core.mail import EmailMultiAlternatives
 
 class DummyOut:
     def write(self, s):
@@ -44,3 +46,10 @@ def calculate_monthly_profit_task():
 
     except Exception as e:
         logger.error(f"Eroare critică la executarea task-ului calculate_monthly_profit_task: {e}", exc_info=True)
+
+
+@shared_task
+def send_email_task(subject, text_body, html_body, to):
+    msg = EmailMultiAlternatives(subject, text_body, None, [to])
+    msg.attach_alternative(html_body, "text/html")
+    msg.send()

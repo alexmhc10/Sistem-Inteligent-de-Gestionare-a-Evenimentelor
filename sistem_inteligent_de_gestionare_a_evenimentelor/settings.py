@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base.apps.BaseConfig',
+    'django.contrib.sites',
     'channels',
 ]
 
@@ -165,3 +168,18 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SITE_ID = 1
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
+
+EMAIL_BACKEND      = env("EMAIL_BACKEND")
+EMAIL_HOST         = env("EMAIL_HOST")
+EMAIL_PORT         = env.int("EMAIL_PORT")
+EMAIL_HOST_USER    = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD= env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS      = env.bool("EMAIL_USE_TLS")
+DEFAULT_FROM_EMAIL = f"Amour <{EMAIL_HOST_USER}>"

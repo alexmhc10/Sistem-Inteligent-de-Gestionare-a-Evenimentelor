@@ -9,6 +9,10 @@ from .models import *
 from django.db.models.signals import post_save
 from decimal import Decimal
 from base.tasks import run_optimization_task
+from django.template.loader import render_to_string
+from django.core.mail import EmailMultiAlternatives
+from django.contrib.sites.models import Site
+from base.tasks import send_email_task
 
 @receiver(pre_save, sender=Event)
 def update_completed_status(sender, instance, **kwargs):
@@ -62,3 +66,47 @@ def location_changed_handler(sender, instance, created, **kwargs):
 def event_deleted_handler(sender, instance, **kwargs):
     print(f"DEBUG: Semnal post_delete pentru Eveniment '{instance.event_name}' detectat. Se declanșează sarcina de optimizare.")
     run_optimization_task.delay()
+
+@receiver(post_save, sender=Profile)
+def send_welcome_email(sender, instance, created, **kwargs):
+    if created:
+        current_site = Site.objects.get_current()
+        context = {
+            "guest": instance,
+            "site_url": f"https://{current_site.domain}",
+        }
+        subject = "Welcome to our app Eventsmart!"
+        html_body = render_to_string("base/welcome_guests.html", context)
+        text_body = render_to_string("base/welcome_guests.txt", context)
+        msg = EmailMultiAlternatives(
+            subject, text_body, None, [instance.email]
+        )
+        msg.attach_alternative(html_body, "text/html")
+        msg.send()
+    
+        send_email_task.delay(subject, text_body, html_body, instance.email)
+
+
+@receiver(post_save, sender=RSVP)
+def send_invitation_email(sender, instance, created, **kwargs):
+    if created:
+        guest = instance.guest
+        event = instance.event
+        current_site = Site.objects.get_current()
+
+        context = {
+            "guest": guest,
+            "event": event,
+            "site_url": f"https://{current_site.domain}",
+            "event_url": f"https://{current_site.domain}{event.get_absolute_url()}",
+        }
+
+        subject = f"Invitaţie la {event.name}"
+        html_body = render_to_string("base/invite_form.html", context)
+        text_body = render_to_string("base/invite_form.txt", context)
+
+        msg = EmailMultiAlternatives(subject, text_body, None, [guest.email])
+        msg.attach_alternative(html_body, "text/html")
+        msg.send()
+    
+        send_email_task.delay(subject, text_body, html_body, guest.email)

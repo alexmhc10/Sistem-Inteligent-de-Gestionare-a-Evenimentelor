@@ -1,0 +1,16 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>Bună {{ guest.first_name }},</p>
+
+    <p>Contul tău pe platforma <strong>Amour de l'Événement</strong> a fost creat!</p>
+
+    <p>
+      Intră în aplicaţie de aici:
+      <a href="{{ site_url }}{% url 'guest_dashboard' %}">Vezi detalii</a>
+    </p>
+
+    <p>Cu drag,<br/>Echipa Amour</p>
+  </body>
+</html>
