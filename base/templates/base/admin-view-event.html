@@ -190,6 +190,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        {% if is_today %}
                                         <div class="accordion-item border-0">
                                             <div class="accordion-header" id="headingTwo">
                                                 <a class="accordion-button p-2 shadow-none" data-bs-toggle="collapse" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -207,11 +208,12 @@
                                             </div>
                                             <div id="collapseTwo" class="accordion-collapse collapse show" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
                                                 <div class="accordion-body ms-2 ps-5 pt-0">
-                                                    <h6 class="mb-1">60 / 100 guests have confirmed participation</h6>
+                                                    <h6 class="mb-1">{{accepted}} / {{ guests_count }} guests have confirmed participation</h6>
                                                     <p class="text-muted mb-0">{{ event.event_date }}</p>
                                                 </div>
                                             </div>
                                         </div>
+                                        {% endif %}
                                         {% if event.completed == True %}
                                         <div class="accordion-item border-0">
                                             <div class="accordion-header" id="headingThree">

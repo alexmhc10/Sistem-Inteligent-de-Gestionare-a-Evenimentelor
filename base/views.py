@@ -988,9 +988,15 @@ def admin_view_events(request, pk):
         return HttpResponseForbidden("You do not have permission to access this page.")
     event = Event.objects.get(id=pk)
     guests_count = event.guests.count()
+    accepted = RSVP.objects.filter(event=event, response="Accepted").count()
     location = Location.objects.get(event=event)
     next_day = event.event_date + timedelta(days=1)
+    now = datetime.now()
+    today = now.date()
+    is_today = today >= (event.event_date - timedelta(days=1))
     context = {
+        'is_today':is_today,
+        'accepted': accepted,
         'next_day':next_day,
         'location':location,
         'event':event,
