@@ -2,15 +2,21 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <p>Bună {{ guest.first_name }},</p>
+    <p>Bună {{ guest.username }},</p>
 
-    <p>Contul tău pe platforma <strong>Amour de l'Événement</strong> a fost creat!</p>
+    <p>Contul tău pe platforma <strong>Eventsmart</strong> a fost creat!</p>
+
+    <p>Detaliile de conectare la contul tău sunt:</p>
+    <ul>
+      <li><strong>Username:</strong> {{ guest.username }}</li>
+      <li><strong>Parolă:</strong> {{ guest.password }}</li>
+    </ul>
 
     <p>
       Intră în aplicaţie de aici:
-      <a href="{{ site_url }}{% url 'guest_dashboard' %}">Vezi detalii</a>
+      <a href="{{ guest_home_url }}">Vezi detalii</a>
     </p>
 
-    <p>Cu drag,<br/>Echipa Amour</p>
+    <p>Cu drag,<br/>Echipa Eventsmart</p>
   </body>
 </html>

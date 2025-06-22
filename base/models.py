@@ -88,6 +88,7 @@ class Profile(models.Model):
     google_link = models.CharField(null=True, blank=True,max_length=100)
     country = models.CharField(null=True, blank=True,max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
+    welcome_email_sent = models.BooleanField(default=False)
     USER_TYPE_CHOICES = (
         ('admin', 'Admin'),
         ('organizer', 'Organizer'),
@@ -378,10 +379,6 @@ class Event(models.Model):
             return 'ongoing'
         else:
             return 'completed'
-
-    # -------------------------------------------------------------
-    # Convenience helpers for URL generation & backward-compatibility
-    # -------------------------------------------------------------
 
     @property
     def name(self):

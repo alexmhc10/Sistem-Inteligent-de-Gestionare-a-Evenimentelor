@@ -10,8 +10,6 @@ from django.db.models.signals import post_save
 from decimal import Decimal
 from base.tasks import run_optimization_task
 from django.template.loader import render_to_string
-from django.core.mail import EmailMultiAlternatives
-from django.contrib.sites.models import Site
 from base.tasks import send_email_task
 from django.conf import settings
 from django.urls import reverse
@@ -70,24 +68,34 @@ def event_deleted_handler(sender, instance, **kwargs):
     run_optimization_task.delay()
 
 @receiver(post_save, sender=Profile)
-def send_welcome_email(sender, instance, created, **kwargs):
-    if created:
-        current_site = Site.objects.get_current()
-        context = {
-            "guest": instance,
-            "site_url": f"https://{current_site.domain}",
-        }
-        subject = "Welcome to our app Eventsmart!"
-        html_body = render_to_string("base/welcome_guests.html", context)
-        text_body = render_to_string("base/welcome_guests.txt", context)
-        msg = EmailMultiAlternatives(
-            subject, text_body, None, [instance.email]
-        )
-        msg.attach_alternative(html_body, "text/html")
-        msg.send()
-    
-        send_email_task.delay(subject, text_body, html_body, instance.email)
+def send_welcome_email(sender, instance, **kwargs):
 
+    if not instance.email:
+        return
+
+    if instance.user_type != 'guest':
+        return
+
+    if instance.welcome_email_sent:
+        return
+
+    base_url = settings.FRONTEND_BASE_URL.rstrip('/')
+    guest_home_path = reverse('guest_home')
+    guest_home_url = f"{base_url}{guest_home_path}"
+
+    context = {
+        "guest": instance,
+        "site_url": base_url,
+        "guest_home_url": guest_home_url,
+    }
+
+    subject = "Welcome to our app Eventsmart!"
+    html_body = render_to_string("base/welcome_guests.html", context)
+    text_body = render_to_string("base/welcome_guests.txt", context)
+
+    send_email_task.delay(subject, text_body, html_body, instance.email)
+
+    Profile.objects.filter(pk=instance.pk).update(welcome_email_sent=True)
 
 @receiver(post_save, sender=RSVP)
 def send_invitation_email(sender, instance, created, **kwargs):
@@ -106,8 +114,4 @@ def send_invitation_email(sender, instance, created, **kwargs):
         html_body = render_to_string("base/invite_email.html", context)
         text_body = render_to_string("base/invite_form.txt", context)
 
-        msg = EmailMultiAlternatives(subject, text_body, None, [guest.email])
-        msg.attach_alternative(html_body, "text/html")
-        msg.send()
-    
         send_email_task.delay(subject, text_body, html_body, guest.email)
