@@ -733,20 +733,18 @@ def loginPage(request):
             print("Profil logat: ", profile)
             print(f"Authentication successful for user: {user.username}")
             login(request, user)
+
+            if next_url and next_url != "/":
+                return redirect(next_url)
+
             if user.is_superuser:
-                if next_url != "" and next_url != '/':
-                    return redirect(next_url)
-                else:
-                    return redirect('home-admin')
+                return redirect('home-admin')
             elif profile.user_type == 'staff':
-                print(f"Redirecting user {user.username} to personal home.")
-                return HttpResponseRedirect(reverse('personal_eveniment_home'))  
+                return redirect('personal_eveniment_home')
             elif profile.user_type == 'organizer':
-                print(f"Redirecting user {user.username} to organizer home.")
-                return HttpResponseRedirect(reverse('home-organizer'))  
+                return redirect('home-organizer')
             else:
-                print(f"Redirecting user {user.username} to guest home.")
-                return HttpResponseRedirect(reverse('guest_home'))  
+                return redirect('guest_home')  
         else:
             print(f"Authentication failed for username: {username}")
             messages.error(request, "Invalid credentials")

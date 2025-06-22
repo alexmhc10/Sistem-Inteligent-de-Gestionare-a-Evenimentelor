@@ -13,6 +13,8 @@ from django.template.loader import render_to_string
 from django.core.mail import EmailMultiAlternatives
 from django.contrib.sites.models import Site
 from base.tasks import send_email_task
+from django.conf import settings
+from django.urls import reverse
 
 @receiver(pre_save, sender=Event)
 def update_completed_status(sender, instance, **kwargs):
@@ -92,17 +94,16 @@ def send_invitation_email(sender, instance, created, **kwargs):
     if created:
         guest = instance.guest
         event = instance.event
-        current_site = Site.objects.get_current()
-
+        base_url = settings.FRONTEND_BASE_URL.rstrip('/')
         context = {
             "guest": guest,
             "event": event,
-            "site_url": f"https://{current_site.domain}",
-            "event_url": f"https://{current_site.domain}{event.get_absolute_url()}",
+            "site_url": base_url,
+            "event_url": f"{base_url}{reverse('guest_event_view', kwargs={'pk': event.id})}",
         }
 
         subject = f"Invitaţie la {event.name}"
-        html_body = render_to_string("base/invite_form.html", context)
+        html_body = render_to_string("base/invite_email.html", context)
         text_body = render_to_string("base/invite_form.txt", context)
 
         msg = EmailMultiAlternatives(subject, text_body, None, [guest.email])

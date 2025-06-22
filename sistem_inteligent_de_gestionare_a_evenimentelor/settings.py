@@ -88,9 +88,19 @@ TEMPLATES = [
     },
 ]
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+env = environ.Env()
+environ.Env.read_env(BASE_DIR / ".env")
+
+
 ASGI_APPLICATION = 'sistem_inteligent_de_gestionare_a_evenimentelor.asgi.application'
-CELERY_BROKER_URL = 'redis://172.19.90.78:6379/0'
-CELERY_RESULT_BACKEND = 'redis://172.19.90.78:6379/0'
+REDIS_HOST = env('REDIS_HOST', default='127.0.0.1')
+REDIS_PORT = env.int('REDIS_PORT', default=6379)
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/0'
+CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
@@ -171,10 +181,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_ID = 1
 
-BASE_DIR = Path(__file__).resolve().parent.parent
 
-env = environ.Env()
-environ.Env.read_env(BASE_DIR / ".env")
 
 EMAIL_BACKEND      = env("EMAIL_BACKEND")
 EMAIL_HOST         = env("EMAIL_HOST")
@@ -182,4 +189,10 @@ EMAIL_PORT         = env.int("EMAIL_PORT")
 EMAIL_HOST_USER    = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD= env("EMAIL_HOST_PASSWORD")
 EMAIL_USE_TLS      = env.bool("EMAIL_USE_TLS")
-DEFAULT_FROM_EMAIL = f"Amour <{EMAIL_HOST_USER}>"
+DEFAULT_FROM_EMAIL = f"Eventsmart <{EMAIL_HOST_USER}>"
+
+
+FRONTEND_BASE_URL = env(
+    "FRONTEND_BASE_URL",
+    default="http://127.0.0.1:8000",
+)

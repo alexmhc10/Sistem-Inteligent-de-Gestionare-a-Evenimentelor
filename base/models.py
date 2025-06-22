@@ -11,6 +11,7 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from .constants import REGION_CHOICES, DIET_CHOICES, TEXTURE_CHOICES, NUTRITION_GOAL_CHOICES, TEMP_CHOICES, COOKING_METHOD_CHOICES
 import uuid
+from django.urls import reverse
 
 
 class EventHistory(models.Model):
@@ -377,6 +378,20 @@ class Event(models.Model):
             return 'ongoing'
         else:
             return 'completed'
+
+    # -------------------------------------------------------------
+    # Convenience helpers for URL generation & backward-compatibility
+    # -------------------------------------------------------------
+
+    @property
+    def name(self):
+        """Return the event name (alias used în diverse alte module)."""
+        return self.event_name
+
+    def get_absolute_url(self):
+        """Return canonical URL for the event details page."""
+        return reverse("event_details", kwargs={"event_id": self.pk})
+
 class OptimisedEvent(models.Model):
 
     event = models.ForeignKey(
