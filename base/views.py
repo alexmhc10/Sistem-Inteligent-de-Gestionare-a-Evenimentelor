@@ -2196,8 +2196,10 @@ def event_list_json(request):
     for event in events:
         event_data.append({
             'title': event.event_name,
-            'start': format(event.event_date, 'Y-m-d'),
+            'start': event.event_date.isoformat(),
             'url': f'/personal_vizualizare_eveniment/{event.id}',
+            'guest_count': event.guests.count(),
+            'event_type': event.types.first().name if event.types.exists() else '',
         })
     print("Event data:", event_data)
     return JsonResponse(event_data, safe=False)

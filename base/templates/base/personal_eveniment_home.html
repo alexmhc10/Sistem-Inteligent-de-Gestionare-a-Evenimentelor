@@ -120,27 +120,61 @@ data-sidebar-position="fixed" data-header-position="fixed">
           </div>
           {% endif %}
             </div>
-            <div class="col-lg-4">
-            <div id='calendar'></div>
+            <div class="col-lg-4 pb-4">
+              <!-- FullCalendar va genera propriul toolbar -->
+              <div id='calendar' style="height: 500px;"></div>
           </div>
           </div>
+
+
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var calendarEl = document.getElementById('calendar');
-        
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    events: '/calendar/events/',
-                    eventClick: function(info) {
-                        info.jsEvent.preventDefault();
-                        if (info.event.url) {
-                            window.location.href = info.event.url;
-                        }
-                    }
-                });
-        
-                calendar.render();
-            });
+              document.addEventListener('DOMContentLoaded', function () {
+                 const calendarEl = document.getElementById('calendar');
+                 const fc = new FullCalendar.Calendar(calendarEl, {
+                     initialView   : 'dayGridMonth',
+                     height        : 500,
+                     headerToolbar : {
+                      start : 'prev,next today',
+                      center: 'title',
+                      end   : 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
+                    },
+                     events        : [],   // populăm după fetch
+                     eventClick(info) {
+                         info.jsEvent.preventDefault();
+                         const ev  = info.event;
+                         const ext = ev.extendedProps || {};
+
+                         // Populează modalul Bootstrap
+                         document.getElementById('modalTitle').textContent  = ev.title;
+                         document.getElementById('modalDate').textContent   = ev.start ? ev.start.toLocaleDateString('ro-RO') : '';
+                         document.getElementById('modalGuests').textContent = ext.guest_count ?? 0;
+                         document.getElementById('modalType').textContent   = ext.event_type  ?? '';
+                         document.getElementById('modalViewBtn').href       = ext.url         ?? '#';
+
+                         new bootstrap.Modal('#eventModal').show();
+                     }
+                 });
+
+                 fc.render();
+
+                 fetch('/calendar/events/')
+                     .then(r => r.json())
+                     .then(data => {
+                         const src = data.map((ev, i) => ({
+                             id           : `e${i}-${Date.now()}`,
+                             title        : ev.title,
+                             start        : ev.start,
+                             allDay       : true,
+                             extendedProps: {
+                                 url        : ev.url,
+                                 guest_count: ev.guest_count,
+                                 event_type : ev.event_type
+                             }
+                         }));
+                         fc.addEventSource(src);
+                     });
+
+              });
         </script>
         
                 
@@ -249,6 +283,34 @@ data-sidebar-position="fixed" data-header-position="fixed">
         </div>
     </div>
   </div>
+</div>
+
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet"/>
+<style>
+.fc-header-toolbar {justify-content:space-between;}
+.fc-toolbar-title  {font-size:0.8rem;}
+.fc .fc-button     {padding:2px 6px;font-size:0.75rem;}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+
+<!-- Bootstrap modal pentru detalii eveniment (Bootstrap 5 este deja folosit în proiect) -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p><i class="bi bi-calendar-event me-1"></i><span id="modalDate"></span></p>
+                <p><i class="bi bi-people-fill me-1"></i><span id="modalGuests"></span> guests</p>
+                <p><i class="bi bi-briefcase me-1"></i><span id="modalType"></span></p>
+            </div>
+            <div class="modal-footer">
+                <a id="modalViewBtn" href="#" class="btn btn-primary w-100"><i class="bi bi-eye me-1"></i>View</a>
+            </div>
+        </div>
+    </div>
 </div>
 
 {% endblock %}
