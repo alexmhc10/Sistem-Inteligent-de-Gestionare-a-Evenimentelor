@@ -71,6 +71,7 @@ from base.tasks import run_optimization_task
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 
+from django.db.models import Sum
 
 
 class NotificationView(View):
@@ -1295,13 +1296,11 @@ def homeAdmin(request):
     .annotate(total=Count('id'))
     .order_by('month')
 )
-    profit_by_month = (
-        CompanyProfit.objects
-    .annotate(month=TruncMonth('created_at'))
-    .values('month')
-    .annotate(total=Count('id'))
-    .order_by('month')
-    )
+    profit_by_month = CompanyProfit.objects.annotate(
+    month=TruncMonth('created_at')
+).values('month').annotate(
+    total=Sum('profit')
+).order_by('month')
     location_month_count = []
     for entry in locations_by_month:
         month_str = entry['month'].strftime('%m')
@@ -1337,37 +1336,14 @@ def homeAdmin(request):
         )
     profit_month_count = []
     for entry in profit_by_month:
-        month_str = entry['month'].strftime('%m')
-        if month_str == "01":
-            month_str = "Jan"
-        elif month_str == "02":
-            month_str = "Feb"
-        elif month_str == "03":
-            month_str = "Mar"
-        elif month_str == "04":
-            month_str = "Apr"
-        elif month_str == "05":
-            month_str = "May"
-        elif month_str == "06":
-            month_str = "Jun"
-        elif month_str == "07":
-            month_str = "Jul"
-        elif month_str == "08":
-            month_str = "Aug"
-        elif month_str == "09":
-            month_str = "Sep"
-        elif month_str == "10":
-            month_str = "Oct"
-        elif month_str == "11":
-            month_str = "Nov"
-        elif month_str == "12":
-            month_str = "Dec"
-        profit_month_count.append(
-            {
-                'month':month_str,
-                'count':entry['total']
-            }
-        )
+        month_str = entry['month'].strftime('%b')  
+        total = entry['total'] or Decimal('0.0')
+        profit_month_count.append({
+            'month': month_str,
+            'count': float(total)  
+        })
+    print(profit_month_count)
+
     events_by_month = (
     Event.objects
     .annotate(month=TruncMonth('event_date'))

@@ -874,13 +874,35 @@
                   size: 8,
               },
           },
-          tooltip: {
-              theme: 'dark',
-              style: {
-                  fontSize: '14px',
-                  fontFamily: 'Arial, sans-serif',
-              },
-          },
+            tooltip: {
+    theme: 'dark',
+    style: {
+      fontSize: '14px',
+      fontFamily: 'Arial, sans-serif',
+    },
+    y: {
+      formatter: function(val) {
+        if (val >= 1000) {
+          return (val / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        }
+        return val;
+      }
+    }
+  },
+  yaxis: {
+    labels: {
+      formatter: function(val) {
+        if (val >= 1000) {
+          return (val / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
+        }
+        return val;
+      },
+      style: {
+        colors: '#a29f9e',
+        fontSize: '12px',
+      }
+    }
+  },
           grid: {
               show: false,
           },
@@ -890,52 +912,44 @@
       chart.render();
    
       const updateChart = (locationMonthCount, eventMonthCount, profitMonthCount, months) => {
-          const categories = months;
-          const locationsData = new Array(months.length).fill(0);
-          const eventsData = new Array(months.length).fill(0);
-          const functionalProfitData = new Array(months.length).fill(0); 
-          locationMonthCount.forEach(entry => {
-              const monthIndex = months.indexOf(entry['month']);
-              if (monthIndex !== -1) {
-               locationsData[monthIndex] = entry['count']; 
-              }
-          });
-   
-          eventMonthCount.forEach(entry => {
-              const monthIndex = months.indexOf(entry['month']);
-              if (monthIndex !== -1) {
-                  eventsData[monthIndex] = entry['count']; 
-              }
-          });
-   
-          profitMonthCount.forEach(entry => {
-              const monthIndex = months.indexOf(entry['month']);
-              if (monthIndex !== -1) {
-                  functionalProfitData[monthIndex] = entry['count'];
-              }
-          });
-   
-          chart.updateOptions({
-              series: [
-                  {
-                      name: 'Locations',
-                      data: locationsData
-                  },
-                  {
-                      name: 'Events',
-                      data: eventsData
-                  },
-                  {
-                      name: 'Functional Profit',
-                      data: functionalProfitData
-                  }
-              ],
-              xaxis: {
-                  categories: categories
-              }
-          });
-      };
-   
+  const categories = months;
+  const locationsData = new Array(months.length).fill(0);
+  const eventsData = new Array(months.length).fill(0);
+  const functionalProfitData = new Array(months.length).fill(0);
+
+  locationMonthCount.forEach(entry => {
+    const monthIndex = months.indexOf(entry['month']);
+    if (monthIndex !== -1) {
+      locationsData[monthIndex] = entry['count'];
+    }
+  });
+
+  eventMonthCount.forEach(entry => {
+    const monthIndex = months.indexOf(entry['month']);
+    if (monthIndex !== -1) {
+      eventsData[monthIndex] = entry['count'];
+    }
+  });
+
+  profitMonthCount.forEach(entry => {
+  const monthIndex = months.indexOf(entry['month']);
+  if (monthIndex !== -1) {
+    const scaledValue = entry['count'] / 1000;
+    console.log(`Scaled profit for ${entry['month']}:`, scaledValue);
+    functionalProfitData[monthIndex] = scaledValue;
+  }
+});
+
+  chart.updateOptions({
+    series: [
+      { name: 'Locations', data: locationsData },
+      { name: 'Events', data: eventsData },
+      { name: 'Functional Profit', data: functionalProfitData }
+    ],
+    xaxis: { categories: categories }
+  });
+};
+
       const locationMonthCountData = JSON.parse('{{ location_month_count|escapejs }}');
       const eventMonthCountData = JSON.parse('{{ event_month_count|escapejs }}');
       const profitMonthCountData = JSON.parse('{{ profit_month_count|escapejs }}');
