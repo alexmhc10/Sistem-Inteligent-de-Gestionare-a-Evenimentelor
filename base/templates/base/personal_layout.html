@@ -108,6 +108,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <button type="button" class="btn btn-outline-danger" data-element="emergency">🚨 Emergency Exit</button>
                                     <button type="button" class="btn btn-outline-danger" data-element="photobooth">📸 Photo Booth</button>
                                     <button type="button" class="btn btn-outline-warning" data-element="kids">🧸 Kids Area</button>
+                                    <button type="button" class="btn btn-success" id="btnAddCustom">+ Add Custom</button>
                                 </div>
                             </div>
 
@@ -229,7 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         height: height
     });
     const layer = new Konva.Layer();
-    // Grid layer (background, non-interactive)
+
     const gridLayer = new Konva.Layer({ listening: false });
     const gridSize = 50; // px
     function drawGrid() {
@@ -254,7 +255,6 @@ document.addEventListener('DOMContentLoaded', function() {
     stage.add(gridLayer);
     stage.add(layer);
 
-    // Shared Konva.Transformer for rotate / resize
     const transformer = new Konva.Transformer({
         rotateEnabled: true,
         enabledAnchors: ['top-left', 'top-center', 'top-right', 'middle-left', 'middle-right', 'bottom-left', 'bottom-center', 'bottom-right'],
@@ -267,7 +267,6 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     layer.add(transformer);
 
-    // Redimensionare canvas la resize
     window.addEventListener('resize', function() {
         const newWidth = container.offsetWidth;
         stage.width(newWidth);
@@ -286,7 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {% for table in tables %}
         {
             id: {{ table.id }},
-            table_number: "{{ table.table_number }}",
+            table_number: "T.{{ table.table_number }}",
             capacity: {{ table.capacity }},
             shape: "{{ table.shape }}",
             is_vip: {% if table.is_vip %}true{% else %}false{% endif %},
@@ -498,11 +497,15 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         kids: {
             shape: 'rect', color: '#fff59d', width: 70, height: 50, icon: '', label: 'Kids Area'
+        },
+        custom: {
+            shape: 'rect', color: '#c5e1a5', width: 80, height: 40, icon: '', label: 'Custom'
         }
     };
 
-    function addSpecialElementToCanvas(type, x, y, rotation, w, h, r) {
+    function addSpecialElementToCanvas(type, x, y, rotation, w, h, r, customLabel=null) {
         const def = specialElements[type];
+        const labelText = customLabel || def.label;
         let group = new Konva.Group({
             x: x || 100 + Math.random() * 200,
             y: y || 100 + Math.random() * 200,
@@ -531,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if(def.opacity){ shape.opacity(def.opacity); }
         }
         const label = new Konva.Text({
-            text: def.label,
+            text: labelText,
             fontSize: 14,
             fill: '#222',
             x: def.shape === 'rect' ? 0 : - (def.shape==='circle' ? (r && r>0 ? r : def.radius) : 0),
@@ -540,7 +543,7 @@ document.addEventListener('DOMContentLoaded', function() {
             align: 'center'
         });
         group._specialType = type;
-        group._specialLabel = def.label;
+        group._specialLabel = labelText;
         group._specialRotation = rotation || 0;
         group.add(shape);
         group.add(label);
@@ -616,7 +619,7 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
     ];
     specialElementsFromBackend.forEach(function(el) {
-        addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation, el.width, el.height, el.radius);
+        addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation, el.width, el.height, el.radius, el.label);
     });
 
     // --- Load special elements on page load ---
@@ -682,15 +685,28 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // --- Add special element on button click ---
-    document.querySelectorAll('.special-elements-controls button').forEach(btn => {
+    document.querySelectorAll('.special-elements-controls button[data-element]').forEach(btn => {
         btn.addEventListener('click', function() {
             const type = this.getAttribute('data-element');
             addSpecialElementToCanvas(type);
         });
     });
 
-    // --- Save special elements to localStorage ---
-    // (removed localStorage saving functionality)
+    // Custom element button -> prompt for label using SweetAlert2 (already loaded)
+    document.getElementById('btnAddCustom').addEventListener('click', function(){
+        Swal.fire({
+            title: 'Add custom element',
+            input: 'text',
+            inputLabel: 'Label / Name',
+            inputPlaceholder: 'e.g. Gift Table',
+            showCancelButton: true,
+            inputValidator: (value)=>{ if(!value){return 'Label required';}}
+        }).then((result)=>{
+            if(result.isConfirmed){
+                addSpecialElementToCanvas('custom', null, null, null, null, null, null, result.value.trim());
+            }
+        });
+    });
 });
 </script>
 {% endblock %}

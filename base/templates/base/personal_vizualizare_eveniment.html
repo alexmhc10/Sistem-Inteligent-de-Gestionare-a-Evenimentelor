@@ -523,9 +523,9 @@ document.addEventListener('DOMContentLoaded', function(){
         const rectH = isRound?null:(t.height||90);
         let shape;
         if(isRound){
-            shape=new Konva.Circle({radius:radius,fill:t.is_reserved?'#ffd700':'#28a745',stroke:t.is_reserved?'#b8860b':'#1e7e34',strokeWidth:3});
+            shape=new Konva.Circle({radius:radius,fill:t.is_reserved?'#ffd700':'#82faea',stroke:t.is_reserved?'#b8860b':'#439c99',strokeWidth:3});
         }else{
-            shape=new Konva.Rect({width:rectW,height:rectH,fill:t.is_reserved?'#ffd700':'#28a745',stroke:t.is_reserved?'#b8860b':'#1e7e34',strokeWidth:3,cornerRadius:10});
+            shape=new Konva.Rect({width:rectW,height:rectH,fill:t.is_reserved?'#ffd700':'#82faea',stroke:t.is_reserved?'#b8860b':'#439c99',strokeWidth:3,cornerRadius:10});
         }
         const labelW = isRound?radius*2:rectW;
         const labelX = isRound?-radius:0;
@@ -534,7 +534,7 @@ document.addEventListener('DOMContentLoaded', function(){
             text: t.table_number,
             fontSize: 20,
             fontStyle: 'bold',
-            fill: '#fff',
+            fill: 'black',
             stroke: '#000',
             strokeWidth: 0.5,
             width: labelW,
@@ -543,6 +543,8 @@ document.addEventListener('DOMContentLoaded', function(){
             y: labelY
         });
         group.add(shape); group.add(text);
+
+        
         group._tableId = t.id;
         group.on('click',()=>{
             fetch(`/api/table-details/${t.id}/?event_id={{ event.id }}`)
@@ -583,16 +585,37 @@ document.addEventListener('DOMContentLoaded', function(){
 
     tablesRaw.forEach(drawTable);
 
-    const defs={
-        entrance:{shape:'rect',color:'green',width:60,height:20,label:'Entrance'},
-        dancefloor:{shape:'rect',color:'#b39ddb',width:200,height:120,opacity:0.3,label:'Dance Floor'},
-        dj:{shape:'circle',color:'#ffb300',radius:25,label:'DJ/Band'},
-        restrooms:{shape:'rect',color:'#90caf9',width:50,height:50,label:'Restrooms'},
-        bar:{shape:'rect',color:'#ffe082',width:150,height:30,label:'Bar'},
-        kitchen:{shape:'rect',color:'#616161',width:80,height:60,label:'Kitchen'},
-        emergency:{shape:'rect',color:'red',width:60,height:20,label:'Emergency Exit'},
-        photobooth:{shape:'circle',color:'#f06292',radius:30,label:'Photo Booth'},
-        kids:{shape:'rect',color:'#fff59d',width:70,height:50,label:'Kids Area'}
+    const defs = {
+        entrance: {
+            shape: 'rect', color: 'green', width: 60, height: 20, icon: '', label: 'Entrance'
+        },
+        dancefloor: {
+            shape: 'rect', color: '#b39ddb', width: 200, height: 120, icon: '', opacity: 0.3, label: 'Dance Floor'
+        },
+        dj: {
+            shape: 'circle', color: '#ffb300', radius: 25, icon: '', label: 'DJ/Band'
+        },
+        restrooms: {
+            shape: 'rect', color: '#90caf9', width: 50, height: 50, icon: '', label: 'Restrooms'
+        },
+        bar: {
+            shape: 'rect', color: '#ffe082', width: 150, height: 30, icon: '', label: 'Bar'
+        },
+        kitchen: {
+            shape: 'rect', color: '#616161', width: 80, height: 60, icon: '', label: 'Kitchen'
+        },
+        emergency: {
+            shape: 'rect', color: 'red', width: 60, height: 20, icon: '', label: 'Emergency Exit'
+        },
+        photobooth: {
+            shape: 'circle', color: '#f06292', radius: 30, icon: '', label: 'Photo Booth'
+        },
+        kids: {
+            shape: 'rect', color: '#fff59d', width: 70, height: 50, icon: '', label: 'Kids Area'
+        },
+        custom: {
+            shape: 'rect', color: '#c5e1a5', width: 80, height: 40, icon: '', label: 'Custom'
+        }
     };
     specialRaw.forEach(function(el){
         const def = defs[el.type]||{shape:'rect',color:'#ccc',width:40,height:40};

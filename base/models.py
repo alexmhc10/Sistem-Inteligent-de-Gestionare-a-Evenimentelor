@@ -793,17 +793,17 @@ class SpecialElement(models.Model):
         ('emergency', 'Emergency Exit'),
         ('photobooth', 'Photo Booth'),
         ('kids', 'Kids Area'),
+        ('custom', 'Custom'),
     ]
     location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='special_elements')
     type = models.CharField(max_length=32, choices=ELEMENT_TYPES)
     label = models.CharField(max_length=64, blank=True)
     position_x = models.FloatField(default=0)
     position_y = models.FloatField(default=0)
-    # Dimensiuni (pentru rect sau cerc)
     width = models.FloatField(default=0, null=True, blank=True)
     height = models.FloatField(default=0, null=True, blank=True)
     radius = models.FloatField(default=0, null=True, blank=True)
-    rotation = models.FloatField(default=0)  # grade (0-360)
+    rotation = models.FloatField(default=0)
 
     def __str__(self):
         return f"{self.get_type_display()} at {self.location.name}"

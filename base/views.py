@@ -4058,6 +4058,27 @@ def populate_test_data(request, event_id):
 
     return redirect('test_table_arrangement', event_id=event.id)
 
+
+def guests_arrived_per_table(request, event_id):
+
+    logs = Log.objects.filter(
+        is_correct=True,
+        photo__isnull=False,
+        event_id=event_id,
+        profile__isnull=False
+    ).values_list('profile_id', flat=True)
+
+    data = (
+        TableArrangement.objects
+        .filter(event_id=event_id, profile_id__in=logs)
+        .values('table_number')
+        .annotate(arrived_count=Count('profile'))
+    )
+
+    result = {entry['table_number']: entry['arrived_count'] for entry in data}
+    return JsonResponse(result)
+
+
 @require_GET
 @login_required
 def table_details_api(request, table_id):

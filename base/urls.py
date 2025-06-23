@@ -140,7 +140,9 @@ urlpatterns = [
     path('add_table/', views.add_table, name='add_table'),
     path('update_table/', views.update_table, name='update_table'),
     path('delete_table/', views.delete_table, name='delete_table'),
+    path('api/event/<int:event_id>/arrivals/', views.guests_arrived_per_table, name='guests_arrived'),
     path('save_table_layout/', views.save_table_layout, name='save_table_layout'),
+
 
     # Recomandări și ML
     path('recommendations/<int:guest_id>/', views.recommendations_view, name='recommendations'),
