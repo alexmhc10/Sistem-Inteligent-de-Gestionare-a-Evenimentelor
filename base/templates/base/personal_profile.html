@@ -237,6 +237,8 @@
                                       <th scope="col" class="text-center">Capacity</th>
                                       <th scope="col" class="ps-0 text-center">Shape</th>
                                       <th scope="col" class="text-center">Notes</th>
+                                      <th scope="col" class="text-center">Actions</th>
+                                  </tr>
                               </thead>
                               <tbody class="table-group-divider">
                                   <tr class="table-row-table" data-id="">
@@ -276,6 +278,7 @@
                           <td class="text-center fw-medium">${table.capacity}</td>
                           <td class="text-center fw-medium">${table.shape.charAt(0).toUpperCase() + table.shape.slice(1)}</td>
                           <td class="text-center fw-medium">${table.notes || '—'}</td>
+                          <td class="text-center fw-medium"><button class="btn btn-sm btn-secondary edit-table-btn" data-id="${table.id}" data-number="${table.table_number}" data-capacity="${table.capacity}" data-shape="${table.shape}" data-notes="${table.notes || ''}">Edit</button></td>
                         `;
 
                         tbody.appendChild(row);
@@ -543,4 +546,77 @@
     </div>
   </div>
 </div>
+
+<!-- Modal edit table -->
+<div class="modal fade" id="editTableModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Table</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editTableForm">
+          <input type="hidden" name="table_id" id="edit-table-id">
+          <div class="mb-3">
+            <label class="form-label">Table number</label>
+            <input type="number" class="form-control" name="table_number" id="edit-table-number" readonly>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Capacity</label>
+            <input type="number" class="form-control" name="capacity" id="edit-table-capacity" min="1">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Shape</label>
+            <select class="form-select" name="shape" id="edit-table-shape">
+              <option value="round">Round</option>
+              <option value="rectangle">Rectangle</option>
+              <option value="square">Square</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Notes</label>
+            <textarea class="form-control" name="notes" id="edit-table-notes" rows="3"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const editModal = new bootstrap.Modal(document.getElementById('editTableModal'));
+
+  document.addEventListener('click', function(e){
+    if(e.target.classList.contains('edit-table-btn')){
+      const btn = e.target;
+      document.getElementById('edit-table-id').value = btn.dataset.id;
+      document.getElementById('edit-table-number').value = btn.dataset.number;
+      document.getElementById('edit-table-capacity').value = btn.dataset.capacity;
+      document.getElementById('edit-table-shape').value = btn.dataset.shape;
+      document.getElementById('edit-table-notes').value = btn.dataset.notes;
+      editModal.show();
+    }
+  });
+
+  document.getElementById('editTableForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    fetch('/update_table/', {
+      method: 'POST',
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      body: formData
+    }).then(r=>r.json()).then(data=>{
+      if(data.success){
+        // Închide modalul şi reîncarcă lista
+        editModal.hide();
+        loadTables(document.getElementById('table-table').dataset.locationId);
+      }else{
+        alert(data.error || 'Eroare la salvare');
+      }
+    }).catch(err=>console.error(err));
+  });
+</script>
+
 {% endblock %}

@@ -670,21 +670,18 @@ document.addEventListener('DOMContentLoaded', function() {
         transformer.getLayer().batchDraw();
         editPanel.style.display = 'none';
     }
-    // Click pe orice grup selecteaza
     layer.on('click tap', function(e) {
         if (e.target && e.target.getParent() && e.target.getParent() !== layer) {
             const group = e.target.getParent();
             selectGroup(group);
         }
     });
-    // Click in afara layerului sau pe fundal -> deselecteaza
     stage.on('click tap', function(e) {
         if (e.target === stage) {
             deselectGroup();
         }
     });
 
-    // --- Add special element on button click ---
     document.querySelectorAll('.special-elements-controls button[data-element]').forEach(btn => {
         btn.addEventListener('click', function() {
             const type = this.getAttribute('data-element');
@@ -692,7 +689,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Custom element button -> prompt for label using SweetAlert2 (already loaded)
     document.getElementById('btnAddCustom').addEventListener('click', function(){
         Swal.fire({
             title: 'Add custom element',

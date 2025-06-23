@@ -317,7 +317,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 <td class="text-center fw-medium">${userData.cuisine_preference}</td>
                 <td class="text-center fw-medium">${userData.is_vegan ? 'vegan' : 'non-vegan'}</td>
                 <td class="text-center fw-medium">${userData.allergens.length > 0 ? userData.allergens.join(', ') : 'None'}</td>
-                <td class="text-center fw-medium">${userData.table_number}</td>
+                <td class="text-center fw-medium">${userData.table_number ?? '-'}</td>
+                <td class="text-center fw-medium">${userData.seat_number ?? '-'}</td>
             `;
 
 
@@ -370,6 +371,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                     <th scope="col" class="text-center">Diet</th>
                                     <th scope="col" class="text-center">Allergens</th>
                                     <th scope="col" class="text-center">Table no.</th>
+                                    <th scope="col" class="text-center">Seat no.</th>
                                 </tr>
                             </thead>
                             <tbody class="table-group-divider" id="attendance-table-body">
@@ -401,7 +403,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                 {% else %}
                                                 <td class="text-center fw-medium">None</td>
                                                 {% endif %}
-                                                <td class="text-center fw-medium">{{ log.profile.guest_profile.table_number|default:"-" }}</td>
+                                                <td class="text-center fw-medium">{{ log.table_number }}</td>
+                                                <td class="text-center fw-medium">{{ log.seat_number }}</td>
                                             </tr>
                                         {% endfor %}
                                     {% endif %}

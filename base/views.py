@@ -2320,6 +2320,20 @@ def personal_vizualizare_eveniment(request, pk):
     logs = Log.objects.filter(event=event, is_correct = True)
     print('Logs:', logs)
 
+    log_arrs = TableArrangement.objects.filter(event=event).select_related('guest__profile', 'table')
+    log_map = {arr.guest.profile.id: (arr.table.table_number if arr.table else None, arr.seat_number) for arr in log_arrs}
+
+    for lg in logs:
+        tbl, seat = log_map.get(getattr(lg.profile, 'id', None), (None, None))
+        # atașăm info pe profilul invitatului (guest_profile) pentru template
+        gp = getattr(lg.profile, 'guest_profile', None)
+        if gp:
+            gp.table_number = tbl
+            gp.seat_number = seat
+        # și direct pe obiectul Log, în caz că este folosit în template
+        lg.table_number = tbl
+        lg.seat_number = seat
+        
     event_data = [
         {
             'id': event.id,
@@ -2748,6 +2762,7 @@ def update_table(request):
         table.capacity = request.POST.get('capacity')
         table.shape = request.POST.get('shape')
         table.is_vip = request.POST.get('is_vip') == 'on'
+        table.notes = request.POST.get('notes', table.notes)
         table.save()
         
         return JsonResponse({
@@ -2759,7 +2774,8 @@ def update_table(request):
                 'shape': table.shape,
                 'is_vip': table.is_vip,
                 'x': table.position_x,
-                'y': table.position_y
+                'y': table.position_y,
+                'notes': table.notes
             }
         })
     except Exception as e:
@@ -4750,9 +4766,11 @@ def manual_validate_attendance(request):
     log.save()
 
     table_number = None
+    seat_number = None
     arrangement = TableArrangement.objects.filter(event=event, guest=guests_qs.first()).select_related('table').first()
     if arrangement and arrangement.table:
         table_number = arrangement.table.table_number
+        seat_number = arrangement.seat_number
 
     from django.utils import timezone
     created_at = log.created
@@ -4771,6 +4789,7 @@ def manual_validate_attendance(request):
         'is_vegan': guests_qs.first().vegan,
         'allergens': [a.name for a in guests_qs.first().allergens.all()],
         'table_number': table_number,
+        'seat_number': seat_number,
     }
 
     return JsonResponse({'success': True, 'user': user_data})

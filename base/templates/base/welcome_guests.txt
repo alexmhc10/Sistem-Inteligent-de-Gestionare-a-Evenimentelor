@@ -1,0 +1,12 @@
+Bună {{ guest.first_name }},
+
+Contul tău pe platforma Eventsmart a fost creat!
+
+Detaliile de conectare:
+ - Username: {{ guest.username }}
+ - Parolă: {{ guest.password }}
+
+Intră în aplicație: {{ guest_home_url }}
+
+Cu drag,
+Echipa Eventsmart 

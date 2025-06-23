@@ -1,0 +1,12 @@
+Dragi {{ guest.username }},
+
+Ai fost invitat(ă) la evenimentul "{{ event.event_name }}" care va avea loc pe {{ event.event_date }} la {{ event.event_time }}.
+
+Poți vizualiza mai multe detalii accesând:
+{{ event_url }}
+
+Te rugăm să ne confirmi participarea folosind formularul de pe site.
+
+Cu drag,
+Echipa Amour
+{{ site_url }} 
