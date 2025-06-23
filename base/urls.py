@@ -45,6 +45,7 @@ urlpatterns = [
     path('event/<int:event_id>/confirm-arrangement/', views.confirm_table_arrangement, name='confirm_table_arrangement'),
     path('event/<int:event_id>/reset-arrangement/', views.reset_table_arrangement, name='reset_table_arrangement'),
     path('event/<int:event_id>/save_table_positions/', views.save_table_positions, name='save_table_positions'),
+    path('event/<int:event_id>/auto-arrange/', views.auto_arrange_tables, name='auto_arrange_tables'),
    
 
 

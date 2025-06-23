@@ -4059,6 +4059,146 @@ def populate_test_data(request, event_id):
     return redirect('test_table_arrangement', event_id=event.id)
 
 
+@login_required(login_url='/login')
+@user_is_organizer
+@require_POST
+def auto_arrange_tables(request, event_id):
+    """
+    Aranjează automat invitații la mese, ajustând numărul de mese după necesitate
+    """
+    import math
+    from decimal import Decimal
+    
+    try:
+        event = get_object_or_404(Event, id=event_id)
+        
+        # Verifică permisiuni
+        if event.organized_by != request.user:
+            return JsonResponse({
+                'success': False,
+                'error': 'Nu aveți permisiunea de a modifica acest eveniment'
+            })
+        
+        if not event.location:
+            return JsonResponse({
+                'success': False,
+                'error': 'Evenimentul nu are o locație asociată'
+            })
+        
+        # Obține toți invitații evenimentului
+        # Încearcă mai întâi să obțină doar invitații confirmați
+        try:
+            accepted_guests = event.guests.filter(
+                profile__user__rsvps__event=event,
+                profile__user__rsvps__response='Accepted'
+            ).distinct()
+            
+            if accepted_guests.count() > 0:
+                guests_to_arrange = accepted_guests
+                guest_count = accepted_guests.count()
+            else:
+                # Dacă nu sunt RSVP-uri, ia toți invitații
+                guests_to_arrange = event.guests.all()
+                guest_count = guests_to_arrange.count()
+        except:
+            # Fallback - ia toți invitații
+            guests_to_arrange = event.guests.all()
+            guest_count = guests_to_arrange.count()
+        
+        if guest_count == 0:
+            return JsonResponse({
+                'success': False,
+                'error': 'Nu există invitați pentru acest eveniment'
+            })
+        
+        # Calculează numărul optim de mese
+        # Presupunem capacitate standard de 8-10 persoane per masă
+        optimal_table_capacity = 8
+        min_table_capacity = 6
+        max_table_capacity = 10
+        
+        # Calculează numărul minim de mese necesare
+        min_tables_needed = math.ceil(guest_count / max_table_capacity)
+        # Calculează numărul optim de mese pentru distribuție echilibrată
+        optimal_tables_needed = math.ceil(guest_count / optimal_table_capacity)
+        
+        # Ajustează mesele existente
+        existing_tables = Table.objects.filter(location=event.location).order_by('table_number')
+        existing_count = existing_tables.count()
+        
+        # Șterge aranjamentele existente
+        TableArrangement.objects.filter(event=event).delete()
+        
+        # Ajustează numărul de mese
+        if existing_count < optimal_tables_needed:
+            # Adaugă mese noi
+            tables_to_add = optimal_tables_needed - existing_count
+            last_table_number = existing_tables.last().table_number if existing_tables.exists() else 0
+            
+            # Calculează poziții pentru mese noi (aranjament circular sau grid)
+            for i in range(tables_to_add):
+                table_number = last_table_number + i + 1
+                # Aranjament în grid
+                row = (table_number - 1) // 4
+                col = (table_number - 1) % 4
+                
+                Table.objects.create(
+                    location=event.location,
+                    table_number=table_number,
+                    capacity=optimal_table_capacity,
+                    shape='round',
+                    position_x=150 + col * 200,  # 200px spacing
+                    position_y=150 + row * 200,
+                    is_reserved=False,
+                    width=80,
+                    height=80,
+                    radius=40
+                )
+            
+        elif existing_count > optimal_tables_needed + 2:  # Păstrează câteva mese extra
+            # Șterge mesele în exces
+            tables_to_delete = existing_count - optimal_tables_needed - 2
+            # Șterge ultimele mese
+            tables_to_remove = existing_tables.reverse()[:tables_to_delete]
+            for table in tables_to_remove:
+                table.delete()
+        
+        # Re-încarcă mesele după ajustare
+        tables = Table.objects.filter(location=event.location).order_by('table_number')
+        
+        # Inițializează și rulează algoritmul
+        from .table_arrangement_algorithm import TableArrangementAlgorithm
+        
+        algorithm = TableArrangementAlgorithm(event)
+        arrangements = algorithm.generate_arrangement()
+        
+        # Salvează aranjamentele
+        for arrangement in arrangements:
+            arrangement.save()
+        
+        # Obține statisticile
+        stats = algorithm.get_arrangement_statistics()
+        
+        return JsonResponse({
+            'success': True,
+            'message': f'Aranjament generat cu succes! {stats["tables_used"]} mese utilizate din {tables.count()} disponibile.',
+            'guests_arranged': len(arrangements),
+            'tables_used': stats['tables_used'],
+            'tables_total': tables.count(),
+            'statistics': stats
+        })
+        
+    except Exception as e:
+        import traceback
+        print(f"Error in auto_arrange_tables: {str(e)}")
+        print(traceback.format_exc())
+        
+        return JsonResponse({
+            'success': False,
+            'error': f'Eroare la generarea aranjamentului: {str(e)}'
+        })
+
+
 def guests_arrived_per_table(request, event_id):
 
     logs = Log.objects.filter(
