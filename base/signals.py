@@ -13,6 +13,9 @@ from django.template.loader import render_to_string
 from base.tasks import send_email_task
 from django.conf import settings
 from django.urls import reverse
+from django.db.models.signals import m2m_changed
+from django.db import transaction
+
 
 @receiver(pre_save, sender=Event)
 def update_completed_status(sender, instance, **kwargs):
@@ -54,18 +57,18 @@ def update_completed_event(sender, instance, **kwargs):
 def event_changed_handler(sender, instance, created, **kwargs):
     if not created:
         print(f"DEBUG: Semnal post_save (update) pentru Eveniment '{instance.event_name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
-        run_optimization_task.delay()
+        #run_optimization_task.delay()
 
 @receiver(post_save, sender=Location)
 def location_changed_handler(sender, instance, created, **kwargs):
     if not created:
         print(f"DEBUG: Semnal post_save (update) pentru Locație '{instance.name}' (ID: {instance.id}) detectat. Se declanșează sarcina de optimizare.")
-        run_optimization_task.delay()
+        #run_optimization_task.delay()
 
 @receiver(post_delete, sender=Event)
 def event_deleted_handler(sender, instance, **kwargs):
     print(f"DEBUG: Semnal post_delete pentru Eveniment '{instance.event_name}' detectat. Se declanșează sarcina de optimizare.")
-    run_optimization_task.delay()
+    #run_optimization_task.delay()
 
 @receiver(post_save, sender=Profile)
 def send_welcome_email(sender, instance, **kwargs):
@@ -115,3 +118,26 @@ def send_invitation_email(sender, instance, created, **kwargs):
         text_body = render_to_string("base/invite_form.txt", context)
 
         send_email_task.delay(subject, text_body, html_body, guest.email)
+
+
+@receiver(m2m_changed, sender=Event.guests.through)
+def sync_rsvp_with_event_guests(sender, instance, action, pk_set, **kwargs):
+    if action != "post_add":
+        return
+
+    new_rsvps = []
+    for guest_pk in pk_set:
+        guest = Guests.objects.select_related("profile__user").filter(pk=guest_pk).first()
+        if not guest or not guest.profile.user:
+            continue
+        if not RSVP.objects.filter(event=instance, guest=guest.profile.user).exists():
+            new_rsvps.append(RSVP(event=instance, guest=guest.profile.user))
+
+    if not new_rsvps:
+        return
+
+
+    def _bulk_create_rsvps():
+        RSVP.objects.bulk_create(new_rsvps)
+
+    transaction.on_commit(_bulk_create_rsvps)

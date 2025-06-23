@@ -228,7 +228,6 @@ class Guests(models.Model):
                 missing.append(label)
         return missing
 
-    # Compatibilitate: proprietate booleană pentru codul existent
     @property
     def vegan(self):
         return self.diet_preference == 'vegan'
@@ -249,7 +248,6 @@ class Guests(models.Model):
 
         menu_qs = Menu.objects.all()
 
-        # 1. Diet constraint – diet compatibility mapping (e.g. vegetarian includes vegan dishes)
         if self.diet_preference and self.diet_preference != 'none':
             DIET_COMPATIBILITY = {
                 'vegan': ['vegan'],
@@ -263,23 +261,18 @@ class Guests(models.Model):
             allowed_diets = DIET_COMPATIBILITY.get(self.diet_preference, [self.diet_preference])
             menu_qs = menu_qs.filter(diet_type__in=allowed_diets)
 
-        # 2. Allergen constraint – exclude any dish that contains at least one of the guest allergens
         if self.allergens.exists():
             menu_qs = menu_qs.exclude(allergens__in=self.allergens.all()).distinct()
 
-        # 3. Spicy level – accept dishes whose spicy_level is <= guest preference
         preference = self.spicy_food or 'none'
         order = ['none', 'low', 'medium', 'high']
         if preference in order and preference != 'none':
             allowed_levels = order[: order.index(preference) + 1]
             menu_qs = menu_qs.filter(spicy_level__in=allowed_levels)
 
-        # 4. Serving temperature (hot / cold)
         if self.temp_preference:
             menu_qs = menu_qs.filter(serving_temp=self.temp_preference)
 
-
-        # 6. Regional cuisine preference – prioritate la afișare, dar nu excludem alte feluri
         if self.cuisine_preference and self.cuisine_preference != 'no_region':
             from django.db.models import Case, When, Value, IntegerField
             menu_qs = menu_qs.annotate(
@@ -290,7 +283,6 @@ class Guests(models.Model):
                 )
             ).order_by('_pref')
 
-        # eliminăm duplicatele după toate filtrările/annotările
         return menu_qs.distinct()
 
 
@@ -317,7 +309,6 @@ class Menu(models.Model):
     spicy_level = models.CharField(max_length=10, choices=SPICY_LEVELS, default='none')
     allergens = models.ManyToManyField(Allergen, blank=True)
     item_picture = models.ImageField(upload_to=menu_item_upload_path, null=True, blank=True)
-    # new food features
     cooking_method = models.CharField(max_length=10, choices=COOKING_METHOD_CHOICES, blank=True, null=True)
     serving_temp = models.CharField(max_length=5, choices=TEMP_CHOICES, default='hot')
     calories = models.PositiveIntegerField(null=True, blank=True, help_text="kcal per serving")
@@ -709,7 +700,6 @@ class Table(models.Model):
     shape = models.CharField(max_length=20, choices=SHAPE_CHOICES, default='round')
     position_x = models.FloatField(default=0) 
     position_y = models.FloatField(default=0)
-    # Dimensiuni
     width = models.FloatField(default=0, null=True, blank=True)
     height = models.FloatField(default=0, null=True, blank=True)
     radius = models.FloatField(default=0, null=True, blank=True)
@@ -717,14 +707,26 @@ class Table(models.Model):
     notes = models.TextField(blank=True, null=True, help_text="Additional notes about the table")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    rotation = models.FloatField(default=0)  # grade (0-360)
-
+    rotation = models.FloatField(default=0)
     class Meta:
         ordering = ['table_number']
         unique_together = ['location', 'table_number']
 
     def __str__(self):
         return f"Table {self.table_number} at {self.location.name}"
+
+
+class EventLayout(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='layouts')
+    event = models.OneToOneField('Event', on_delete=models.SET_NULL, null=True, blank=True, related_name='layout')
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    cloned_from = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
+    is_default  = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.location.name} – {self.name}"
 
 
 class TableGroup(models.Model):

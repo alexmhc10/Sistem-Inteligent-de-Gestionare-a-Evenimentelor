@@ -140,7 +140,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
     </style>
 
-    <div class="text-center mt-3">
+    <div class="text-center mb-3">
         <button class="btn btn-primary" id="capture-btn">take photo</button>
         <button class="btn btn-info" id="reload-btn">reload</button>
     </div> 
@@ -347,7 +347,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                             </div>  
                             <div class="table-header-actions">
                                 {% if guests_count == logs.count %}
-                                <span class="badge bg-success-subtle text-success text-uppercase">All guests arrived</span>
+                                <span class="badge bg-success-subtle text-success text-uppercase">All guests arrived</span> 
                                 {% else %}
                                 <p class="text-dark"><span id="guests-arrived">{{ logs.count }}</span> / {{event_guests_count}} guests arrived</p>
                                 {% endif %} 
