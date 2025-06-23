@@ -4129,20 +4129,33 @@ def auto_arrange_tables(request, event_id):
         # Șterge aranjamentele existente
         TableArrangement.objects.filter(event=event).delete()
         
-        # Ajustează numărul de mese
-        if existing_count < optimal_tables_needed:
-            # Adaugă mese noi
-            tables_to_add = optimal_tables_needed - existing_count
+        # Calculează dacă sunt suficiente locuri pentru toți invitații
+        total_existing_capacity = sum(table.capacity for table in existing_tables)
+        
+        print(f"DEBUG: {guest_count} invitați, {existing_count} mese existente cu capacitate totală {total_existing_capacity}")
+        
+        # Afișează detalii despre mesele existente pentru debugging
+        for table in existing_tables:
+            print(f"DEBUG: Masă existentă: Masa {table.table_number} cu capacitate {table.capacity}")
+        
+        # Verifică dacă sunt suficiente locuri pentru toți invitații
+        if total_existing_capacity < guest_count:
+            # Calculează câte mese suplimentare sunt necesare
+            shortage = guest_count - total_existing_capacity
+            additional_tables_needed = math.ceil(shortage / optimal_table_capacity)
+            
+            print(f"DEBUG: Lipsesc {shortage} locuri, se vor crea {additional_tables_needed} mese noi cu capacitate {optimal_table_capacity}")
+            
             last_table_number = existing_tables.last().table_number if existing_tables.exists() else 0
             
-            # Calculează poziții pentru mese noi (aranjament circular sau grid)
-            for i in range(tables_to_add):
+            # Creează mesele suplimentare necesare
+            for i in range(additional_tables_needed):
                 table_number = last_table_number + i + 1
                 # Aranjament în grid
                 row = (table_number - 1) // 4
                 col = (table_number - 1) % 4
                 
-                Table.objects.create(
+                new_table = Table.objects.create(
                     location=event.location,
                     table_number=table_number,
                     capacity=optimal_table_capacity,
@@ -4154,29 +4167,108 @@ def auto_arrange_tables(request, event_id):
                     height=80,
                     radius=40
                 )
+                print(f"DEBUG: Masă nouă creată: Masa {table_number} cu capacitate {optimal_table_capacity}")
+                
+        # Pentru a evita probleme cu mese cu capacități mici, să actualizez mesele existente la capacitatea optimă
+        elif total_existing_capacity >= guest_count:
+            print(f"DEBUG: Suficiente locuri există, dar să verific dacă mesele au capacități optime")
             
-        elif existing_count > optimal_tables_needed + 2:  # Păstrează câteva mese extra
-            # Șterge mesele în exces
-            tables_to_delete = existing_count - optimal_tables_needed - 2
-            # Șterge ultimele mese
-            tables_to_remove = existing_tables.reverse()[:tables_to_delete]
-            for table in tables_to_remove:
-                table.delete()
+            # Actualizează mesele cu capacități prea mici la capacitatea optimă
+            for table in existing_tables:
+                if table.capacity < min_table_capacity:
+                    print(f"DEBUG: Actualizez masa {table.table_number} de la capacitate {table.capacity} la {optimal_table_capacity}")
+                    table.capacity = optimal_table_capacity
+                    table.save()
+        else:
+            print(f"DEBUG: Păstrez toate mesele existente ({existing_count}) - mesele nefolosite vor rămâne în layout")
+        
+        # NU se șterge nicio masă - toate mesele existente rămân în layout
         
         # Re-încarcă mesele după ajustare
         tables = Table.objects.filter(location=event.location).order_by('table_number')
+        total_capacity_after_adjustment = sum(table.capacity for table in tables)
+        
+        print(f"DEBUG: După ajustare: {tables.count()} mese cu capacitate totală {total_capacity_after_adjustment}")
         
         # Inițializează și rulează algoritmul
         from .table_arrangement_algorithm import TableArrangementAlgorithm
         
         algorithm = TableArrangementAlgorithm(event)
+        
+        # IMPORTANT: Forțează reîncărcarea meselor în algoritm după crearea celor noi
+        algorithm.tables = list(Table.objects.filter(location=event.location).order_by('table_number'))
+        
+        print(f"DEBUG: Algoritmul vede {len(algorithm.tables)} mese:")
+        for table in algorithm.tables:
+            print(f"  - Masa {table.table_number}: capacitate {table.capacity}")
+        
         arrangements = algorithm.generate_arrangement()
         
-        # Salvează aranjamentele
+        # Verifică dacă toți invitații au fost aranjați
+        arranged_guests = len(arrangements)
+        unassigned_guests = guest_count - arranged_guests
+        
+        print(f"DEBUG: Arrangiați: {arranged_guests}, Nearanjați: {unassigned_guests}")
+        
+        # Dacă rămân invitați nearanjați, creează mese suplimentare
+        if unassigned_guests > 0:
+            print(f"DEBUG: Rămân {unassigned_guests} invitați nearanjați, se vor crea mese suplimentare")
+            
+            # Calculează câte mese suplimentare sunt necesare pentru invitații nearanjați
+            additional_tables_for_unassigned = math.ceil(unassigned_guests / optimal_table_capacity)
+            
+            current_tables = Table.objects.filter(location=event.location).order_by('table_number')
+            last_table_number = current_tables.last().table_number if current_tables.exists() else 0
+            
+            # Creează mesele suplimentare pentru invitații nearanjați
+            for i in range(additional_tables_for_unassigned):
+                table_number = last_table_number + i + 1
+                # Aranjament în grid
+                row = (table_number - 1) // 4
+                col = (table_number - 1) % 4
+                
+                new_table = Table.objects.create(
+                    location=event.location,
+                    table_number=table_number,
+                    capacity=optimal_table_capacity,
+                    shape='round',
+                    position_x=150 + col * 200,  # 200px spacing
+                    position_y=150 + row * 200,
+                    is_reserved=False,
+                    width=80,
+                    height=80,
+                    radius=40
+                )
+                print(f"DEBUG: Masă suplimentară creată pentru nearanjați: Masa {table_number} cu capacitate {optimal_table_capacity}")
+            
+            # Reîncarcă algoritmul cu mesele noi și încearcă din nou
+            print(f"DEBUG: Reîncerc aranjamentul cu mesele suplimentare...")
+            algorithm.tables = list(Table.objects.filter(location=event.location).order_by('table_number'))
+            
+            # Șterge aranjamentele parțiale anterioare
+            TableArrangement.objects.filter(event=event).delete()
+            
+            # Generează din nou aranjamentul complet
+            arrangements = algorithm.generate_arrangement()
+            
+            # Verifică din nou
+            arranged_guests_retry = len(arrangements)
+            unassigned_guests_retry = guest_count - arranged_guests_retry
+            print(f"DEBUG: După retry - Arrangiați: {arranged_guests_retry}, Nearanjați: {unassigned_guests_retry}")
+            
+            # Dacă încă rămân invitați nearanjați, folosește algoritmul permisiv forțat
+            if unassigned_guests_retry > 0:
+                print(f"DEBUG: Încă rămân {unassigned_guests_retry} nearanjați, se folosește algoritmul permisiv forțat")
+                
+                # Șterge aranjamentele și folosește algoritmul permisiv direct
+                TableArrangement.objects.filter(event=event).delete()
+                arrangements = algorithm._generate_permissive_arrangement()
+        
+        # Salvează aranjamentele finale
         for arrangement in arrangements:
             arrangement.save()
         
-        # Obține statisticile
+        # Obține statisticile finale
         stats = algorithm.get_arrangement_statistics()
         
         return JsonResponse({
