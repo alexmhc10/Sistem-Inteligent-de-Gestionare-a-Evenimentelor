@@ -1248,15 +1248,21 @@ def homeAdmin(request):
             'organizer': organizer,
             'event_count': count
         })
-    high_ev = []
+    location_counts = defaultdict(int)
+
     for location in locations:
-        event_count = location.event_set.count() 
+        event_count = location.event_set.count()
         if event_count > 0:
-            percentage = int((event_count / ev_nr) * 100)  
-            high_ev.append({
-                'location': location.location,
-                'percentage':percentage
-            })
+            location_counts[location.location] += event_count
+
+    high_ev = []
+    for loc_name, count in location_counts.items():
+        percentage = int((count / ev_nr) * 100)
+        high_ev.append({
+            'location': loc_name,
+            'percentage': percentage
+        })
+    print("high ev: ", high_ev)
     loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
