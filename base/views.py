@@ -12,7 +12,6 @@ from .forms import *
 from django.conf import settings
 from collections import Counter, defaultdict
 import json
-from .forms import EventForm
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
 import random

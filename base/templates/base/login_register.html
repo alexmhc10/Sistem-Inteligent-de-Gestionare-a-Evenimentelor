@@ -675,6 +675,10 @@ setTimeout(() => {
                     <div class="row register-form">
                         <div class="col-md-6">
                             <div class="form-group">
+                                {{ form.first_name.label_tag }}
+                                {{ form.first_name|add_class:"form-control" }}
+                            </div>
+                            <div class="form-group">
                                 {{ form.username.label_tag }}
                                 {{ form.username|add_class:"form-control" }}
                             </div>
@@ -693,6 +697,10 @@ setTimeout(() => {
                             </div>
                         </div>
                         <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.last_name.label_tag }}
+                                {{ form.last_name|add_class:"form-control" }}
+                            </div>
                             <div class="form-group">
                                 {{ form.email.label_tag }}
                                 {{ form.email|add_class:"form-control" }}
