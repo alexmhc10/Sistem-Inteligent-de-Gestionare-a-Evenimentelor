@@ -1120,6 +1120,8 @@ def users(request):
             if request.POST.get('action') == "accept":
                 user = User.objects.create_user(
                     username=profile.username,
+                    first_name=profile.first_name,
+                    last_name=profile.last_name,
                     password=profile.password,
                     email=profile.email
                 )
@@ -1171,10 +1173,15 @@ def users(request):
     user_data = [
     {
         'username': profile.user.username if profile.user else profile.username,
-        'salary': float(getattr(profile.user.salary, 'total_salary', 0)) if profile.user else 0
+        'salary': float(profile.user.salary.total_salary) if (
+            profile.user and hasattr(profile.user, 'salary') and profile.user.salary.total_salary != 0
+        ) else float(profile.user.salary.base_salary) if (
+            profile.user and hasattr(profile.user, 'salary')
+        ) else 0
     }
     for profile in profiles
 ]
+
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
     context = {
