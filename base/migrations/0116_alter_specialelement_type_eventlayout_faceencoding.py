@@ -17,19 +17,6 @@ class Migration(migrations.Migration):
             field=models.CharField(choices=[('entrance', 'Entrance'), ('dancefloor', 'Dance Floor'), ('dj', 'DJ/Band'), ('restrooms', 'Restrooms'), ('bar', 'Bar'), ('kitchen', 'Kitchen'), ('emergency', 'Emergency Exit'), ('photobooth', 'Photo Booth'), ('kids', 'Kids Area'), ('custom', 'Custom')], max_length=32),
         ),
         migrations.CreateModel(
-            name='EventLayout',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('description', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('is_default', models.BooleanField(default=False)),
-                ('cloned_from', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='base.eventlayout')),
-                ('event', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='layout', to='base.event')),
-                ('location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='layouts', to='base.location')),
-            ],
-        ),
-        migrations.CreateModel(
             name='FaceEncoding',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

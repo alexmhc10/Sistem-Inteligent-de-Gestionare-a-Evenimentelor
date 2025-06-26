@@ -716,19 +716,6 @@ class Table(models.Model):
         return f"Table {self.table_number} at {self.location.name}"
 
 
-class EventLayout(models.Model):
-    location = models.ForeignKey(Location, on_delete=models.CASCADE, related_name='layouts')
-    event = models.OneToOneField('Event', on_delete=models.SET_NULL, null=True, blank=True, related_name='layout')
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    cloned_from = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL)
-    is_default  = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f"{self.location.name} – {self.name}"
-
-
 class TableGroup(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='table_groups')
     name = models.CharField(max_length=100, help_text="Name of the group (e.g., 'Bride's Family', 'Groom's Colleagues')")
@@ -906,8 +893,7 @@ class MenuRating(models.Model):
 
 
 class MedicalCondition(models.Model):
-    """Common health conditions that impact food choices."""
-    name = models.CharField(max_length=100, unique=True)  # e.g. "Diabetes", "Lactose intolerance"
+    name = models.CharField(max_length=100, unique=True)
     is_common = models.BooleanField(default=True)
 
     class Meta:
@@ -919,9 +905,6 @@ class MedicalCondition(models.Model):
 
 
 class FaceEncoding(models.Model):
-    """Stores precomputed face encodings for a specific guest (profile) at a particular event.
-    Encodarea este salvată sub formă de listă de float-uri (JSONField) pentru portabilitate.
-    """
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="face_encodings")
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="face_encodings")
     encoding = models.JSONField()

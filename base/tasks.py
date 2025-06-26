@@ -58,7 +58,6 @@ def send_email_task(subject, text_body, html_body, to):
 
 @shared_task(bind=True)
 def prepare_event_face_encodings(self, event_id):
-    """Generează și salvează encodări faciale pentru toți invitații unui eveniment."""
     logger.info(f"[ENCODING] Pregătesc encodările faciale pentru evenimentul #{event_id}…")
     try:
         from base.utils import get_encoded_faces
@@ -73,13 +72,13 @@ def prepare_event_face_encodings(self, event_id):
         logger.error(f"[ENCODING] Eroare la generarea encodărilor pentru evenimentul #{event_id}: {e}", exc_info=True)
         raise
 
+
 @shared_task(bind=True)
 def prepare_encodings_upcoming_events(self):
-    """Task periodic: caută evenimente care încep în următoarele 15 minute și pregătește encodările."""
     logger.info("[ENCODING] Verific evenimentele care încep în curând pentru generarea encodărilor…")
     try:
         from base.models import Event
-        now = timezone.localtime()
+        now = timezone.now()
         window_start = now
         window_end = now + timedelta(minutes=15)
         upcoming_events = Event.objects.filter(event_date=now.date(), event_time__gte=window_start.time(), event_time__lte=window_end.time())

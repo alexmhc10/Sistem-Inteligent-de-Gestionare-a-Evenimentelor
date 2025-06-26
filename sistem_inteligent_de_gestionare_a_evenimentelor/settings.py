@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 import environ
 import os
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -111,30 +112,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 BROKER_TRANSPORT = 'redis'
 CELERY_BEAT_SCHEDULE = {
-   
     'calculate-monthly-profit': {
         'task': 'base.tasks.calculate_monthly_profit_task',
-        'schedule': {
-            'minute': 1,
-            'hour': 0,
-            'day_of_month': 1,
-            'month_of_year': '*',
-            'day_of_week': '*',
-        },
+        'schedule': crontab(minute=1, hour=0, day_of_month='1'),  # 00:01 în prima zi a fiecărei luni
         'args': (),
-        'options': {'queue': 'default'}
+        'options': {'queue': 'celery'},
     },
     'prepare-face-encodings-every-5-min': {
         'task': 'base.tasks.prepare_encodings_upcoming_events',
-        'schedule': {
-            'minute': '*/5',
-            'hour': '*',
-            'day_of_month': '*',
-            'month_of_year': '*',
-            'day_of_week': '*',
-        },
+        'schedule': crontab(minute='*/5'),
         'args': (),
-        'options': {'queue': 'default'}
+        'options': {'queue': 'celery'},
     },
 }
 DATABASES = {
