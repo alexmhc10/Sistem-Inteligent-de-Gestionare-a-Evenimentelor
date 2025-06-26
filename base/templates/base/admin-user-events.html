@@ -74,9 +74,7 @@
                     </div>
                 </div>
                 
-                <!-- Profile Header -->
                 <div class="text-center mb-5" style="position: relative;">
-                    <!-- Avatar -->
                     <div class="avatar avatar-xxl avatar-circle profile-cover-avatar" 
                          style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%);">
                         <img class="avatar-img" 
@@ -87,7 +85,6 @@
                     </div>
                 </div>
                 
-                  <!-- Nav -->
                   <div class="js-nav-scroller hs-nav-scroller-horizontal mb-5">
                      <span class="hs-nav-scroller-arrow-prev" style="display: none;">
                      <a class="hs-nav-scroller-arrow-link" href="javascript:;">
@@ -194,7 +191,7 @@
                                        <span class="fs-5">Lastly Updated at {{ event.updated_at }}</span>
                                     </div>
                                     
-                                    <a class="stretched-link" href="{% url 'admin-view-event' event.event_name %}"></a>
+                                    <a class="stretched-link" href="{% url 'admin-view-event' event.id %}"></a>
                                  </div>
                                  <div class="card-footer">
                                     <div class="row col-divider">
@@ -288,7 +285,7 @@
                                           <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
                                        </div>
                                        {% endif %}
-                                       <a class="stretched-link" href="{% url 'admin-view-event' event.event_name %}"></a>
+                                       <a class="stretched-link" href="{% url 'admin-view-event' event.id %}"></a>
                                     </div>
                                  </div>
                               </div>

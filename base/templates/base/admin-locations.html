@@ -378,13 +378,6 @@
                                                         class="badge bg-danger-subtle text-danger align-middle rounded-pill ms-1">{{ new_locations_count }}</span>
                                                 </a>
                                             </li>
-                                            <li class="nav-item" role="presentation">
-                                                <a class="nav-link fw-semibold" data-bs-toggle="tab"
-                                                    href="#locationnav-draft" role="tab" aria-selected="false"
-                                                    tabindex="-1">
-                                                    Draft
-                                                </a>
-                                            </li>
                                         </ul>
                                     </div>
                                   
@@ -647,7 +640,7 @@
                                                                    </div>
                                                                    <div class="flex-grow-1">
                                                                       <h5 class="fs-14 mb-1">
-                                                                         <a href="apps-ecommerce-location-details.html"
+                                                                         <a href="{% url 'admin-view-location' item.name %}"
                                                                             class="text-body">{{ item.name }}</a>
                                                                       </h5>
                                                                       <p class="text-muted mb-0">Category :
@@ -696,7 +689,7 @@
                                                                    <ul class="dropdown-menu dropdown-menu-end">
                                                                       <li>
                                                                          <a class="dropdown-item"
-                                                                            href="apps-ecommerce-location-details.html">
+                                                                            href="{% url 'admin-view-location' item.name %}">
                                                                          <i
                                                                             class="bi bi-eye align-bottom me-2 text-muted"></i>
                                                                          View </a>
@@ -704,7 +697,7 @@
                                                                       <li>
                                                                          <a class="dropdown-item edit-list"
                                                                             data-edit-id="1"
-                                                                            href="apps-ecommerce-add-location.html">
+                                                                            href="{% url 'admin_edit_location' item.id %}">
                                                                          <i
                                                                             class="bi bi-pencil-fill align-bottom me-2 text-muted"></i>
                                                                          Edit </a>
@@ -746,78 +739,6 @@
                                            </div>
                                         </div>
                                      </div>
-                                     <div class="tab-pane" id="locationnav-draft" role="tabpanel">
-                                        <div id="table-location-list-published" class="table-card gridjs-border-none">
-                                           <div role="complementary" class="gridjs gridjs-container"
-                                              style="width: 100%;">
-                                              <div class="gridjs-wrapper" style="height: auto;">
-                                                 <table role="grid" class="gridjs-table" style="height: auto;">
-                                                    <thead class="gridjs-thead">
-                                                       <tr class="" >
-                                                          <th data-column-id="#"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 40px;">
-                                                             <div class="gridjs-th-content">#</div>
-                                                          </th>
-                                                          <th data-column-id="event"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 360px;">
-                                                             <div class="gridjs-th-content">Location</div>
-                                                          </th>
-                                                          <th data-column-id=""
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 200px;">
-                                                             <div class="gridjs-th-content">Added by</div>
-                                                          </th>
-                                                          <th data-column-id="guests"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width:120px;">
-                                                             <div class="gridjs-th-content">Max Guests</div>
-                                                          </th>
-                                                          <th data-column-id="price"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 101px;">
-                                                             <div class="gridjs-th-content">Price</div>
-                                                          </th>
-                                                          <th data-column-id="location"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width:184px;">
-                                                             <div class="gridjs-th-content">Location</div>
-                                                          </th>
-                                                          <th data-column-id="rating"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 105px;">
-                                                             <div class="gridjs-th-content">Rating</div>
-                                                          </th>
-                                                          <th data-column-id="action"
-                                                             class="gridjs-th gridjs-th-sort text-muted"
-                                                             tabindex="0" style="width: 80px;">
-                                                             <div class="gridjs-th-content">Action</div>
-                                                          </th>
-                                                       </tr>
-                                                    </thead>
-                                                    <tbody class="gridjs-tbody">
-                                                    </tbody>
-                                                 </table>
-                                                 <div class="py-4 text-center no-result-message" id="no-result-message" style="display: none;">
-                                                    <div style="width:1185px;"></div>
-                                                    <h5 class="mt-4">Sorry! No Result Found</h5>
-                                                 </div>
-                                              </div>
-                                              <div class="gridjs-footer" id="footer-3">
-                                                <div class="gridjs-pagination">
-                                                    <div role="status" aria-live="polite" class="gridjs-summary"
-                                                       title="Page 1 of 1">
-                                                    </div>
-                                                    <div class="gridjs-pages">
-                                                    </div>
-                                                 </div>
-                                              </div>
-                                              <div id="gridjs-temp" class="gridjs-temp"></div>
-                                           </div>
-                                        </div>
-                                     </div>
-
                             </div>
                         </div>
                     </div>
