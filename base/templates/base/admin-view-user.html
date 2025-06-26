@@ -43,7 +43,8 @@
                 </ul>
                 
                 <hr>
-                <div class="dropdown pb-4">
+                <div class="dropdown pb-4 mt-auto">
+
                     <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle"
                         id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
                         <img src="{{ request.user.profile_set.first.photo.url }}" alt="hugenerd" width="30" height="30"
@@ -97,7 +98,6 @@
                         
                      </ul>
                   </div>
-                  <!-- End Nav -->
                   <div class="row">
                      <div class="col-lg-4">
                        
@@ -110,12 +110,9 @@
                               &quot;endPoint&quot;: &quot;#stickyBlockEndPoint&quot;,
                               &quot;stickyOffsetTop&quot;: 20
                               }">
-                              <!-- Header -->
                               <div class="card-header">
                                  <h4 class="card-header-title">Profile</h4>
                               </div>
-                              <!-- End Header -->
-                              <!-- Body -->
                               <div class="card-body">
                                  <ul class="list-unstyled list-py-2 text-dark mb-0">
                                     <li class="pb-0"><span class="card-subtitle">About</span></li>
@@ -130,12 +127,9 @@
                                     <li><i class="bi-stickies dropdown-item-icon"></i> Managing {{ count_locations }} locations</li>
                                  </ul>
                               </div>
-                              <!-- End Body -->
                            </div>
                            <div class="col-sm-6 w-100" >
-                              <!-- Card -->
                               <div class="card h-100">
-                                 <!-- Header -->
                                  <div class="card-header">
                                     <h4 class="card-header-title">Locations</h4>
                                  </div>
@@ -162,14 +156,10 @@
                                     {% endfor %}
                                     </ul>
                                  </div>
-                                 <!-- End Body -->
-                                 <!-- Footer -->
                                  <a class="card-footer text-center" href="{% url 'view_user_locations' user.username %}">
                                  View all locations <i class="bi-chevron-right"></i>
                                  </a>
-                                 <!-- End Footer -->
                               </div>
-                              <!-- End Card -->
                            </div>
                         </div>
                      </div>
@@ -204,25 +194,25 @@
                                              <mb-4>
                                                 <h3>
                                                    <i class="bi bi-calendar-event"></i> 
-                                                </h3>Created the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                                </h3>Created the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_id }}</a> at {{ notification.timestamp }}
                                              </mb-4>
                                              {% elif notification.action_type == "updated_event" %}
                                              <mb-4>
                                                 <h3>
                                                    <i class="bi bi-calendar-event"></i> 
-                                                </h3>Updated the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                                </h3>Updated the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_id }}</a> at {{ notification.timestamp }}
                                              </mb-4>
                                              {% elif notification.action_type == "updated_profile" %}
                                     <div class="mb-4">
                                        <h3>
                                           <i class="bi bi-person-check"></i>
-                                       </h3>   Updated his own profile, <a href="{% url 'view_user_admin' notification.target_object_name %}"> {{ notification.target_object_name }} </a> at {{ notification.timestamp }}
+                                       </h3>   Updated his own profile, <a href="{% url 'view_user_admin' notification.target_object_name %}"> {{ notification.target_object_id }} </a> at {{ notification.timestamp }}
                                     </div>
                                     {% elif notification.action_type == "completed_event" %}
                                     <mb-4>
                                        <h3>
                                           <i class="bi bi-calendar2-event-fill"></i> 
-                                       </h3>Succesfully completed the event<a href="{% url 'admin-view-event' notification.target_object_name %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
+                                       </h3>Succesfully completed the event<a href="{% url 'admin-view-event' notification.target_object_id %}"> {{ notification.target_object_name }}</a> at {{ notification.timestamp }}
                                     </mb-4>
                                     {% endif %}
                                           </div>
@@ -260,7 +250,7 @@
                                           <div class="d-flex">
                                              <img class="avatar" style="width: 50px; " src="{{ event.location.gallery.url }}" alt="Image Description">
                                              <div class="ms-3">
-                                                <h5 class="mb-0"> <a href=" {% url 'admin-view-event' event.event_name %} ">{{ event.event_name }}</a> </h5>
+                                                <h5 class="mb-0"> <a href=" {% url 'admin-view-event' event.id %} ">{{ event.event_name }}</a> </h5>
                                                 <small>Updated 1 day ago</small>
                                              </div>
                                           </div>

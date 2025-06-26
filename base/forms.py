@@ -137,7 +137,7 @@ class RegisterForm(ModelForm):
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ['username', 'password', 'email', 'description', 'photo', 'cv_file']
+        fields = ['username', 'password', 'email', 'description', 'photo', 'cv_file', 'first_name', 'last_name']
         widgets = {
             'password': forms.PasswordInput(),
         }

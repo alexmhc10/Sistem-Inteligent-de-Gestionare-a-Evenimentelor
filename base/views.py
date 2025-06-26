@@ -12,7 +12,6 @@ from .forms import *
 from django.conf import settings
 from collections import Counter, defaultdict
 import json
-from .forms import EventForm
 from .forms import TaskForm
 from django.http import HttpResponseRedirect
 import random
@@ -71,6 +70,7 @@ from base.tasks import run_optimization_task
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 
+from django.db.models import Sum
 
 
 class NotificationView(View):
@@ -1120,6 +1120,8 @@ def users(request):
             if request.POST.get('action') == "accept":
                 user = User.objects.create_user(
                     username=profile.username,
+                    first_name=profile.first_name,
+                    last_name=profile.last_name,
                     password=profile.password,
                     email=profile.email
                 )
@@ -1171,10 +1173,15 @@ def users(request):
     user_data = [
     {
         'username': profile.user.username if profile.user else profile.username,
-        'salary': float(getattr(profile.user.salary, 'total_salary', 0)) if profile.user else 0
+        'salary': float(profile.user.salary.total_salary) if (
+            profile.user and hasattr(profile.user, 'salary') and profile.user.salary.total_salary != 0
+        ) else float(profile.user.salary.base_salary) if (
+            profile.user and hasattr(profile.user, 'salary')
+        ) else 0
     }
     for profile in profiles
 ]
+
     non_acc = Profile.objects.filter(approved=False,user_type="organizer")
     notifications = Notification.objects.all()
     context = {
@@ -1247,15 +1254,21 @@ def homeAdmin(request):
             'organizer': organizer,
             'event_count': count
         })
-    high_ev = []
+    location_counts = defaultdict(int)
+
     for location in locations:
-        event_count = location.event_set.count() 
+        event_count = location.event_set.count()
         if event_count > 0:
-            percentage = int((event_count / ev_nr) * 100)  
-            high_ev.append({
-                'location': location.location,
-                'percentage':percentage
-            })
+            location_counts[location.location] += event_count
+
+    high_ev = []
+    for loc_name, count in location_counts.items():
+        percentage = int((count / ev_nr) * 100)
+        high_ev.append({
+            'location': loc_name,
+            'percentage': percentage
+        })
+    print("high ev: ", high_ev)
     loc_nr = locations.count()
     for event in events:
         print("Evenimente corecte:", event.event_name, event.location)
@@ -1295,13 +1308,11 @@ def homeAdmin(request):
     .annotate(total=Count('id'))
     .order_by('month')
 )
-    profit_by_month = (
-        CompanyProfit.objects
-    .annotate(month=TruncMonth('created_at'))
-    .values('month')
-    .annotate(total=Count('id'))
-    .order_by('month')
-    )
+    profit_by_month = CompanyProfit.objects.annotate(
+    month=TruncMonth('created_at')
+).values('month').annotate(
+    total=Sum('profit')
+).order_by('month')
     location_month_count = []
     for entry in locations_by_month:
         month_str = entry['month'].strftime('%m')
@@ -1337,37 +1348,14 @@ def homeAdmin(request):
         )
     profit_month_count = []
     for entry in profit_by_month:
-        month_str = entry['month'].strftime('%m')
-        if month_str == "01":
-            month_str = "Jan"
-        elif month_str == "02":
-            month_str = "Feb"
-        elif month_str == "03":
-            month_str = "Mar"
-        elif month_str == "04":
-            month_str = "Apr"
-        elif month_str == "05":
-            month_str = "May"
-        elif month_str == "06":
-            month_str = "Jun"
-        elif month_str == "07":
-            month_str = "Jul"
-        elif month_str == "08":
-            month_str = "Aug"
-        elif month_str == "09":
-            month_str = "Sep"
-        elif month_str == "10":
-            month_str = "Oct"
-        elif month_str == "11":
-            month_str = "Nov"
-        elif month_str == "12":
-            month_str = "Dec"
-        profit_month_count.append(
-            {
-                'month':month_str,
-                'count':entry['total']
-            }
-        )
+        month_str = entry['month'].strftime('%b')  
+        total = entry['total'] or Decimal('0.0')
+        profit_month_count.append({
+            'month': month_str,
+            'count': float(total)  
+        })
+    print(profit_month_count)
+
     events_by_month = (
     Event.objects
     .annotate(month=TruncMonth('event_date'))
