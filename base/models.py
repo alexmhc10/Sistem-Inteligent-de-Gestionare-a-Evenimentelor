@@ -916,3 +916,21 @@ class MedicalCondition(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class FaceEncoding(models.Model):
+    """Stores precomputed face encodings for a specific guest (profile) at a particular event.
+    Encodarea este salvată sub formă de listă de float-uri (JSONField) pentru portabilitate.
+    """
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="face_encodings")
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="face_encodings")
+    encoding = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("profile", "event")
+        verbose_name = "Face Encoding"
+        verbose_name_plural = "Face Encodings"
+
+    def __str__(self):
+        return f"Encoding for {self.profile} at event #{self.event_id}"

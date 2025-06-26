@@ -3132,6 +3132,7 @@ def guest_home(request):
     print("Evenimente confirmate:", confirmed_events)
     next_confirmed_event = confirmed_events.first() if confirmed_events.exists() else None
     print("Next confirmed event:", next_confirmed_event)
+    rsvp_next_event = RSVP.objects.filter(event=next_confirmed_event, guest=request.user).first() if next_confirmed_event else None
 
     if confirmed_events.exists():
         upcoming_events = confirmed_events[1:]
@@ -3162,7 +3163,8 @@ def guest_home(request):
         "past_events": past_events,
         "past_events_count": past_events.count(),
         "event": next_confirmed_event,
-        "event_data": json.dumps(event_data)
+        "event_data": json.dumps(event_data),
+        "rsvp_next_event": rsvp_next_event
     }
 
     if not_completed:

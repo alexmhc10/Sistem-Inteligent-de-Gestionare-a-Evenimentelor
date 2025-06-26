@@ -93,14 +93,15 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                         {% include 'timer.html' %}
                                       </div>
                                       <div class="d-flex flex-row m-0">
-                                        {% if rsvp.status == "confirmed" %}
-                                          <span class="badge bg-success">RSVP: Confirmed</span>
-                                          <span class="badge bg-success">My menu</span>
-                                        {% else %}
+                                        {% if rsvp_next_event and rsvp_next_event.response == "Accepted" %}
+                                          <span class="badge bg-success">RSVP: Accepted</span>
+                                          <a href="{% url 'guest_event_view' next_confirmed_event.id %}#menuGrid" class="btn btn-outline-secondary btn-sm">My menu</a>
+                                          {% elif rsvp_next_event and rsvp_next_event.response == "Pending" %}
                                           <span class="badge bg-warning text-dark">RSVP: Pending</span>
+                                        {% else %}
+                                          <span class="badge bg-danger">RSVP: Declined</span>
                                         {% endif %}
                                         <a href="https://www.google.com/maps/search/?api=1&query={{ next_confirmed_event.location.location|urlencode }}" target="_blank"  class="btn btn-outline-secondary btn-sm">Map</a>
-                                        <a href="{% url 'guest_event_view' next_confirmed_event.id %}#menuGrid" class="btn btn-outline-secondary btn-sm">My menu</a>
                                       </div>
                                     </div>
                                   </div>

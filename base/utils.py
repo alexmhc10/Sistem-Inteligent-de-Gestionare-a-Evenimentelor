@@ -1,6 +1,6 @@
 import face_recognition as fr
 import numpy as np
-from base.models import Profile, Event
+from base.models import Profile, Event, FaceEncoding
 import os
 
 def is_ajax(request):
@@ -9,35 +9,56 @@ def is_ajax(request):
 
 def get_encoded_faces(event_id):
     """
-    This function loads all user profile images and encodes their faces.
-    It handles missing files and skips images where no face is detected.
+    Returnează un dicționar {username: encoding_numpy_array} pentru toți invitații unui eveniment.
+    1. Încearcă să încarce encodările precompute din modelul FaceEncoding.
+    2. Dacă lipsesc encodări, se calculează on-the-fly și se persistă pentru utilizări viitoare.
     """
     event = Event.objects.get(id=event_id)
-    guests = event.guests.all()
-    qs = Profile.objects.filter(id__in=guests.values_list('profile', flat=True))
-    encoded = {}
 
-    for p in qs:
+    # 1. Încarcă encodările existente
+    precomputed_qs = FaceEncoding.objects.filter(event_id=event_id)
+    encoded: dict[str, np.ndarray] = {}
+
+    for rec in precomputed_qs.select_related("profile__user"):
+        try:
+            encoded[rec.profile.user.username] = np.array(rec.encoding, dtype=float)
+        except Exception:
+            # Dacă apare o eroare de conversie, ignorăm și recalc.
+            pass
+
+    # 2. Identifică invitații fără encodări
+    guests_without = []
+    guest_profiles = Profile.objects.filter(id__in=event.guests.values_list('profile', flat=True))
+    for p in guest_profiles.select_related("user"):
+        if p.user.username not in encoded:
+            guests_without.append(p)
+
+    # 3. Calculează encodările lipsă
+    for p in guests_without:
         encoding = None
-
-        # Verificăm dacă există imaginea și dacă fișierul există fizic pe disc
         if p.photo and os.path.exists(p.photo.path):
             try:
                 face = fr.load_image_file(p.photo.path)
                 face_encodings = fr.face_encodings(face)
-
                 if face_encodings:
                     encoding = face_encodings[0]
                     print(f"✅ Față detectată pentru {p.user.username}")
                 else:
                     print(f"⚠️ Nicio față detectată în imaginea lui {p.user.username}")
-
-                if encoding is not None:
-                    encoded[p.user.username] = encoding
             except Exception as e:
                 print(f"❌ Eroare la procesarea imaginii pentru {p.user.username}: {e}")
-        else:
-            print(f"🛑 Imagine lipsă pentru {p.user.username} - {p.photo}")
+
+        if encoding is not None:
+            encoded[p.user.username] = encoding
+            # Persistă în FaceEncoding pentru utilizări viitoare
+            try:
+                FaceEncoding.objects.update_or_create(
+                    profile=p,
+                    event=event,
+                    defaults={"encoding": encoding.tolist()}
+                )
+            except Exception as e:
+                print(f"❌ Eroare la salvarea encodării pentru {p.user.username}: {e}")
 
     return encoded
 

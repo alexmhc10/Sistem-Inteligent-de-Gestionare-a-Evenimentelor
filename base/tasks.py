@@ -5,6 +5,8 @@ from base.models import *
 logger = logging.getLogger(__name__)
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
+from django.utils import timezone
+from datetime import timedelta
 
 class DummyOut:
     def write(self, s):
@@ -53,3 +55,38 @@ def send_email_task(subject, text_body, html_body, to):
     msg = EmailMultiAlternatives(subject, text_body, None, [to])
     msg.attach_alternative(html_body, "text/html")
     msg.send()
+
+@shared_task(bind=True)
+def prepare_event_face_encodings(self, event_id):
+    """Generează și salvează encodări faciale pentru toți invitații unui eveniment."""
+    logger.info(f"[ENCODING] Pregătesc encodările faciale pentru evenimentul #{event_id}…")
+    try:
+        from base.utils import get_encoded_faces
+        faces = get_encoded_faces(event_id)
+        logger.info(f"[ENCODING] Am pregătit {len(faces)} encodări pentru evenimentul #{event_id}.")
+        return {
+            "status": "success",
+            "event_id": event_id,
+            "encodings": len(faces)
+        }
+    except Exception as e:
+        logger.error(f"[ENCODING] Eroare la generarea encodărilor pentru evenimentul #{event_id}: {e}", exc_info=True)
+        raise
+
+@shared_task(bind=True)
+def prepare_encodings_upcoming_events(self):
+    """Task periodic: caută evenimente care încep în următoarele 15 minute și pregătește encodările."""
+    logger.info("[ENCODING] Verific evenimentele care încep în curând pentru generarea encodărilor…")
+    try:
+        from base.models import Event
+        now = timezone.localtime()
+        window_start = now
+        window_end = now + timedelta(minutes=15)
+        upcoming_events = Event.objects.filter(event_date=now.date(), event_time__gte=window_start.time(), event_time__lte=window_end.time())
+        for event in upcoming_events:
+            prepare_event_face_encodings.delay(event.id)
+        logger.info(f"[ENCODING] Programate encodări pentru {upcoming_events.count()} evenimente.")
+        return upcoming_events.count()
+    except Exception as e:
+        logger.error(f"[ENCODING] Eroare la task-ul periodic de encodări: {e}", exc_info=True)
+        raise

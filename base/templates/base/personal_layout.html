@@ -87,13 +87,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 Layout Management
                           </h1>
                             <p class="text-center mb-4">
-                                Here you can customize your location's layout. Add, remove, and arrange tables to match your venue's setup.
+                                Here you can customize your location's layout. {{ location.name }} Add, remove, and arrange tables to match your venue's setup.
                             </p>
-                            
-                            <!-- Table Controls -->
-                          
+                            <p class="text-center mb-4">
+                                <strong>Total tables:</strong> {{ tables.count }}, <strong> and special elements:</strong> {{ special_elements.count }}
+                            </p>
 
-                            <!-- Special Elements Controls -->
                             <div class="mb-3">
                                 <h5 class="card-title mb-4">
                                     Special Elements

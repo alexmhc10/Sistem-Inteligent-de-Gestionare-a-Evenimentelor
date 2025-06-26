@@ -25,7 +25,6 @@ class Command(BaseCommand):
 
         verbosity = int(options.get("verbosity", 1))
 
-        # Verbose diagnostic information
         if verbosity >= 2:
             self.stdout.write(f"Total ratings: {ratings.count()}")
 
@@ -34,11 +33,9 @@ class Command(BaseCommand):
                 "Nu există niciun MenuRating în baza de date – modelul nu poate fi antrenat."))
             return
 
-        # Găsește invitații care au cel puțin un review
         active_guest_ids = set(ratings.values_list('guest_id', flat=True).distinct())
         guests = Guests.objects.filter(id__in=active_guest_ids)
 
-        # Găsește preparatele care au cel puțin un review
         active_dish_ids = set(ratings.values_list('menu_item_id', flat=True).distinct())
         dishes = Menu.objects.filter(id__in=active_dish_ids)
 
@@ -46,7 +43,6 @@ class Command(BaseCommand):
             self.stdout.write(f"Active Guests (cu review-uri): {guests.count()}")
             self.stdout.write(f"Active Dishes (cu review-uri): {dishes.count()}")
 
-        # Verifică dacă avem suficiente date
         if guests.count() < 2:
             self.stdout.write(self.style.WARNING(
                 "Nu sunt suficienți invitați cu review-uri pentru antrenare (minimum 2 necesari)."))
@@ -57,7 +53,6 @@ class Command(BaseCommand):
                 "Nu sunt suficiente preparate cu review-uri pentru antrenare (minimum 2 necesare)."))
             return
 
-        # -------- helpers --------
         def user_tokens(g):
             tokens = []
             if g.diet_preference != 'none':
@@ -111,7 +106,6 @@ class Command(BaseCommand):
                 tokens.append("macro_low_kcal")
             return tokens
 
-        # -------------------------
 
         user_feature_tokens = set().union(*[user_tokens(g) for g in guests])
         item_feature_tokens = set().union(*[item_tokens(d) for d in dishes])
@@ -127,7 +121,6 @@ class Command(BaseCommand):
         end_time = time.perf_counter() - start_time
         self.stdout.write(f"Dataset fit time: {end_time:.2f} seconds")
 
-        # Filtrează ratingurile pentru a include doar invitații și preparatele active
         filtered_ratings = ratings.filter(
             guest_id__in=active_guest_ids,
             menu_item_id__in=active_dish_ids
@@ -143,17 +136,14 @@ class Command(BaseCommand):
         print("Positives per user min:", interactions.sum(axis=1).min())
         print("Positives per item min:", interactions.sum(axis=0).min())
         
-        # Verifică dacă avem suficiente interacțiuni
         if interactions.nnz < 10:
             self.stdout.write(self.style.WARNING(
                 "Nu sunt suficiente interacțiuni pentru antrenare (minimum 10 necesare)."))
             return
 
-        # Verifică dacă toți utilizatorii și elementele au cel puțin o interacțiune
         user_interactions = interactions.sum(axis=1).A1
         item_interactions = interactions.sum(axis=0).A1
         
-        # Acum ar trebui să avem toți utilizatorii cu cel puțin o interacțiune
         if user_interactions.min() == 0:
             self.stdout.write(self.style.WARNING(
                 f"Există utilizatori fără interacțiuni. Utilizatori cu interacțiuni: {np.sum(user_interactions > 0)}/{len(user_interactions)}"))
@@ -181,44 +171,40 @@ class Command(BaseCommand):
             for d in dishes
         ])
 
-        # Verifică dimensiunile features
         self.stdout.write(f"User features shape: {user_features.shape}")
         self.stdout.write(f"Item features shape: {item_features.shape}")
         self.stdout.write(f"Interactions shape: {interactions.shape}")
 
         show_progress = options.get("progress", False)
 
-        # Încearcă cu parametri mai conservatori
         model = LightFM(
             loss="warp", 
-            no_components=8,  # Redus de la 16 la 8
+            no_components=8,
             random_state=42,
-            learning_rate=0.05,  # Adăugat learning rate explicit
-            learning_schedule='adagrad'  # Adăugat learning schedule
+            learning_rate=0.05,
+            learning_schedule='adagrad'
         )
         
         try:
             self.stdout.write("Începe antrenarea modelului...")
             
-            # Încearcă mai întâi fără features pentru a testa
             self.stdout.write("Testare antrenare fără features...")
             model_simple = LightFM(loss="warp", no_components=8, random_state=42)
             model_simple.fit(
                 interactions,
                 epochs=5,
-                num_threads=1,  # Forțează single thread
+                num_threads=1,
                 verbose=show_progress,
             )
             self.stdout.write(self.style.SUCCESS("✓ Antrenarea simplă a funcționat!"))
             
-            # Acum încearcă cu features
             self.stdout.write("Începe antrenarea cu features...")
             model.fit(
                 interactions,
                 user_features=user_features,
                 item_features=item_features,
-                epochs=5,  # Redus de la 10 la 5
-                num_threads=1,  # Forțează single thread
+                epochs=5,
+                num_threads=1,
                 verbose=show_progress,
             )
             self.stdout.write(self.style.SUCCESS("✓ Antrenarea cu features a funcționat!"))

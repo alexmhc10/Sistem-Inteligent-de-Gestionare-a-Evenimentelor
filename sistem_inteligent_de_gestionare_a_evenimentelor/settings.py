@@ -124,6 +124,18 @@ CELERY_BEAT_SCHEDULE = {
         'args': (),
         'options': {'queue': 'default'}
     },
+    'prepare-face-encodings-every-5-min': {
+        'task': 'base.tasks.prepare_encodings_upcoming_events',
+        'schedule': {
+            'minute': '*/5',
+            'hour': '*',
+            'day_of_month': '*',
+            'month_of_year': '*',
+            'day_of_week': '*',
+        },
+        'args': (),
+        'options': {'queue': 'default'}
+    },
 }
 DATABASES = {
     'default': {

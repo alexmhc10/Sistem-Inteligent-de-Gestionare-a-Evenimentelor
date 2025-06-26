@@ -47,7 +47,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                         <div class="col-lg-12 d-flex flex-column justify-content-center">
   
                           <h1 class="text-center"><i class="bi bi-clock"></i></h1>
-                          {% include 'timer.html' %} - left
+                          {% include 'timer.html' %}
                         </div>
                         <hr>
                         <div class="col-lg-12 p-1">
@@ -126,8 +126,16 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                       <td>{{ preferences.spicy_food }}</td>
                                       <td>{{ preferences.texture_preference }}</td>
                                       <td>{{ preferences.nutrition_goal }}</td>
+                                      {% if preferences.medical_conditions.all %}
                                       <td>{{ preferences.medical_conditions.all|join:", " }}</td>
+                                      {% else %}
+                                      <td>No medical conditions</td>
+                                      {% endif %}
+                                      {% if preferences.allergens.all %}
                                       <td>{{ preferences.allergens.all|join:", " }}</td>
+                                      {% else %}
+                                      <td>No allergens</td>
+                                      {% endif %}
                                     </tr>
                                   </tbody>
                                 </table>
@@ -1536,7 +1544,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
   });
 </script>
 
-<!-- RSVP auto-prompt (re-added) -->
 <script>
  document.addEventListener("DOMContentLoaded", () => {
    const rsvpStatus = "{{ rsvp.response }}";
@@ -1559,7 +1566,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
      });
    }
 
-   function getCookie(n){return document.cookie.split('; ').find(row=>row.startsWith(n+'='))?.split('=')[1];}
+  function getCookie(n){return document.cookie.split('; ').find(row=>row.startsWith(n+'='))?.split('=')[1];}
    function sendRsvp(val){
      fetch(location.pathname,{
        method:"POST",
