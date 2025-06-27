@@ -219,6 +219,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
 <script src="https://cdn.jsdelivr.net/npm/konva@9.2.2/konva.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+
+
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.getElementById('konva-container');
     let width = container.offsetWidth;
@@ -231,7 +233,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const layer = new Konva.Layer();
 
     const gridLayer = new Konva.Layer({ listening: false });
-    const gridSize = 50; // px
+    const gridSize = 50;
     function drawGrid() {
         const cols = Math.ceil(width / gridSize);
         const rows = Math.ceil(height / gridSize);
@@ -269,17 +271,12 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         const newWidth = container.offsetWidth;
         stage.width(newWidth);
-        // Dacă vrei să scalezi și elementele, poți adăuga:
-        // const scale = newWidth / width;
-        // stage.scale({ x: scale, y: 1 });
-        // width = newWidth;
         layer.draw();
         gridLayer.destroyChildren();
         drawGrid();
         gridLayer.draw();
     });
 
-    // Load existing tables
     const tables = [
         {% for table in tables %}
         {

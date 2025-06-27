@@ -917,3 +917,20 @@ class FaceEncoding(models.Model):
 
     def __str__(self):
         return f"Encoding for {self.profile} at event #{self.event_id}"
+
+
+class RecommenderStatus(models.Model):
+    last_trained_at = models.DateTimeField(auto_now_add=True)
+    last_rating_count = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return f"Recommender trained at {self.last_trained_at} (ratings: {self.last_rating_count})"
+
+    class Meta:
+        verbose_name = "Recommender Status"
+        verbose_name_plural = "Recommender Status"
+
+    @classmethod
+    def get(cls):
+        obj, _ = cls.objects.get_or_create(id=1)
+        return obj

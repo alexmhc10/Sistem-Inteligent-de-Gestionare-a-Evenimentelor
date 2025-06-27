@@ -75,13 +75,10 @@ def send_welcome_email(sender, instance, **kwargs):
 
     if not instance.email:
         return
-
     if instance.user_type != 'guest':
         return
-
     if instance.welcome_email_sent:
         return
-
     base_url = settings.FRONTEND_BASE_URL.rstrip('/')
     guest_home_path = reverse('guest_home')
     guest_home_url = f"{base_url}{guest_home_path}"
@@ -92,7 +89,7 @@ def send_welcome_email(sender, instance, **kwargs):
         "guest_home_url": guest_home_url,
     }
 
-    subject = "Welcome to our app Eventsmart!"
+    subject = "Welcome to our app Eventease!"
     html_body = render_to_string("base/welcome_guests.html", context)
     text_body = render_to_string("base/welcome_guests.txt", context)
 

@@ -108,21 +108,21 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Europe/Bucharest'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 BROKER_TRANSPORT = 'redis'
-CELERY_BEAT_SCHEDULE = {
-    'calculate-monthly-profit': {
-        'task': 'base.tasks.calculate_monthly_profit_task',
-        'schedule': crontab(minute=1, hour=0, day_of_month='1'),  # 00:01 în prima zi a fiecărei luni
-        'args': (),
-        'options': {'queue': 'celery'},
-    },
+
+
+CELERY_BEAT_SCHEDULE = {    
     'prepare-face-encodings-every-5-min': {
         'task': 'base.tasks.prepare_encodings_upcoming_events',
         'schedule': crontab(minute='*/5'),
         'args': (),
         'options': {'queue': 'celery'},
+    },
+    'train-lightfm-daily': {
+        'task': 'base.tasks.train_lightfm_model',
+        'schedule': crontab(minute=0, hour=3),
+        'args': (),
+        'options': {'queue': 'retain'},
     },
 }
 DATABASES = {
