@@ -65,6 +65,11 @@ def location_changed_handler(sender, instance, created, **kwargs):
 def event_deleted_handler(sender, instance, **kwargs):
     run_optimization_task, _ = import_tasks()
     run_optimization_task.delay()
+    
+@receiver(post_delete, sender=Location)
+def location_deleted_handler(sender, instance, **kwargs):
+    run_optimization_task, _ = import_tasks()
+    run_optimization_task.delay()
 
 @receiver(post_save, sender=Profile)
 def send_welcome_email(sender, instance, **kwargs):

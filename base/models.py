@@ -457,12 +457,18 @@ class OptimisedEvent(models.Model):
         verbose_name = "Eveniment Optimizat"
         verbose_name_plural = "Evenimente Optimizate"
 
+    @property
+    def display_original_location(self):
+        if self.original_location:
+            return self.original_location.name
+ 
+        return "Previous Location Removed"
+
     def __str__(self):
         return (
             f"Optimizare pentru '{self.event.event_name}' (ID: {self.event.id}) "
             f"la {self.optimized_at.strftime('%Y-%m-%d %H:%M')}"
         )
-
 
 class GuestMenu(models.Model):
     guest = models.ForeignKey(User, on_delete=models.CASCADE, related_name="guest", default=None)

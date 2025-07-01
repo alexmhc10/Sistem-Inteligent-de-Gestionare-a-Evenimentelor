@@ -161,7 +161,7 @@
                                                                 <i class="h5 ms-2 text-danger bi bi-graph-down-arrow"></i>
                                                                 {% endif %}
                                                             </td>
-                                                            <td class="amount"> {{ item.original_location.name }} </td>
+                                                            <td class="amount"> {{ item.display_original_location }} </td>
                                                             <td class="payment"> {{ item.optimized_location.name }} </td>
                                                             {% if item.event.cancelled %}
                                                             <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
