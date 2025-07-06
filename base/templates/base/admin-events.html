@@ -179,7 +179,7 @@
         <li class="nav-item" role="presentation">
             <a class="nav-link py-3 ongoing" data-bs-toggle="tab" href="#ongoing" role="tab" aria-selected="false">
                 <i class="ri-truck-line me-1 align-bottom"></i> Ongoing
-                <span class="badge bg-danger align-middle ms-1">{{ unfinished_count }}</span>
+                <span class="badge bg-danger align-middle ms-1">{{ ongoing_count }}</span>
             </a>
         </li>
         <li class="nav-item" role="presentation">
@@ -470,8 +470,8 @@
                                             </thead>
                                             <tbody class="list form-check-all">
                                                 {% for item in detailed_events %}
-                                                    {% if not item.completed %}
-                                                        {% if item.event_date == today_date and today_time >= item.even_time  %}
+                                                {% if item.cancelled == False %}
+                                                        {% if item.event_date == today_date and today_time >= item.event_time  %}
                                                         <tr>
                                                             <th scope="row">
                                                                 <div class="form-check">
@@ -484,7 +484,7 @@
                                                             <td class="event_date"> {{ item.event_date }} <small class="text-muted"> {{ item.event_time }} </small></td>
                                                             <td class="amount"> {{ item.guest_count }} </td>
                                                             <td class="payment"> {{ item.cost }}$ </td>
-                                                            <td class="status"><span class="badge bg-danger-subtle text-danger text-uppercase">Cancelled</span></td>
+                                                            <td class="status"><span class="badge bg-success-subtle text-success text-uppercase">Ongoing</span></td>
                                                             <td>
                                                                 <ul class="list-inline hstack gap-2 mb-0">
                                                                     <li class="list-inline-item" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-placement="top" title="View">
@@ -506,7 +506,7 @@
                                                             </td>
                                                         </tr>
                                                         {% endif %}
-                                                    {% endif %}
+                                                        {% endif %}
                                                 {% endfor %}
                                             </tbody>
                                         </table>

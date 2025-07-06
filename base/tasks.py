@@ -1,13 +1,11 @@
-from sistem_inteligent_de_gestionare_a_evenimentelor.celery import app
 import logging
-from base.management.commands.optimise_events import run_genetic_optimization 
-from base.models import *
-logger = logging.getLogger(__name__)
 from celery import shared_task
 from django.core.mail import EmailMultiAlternatives
 from django.utils import timezone
 from datetime import timedelta
 from django.core.management import call_command
+from base.models import *
+logger = logging.getLogger(__name__)
 
 class DummyOut:
     def write(self, s):
@@ -17,21 +15,19 @@ class DummyStyle:
     def __getattr__(self, name):
         return lambda x: x
 
-@app.task(bind=True)
-def run_optimization_task(self):
+@shared_task
+def run_optimization_task():
+    """Task that runs the optimization command"""
     logger.info("Starting optimization task via Celery...")
-
-    dummy_out = DummyOut()
-    dummy_style = DummyStyle()
-
     try:
-        run_genetic_optimization(dummy_out, dummy_style)
+        call_command('optimise_events')
         logger.info("Optimization task completed successfully.")
         return "Optimization task completed successfully."
     except Exception as e:
         logger.error(f"Optimization task failed: {e}", exc_info=True)
         raise
-@app.task(bind=True)
+
+@shared_task(bind=True)
 def calculate_monthly_profit_task():
 
     logger.info("Începerea task-ului de calcul al profitului lunar.")

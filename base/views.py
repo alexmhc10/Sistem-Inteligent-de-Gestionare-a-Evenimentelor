@@ -903,16 +903,35 @@ def admin_events(request):
             'organized_by':event.organized_by
         })
     today_date = today.date()
-    today_time = today.strftime("%H:%M:%S")
+    current_datetime = datetime.now()
+    today_time = current_datetime.time()
     detailed_incompleted_events = []
     finished_count = 0
     cancelled_count = 0
+    ongoing_count = 0
     for item in detailed_events:
-        if item['completed'] :
+        print(f"--- Processing Event: {item['name']} ({item['event_date']} {item['event_time']}) ---")
+        print(f"  Completed: {item['completed']}, Cancelled: {item['cancelled']}")
+
+        if item['completed']:
+            print("  --> Event is COMPLETED.")
             finished_count += 1
-        elif item['cancelled'] == True:
+        elif item['cancelled']:
+            print("  --> Event is CANCELLED.")
             cancelled_count += 1
             detailed_incompleted_events.append(item)
+        elif not item['completed'] and not item['cancelled']:
+            print("  --> Event is NEITHER completed nor cancelled. Checking for ONGOING...")
+            if item['event_date'] == today_date and item['event_time'] <= today_time:
+                print("  --> DA! This event IS ongoing.")
+                ongoing_count += 1
+            else:
+                print("  --> NO. Date/Time condition not met for ongoing.")
+        print("--------------------------------------------------")
+
+    print(f"Finished Count: {finished_count}")
+    print(f"Cancelled Count: {cancelled_count}")
+    print(f"Ongoing Count: {ongoing_count}")
 
     if request.method == 'POST':
         if request.POST.get('trigger_optimization') == '1':
@@ -949,12 +968,16 @@ def admin_events(request):
 
             return redirect('admin-events')
     locations = Location.objects.all()
+    print("ora si data de azi: ", today_time, today_date)
+    for i in detailed_events:
+        print(i['event_date'] == today_date and i['event_time'] <= today_time)
     context = {
         'locations':locations,
         'cancelled_count':cancelled_count,
         'today_date':today_date,
         'today_time':today_time,
         'finished_count':finished_count,
+        'ongoing_count':ongoing_count,
         'detailed_incompleted_events':detailed_incompleted_events,
         'detailed_events': detailed_events,
         'events_count': events_count,
