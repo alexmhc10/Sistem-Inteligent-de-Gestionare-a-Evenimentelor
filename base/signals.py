@@ -1,4 +1,3 @@
-# base/signals.py
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
 from django.dispatch import receiver
 from django.utils.timezone import now
@@ -8,7 +7,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from decimal import Decimal
 from .models import *
-# Importuri întârziate pentru a evita circular imports
+
 def import_tasks():
     from base.tasks import run_optimization_task, send_email_task
     return run_optimization_task, send_email_task
@@ -77,7 +76,7 @@ def send_welcome_email(sender, instance, **kwargs):
         return
     if instance.welcome_email_sent:
         return
-
+    _, send_email_task = import_tasks()
     base_url = settings.FRONTEND_BASE_URL.rstrip('/')
     if instance.user_type == 'guest':
         home_path = reverse('guest_home')

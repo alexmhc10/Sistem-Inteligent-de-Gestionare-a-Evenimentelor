@@ -58,28 +58,23 @@ class LightFMRecommender:
             
             guest_idx = self.guest_id_to_idx[guest_id]
             
-            # Generează predicții pentru toate preparatele
             scores = self.model.predict(guest_idx, np.arange(len(self.dishes)))
             
-            # Găsește preparatele deja evaluate (dacă exclude_rated=True)
             rated_dish_ids = set()
             if exclude_rated:
                 rated_dish_ids = set(MenuRating.objects.filter(
                     guest_id=guest_id
                 ).values_list('menu_item_id', flat=True))
             
-            # Filtrează și sortează recomandările
             recommendations = []
             for dish_idx, score in enumerate(scores):
                 dish_id = list(self.dish_id_to_idx.keys())[
                     list(self.dish_id_to_idx.values()).index(dish_idx)
                 ]
                 
-                # Exclude preparatele deja evaluate
                 if exclude_rated and dish_id in rated_dish_ids:
                     continue
                 
-                # Găsește informațiile despre preparat
                 dish_info = next((d for d in self.dishes if d['id'] == dish_id), None)
                 if dish_info:
                     recommendations.append({
@@ -91,7 +86,6 @@ class LightFMRecommender:
                         'normalized_score': self._normalize_score(score, scores)
                     })
             
-            # Sortează după scor și returnează top_n
             recommendations.sort(key=lambda x: x['score'], reverse=True)
             return recommendations[:top_n]
             
@@ -110,15 +104,12 @@ class LightFMRecommender:
             
             dish_idx = self.dish_id_to_idx[dish_id]
             
-            # Calculează similaritatea cu toate preparatele
             similarities = []
             for other_dish_idx in range(len(self.dishes)):
                 if other_dish_idx != dish_idx:
-                    # Folosește features pentru a calcula similaritatea
                     similarity = self._calculate_dish_similarity(dish_idx, other_dish_idx)
                     similarities.append((other_dish_idx, similarity))
             
-            # Sortează și returnează top_n
             similarities.sort(key=lambda x: x[1], reverse=True)
             
             similar_dishes = []
@@ -142,7 +133,6 @@ class LightFMRecommender:
             return []
     
     def _normalize_score(self, score, all_scores):
-        """Normalizează scorul între 0 și 100"""
         min_score = np.min(all_scores)
         max_score = np.max(all_scores)
         if max_score == min_score:
@@ -150,8 +140,7 @@ class LightFMRecommender:
         return ((score - min_score) / (max_score - min_score)) * 100
     
     def _calculate_dish_similarity(self, dish_idx1, dish_idx2):
-        """Calculează similaritatea între două preparate"""
-        # Implementare simplă - poate fi îmbunătățită
+      
         dish1 = self.dishes[dish_idx1]
         dish2 = self.dishes[dish_idx2]
         
@@ -168,7 +157,6 @@ class LightFMRecommender:
         return similarity
     
     def get_model_info(self):
-        """Returnează informații despre model"""
         if not self.is_loaded:
             return {"status": "not_loaded"}
         
@@ -180,11 +168,9 @@ class LightFMRecommender:
             "features_shape": self.user_features.shape if self.user_features is not None else None
         }
 
-# Instanță globală pentru cache
 _recommender_instance = None
 
 def get_recommender():
-    """Returnează instanța singleton a recomandatorului"""
     global _recommender_instance
     if _recommender_instance is None:
         _recommender_instance = LightFMRecommender()
@@ -192,17 +178,6 @@ def get_recommender():
     return _recommender_instance
 
 def get_recommendations_for_guest(guest_id, top_n=10, use_cache=True):
-    """
-    Funcție helper pentru a obține recomandări pentru un invitat
-    
-    Args:
-        guest_id: ID-ul invitatului
-        top_n: Numărul de recomandări
-        use_cache: Folosește cache pentru performanță
-    
-    Returns:
-        Lista de recomandări
-    """
     if use_cache:
         cache_key = f"recommendations_guest_{guest_id}_{top_n}"
         cached_recommendations = cache.get(cache_key)

@@ -101,7 +101,6 @@ class Profile(models.Model):
         default='guest'
     )
     def __str__(self):
-        # user poate fi None pentru profiluri create înainte de asocierea unui User.
         if self.user:
             return self.user.username
         return self.username or f"Profile #{self.pk}"
@@ -757,7 +756,7 @@ class TableArrangement(models.Model):
 
     class Meta:
         ordering = ['table__table_number', 'seat_number']
-        unique_together = ['event', 'guest']  # One guest can only be assigned to one table per event
+        unique_together = ['event', 'guest']
 
     def __str__(self):
         return f"{self.guest} at Table {self.table.table_number} (Seat {self.seat_number})"
@@ -819,49 +818,49 @@ class Review(models.Model):
 
 class EventBudget(models.Model):
     event = models.OneToOneField('Event', on_delete=models.CASCADE, related_name='eventbudget')
-    # Venue & Ceremony
+
     venue_rental_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ceremony_location_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     furniture_rental_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     decorations_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Attire & Accessories
+
     wedding_dress_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     groom_suit_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     accessories_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     shoes_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Photography & Video
+
     photographer_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     videographer_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     photo_booth_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Entertainment
+
     band_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     dj_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     sound_system_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Beauty and Health
+
     hair_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     makeup_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     spa_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Flowers & Decorations
+
     bouquet_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     centerpieces_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     ceremony_flowers_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Catering
+
     food_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     beverages_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     cake_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     snacks_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Stationery & Gifts
+
     invitations_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     favors_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     thank_you_cards_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Transportation
+
     wedding_car_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     guest_shuttle_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Miscellaneous
+
     insurance_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     license_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     planner_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # Organizer Payment
+
     organizer_payment_cost = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     @property

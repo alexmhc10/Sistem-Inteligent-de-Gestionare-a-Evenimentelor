@@ -59,12 +59,12 @@ class EventForm(forms.ModelForm):
     widgets = {
             'event_date': forms.DateInput(attrs={
                 'type': 'date', 
-                'class': 'form-control event-input',  # Adăugăm clasele pentru stilizare
+                'class': 'form-control event-input', 
                 'placeholder': 'Select Date'
             }),
             'event_time': forms.TimeInput(attrs={
                 'type': 'time', 
-                'class': 'form-control event-input',  # Adăugăm clasele pentru stilizare
+                'class': 'form-control event-input', 
                 'placeholder': 'Select Time'
             }),
             'event_description': forms.Textarea(attrs={
@@ -296,7 +296,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
     algoritmului inteligent de aranjare a meselor
     """
     
-    # === INFORMAȚII PERSONALE DE BAZĂ ===
     first_name = forms.CharField(
         max_length=50,
         label="Prenume",
@@ -354,7 +353,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === PREFERINȚE CULINARE (IMPORTANTE PENTRU ALGORITM) ===
     cuisine_preference = forms.ChoiceField(
         choices=REGION_CHOICES,
         required=False,
@@ -382,7 +380,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === RELAȚII ȘI GRUPURI SOCIALE ===
     relationship_to_couple = forms.ChoiceField(
         choices=[
             ('bride_family', 'Familia miresei'),
@@ -412,7 +409,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === PREFERINȚE DE AȘEZARE ===
     preferred_companions = forms.CharField(
         max_length=200,
         required=False,
@@ -435,7 +431,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === CERINȚE SPECIALE ===
     mobility_needs = forms.BooleanField(
         required=False,
         label="Nevoi de mobilitate",
@@ -464,7 +459,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === CARACTERISTICI SOCIALE ===
     personality_type = forms.ChoiceField(
         choices=[
             ('extrovert', 'Extrovert - îi place să socializeze'),
@@ -497,7 +491,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === INFORMAȚII LOGISTICE ===
     arrival_time = forms.ChoiceField(
         choices=[
             ('early', 'Timpuriu (cu 30+ min înainte)'),
@@ -527,7 +520,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         })
     )
     
-    # === NOTIȚE SPECIALE ===
     special_notes = forms.CharField(
         max_length=500,
         required=False,
@@ -548,16 +540,13 @@ class ComprehensiveGuestForm(forms.ModelForm):
         self.event = kwargs.pop('event', None)
         super().__init__(*args, **kwargs)
         
-        # Personalizează queryset-ul pentru alergii
         if self.event:
-            # Poți filtra alergii pe baza locației sau evenimentului
             pass
     
     def save(self, commit=True):
         guest = super().save(commit=False)
         
         if commit:
-            # Creează profilul
             profile = Profile.objects.create(
                 username=f"{self.cleaned_data['first_name'].lower()}_{self.cleaned_data['last_name'].lower()}",
                 email=self.cleaned_data['email'],
@@ -573,16 +562,13 @@ class ComprehensiveGuestForm(forms.ModelForm):
             guest.age = self.cleaned_data['age']
             guest.save()
             
-            # Salvează relația many-to-many pentru alergii
             self.save_m2m()
             
-            # Creează sau actualizează grupul în funcție de relația cu cuplul
             self._assign_to_social_group(guest)
         
         return guest
     
     def _assign_to_social_group(self, guest):
-        """Asignează invitatul la grupul social corespunzător"""
         if not self.event:
             return
         
@@ -602,7 +588,6 @@ class ComprehensiveGuestForm(forms.ModelForm):
         
         group_name = group_mapping.get(relationship, 'Alți Invitați')
         
-        # Găsește sau creează grupul
         group, created = TableGroup.objects.get_or_create(
             event=self.event,
             name=group_name,
@@ -612,16 +597,10 @@ class ComprehensiveGuestForm(forms.ModelForm):
             }
         )
         
-        # Adaugă invitatul la grup
         group.guests.add(guest)
 
 class GuestSelfRegistrationForm(forms.ModelForm):
-    """
-    Formular pentru invitați să își completeze propriile date
-    Colectează informații pentru algoritm într-un mod prietenos
-    """
-    
-    # === PASUL 1: CINE EȘTI? ===
+
     first_name = forms.CharField(
         max_length=50,
         label="Prenumele tău",
@@ -661,7 +640,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         })
     )
     
-    # === PASUL 2: CUM TE CUNOAȘTEM? ===
     relationship_to_couple = forms.ChoiceField(
         choices=[
             ('bride_family', 'Sunt din familia miresei'),
@@ -692,7 +670,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
-    # === PASUL 3: PREFERINȚE MÂNCARE ===
     cuisine_preference = forms.ChoiceField(
         choices=[
             ('romanian', 'Mâncare românească tradițională'),
@@ -729,7 +706,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'})
     )
     
-    # === PASUL 4: CU CINE VENII? ===
     plus_one = forms.BooleanField(
         required=False,
         label="Vin însoțit/ă de o persoană (+1)",
@@ -760,7 +736,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         })
     )
     
-    # === PASUL 5: PREFERINȚE SOCIALE ===
     social_personality = forms.ChoiceField(
         choices=[
             ('very_social', 'Îmi place să cunosc oameni noi și să socializez mult'),
@@ -784,7 +759,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         })
     )
     
-    # === PASUL 6: CERINȚE SPECIALE ===
     mobility_assistance = forms.BooleanField(
         required=False,
         label="Am nevoie de o masă cu acces facil (scaun cu rotile, baston, etc.)",
@@ -808,7 +782,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         widget=forms.Select(attrs={'class': 'form-select'})
     )
     
-    # === PASUL 7: ALTE INFORMAȚII ===
     special_requests = forms.CharField(
         max_length=300,
         required=False,
@@ -840,7 +813,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         self.event = kwargs.pop('event', None)
         super().__init__(*args, **kwargs)
         
-        # Personalizează mesajele în funcție de eveniment
         if self.event:
             couple_names = getattr(self.event, 'couple_names', 'miri')
             self.fields['relationship_to_couple'].help_text = f"Ne ajută să te așezăm lângă persoane pe care le cunoști"
@@ -848,7 +820,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
         
-        # Validare +1
         plus_one = cleaned_data.get('plus_one')
         plus_one_name = cleaned_data.get('plus_one_name')
         
@@ -861,7 +832,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         guest = super().save(commit=False)
         
         if commit:
-            # Creează profilul bazat pe datele introduse
             profile = Profile.objects.create(
                 username=f"{self.cleaned_data['first_name'].lower()}_{self.cleaned_data['last_name'].lower()}",
                 email=self.cleaned_data.get('email', f"{self.cleaned_data['first_name'].lower()}@temp.com"),
@@ -877,23 +847,18 @@ class GuestSelfRegistrationForm(forms.ModelForm):
             guest.age = self.cleaned_data['age']
             guest.save()
             
-            # Salvează relația many-to-many pentru alergii
             self.save_m2m()
             
-            # Determină prioritatea bazată pe relația cu cuplul
             priority = self._calculate_priority()
             
-            # Asignează la grupul social corespunzător
             self._assign_to_social_group(guest, priority)
         
         return guest
     
     def _calculate_priority(self):
-        """Calculează prioritatea bazată pe relația cu cuplul și proximitatea"""
         relationship = self.cleaned_data['relationship_to_couple']
         closeness = self.cleaned_data['how_close']
         
-        # Mapare priorități bazate pe relație
         relationship_priority = {
             'bride_family': 10,
             'groom_family': 10,
@@ -907,7 +872,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
             'other': 4,
         }
         
-        # Ajustare bazată pe proximitate
         closeness_modifier = {
             'very_close': 1,
             'close': 0,
@@ -921,13 +885,11 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         return max(1, min(10, base_priority + modifier))
     
     def _assign_to_social_group(self, guest, priority):
-        """Asignează invitatul la grupul social corespunzător"""
         if not self.event:
             return
         
         relationship = self.cleaned_data['relationship_to_couple']
         
-        # Mapare grupuri
         group_mapping = {
             'bride_family': 'Familia Miresei',
             'groom_family': 'Familia Mirelui',
@@ -943,7 +905,6 @@ class GuestSelfRegistrationForm(forms.ModelForm):
         
         group_name = group_mapping.get(relationship, 'Alți Invitați')
         
-        # Găsește sau creează grupul
         group, created = TableGroup.objects.get_or_create(
             event=self.event,
             name=group_name,
@@ -953,5 +914,4 @@ class GuestSelfRegistrationForm(forms.ModelForm):
             }
         )
         
-        # Adaugă invitatul la grup
         group.guests.add(guest)

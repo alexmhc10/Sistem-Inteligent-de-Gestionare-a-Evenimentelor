@@ -75,14 +75,14 @@ from django.db.models import Sum
 
 class NotificationView(View):
     def get(self, request):
-        # Filtrăm notificările pentru utilizatorul conectat
-        notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')  # Ordonați după dată, cele mai recente primele
+                                                           
+        notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')                                                
         
-        # Poți filtra și notificările necitite, dacă dorești
+                                                            
         unread_notifications = notifications.filter(is_read=False)
         
         return render(request, 'home-organizer.html', {
-            'notifications': notifications,  # Trimiți notificările în template
+            'notifications': notifications,                                    
         })
 
 
@@ -111,12 +111,12 @@ from django.db.models import Q
 def locations_list(request):
     locations = Location.objects.all()
 
-    # Obținem parametrii din query string
+                                         
     search = request.GET.get('search', '').strip()
     min_seats = request.GET.get('min_seats', '').strip()
     max_price = request.GET.get('max_price', '').strip()
 
-    # Aplicăm filtrele
+                      
     if search:
         locations = locations.filter(name__icontains=search)
 
@@ -124,7 +124,7 @@ def locations_list(request):
         try:
             locations = locations.filter(seats_numbers__gte=int(min_seats))
         except ValueError:
-            pass  # ignori inputuri invalide
+            pass                            
 
     if max_price:
         try:
@@ -175,14 +175,14 @@ def home_organizer(request):
     type_counts = Counter(event_types)
     
     for type_name, count in type_counts.most_common(5):
-        if type_name:  # Exclude None values
+        if type_name:                       
             popular_categories.append({
                 'name': type_name,
                 'count': count,
                 'percentage': round((count / events.count()) * 100, 1) if events.count() > 0 else 0
             })
     
-    # If no categories found, add some default ones
+                                                   
     if not popular_categories:
         popular_categories = [
             {'name': 'Wedding', 'count': 15, 'percentage': 35.0},
@@ -192,14 +192,14 @@ def home_organizer(request):
             {'name': 'Anniversary', 'count': 3, 'percentage': 7.0},
         ]
 
-    # Calculate recent performance data
+                                       
     from datetime import timedelta
     
-    # Get events from last 6 months
+                                   
     six_months_ago = timezone.now() - timedelta(days=180)
     recent_events = events.filter(event_date__gte=six_months_ago, organized_by=request.user)
     
-    # Calculate monthly performance
+                                   
     recent_performance = []
     for i in range(6):
         month_start = timezone.now() - timedelta(days=30 * (i + 1))
@@ -208,12 +208,12 @@ def home_organizer(request):
         month_events = recent_events.filter(event_date__gte=month_start, event_date__lt=month_end)
         month_participants = sum(event.guests.count() for event in month_events)
         
-        # Calculate success rate (completed events / total events)
+                                                                  
         completed_events = month_events.filter(completed=True).count()
         total_month_events = month_events.count()
         success_rate = round((completed_events / total_month_events) * 100, 1) if total_month_events > 0 else 0
         
-        # Only add months with activity (events > 0)
+                                                    
         if total_month_events > 0:
             recent_performance.append({
                 'month': month_start.strftime('%B'),
@@ -223,32 +223,32 @@ def home_organizer(request):
                 'revenue': sum(event.cost for event in month_events.filter(completed=True)) if month_events.filter(completed=True).exists() else 0
             })
     
-    # Reverse to show oldest to newest
+                                      
     recent_performance.reverse()
     
-    # If no real data, add sample data (only months with activity)
+                                                                  
     if len(recent_performance) == 0:
         recent_performance = [
             {'month': 'April', 'events': 1, 'participants': 1, 'success_rate': 100.0, 'revenue': 3000},
             {'month': 'May', 'events': 1, 'participants': 2, 'success_rate': 100.0, 'revenue': 3000},
         ]
 
-    # Calculate organizer rating
+                                
     from django.db.models import Avg
     organizer_reviews = Review.objects.filter(organizer=request.user)
     average_rating = organizer_reviews.aggregate(Avg('organizer_stars'))['organizer_stars__avg']
     
-    # Format rating to 1 decimal place or show N/A if no reviews
+                                                                
     if average_rating is not None:
         formatted_rating = round(average_rating, 1)
     else:
         formatted_rating = "N/A"
 
-    # Calculate revenue analytics
+                                 
     from decimal import Decimal
     organizer_events = events.filter(organized_by=request.user)
     
-    # Monthly revenue data for last 6 months
+                                            
     revenue_analytics = []
     total_revenue = Decimal('0')
     total_costs = Decimal('0')
@@ -259,19 +259,19 @@ def home_organizer(request):
         
         month_events = organizer_events.filter(event_date__gte=month_start, event_date__lt=month_end, completed=True)
         
-        # Calculate revenue (from completed events)
+                                                   
         month_revenue = sum(event.cost for event in month_events) if month_events.exists() else Decimal('0')
         
-        # Calculate estimated costs (30% of revenue as operational costs)
+                                                                         
         month_costs = month_revenue * Decimal('0.3')
         
-        # Calculate profit
+                          
         month_profit = month_revenue - month_costs
         
         total_revenue += month_revenue
         total_costs += month_costs
         
-        if month_revenue > 0:  # Only add months with revenue
+        if month_revenue > 0:                                
             revenue_analytics.append({
                 'month': month_start.strftime('%B'),
                 'revenue': float(month_revenue),
@@ -280,10 +280,10 @@ def home_organizer(request):
                 'events_count': month_events.count()
             })
     
-    # Reverse to show oldest to newest
+                                      
     revenue_analytics.reverse()
     
-    # If no real data, add sample data
+                                      
     if len(revenue_analytics) == 0:
         revenue_analytics = [
             {'month': 'April', 'revenue': 3000, 'costs': 900, 'profit': 2100, 'events_count': 1},
@@ -294,19 +294,19 @@ def home_organizer(request):
     
     total_profit = total_revenue - total_costs
 
-    # --- NEW STATISTICS FOR QUICK STATS CARD ---
-    # Number of distinct locations/cities where organizer has held events
+                                                 
+                                                                         
     events_cities = organizer_events.exclude(location__isnull=True).values_list('location__location', flat=True).distinct().count()
     
-    # Date of the most recent event
+                                   
     last_event_obj = organizer_events.order_by('-event_date').first()
     last_event_date = last_event_obj.event_date.strftime('%d.%m.%Y') if last_event_obj else 'N/A'
 
-    # Positive feedback percentage (reviews with 4 or 5 stars)
+                                                              
     total_reviews = organizer_reviews.count()
     positive_reviews = organizer_reviews.filter(organizer_stars__gte=4).count()
     positive_feedback = round((positive_reviews / total_reviews) * 100) if total_reviews > 0 else 0
-    # -------------------------------------------------
+                                                       
 
     context = {
         'total_events': events.count(),
@@ -323,7 +323,7 @@ def home_organizer(request):
         'total_revenue': float(total_revenue),
         'total_costs': float(total_costs),
         'total_profit': float(total_profit),
-        # NEW stats for quick stats card
+                                        
         'events_cities': events_cities,
         'last_event_date': last_event_date,
         'positive_feedback': positive_feedback,
@@ -337,28 +337,28 @@ def financial_management(request):
     """View pentru managementul financiar al organizatorului"""
     from decimal import Decimal
     
-    # Obține evenimentele organizatorului
+                                         
     organizer_events = Event.objects.filter(organized_by=request.user)
     
-    # Calculează statistici financiare
+                                      
     total_revenue = Decimal('0')
     total_pending = Decimal('0')
     completed_events = organizer_events.filter(completed=True)
     pending_events = organizer_events.filter(completed=False, is_canceled=False)
     
-    # Calculează veniturile totale din evenimente completate
+                                                            
     for event in completed_events:
         total_revenue += event.cost
     
-    # Calculează veniturile în așteptare
+                                        
     for event in pending_events:
         total_pending += event.cost
     
-    # Calculează costurile estimate (30% din venituri)
+                                                      
     total_costs = total_revenue * Decimal('0.3')
     net_profit = total_revenue - total_costs
     
-    # Tranzacții recente (simulat pentru demo)
+                                              
     recent_transactions = []
     for event in completed_events.order_by('-event_date')[:5]:
         recent_transactions.append({
@@ -369,12 +369,12 @@ def financial_management(request):
             'status': 'completed'
         })
     
-    # Informații card (simulat)
+                               
     card_info = {
         'card_number': '**** **** **** 1234',
         'card_type': 'Visa',
         'balance': float(net_profit),
-        'available_for_withdrawal': float(net_profit * Decimal('0.8'))  # 80% disponibil pentru retragere
+        'available_for_withdrawal': float(net_profit * Decimal('0.8'))                                   
     }
     
     context = {
@@ -553,7 +553,7 @@ def event_builder(request):
                 target_model='Event'
             )
 
-            # Dacă a fost încărcat și un fișier cu invitați, îl procesăm
+                                                                        
             if request.FILES.get('guest_file'):
                 uploaded_file = request.FILES['guest_file']
                 fs = FileSystemStorage()
@@ -575,7 +575,7 @@ def event_builder(request):
                         'locations': locations
                     })
 
-                # Procesăm invitații din fișier
+                                               
                 invited_guests = []
                 for _, row in df.iterrows():
                     name = row.get('nume')
@@ -605,9 +605,9 @@ def event_builder(request):
         form = EventForm()
         form_file = UploadFileForm()
 
-    # Obținem invitații deja înregistrați ca "guest" pentru a-i afișa în modal
+                                                                              
     existing_guests = Profile.objects.filter(user_type='guest')
-    guests_with_accounts = [profile.user for profile in existing_guests]  # Userii invitați
+    guests_with_accounts = [profile.user for profile in existing_guests]                   
 
     return render(request, 'base/event_builder.html', {
         'form': form,
@@ -648,7 +648,7 @@ def delete_task(request, task_id):
 
 from django.core.paginator import Paginator
 from django.contrib.auth.decorators import login_required
-#my events
+          
 @login_required(login_url='login')
 def my_events(request):
     events = Event.objects.filter(organized_by=request.user)
@@ -670,26 +670,26 @@ def my_events(request):
 
     events = events.order_by('-event_date')
 
-    # paginare
-    paginator = Paginator(events, 10)  # 10 evenimente pe pagină
+              
+    paginator = Paginator(events, 10)                           
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
     return render(request, 'base/my_events.html', {'events': page_obj})
 
 
-# def task_manager_view(request):
-#     if request.method == 'POST':
-#         form = TaskForm(request.POST)
-#         if form.is_valid():
-#             task = form.save(commit=False)
-#             task.user = request.user
-#             task.save()
-#     else:
-#         form = TaskForm()
+                                 
+                                  
+                                       
+                             
+                                            
+                                      
+                         
+           
+                           
 
-#     tasks = Task.objects.filter(user=request.user)
-#     return render(request, 'base/task-manager.html', {'form': form, 'tasks': tasks})
+                                                    
+                                                                                      
 
 
 @login_required(login_url='/login')
@@ -1676,7 +1676,7 @@ def admin_settings(request):
 
 
 
-#pagina proba
+             
 @login_required(login_url='login')
 def organizer_locations(request):
     locations = Location.objects.all()
@@ -1710,7 +1710,7 @@ def organizer_locations(request):
     return render(request, 'base/organizator-locatii.html', context)
 
 
-##evenimente proba
+                  
 @login_required(login_url='login')
 def organizer_events(request):
     events = Event.objects.filter(organized_by=request.user)
@@ -1872,9 +1872,9 @@ def profilePage(request, username):
 
 def location(request, pk):
     try:
-        location = Location.objects.get(pk=pk)  # Căutăm locația pe baza id-ului (pk)
+        location = Location.objects.get(pk=pk)                                       
     except Location.DoesNotExist:
-        raise Http404("Location does not exist")  # Aruncăm o eroare dacă locația nu există
+        raise Http404("Location does not exist")                                           
     
     reviews = location.review_set.all()
     
@@ -1885,7 +1885,7 @@ def location(request, pk):
             comment=request.POST.get('comment'),
             stars=request.POST.get('rating')
         )
-        return redirect('location', pk=location.pk)  # Redirecționăm la pagina locației
+        return redirect('location', pk=location.pk)                                    
 
     star_range = range(1, 6)
     context = {
@@ -1909,7 +1909,7 @@ def addLocation(request):
             location = form.save(commit=False)
             location.owner = request.user
             
-            # Create unique staff user account
+                                              
             base_username = f"{location.name.replace(' ', '_').lower()}_staff"
             username = base_username
             counter = 1
@@ -1918,9 +1918,9 @@ def addLocation(request):
                 username = f"{base_username}{counter}"
                 counter += 1
             email = f"{username}@eventplanner.com"
-            password = location.number  # Using the location's phone number as password
+            password = location.number                                                 
             
-            # Create user account
+                                 
             user = User.objects.create_user(
                 username=username,
                 email=email,
@@ -1929,7 +1929,7 @@ def addLocation(request):
                 is_active=True
             )
             
-            # Create profile with user_type='staff'
+                                                   
             Profile.objects.create(
                 user=user,
                 username=username,
@@ -1938,7 +1938,7 @@ def addLocation(request):
                 user_type='staff'
             )
             
-            # Link user account to location
+                                           
             location.user_account = user
             location.save()
 
@@ -1960,7 +1960,7 @@ def addLocation(request):
                 for type_instance in selected_types:
                     location.types.add(type_instance)
 
-            # Return modal with credentials
+                                           
             context = {
                 'form': LocationForm(),
                 'types': types,
@@ -1970,7 +1970,7 @@ def addLocation(request):
             }
             return render(request, 'base/location_form.html', context)
         else:
-            print(form.errors)  # Debug invalid form
+            print(form.errors)                      
 
     context = {
         'form': form,
@@ -2336,12 +2336,12 @@ def personal_vizualizare_eveniment(request, pk):
 
     for lg in logs:
         tbl, seat = log_map.get(getattr(lg.profile, 'id', None), (None, None))
-        # atașăm info pe profilul invitatului (guest_profile) pentru template
+                                                                             
         gp = getattr(lg.profile, 'guest_profile', None)
         if gp:
             gp.table_number = tbl
             gp.seat_number = seat
-        # și direct pe obiectul Log, în caz că este folosit în template
+                                                                       
         lg.table_number = tbl
         lg.seat_number = seat
         
@@ -2362,11 +2362,11 @@ def personal_vizualizare_eveniment(request, pk):
         tables_json = list(event.location.tables.values('id','table_number','capacity','shape','is_reserved','position_x','position_y','rotation','width','height','radius'))
         special_json = list(event.location.special_elements.values('type','label','position_x','position_y','rotation','width','height','radius'))
 
-    # Map guests to their assigned table numbers
+                                                
     arrangements = TableArrangement.objects.filter(event=event).select_related('guest', 'table')
     guest_table_map = {arr.guest.id: (arr.table.table_number if arr.table else None) for arr in arrangements}
 
-    # attach attribute for easy template access
+                                               
     for g in event_guests:
         g.table_number = guest_table_map.get(g.id)
 
@@ -2416,7 +2416,7 @@ def completed_event(request, pk):
             for i, img in enumerate(request.FILES.getlist('images')):
                 PostImage.objects.create(post=post, image=img, order=i)
 
-            return redirect('completed_event', pk)  # sau completed_event
+            return redirect('completed_event', pk)                       
 
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event)
@@ -3384,7 +3384,7 @@ def generate_menu(request):
         allowed_diets = DIET_COMPATIBILITY.get(guest_diet, [guest_diet])
         safe_dishes = safe_dishes.filter(diet_type__in=allowed_diets)
 
-    # spicy level <= preferinţă
+                               
     order = ['none','low','medium','high']
     allowed_levels = order[: order.index(spicy_pref)+1] if spicy_pref in order else order
     safe_dishes = safe_dishes.filter(spicy_level__in=allowed_levels)
@@ -3515,7 +3515,7 @@ def generate_menu(request):
 def save_guest_menu(request):
     try:
         data = json.loads(request.body)
-        user = request.user  # sau request.user.id
+        user = request.user                       
         event_id = data.get("event_id")
         location_id = data.get("location_id")
         dish_ids = data.get("menu_choices", [])
@@ -3840,39 +3840,39 @@ def mark_notifications_as_read(request):
 
 
 
-# @login_required(login_url='/login')
-# def chat(request):
-#     print("DATE:")
-#     print(request.POST)
-#     profiles = Profile.objects.all()
-#     messages = Message.objects.all()
-#     form = MessageForm()
+                                     
+                    
+                    
+                         
+                                      
+                                      
+                          
     
-#     if request.htmx:
-#         form = MessageForm(request.POST)
-#         print("DARi")
-#         if form.is_valid():
-#             print("Formularul este valid")
-#             message = form.save(commit=False)
-#             message.author = request.user
-#             print(message.author)
-#             message.save()
-#             context = {
-#                 'message': message,
-#                 'form': form,
-#                 'messages':messages,
-#                 'profiles': profiles,
-#             }
-#             print(f"Message saved: {message.body, message.author}") 
-#             return render(request, 'base/partials/chat_message_p.html', context)
-#         else:
-#             print("Formularul nu este valid:", form.errors) 
+                      
+                                          
+                       
+                             
+                                            
+                                               
+                                           
+                                   
+                            
+                         
+                                     
+                               
+                                      
+                                       
+               
+                                                                      
+                                                                                  
+               
+                                                              
     
-#     return render(request, 'base/chat.html', {
-#         'form': form,
-#         'profiles': profiles,
-#         'messages': messages
-#     })
+                                                
+                       
+                               
+                              
+        
 
 
 @login_required(login_url='/login')
@@ -3887,12 +3887,12 @@ def test_table_arrangement(request, event_id):
         event = get_object_or_404(Event, id=event_id)
         print(f"DEBUG: Event găsit: {event.event_name}")
         
-        # Verifică dacă utilizatorul este organizatorul evenimentului
+                                                                     
         if event.organized_by != request.user:
             messages.error(request, "Nu aveți permisiunea de a testa aranjamentul!")
             return redirect('event_details', event_id=event.id)
         
-        # Verifică dacă evenimentul are locație și invitați
+                                                           
         if not event.location:
             messages.error(request, "Evenimentul nu are o locație asociată!")
             return redirect('event_details', event_id=event.id)
@@ -3901,35 +3901,35 @@ def test_table_arrangement(request, event_id):
             messages.error(request, "Nu există invitați pentru acest eveniment!")
             return redirect('event_details', event_id=event.id)
 
-        # Verifică dacă există mese în locație
+                                              
         tables = Table.objects.filter(location=event.location)
         if not tables.exists():
             messages.error(request, "Nu există mese configurate în această locație!")
             return redirect('event_details', event_id=event.id)
 
-        # Șterge aranjamentele existente pentru a începe cu un aranjament nou
+                                                                             
         TableArrangement.objects.filter(event=event).delete()
         
-        # Inițializează algoritmul
+                                  
         algorithm = TableArrangementAlgorithm(event)
         
-        # Generează aranjamentul
+                                
         arrangements = algorithm.generate_arrangement()
         
         if not arrangements:
             messages.error(request, "Nu s-a putut genera un aranjament valid!")
             return redirect('event_details', event_id=event.id)
 
-        # Salvează aranjamentele în baza de date
+                                                
         for arrangement in arrangements:
             arrangement.save()
             print(f"DEBUG: Salvat aranjament: {arrangement}")
         
-        # Obține statisticile aranjamentului
+                                            
         stats = algorithm.get_arrangement_statistics()
         print(f"DEBUG: Statistici calculate: {stats}")
         
-        # Grupează aranjamentele pe mese pentru afișare
+                                                       
         table_arrangements = {}
         for arrangement in arrangements:
             if arrangement.table not in table_arrangements:
@@ -3955,16 +3955,16 @@ def confirm_table_arrangement(request, event_id):
     """Endpoint pentru confirmarea aranjamentului la mese"""
     event = get_object_or_404(Event, id=event_id)
     
-    # Actualizează statusul aranjamentelor la 'confirmed'
+                                                         
     TableArrangement.objects.filter(
         event=event,
         status='pending'
     ).update(status='confirmed')
     
-    # Adaugă mesajul în sesiune pentru a fi afișat pe pagina de test
+                                                                    
     messages.success(request, "Aranjamentul la mese a fost confirmat cu succes!")
     
-    # Redirecționează înapoi la pagina de test
+                                              
     return redirect('test_table_arrangement', event_id=event.id)
 
 @require_POST
@@ -3972,13 +3972,13 @@ def reset_table_arrangement(request, event_id):
     """Endpoint pentru resetarea aranjamentului la mese"""
     event = get_object_or_404(Event, id=event_id)
     
-    # Șterge toate aranjamentele existente
+                                          
     TableArrangement.objects.filter(event=event).delete()
     
-    # Adaugă mesajul în sesiune pentru a fi afișat pe pagina de test
+                                                                    
     messages.success(request, "Aranjamentul la mese a fost resetat!")
     
-    # Redirecționează înapoi la pagina de test
+                                              
     return redirect('test_table_arrangement', event_id=event.id)
 
 @login_required(login_url='/login')
@@ -3987,7 +3987,7 @@ def populate_test_data(request, event_id):
     """Populează datele de test pentru aranjamentul la mese"""
     event = get_object_or_404(Event, id=event_id)
     
-    # Verifică dacă utilizatorul este organizatorul evenimentului
+                                                                 
     if event.organized_by != request.user:
         messages.error(request, "Nu aveți permisiunea de a popula datele de test!")
         return redirect('event_details', event_id=event.id)
@@ -3996,7 +3996,7 @@ def populate_test_data(request, event_id):
         messages.error(request, "Evenimentul nu are o locație asociată!")
         return redirect('event_details', event_id=event.id)
 
-    # 1. Creează mesele în locație dacă nu există
+                                                 
     if not Table.objects.filter(location=event.location).exists():
         tables_data = [
             {'table_number': 1, 'capacity': 8, 'shape': 'round', 'position_x': 100, 'position_y': 100, 'is_reserved': True},
@@ -4012,40 +4012,40 @@ def populate_test_data(request, event_id):
         
         messages.success(request, "Au fost create 6 mese în locație!")
 
-    # 2. Creează invitați de test dacă nu există
+                                                
     if not event.guests.exists():
         guests_data = [
-            # Familia miresei
+                             
             {'username': 'maria.popescu', 'first_name': 'Maria', 'last_name': 'Popescu', 'email': 'maria@test.com', 'gender': 'F', 'age': 45},
             {'username': 'ion.popescu', 'first_name': 'Ion', 'last_name': 'Popescu', 'email': 'ion@test.com', 'gender': 'M', 'age': 48},
             {'username': 'elena.popescu', 'first_name': 'Elena', 'last_name': 'Popescu', 'email': 'elena@test.com', 'gender': 'F', 'age': 42},
             {'username': 'vasile.popescu', 'first_name': 'Vasile', 'last_name': 'Popescu', 'email': 'vasile@test.com', 'gender': 'M', 'age': 40},
             
-            # Familia mirelui
+                             
             {'username': 'andrei.ionescu', 'first_name': 'Andrei', 'last_name': 'Ionescu', 'email': 'andrei@test.com', 'gender': 'M', 'age': 46},
             {'username': 'ana.ionescu', 'first_name': 'Ana', 'last_name': 'Ionescu', 'email': 'ana@test.com', 'gender': 'F', 'age': 44},
             {'username': 'mihai.ionescu', 'first_name': 'Mihai', 'last_name': 'Ionescu', 'email': 'mihai@test.com', 'gender': 'M', 'age': 41},
             {'username': 'laura.ionescu', 'first_name': 'Laura', 'last_name': 'Ionescu', 'email': 'laura@test.com', 'gender': 'F', 'age': 39},
             
-            # Prieteni comuni
+                             
             {'username': 'alexandru.constantin', 'first_name': 'Alexandru', 'last_name': 'Constantin', 'email': 'alex@test.com', 'gender': 'M', 'age': 35},
             {'username': 'diana.constantin', 'first_name': 'Diana', 'last_name': 'Constantin', 'email': 'diana@test.com', 'gender': 'F', 'age': 33},
             {'username': 'cristian.radu', 'first_name': 'Cristian', 'last_name': 'Radu', 'email': 'cristi@test.com', 'gender': 'M', 'age': 36},
             {'username': 'simona.radu', 'first_name': 'Simona', 'last_name': 'Radu', 'email': 'simona@test.com', 'gender': 'F', 'age': 34},
             
-            # Colegi de la serviciu
+                                   
             {'username': 'george.marin', 'first_name': 'George', 'last_name': 'Marin', 'email': 'george@test.com', 'gender': 'M', 'age': 38},
             {'username': 'andreea.marin', 'first_name': 'Andreea', 'last_name': 'Marin', 'email': 'andreea@test.com', 'gender': 'F', 'age': 36},
             {'username': 'bogdan.dumitrescu', 'first_name': 'Bogdan', 'last_name': 'Dumitrescu', 'email': 'bogdan@test.com', 'gender': 'M', 'age': 37},
             {'username': 'raluca.dumitrescu', 'first_name': 'Raluca', 'last_name': 'Dumitrescu', 'email': 'raluca@test.com', 'gender': 'F', 'age': 35},
             
-            # Vecini
+                    
             {'username': 'florin.stoica', 'first_name': 'Florin', 'last_name': 'Stoica', 'email': 'florin@test.com', 'gender': 'M', 'age': 50},
             {'username': 'gabriela.stoica', 'first_name': 'Gabriela', 'last_name': 'Stoica', 'email': 'gabi@test.com', 'gender': 'F', 'age': 48},
             {'username': 'marian.neagu', 'first_name': 'Marian', 'last_name': 'Neagu', 'email': 'marian@test.com', 'gender': 'M', 'age': 52},
             {'username': 'luminita.neagu', 'first_name': 'Luminita', 'last_name': 'Neagu', 'email': 'lumi@test.com', 'gender': 'F', 'age': 50},
             
-            # Prieteni din facultate
+                                    
             {'username': 'stefan.munteanu', 'first_name': 'Stefan', 'last_name': 'Munteanu', 'email': 'stefan@test.com', 'gender': 'M', 'age': 32},
             {'username': 'ioana.munteanu', 'first_name': 'Ioana', 'last_name': 'Munteanu', 'email': 'ioana@test.com', 'gender': 'F', 'age': 30},
             {'username': 'adrian.gheorghe', 'first_name': 'Adrian', 'last_name': 'Gheorghe', 'email': 'adrian@test.com', 'gender': 'M', 'age': 31},
@@ -4053,32 +4053,32 @@ def populate_test_data(request, event_id):
         ]
         
         for guest_data in guests_data:
-            # Creează profilul
+                              
             profile = Profile.objects.create(
                 username=guest_data['username'],
                 email=guest_data['email'],
                 first_name=guest_data['first_name'],
                 last_name=guest_data['last_name'],
-                password=make_password('test123'),  # Parolă default pentru toți invitații
+                password=make_password('test123'),                                        
                 user_type='guest',
                 approved=True
             )
             
-            # Creează invitatul
+                               
             guest = Guests.objects.create(
                 profile=profile,
                 gender=guest_data['gender'],
                 age=guest_data['age']
             )
             
-            # Adaugă invitatul la eveniment
+                                           
             event.guests.add(guest)
         
         messages.success(request, "Au fost adăugați 24 de invitați de test!")
 
-    # 3. Creează grupuri de invitați
+                                    
     if not TableGroup.objects.filter(event=event).exists():
-        # Grupul familiei miresei
+                                 
         bride_family = TableGroup.objects.create(
             event=event,
             name="Familia Miresei",
@@ -4087,7 +4087,7 @@ def populate_test_data(request, event_id):
         )
         bride_family.guests.add(*event.guests.filter(profile__last_name='Popescu'))
         
-        # Grupul familiei mirelui
+                                 
         groom_family = TableGroup.objects.create(
             event=event,
             name="Familia Mirelui",
@@ -4096,7 +4096,7 @@ def populate_test_data(request, event_id):
         )
         groom_family.guests.add(*event.guests.filter(profile__last_name='Ionescu'))
         
-        # Grupul prietenilor comuni
+                                   
         common_friends = TableGroup.objects.create(
             event=event,
             name="Prieteni Comuni",
@@ -4105,7 +4105,7 @@ def populate_test_data(request, event_id):
         )
         common_friends.guests.add(*event.guests.filter(profile__last_name__in=['Constantin', 'Radu']))
         
-        # Grupul colegilor
+                          
         colleagues = TableGroup.objects.create(
             event=event,
             name="Colegi de la Serviciu",
@@ -4132,7 +4132,7 @@ def auto_arrange_tables(request, event_id):
     try:
         event = get_object_or_404(Event, id=event_id)
         
-        # Verifică permisiuni
+                             
         if event.organized_by != request.user:
             return JsonResponse({
                 'success': False,
@@ -4145,8 +4145,8 @@ def auto_arrange_tables(request, event_id):
                 'error': 'Evenimentul nu are o locație asociată'
             })
         
-        # Obține toți invitații evenimentului
-        # Încearcă mai întâi să obțină doar invitații confirmați
+                                             
+                                                                
         try:
             accepted_guests = event.guests.filter(
                 profile__user__rsvps__event=event,
@@ -4157,11 +4157,11 @@ def auto_arrange_tables(request, event_id):
                 guests_to_arrange = accepted_guests
                 guest_count = accepted_guests.count()
             else:
-                # Dacă nu sunt RSVP-uri, ia toți invitații
+                                                          
                 guests_to_arrange = event.guests.all()
                 guest_count = guests_to_arrange.count()
         except:
-            # Fallback - ia toți invitații
+                                          
             guests_to_arrange = event.guests.all()
             guest_count = guests_to_arrange.count()
         
@@ -4171,36 +4171,36 @@ def auto_arrange_tables(request, event_id):
                 'error': 'Nu există invitați pentru acest eveniment'
             })
         
-        # Calculează numărul optim de mese
-        # Presupunem capacitate standard de 8-10 persoane per masă
+                                          
+                                                                  
         optimal_table_capacity = 8
         min_table_capacity = 6
         max_table_capacity = 10
         
-        # Calculează numărul minim de mese necesare
+                                                   
         min_tables_needed = math.ceil(guest_count / max_table_capacity)
-        # Calculează numărul optim de mese pentru distribuție echilibrată
+                                                                         
         optimal_tables_needed = math.ceil(guest_count / optimal_table_capacity)
         
-        # Ajustează mesele existente
+                                    
         existing_tables = Table.objects.filter(location=event.location).order_by('table_number')
         existing_count = existing_tables.count()
         
-        # Șterge aranjamentele existente
+                                        
         TableArrangement.objects.filter(event=event).delete()
         
-        # Calculează dacă sunt suficiente locuri pentru toți invitații
+                                                                      
         total_existing_capacity = sum(table.capacity for table in existing_tables)
         
         print(f"DEBUG: {guest_count} invitați, {existing_count} mese existente cu capacitate totală {total_existing_capacity}")
         
-        # Afișează detalii despre mesele existente pentru debugging
+                                                                   
         for table in existing_tables:
             print(f"DEBUG: Masă existentă: Masa {table.table_number} cu capacitate {table.capacity}")
         
-        # Verifică dacă sunt suficiente locuri pentru toți invitații
+                                                                    
         if total_existing_capacity < guest_count:
-            # Calculează câte mese suplimentare sunt necesare
+                                                             
             shortage = guest_count - total_existing_capacity
             additional_tables_needed = math.ceil(shortage / optimal_table_capacity)
             
@@ -4208,10 +4208,10 @@ def auto_arrange_tables(request, event_id):
             
             last_table_number = existing_tables.last().table_number if existing_tables.exists() else 0
             
-            # Creează mesele suplimentare necesare
+                                                  
             for i in range(additional_tables_needed):
                 table_number = last_table_number + i + 1
-                # Aranjament în grid
+                                    
                 row = (table_number - 1) // 4
                 col = (table_number - 1) % 4
                 
@@ -4220,7 +4220,7 @@ def auto_arrange_tables(request, event_id):
                     table_number=table_number,
                     capacity=optimal_table_capacity,
                     shape='round',
-                    position_x=150 + col * 200,  # 200px spacing
+                    position_x=150 + col * 200,                 
                     position_y=150 + row * 200,
                     is_reserved=False,
                     width=80,
@@ -4229,11 +4229,11 @@ def auto_arrange_tables(request, event_id):
                 )
                 print(f"DEBUG: Masă nouă creată: Masa {table_number} cu capacitate {optimal_table_capacity}")
                 
-        # Pentru a evita probleme cu mese cu capacități mici, să actualizez mesele existente la capacitatea optimă
+                                                                                                                  
         elif total_existing_capacity >= guest_count:
             print(f"DEBUG: Suficiente locuri există, dar să verific dacă mesele au capacități optime")
             
-            # Actualizează mesele cu capacități prea mici la capacitatea optimă
+                                                                               
             for table in existing_tables:
                 if table.capacity < min_table_capacity:
                     print(f"DEBUG: Actualizez masa {table.table_number} de la capacitate {table.capacity} la {optimal_table_capacity}")
@@ -4242,20 +4242,20 @@ def auto_arrange_tables(request, event_id):
         else:
             print(f"DEBUG: Păstrez toate mesele existente ({existing_count}) - mesele nefolosite vor rămâne în layout")
         
-        # NU se șterge nicio masă - toate mesele existente rămân în layout
+                                                                          
         
-        # Re-încarcă mesele după ajustare
+                                         
         tables = Table.objects.filter(location=event.location).order_by('table_number')
         total_capacity_after_adjustment = sum(table.capacity for table in tables)
         
         print(f"DEBUG: După ajustare: {tables.count()} mese cu capacitate totală {total_capacity_after_adjustment}")
         
-        # Inițializează și rulează algoritmul
+                                             
         from .table_arrangement_algorithm import TableArrangementAlgorithm
         
         algorithm = TableArrangementAlgorithm(event)
         
-        # IMPORTANT: Forțează reîncărcarea meselor în algoritm după crearea celor noi
+                                                                                     
         algorithm.tables = list(Table.objects.filter(location=event.location).order_by('table_number'))
         
         print(f"DEBUG: Algoritmul vede {len(algorithm.tables)} mese:")
@@ -4264,26 +4264,26 @@ def auto_arrange_tables(request, event_id):
         
         arrangements = algorithm.generate_arrangement()
         
-        # Verifică dacă toți invitații au fost aranjați
+                                                       
         arranged_guests = len(arrangements)
         unassigned_guests = guest_count - arranged_guests
         
         print(f"DEBUG: Arrangiați: {arranged_guests}, Nearanjați: {unassigned_guests}")
         
-        # Dacă rămân invitați nearanjați, creează mese suplimentare
+                                                                   
         if unassigned_guests > 0:
             print(f"DEBUG: Rămân {unassigned_guests} invitați nearanjați, se vor crea mese suplimentare")
             
-            # Calculează câte mese suplimentare sunt necesare pentru invitații nearanjați
+                                                                                         
             additional_tables_for_unassigned = math.ceil(unassigned_guests / optimal_table_capacity)
             
             current_tables = Table.objects.filter(location=event.location).order_by('table_number')
             last_table_number = current_tables.last().table_number if current_tables.exists() else 0
             
-            # Creează mesele suplimentare pentru invitații nearanjați
+                                                                     
             for i in range(additional_tables_for_unassigned):
                 table_number = last_table_number + i + 1
-                # Aranjament în grid
+                                    
                 row = (table_number - 1) // 4
                 col = (table_number - 1) % 4
                 
@@ -4292,7 +4292,7 @@ def auto_arrange_tables(request, event_id):
                     table_number=table_number,
                     capacity=optimal_table_capacity,
                     shape='round',
-                    position_x=150 + col * 200,  # 200px spacing
+                    position_x=150 + col * 200,                 
                     position_y=150 + row * 200,
                     is_reserved=False,
                     width=80,
@@ -4301,34 +4301,34 @@ def auto_arrange_tables(request, event_id):
                 )
                 print(f"DEBUG: Masă suplimentară creată pentru nearanjați: Masa {table_number} cu capacitate {optimal_table_capacity}")
             
-            # Reîncarcă algoritmul cu mesele noi și încearcă din nou
+                                                                    
             print(f"DEBUG: Reîncerc aranjamentul cu mesele suplimentare...")
             algorithm.tables = list(Table.objects.filter(location=event.location).order_by('table_number'))
             
-            # Șterge aranjamentele parțiale anterioare
+                                                      
             TableArrangement.objects.filter(event=event).delete()
             
-            # Generează din nou aranjamentul complet
+                                                    
             arrangements = algorithm.generate_arrangement()
             
-            # Verifică din nou
+                              
             arranged_guests_retry = len(arrangements)
             unassigned_guests_retry = guest_count - arranged_guests_retry
             print(f"DEBUG: După retry - Arrangiați: {arranged_guests_retry}, Nearanjați: {unassigned_guests_retry}")
             
-            # Dacă încă rămân invitați nearanjați, folosește algoritmul permisiv forțat
+                                                                                       
             if unassigned_guests_retry > 0:
                 print(f"DEBUG: Încă rămân {unassigned_guests_retry} nearanjați, se folosește algoritmul permisiv forțat")
                 
-                # Șterge aranjamentele și folosește algoritmul permisiv direct
+                                                                              
                 TableArrangement.objects.filter(event=event).delete()
                 arrangements = algorithm._generate_permissive_arrangement()
         
-        # Salvează aranjamentele finale
+                                       
         for arrangement in arrangements:
             arrangement.save()
         
-        # Obține statisticile finale
+                                    
         stats = algorithm.get_arrangement_statistics()
         
         return JsonResponse({
@@ -4442,7 +4442,7 @@ def guest_table_api(request):
     except Event.DoesNotExist:
         return JsonResponse({'error': 'Event not found'}, status=404)
 
-    # căutăm în aranjament
+                          
     arrangement = (
         TableArrangement.objects
         .select_related('table', 'guest__profile')
@@ -4470,7 +4470,7 @@ def guest_table_api(request):
 def populate_reviews_for_emhasce():
     try:
         organizer = User.objects.get(username='Emhasce')
-        # Obținem primii 3 utilizatori din baza de date (excluzând organizatorul)
+                                                                                 
         reviewers = User.objects.exclude(username='Emhasce')[:3]
         
         if reviewers.exists():
@@ -4495,7 +4495,7 @@ def populate_reviews_for_emhasce():
     except Exception as e:
         print(f"Error populating reviews: {str(e)}")
 
-# Apelăm funcția pentru a popula review-urile
+                                             
 populate_reviews_for_emhasce()
 
 @csrf_exempt
@@ -4517,13 +4517,10 @@ def save_table_layout(request):
         data = json.loads(request.body)
         location = Location.objects.get(user_account=request.user)
 
-        # Id-urile meselor rămase pe canvas
         table_ids_on_canvas = [t['id'] for t in data.get('tables', [])]
 
-        # Șterge mesele care nu mai există pe canvas
         Table.objects.filter(location=location).exclude(id__in=table_ids_on_canvas).delete()
 
-        # Salvează/actualizează pozițiile și rotația meselor rămase
         for table_data in data.get('tables', []):
             table = Table.objects.get(
                 id=table_data['id'],
