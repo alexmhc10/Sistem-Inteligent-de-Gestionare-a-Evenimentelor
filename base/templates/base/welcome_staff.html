@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <body>
+    <p>Bună {{ staff.username }},</p>
+
+    <p>Contul tău de staff pe platforma <strong>EventEase</strong> a fost creat!</p>
+
+    <p>Detaliile de conectare la contul tău sunt:</p>
+    <ul>
+      <li><strong>Username:</strong> {{ staff.username }}</li>
+      <li><strong>Parolă:</strong> {{ staff.password }}</li>
+    </ul>
+
+    <p>
+      Intră în aplicație de aici:
+      <a href="{{ staff_home_url }}">Accesează zona staff</a>
+    </p>
+
+    <p>Cu drag,<br/>Echipa EventEase</p>
+  </body>
+</html> 

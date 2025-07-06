@@ -2378,6 +2378,22 @@ def completed_event(request, pk):
     if event.status != "completed":
         messages.error(request, "This event is not completed yet.")
         return redirect('personal_vizualizare_eveniment', pk)
+    
+    form = EventPostForm(request.POST or None,
+                     files=request.FILES or None,
+                     event=event, user=request.user)
+    
+    if request.method == 'POST' and request.POST.get('form_type') == 'add_post':
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.event = event
+            post.author = request.user
+            post.save()
+
+            for i, img in enumerate(request.FILES.getlist('images')):
+                PostImage.objects.create(post=post, image=img, order=i)
+
+            return redirect('completed_event', pk)  # sau completed_event
 
     profile = Profile.objects.get(user=request.user)
     rspv = RSVP.objects.filter(event = event)
@@ -2389,7 +2405,6 @@ def completed_event(request, pk):
     
     search_query = request.GET.get('search', '')
     
-    # ------ Pregătim set-uri de ID-uri pentru a evita dublurile ------
     raw_logs = Log.objects.filter(event=event, is_correct=True).select_related('profile__user').order_by('created')
     present_logs = []
     present_user_ids = set()
@@ -2414,11 +2429,8 @@ def completed_event(request, pk):
             .values_list('guest_id', flat=True).distinct()
     )
  
-    # Guests who accepted but didn't show
     confirmed_but_absent_ids = accepted_user_ids - present_user_ids
 
-    # Percentages
-    # Calculăm denominator pe baza reuniunii seturilor (elim. eventuale discrepanţe)
     unique_user_ids = present_user_ids | confirmed_but_absent_ids | declined_user_ids | pending_user_ids
     denominator = len(unique_user_ids) or 1
 
@@ -2488,7 +2500,8 @@ def completed_event(request, pk):
             'archives': archives,
             'posts': posts,
             'posts_count': posts.count(),
-            'arrival_series': json.dumps(arrival_series)
+            'arrival_series': json.dumps(arrival_series),
+            'form': form,
         }
     return render(request, 'base/completed_event.html', context)
 
@@ -2792,13 +2805,10 @@ def save_table_layout(request):
         data = json.loads(request.body)
         location = Location.objects.get(user_account=request.user)
 
-        # Id-urile meselor rămase pe canvas
         table_ids_on_canvas = [t['id'] for t in data.get('tables', [])]
 
-        # Șterge mesele care nu mai există pe canvas
         Table.objects.filter(location=location).exclude(id__in=table_ids_on_canvas).delete()
 
-        # Salvează/actualizează pozițiile și rotația meselor rămase
         for table_data in data.get('tables', []):
             table = Table.objects.get(
                 id=table_data['id'],
@@ -2812,7 +2822,6 @@ def save_table_layout(request):
             table.radius = table_data.get('radius', 0) or 0
             table.save()
 
-        # Salvează elementele speciale (ca înainte)
         special_elements = data.get('special_elements', [])
         location.special_elements.all().delete()
         from .models import SpecialElement
@@ -2829,10 +2838,9 @@ def save_table_layout(request):
                 radius=el.get('radius', 0) or 0
             )
 
-        # NOTIFICARE pentru organizator
         from .models import EventNotification
         staff_user = request.user
-        organizer = location.owner  # presupunem că owner este organizatorul
+        organizer = location.owner
         if organizer and organizer != staff_user:
             mesaj = f"{staff_user.username} a modificat layout-ul pentru locația {location.name}."
             EventNotification.objects.create(
@@ -2912,7 +2920,7 @@ def find_user_view(request):
             except User.DoesNotExist:
                 return JsonResponse({'success': False, 'result': 'Not_found'})
 
-        return JsonResponse({'success': False})
+        return JsonResponse({'success': False, 'result': 'Not_found'})
 
 
 @csrf_exempt
@@ -3067,6 +3075,7 @@ def guest_profile(request):
     texture_choices = TEXTURE_CHOICES
     nutrition_goals = NUTRITION_GOAL_CHOICES
     diet_choices = DIET_CHOICES
+    regions = REGION_CHOICES
     SPICY_LEVELS = [
         ('none', 'None'),
         ('low', 'Low'),
@@ -3086,6 +3095,7 @@ def guest_profile(request):
         "temp_choices": temp_choices,
         "texture_choices": texture_choices,
         "nutrition_goals": nutrition_goals,
+        "regions": regions,
     }            
 
     return render(request, 'base/guest_profile.html', context)
@@ -3178,7 +3188,6 @@ def guest_event_view(request, pk):
     desserts = Menu.objects.filter(category='dessert')
     drinks = Menu.objects.filter(category='drink')
 
-    # Prepare complete dish catalog per category (for edit modal)
     categories_map = {
         'appetizer': appetizers,
         'main': main_courses,
@@ -3210,7 +3219,6 @@ def guest_event_view(request, pk):
             rsvp.responded = True
             rsvp.save() 
 
-            # Redirect to avoid form-resubmission prompt (POST-Redirect-GET)
             return redirect('guest_event_view', pk=pk)
 
     if request.method == 'POST' and request.POST.get("form_type") == "add_post":
@@ -3238,7 +3246,6 @@ def guest_event_view(request, pk):
         else:
             print("Form not valid but sent trimite")
             print(form.errors)
-            # fall through to render template without redirect
     else:
         form = EventPostForm()
         print("Form not valid")
@@ -3638,10 +3645,37 @@ def update_food(request, food_id):
         try:
             food = get_object_or_404(Menu, id=food_id)
             
-            food.item_name = request.POST.get('item_name')
-            food.item_cuisine = request.POST.get('item_cuisine')
-            food.item_vegan = request.POST.get('item_vegan') == 'true'
-            
+            food.item_name = request.POST.get('item_name') or food.item_name
+            food.item_cuisine = request.POST.get('item_cuisine') or food.item_cuisine
+
+            food.diet_type = request.POST.get('diet_type') or food.diet_type
+            food.item_vegan = (request.POST.get('item_vegan') == 'true') if request.POST.get('item_vegan') is not None else food.item_vegan
+
+            food.category = request.POST.get('category') or food.category
+            food.spicy_level = request.POST.get('spicy_level') or food.spicy_level
+            food.cooking_method = request.POST.get('cooking_method') or food.cooking_method
+            food.serving_temp = request.POST.get('serving_temp') or food.serving_temp
+
+            def _to_int(val):
+                try:
+                    return int(val)
+                except (TypeError, ValueError):
+                    return None
+
+            cals = request.POST.get('calories')
+            protein = request.POST.get('protein_g')
+            carbs = request.POST.get('carbs_g')
+            fat = request.POST.get('fat_g')
+
+            food.calories = _to_int(cals) if cals is not None else food.calories
+            food.protein_g = _to_int(protein) if protein is not None else food.protein_g
+            food.carbs_g = _to_int(carbs) if carbs is not None else food.carbs_g
+            food.fat_g = _to_int(fat) if fat is not None else food.fat_g
+
+            desc = request.POST.get('description')
+            if desc is not None:
+                food.description = desc
+        
             if 'item_picture' in request.FILES:
                 food.item_picture = request.FILES['item_picture']
         
@@ -3711,7 +3745,6 @@ def get_notifications(request):
     profil = Profile.objects.get(user = request.user)
     user_type = profil.user_type
     
-    # --- Generare automată notificări pentru profil incomplet (doar pentru invitaţi) ---
     if user_type == "guest" and not profil.is_complete:
         from datetime import timedelta
         today = timezone.now().date()
@@ -3754,9 +3787,7 @@ def get_notifications(request):
         for n in notifications:
             print(f"Notification ID: {n.id}, Event: {n.event}")
     elif profil.user_type == "organizer":
-        # Organizers – return ultimele 5 notificări (indiferent de is_read)
         notifications = EventNotification.objects.filter(receiver=request.user).order_by('-timestamp')[:5]
-        # Markăm aici drept citite, dacă vrei alt comportament poți comenta linia de mai jos
         EventNotification.objects.filter(id__in=[n.id for n in notifications], is_read=False).update(is_read=True)
 
     notifications_data = [
@@ -4483,7 +4514,6 @@ def save_table_layout(request):
             table.radius = table_data.get('radius', 0) or 0
             table.save()
 
-        # Salvează elementele speciale (ca înainte)
         special_elements = data.get('special_elements', [])
         location.special_elements.all().delete()
         from .models import SpecialElement
@@ -4500,10 +4530,9 @@ def save_table_layout(request):
                 radius=el.get('radius', 0) or 0
             )
 
-        # NOTIFICARE pentru organizator
         from .models import EventNotification
         staff_user = request.user
-        organizer = location.owner  # presupunem că owner este organizatorul
+        organizer = location.owner 
         if organizer and organizer != staff_user:
             mesaj = f"{staff_user.username} a modificat layout-ul pentru locația {location.name}."
             EventNotification.objects.create(
@@ -4557,7 +4586,6 @@ def save_menu_ratings(request):
 
     saved, errors = 0, []
 
-    # variables for organizer/location rating aggregated
     organizer_rating = None
     location_rating = None
     organizer_obj = None
@@ -4568,7 +4596,6 @@ def save_menu_ratings(request):
         kind = entry.get('kind', 'dish')
         rating_val = entry.get('rating')
 
-        # validate rating int 1-5
         try:
             rating_val = int(rating_val)
         except (TypeError, ValueError):
@@ -4609,7 +4636,6 @@ def save_menu_ratings(request):
         else:
             errors.append('Unknown kind')
 
-    # create or update single Review
     if organizer_rating is not None or location_rating is not None:
         review_defaults = {}
         if organizer_rating is not None:
@@ -4617,7 +4643,6 @@ def save_menu_ratings(request):
         if location_rating is not None:
             review_defaults['location_stars'] = location_rating
 
-        # attempt to get event by organizer & location if exists
         if organizer_obj and location_obj:
             event_obj = Event.objects.filter(organized_by=organizer_obj, location=location_obj).first()
 
@@ -4637,10 +4662,8 @@ def recommendations_view(request, guest_id):
     try:
         guest = Guests.objects.get(id=guest_id)
         
-        # Obține recomandările
         recommendations = get_recommendations_for_guest(guest_id, top_n=10)
         
-        # Obține informații despre model
         recommender = get_recommender()
         model_info = recommender.get_model_info()
         
@@ -4660,13 +4683,10 @@ def recommendations_view(request, guest_id):
         return redirect('home')
 
 def similar_dishes_view(request, dish_id):
-    """
-    View pentru afișarea preparatelor similare
-    """
+
     try:
         dish = Menu.objects.get(id=dish_id)
         
-        # Obține preparatele similare
         similar_dishes = get_similar_dishes_for_dish(dish_id, top_n=5)
         
         context = {
@@ -4684,14 +4704,10 @@ def similar_dishes_view(request, dish_id):
         return redirect('home')
 
 def model_status_view(request):
-    """
-    View pentru afișarea statusului modelului
-    """
     try:
         recommender = get_recommender()
         model_info = recommender.get_model_info()
         
-        # Verifică dacă antrenarea este necesară
         from .management.commands.schedule_model_training import Command as TrainingCommand
         training_check = TrainingCommand()
         
@@ -4719,7 +4735,7 @@ def manual_validate_attendance(request):
 
     query = (data.get('query') or '').strip()
     event_id = data.get('event_id')
-    target_guest_id = data.get('guest_id')  # optional – explicit guest to mark
+    target_guest_id = data.get('guest_id')  
 
     if not query or not event_id:
         return JsonResponse({'success': False, 'error': 'Missing parameters'}, status=400)

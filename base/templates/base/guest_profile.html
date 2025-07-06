@@ -40,6 +40,14 @@
         transition: background-color 0.3s ease;
     }
     
+    /* Culoare pentru starea curentă / completată */
+    .circle.active {
+        background-color: #4CAF50; /* verde intens pentru pasul curent */
+    }
+    .circle.completed {
+        background-color: #9CCC65; /* verde pal pentru pașii finalizați */
+    }
+    
     form {
         display: flex;
         flex-direction: column;
@@ -192,20 +200,9 @@
 
               </div>
 
-              <div id="form-3" class="form-container flex-column">
+              <div id="form-3" class="form-container flex-column mb-2">
                 <h2>Event details</h2>
-                <!-- <label for="zona">:</label>
-                <select id="zona" class="form-select" name="zona" required>
-                    <option value="Margine">Marginal</option>
-                    <option value="Central">Central</option>
-                    <option value="Oriunde" selected>No preferences</option>
-                    <option value="Spre_iesire">Exit</option>
-                    <option value="Langa_scena">Stage</option>
-                </select> -->
-                <!-- <label for="prieteni">Cu cine vei veni la eveniment?</label>
-                <textarea id="prieteni", name="prieteni" rows="2" cols="30" placeholder="">
-                    Scrie numele complet al priteninilor cu care vei veni la eveniment
-                </textarea> -->
+
                   <label for="diet_preference">Diet preference:</label>
                   <select id="diet_preference" class="form-select" name="diet_preference" required>
                       {% for diet in diet_choices %}
@@ -222,7 +219,7 @@
                       {% endfor %}
                   </div>
                   <label for="spicy_food">Spicy food preference:</label>
-                  <select id="spicy_food" class="form-select" name="spicy_food" required>
+                  <select id="spicy_food" class="form-select mb-2" name="spicy_food" required>
                       {% for spicy in hot_levels %}
                           <option value="{{spicy.0}}">{{spicy.1}}</option>
                       {% endfor %}
@@ -255,24 +252,35 @@
             const btnBack2 = document.getElementById('back-2');
             const btnBack3 = document.getElementById('back-3');
             const btnAccept = document.getElementById('accept-btn');
-            function toggleStep(container, show) {
-            // show = true → afișăm + enable, else hide + disable
-              container.style.display = show ? (container.id === 'form-1' ? 'block' : 'flex') : 'none';
-              const fields = container.querySelectorAll('input, select, textarea, button');
-              fields.forEach(f => {
-                  if (f.name !== 'csrfmiddlewaretoken') {
-                      f.disabled = !show;
-                  }
-              });   // <-- important
-          }
 
-          function goTo(step) {
-              ['form-1','form-2','form-3','final-page'].forEach(id => {
-                  const el = document.getElementById(id);
-                  if (el) toggleStep(el, id === step);
-              });
-              localStorage.setItem('guestProfileStep', step);
-          }
+            document.querySelectorAll('input[required], select[required], textarea[required]').forEach(el => {
+                el.dataset.originalRequired = 'true';
+            });
+
+            function toggleStep(container, show) {
+                container.style.display = show ? (container.id === 'form-1' ? 'block' : 'flex') : 'none';
+                const btns = container.querySelectorAll('button');
+                btns.forEach(btn => btn.disabled = !show);
+
+                const fields = container.querySelectorAll('input, select, textarea');
+                fields.forEach(f => {
+                    if (!show) {
+                        f.removeAttribute('required');
+                    } else if (f.dataset.originalRequired === 'true') {
+                        f.setAttribute('required', '');
+                    }
+                });
+                if (show) updateProgress(container.id);
+            }
+
+            function goTo(step) {
+                ['form-1','form-2','form-3','final-page'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) toggleStep(el, id === step);
+                });
+                localStorage.setItem('guestProfileStep', step);
+                updateProgress(step);
+            }
 
             function validateStep(container) {
                 const fields = container.querySelectorAll('input, select, textarea');
@@ -285,9 +293,31 @@
                 return true;
             }
 
+            function updateProgress(step) {
+                const stepMap = {
+                    'form-1': 1,
+                    'form-2': 2,
+                    'form-3': 3,
+                    'final-page': 3
+                };
+                const current = stepMap[step] || 1;
+                [1,2,3].forEach(num => {
+                    const circle = document.querySelector(`#step-${num} .circle`);
+                    if (!circle) return;
+
+                    circle.classList.remove('active', 'completed');
+
+                    if (num < current) {
+                        circle.classList.add('completed');
+                    } else if (num === current) {
+                        circle.classList.add('active');
+                    }
+                });
+            }
 
             const savedStep = localStorage.getItem('guestProfileStep') || 'form-1';
             goTo(savedStep);
+            updateProgress(savedStep);
 
             btnCont1.addEventListener('click', () => {
                 if (validateStep(step2)) {
@@ -316,6 +346,12 @@
             }
 
             form.addEventListener('submit', (e) => {
+                document.querySelectorAll('.form-container').forEach(cn => {
+                    if (getComputedStyle(cn).display === 'none') {
+                        cn.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
+                    }
+                });
+
                 const allStepsValid = [step2, step3].every(validateStep);
                 if (!allStepsValid) {
                     e.preventDefault();
@@ -452,47 +488,9 @@
                     </div>
                     <div class="col-sm-4 text-secondary">
                       <select id="meniu" class="form-select" name="meniu" va aria-valuetext="{{ preferences.cuisine_preference }}">
-                        <option value="no_region">No region</option>
-                        <option value="italian">Italian</option>
-                        <option value="french">French</option>
-                        <option value="mexican">Mexican</option>
-                        <option value="indian">Indian</option>
-                        <option value="chinese">Chinese</option>
-                        <option value="japanese">Japanese</option>
-                        <option value="american">American</option>
-                        <option value="mediterranean">Mediterranean</option>
-                        <option value="romanian">Romanian</option>
-                        <option value="spanish">Spanish</option>
-                        <option value="thai">Thai</option>
-                        <option value="greek">Greek</option>
-                        <option value="turkish">Turkish</option>
-                        <option value="german">German</option>
-                        <option value="korean">Korean</option>
-                        <option value="vietnamese">Vietnamese</option>
-                        <option value="lebanese">Lebanese</option>
-                        <option value="brazilian">Brazilian</option>
-                        <option value="ethiopian">Ethiopian</option>
-                        <option value="russian">Russian</option>
-                        <option value="moroccan">Moroccan</option>
-                        <option value="caribbean">Caribbean</option>
-                        <option value="african">African</option>
-                        <option value="british">British</option>
-                        <option value="australian">Australian</option>
-                        <option value="persian">Persian</option>
-                        <option value="polish">Polish</option>
-                        <option value="portuguese">Portuguese</option>
-                        <option value="cuban">Cuban</option>
-                        <option value="jamaican">Jamaican</option>
-                        <option value="swedish">Swedish</option>
-                        <option value="egyptian">Egyptian</option>
-                        <option value="indonesian">Indonesian</option>
-                        <option value="malaysian">Malaysian</option>
-                        <option value="pakistani">Pakistani</option>
-                        <option value="syrian">Syrian</option>
-                        <option value="argentinian">Argentinian</option>
-                        <option value="peruvian">Peruvian</option>
-                        <option value="filipino">Filipino</option>
-
+                        {% for region in regions %}
+                          <option value="{{region.0}}">{{region.1}}</option>
+                        {% endfor %}
                     </select>                   
                     </div>
                   </div>
@@ -579,7 +577,7 @@
                             <option value="{{ cond.id }}" selected>{{ cond.name }}</option>
                         {% endfor %}
                       
-                        {# opţiune “No condition” dacă nu e nimic ales #}
+                        {# opţiune "No condition" dacă nu e nimic ales #}
                         {% if not preferences.medical_conditions.exists %}
                             <option value="no_condition" selected>No condition</option>
                         {% else %}

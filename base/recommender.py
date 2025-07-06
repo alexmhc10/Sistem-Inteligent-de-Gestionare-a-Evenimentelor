@@ -8,11 +8,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class LightFMRecommender:
-    """
-    Clasă pentru integrarea modelului LightFM în aplicația Django
-    """
-    
+class LightFMRecommender:    
     def __init__(self):
         self.model = None
         self.dataset = None
@@ -25,7 +21,6 @@ class LightFMRecommender:
         self.is_loaded = False
         
     def load_model(self, model_path=None):
-        """Încarcă modelul antrenat"""
         if model_path is None:
             model_path = os.path.join(settings.BASE_DIR, 'lightfm_model.pkl')
         
@@ -51,23 +46,12 @@ class LightFMRecommender:
             return False
     
     def get_recommendations(self, guest_id, top_n=10, exclude_rated=True):
-        """
-        Generează recomandări pentru un invitat
-        
-        Args:
-            guest_id: ID-ul invitatului
-            top_n: Numărul de recomandări
-            exclude_rated: Exclude preparatele deja evaluate
-        
-        Returns:
-            Lista de recomandări cu scoruri
-        """
+      
         if not self.is_loaded:
             logger.error("Model not loaded")
             return []
         
         try:
-            # Găsește indexul invitatului
             if guest_id not in self.guest_id_to_idx:
                 logger.warning(f"Guest {guest_id} not found in model")
                 return []
@@ -116,9 +100,7 @@ class LightFMRecommender:
             return []
     
     def get_similar_dishes(self, dish_id, top_n=5):
-        """
-        Găsește preparate similare cu unul dat
-        """
+
         if not self.is_loaded:
             return []
         
@@ -231,22 +213,12 @@ def get_recommendations_for_guest(guest_id, top_n=10, use_cache=True):
     recommendations = recommender.get_recommendations(guest_id, top_n)
     
     if use_cache:
-        cache.set(cache_key, recommendations, 3600)  # Cache pentru 1 oră
+        cache.set(cache_key, recommendations, 3600)
     
     return recommendations
 
 def get_similar_dishes_for_dish(dish_id, top_n=5, use_cache=True):
-    """
-    Funcție helper pentru a găsi preparate similare
-    
-    Args:
-        dish_id: ID-ul preparatului
-        top_n: Numărul de preparate similare
-        use_cache: Folosește cache pentru performanță
-    
-    Returns:
-        Lista de preparate similare
-    """
+
     if use_cache:
         cache_key = f"similar_dishes_{dish_id}_{top_n}"
         cached_similar = cache.get(cache_key)
@@ -257,6 +229,6 @@ def get_similar_dishes_for_dish(dish_id, top_n=5, use_cache=True):
     similar_dishes = recommender.get_similar_dishes(dish_id, top_n)
     
     if use_cache:
-        cache.set(cache_key, similar_dishes, 3600)  # Cache pentru 1 oră
+        cache.set(cache_key, similar_dishes, 3600)
     
     return similar_dishes 

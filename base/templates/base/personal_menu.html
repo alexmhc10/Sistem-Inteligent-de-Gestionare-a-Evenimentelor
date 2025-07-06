@@ -49,13 +49,7 @@
                                 <label for="search" class="form-label h6">Seach the dish name:</label>
                                 <input type="text" name="query" value="{{ query }}" class="form-control" placeholder="Dish name" />
                             </div>
-                            <div class="col-md-2 d-flex flex-column align-items-center">
-                              <h6 class="h6">Check veganism:</h6>
-                                <label>
-                                    <input type="checkbox" class="form-check-input" name="vegetarian" {% if request.GET.vegetarian %}checked{% endif %}> Vegan
-                                </label>
-                            </div>
-                            <div class="col-md-6 d-flex flex-column align-items-center">
+                            <div class="col-md-6 offset-md-2 d-flex flex-column align-items-center">
                               <h6 class="h6">Filter for allergens:</h6>
                                 <fieldset>
                                     {% for allergen in allergens %}
@@ -412,7 +406,7 @@
                             <input type="text" class="form-control" id="foodName" placeholder="Name">
                             
                             <div class="row mt-2">
-                              <div class="col-8">
+                              <div class="col-12">
                                 <label for="foodCuisine" class="text-dark">Change the cuisine:</label>
                                 <select name="select" class="form-select" id="foodCuisineSelect">
                                   <option value="" id="foodCuisine"></option>
@@ -421,11 +415,6 @@
                                   {% endfor %}
                               </select>
                               </div>
-                              <div class="col-4 d-flex align-items-center">
-                                <label for="foodAllergens" class="text-dark">Vegan:</label>
-                                <input type="checkbox" class="form-check-input" id="foodVegan" placeholder="Allergens">
-                                
-                              </div>  
                             </div>
                             <div class="d-flex flex-column mt-2">
                               <label for="foodAllergens" class="text-dark">Change the allergens:</label>
@@ -438,6 +427,66 @@
                             {% endfor %}
                             </div>
                           </div>
+
+
+                          <label for="foodCategorySelect" class="text-dark mt-3">Change the category:</label>
+                          <select id="foodCategorySelect" class="form-select">
+                              {% for value, label in category_choices %}
+                                  <option value="{{value}}">{{label}}</option>
+                              {% endfor %}
+                          </select>
+
+                          <label for="foodDietSelect" class="text-dark mt-2">Diet type:</label>
+                          <select id="foodDietSelect" class="form-select">
+                              {% for value, label in diet_choices %}
+                                  <option value="{{value}}">{{label}}</option>
+                              {% endfor %}
+                          </select>
+
+                          <label for="foodSpicySelect" class="text-dark mt-2">Spicy level:</label>
+                          <select id="foodSpicySelect" class="form-select">
+                              {% for value, label in spicy_choices %}
+                                  <option value="{{value}}">{{label}}</option>
+                              {% endfor %}
+                          </select>
+
+                          <label for="foodCookingSelect" class="text-dark mt-2">Cooking method:</label>
+                          <select id="foodCookingSelect" class="form-select">
+                              {% for value, label in cooking_choices %}
+                                  <option value="{{value}}">{{label}}</option>
+                              {% endfor %}
+                          </select>
+
+                          <label for="foodTempSelect" class="text-dark mt-2">Serving temperature:</label>
+                          <select id="foodTempSelect" class="form-select">
+                              {% for value, label in temp_choices %}
+                                  <option value="{{value}}">{{label}}</option>
+                              {% endfor %}
+                          </select>
+
+                          <div class="row mt-2">
+                            <div class="col-6">
+                                <label for="foodCalories" class="text-dark">Calories (kcal):</label>
+                                <input type="number" id="foodCalories" class="form-control" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="foodProtein" class="text-dark">Protein (g):</label>
+                                <input type="number" id="foodProtein" class="form-control" min="0">
+                            </div>
+                          </div>
+                          <div class="row mt-2">
+                            <div class="col-6">
+                                <label for="foodCarbs" class="text-dark">Carbs (g):</label>
+                                <input type="number" id="foodCarbs" class="form-control" min="0">
+                            </div>
+                            <div class="col-6">
+                                <label for="foodFat" class="text-dark">Fat (g):</label>
+                                <input type="number" id="foodFat" class="form-control" min="0">
+                            </div>
+                          </div>
+
+                          <label for="foodDescription" class="text-dark mt-2">Description:</label>
+                          <textarea id="foodDescription" rows="3" class="form-control"></textarea>
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -490,6 +539,18 @@
                                     document.getElementById("foodCuisine").innerText = data.cuisine;
                                     document.getElementById("foodVegan").checked = data.diet_type.toLowerCase()==="vegan";
                                     document.getElementById("foodVegan").value = data.diet_type;
+
+                                    document.getElementById("foodCategorySelect").value = data.category;
+                                    document.getElementById("foodDietSelect").value = data.diet_type;
+                                    document.getElementById("foodSpicySelect").value = data.spicy_level;
+                                    if (data.cooking_method) document.getElementById("foodCookingSelect").value = data.cooking_method;
+                                    document.getElementById("foodTempSelect").value = data.serving_temp;
+
+                                    document.getElementById("foodCalories").value = data.calories || "";
+                                    document.getElementById("foodProtein").value = data.protein_g || "";
+                                    document.getElementById("foodCarbs").value = data.carbs_g || "";
+                                    document.getElementById("foodFat").value = data.fat_g || "";
+                                    document.getElementById("foodDescription").value = data.description || "";
                                 })
                                 .catch(error => console.error("Eroare la fetch:", error));
                         }
@@ -560,6 +621,19 @@
                     allergenCheckboxes.forEach(checkbox => {
                         formData.append("allergens", checkbox.value);
                     });
+
+                    formData.append("category", document.getElementById("foodCategorySelect").value);
+                    formData.append("diet_type", document.getElementById("foodDietSelect").value);
+                    formData.append("spicy_level", document.getElementById("foodSpicySelect").value);
+                    formData.append("cooking_method", document.getElementById("foodCookingSelect").value);
+                    formData.append("serving_temp", document.getElementById("foodTempSelect").value);
+
+                    formData.append("calories", document.getElementById("foodCalories").value);
+                    formData.append("protein_g", document.getElementById("foodProtein").value);
+                    formData.append("carbs_g", document.getElementById("foodCarbs").value);
+                    formData.append("fat_g", document.getElementById("foodFat").value);
+
+                    formData.append("description", document.getElementById("foodDescription").value);
 
                     fetch(`/update_food/${foodId}/`, {
                         method: "POST",

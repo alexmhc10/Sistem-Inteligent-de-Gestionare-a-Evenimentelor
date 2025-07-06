@@ -234,8 +234,7 @@ class Guests(models.Model):
 
     @vegan.setter
     def vegan(self, value: bool):
-        """Permit setarea convențională .vegan = True/False.
-        Dacă True → diet_preference devine 'vegan'. Dacă False și dieta curentă este 'vegan', se resetează la 'none'."""
+
         if value:
             self.diet_preference = 'vegan'
         else:

@@ -121,8 +121,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
           {% endif %}
             </div>
             <div class="col-lg-4 pb-4">
-              <!-- FullCalendar va genera propriul toolbar -->
-              <div id='calendar' style="height: 500px;"></div>
+                <div id='calendar' style="height: 500px;"></div>
           </div>
           </div>
 
@@ -138,13 +137,12 @@ data-sidebar-position="fixed" data-header-position="fixed">
                       center: 'title',
                       end   : 'dayGridMonth,timeGridWeek,timeGridDay listMonth'
                     },
-                     events        : [],   // populăm după fetch
+                     events        : [],
                      eventClick(info) {
                          info.jsEvent.preventDefault();
                          const ev  = info.event;
                          const ext = ev.extendedProps || {};
 
-                         // Populează modalul Bootstrap
                          document.getElementById('modalTitle').textContent  = ev.title;
                          document.getElementById('modalDate').textContent   = ev.start ? ev.start.toLocaleDateString('ro-RO') : '';
                          document.getElementById('modalGuests').textContent = ext.guest_count ?? 0;
@@ -293,7 +291,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
 </style>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
-<!-- Bootstrap modal pentru detalii eveniment (Bootstrap 5 este deja folosit în proiect) -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

@@ -9,4 +9,4 @@ Detaliile de conectare:
 Intră în aplicație: {{ guest_home_url }}
 
 Cu drag,
-Echipa Eventsmart 
+Echipa EventEase

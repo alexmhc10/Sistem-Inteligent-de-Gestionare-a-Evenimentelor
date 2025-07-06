@@ -1,0 +1,12 @@
+Bună {{ staff.first_name }},
+
+Contul tău de staff pe platforma Eventsmart a fost creat!
+
+Detaliile de conectare:
+ - Username: {{ staff.username }}
+ - Parolă: {{ staff.password }}
+
+Intră în aplicație: {{ staff_home_url }}
+
+Cu drag,
+Echipa EventEase 

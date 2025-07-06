@@ -34,11 +34,11 @@ def get_encoded_faces(event_id):
                 face_encodings = fr.face_encodings(face)
                 if face_encodings:
                     encoding = face_encodings[0]
-                    print(f"✅ Față detectată pentru {p.user.username}")
+                    print(f"Față detectată pentru {p.user.username}")
                 else:
-                    print(f"⚠️ Nicio față detectată în imaginea lui {p.user.username}")
+                    print(f"Nicio față detectată în imaginea lui {p.user.username}")
             except Exception as e:
-                print(f"❌ Eroare la procesarea imaginii pentru {p.user.username}: {e}")
+                print(f"Eroare la procesarea imaginii pentru {p.user.username}: {e}")
 
         if encoding is not None:
             encoded[p.user.username] = encoding
@@ -49,7 +49,7 @@ def get_encoded_faces(event_id):
                     defaults={"encoding": encoding.tolist()}
                 )
             except Exception as e:
-                print(f"❌ Eroare la salvarea encodării pentru {p.user.username}: {e}")
+                print(f"Eroare la salvarea encodării pentru {p.user.username}: {e}")
 
     return encoded
 

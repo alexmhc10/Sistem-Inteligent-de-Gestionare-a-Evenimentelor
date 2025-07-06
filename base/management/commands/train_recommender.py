@@ -1,4 +1,3 @@
-# base/management/commands/train_recommender.py
 from django.core.management.base import BaseCommand
 from lightfm import LightFM
 from lightfm.data import Dataset
@@ -126,9 +125,11 @@ class Command(BaseCommand):
             menu_item_id__in=active_dish_ids
         )
 
+        THRESHOLD = 4
+
         interactions, _ = ds.build_interactions(
             (
-                ((r.guest_id, r.menu_item_id) for r in filtered_ratings)
+                ((r.guest_id, r.menu_item_id, int(r.rating >= THRESHOLD)) for r in filtered_ratings)
             )
         )
         
@@ -176,7 +177,6 @@ class Command(BaseCommand):
         self.stdout.write(f"Interactions shape: {interactions.shape}")
 
         show_progress = options.get("progress", False)
-
         model = LightFM(
             loss="warp", 
             no_components=8,

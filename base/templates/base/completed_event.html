@@ -21,6 +21,16 @@ data-sidebar-position="fixed" data-header-position="fixed">
           <style>
           </style>
           <div class="row d-flex flex-wrap">
+            <div class="col-lg-12">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">This event is completed: {{ event.name }}</h5>
+
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row d-flex flex-wrap">
             <div class="col-lg-8 mt-4">
               <div class="card">
                 <div class="card-body">
@@ -29,7 +39,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                 </div>
               </div>
             </div>
-            <div class="col-lg-4">
+            <div class="col-lg-4 mt-4">
               <div class="card">
                 <div class="card-body text-center">
                   <i class="bi bi-camera h1 text-primary"></i>
@@ -161,7 +171,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                           {% for guest in pending_guests %}
                                               <tr style="background-color: #686363 !important;">
                                                   <td class="fw-medium text-center"><span>{{ forloop.counter }}.</span></td>
-                                                  <td class="text-center fw-medium"></td>
+                                                  <td class="text-center fw-medium">
                                                       <img src="{{ guest.guest.profile_set.all.0.photo.url }}" class="rounded-circle" width="35" height="35">
                                                   </td>
                                                   <td class="text-center"><span>{{ guest.guest.profile_set.all.0.first_name }} {{ guest.guest.profile_set.all.0.last_name }}</span></td>
@@ -259,6 +269,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
             </div>
           </div>
         </div>
+
         {% load custom_filters %}
 
         <h3 class="archives-title">
@@ -359,7 +370,71 @@ data-sidebar-position="fixed" data-header-position="fixed">
             attachDeleteHandler(tr.querySelector('.delete-archive-btn'));
           }
         </script>
-        
+                {% if request.user == event.location.user_account %}
+                <h3 class="h3 mt-4">Create a post for – {{ event.event_name }}</h3>
+                <div class="card mt-3">
+                  <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="staff-post-form">
+                      {% csrf_token %}
+                      {{ form.non_field_errors }}
+      
+                      <div class="mb-3">
+                        <label class="form-label">Rating:</label>
+                        <div class="star-rating">
+                          {% for i in "54321" %}
+                            <input type="radio" id="star-staff-{{ i }}" name="rating" value="{{ i }}" {% if form.rating.value == i %}checked{% endif %}>
+                            <label for="star-staff-{{ i }}" title="{{ i }} stars">★</label>
+                          {% endfor %}
+                          {{ form.rating }}
+                        </div>
+                        {% if form.rating.errors %}
+                          <div class="invalid-feedback d-block">{{ form.rating.errors.as_text }}</div>
+                        {% endif %}
+                      </div>
+      
+                      <div class="mb-3">
+                        {{ form.title.label_tag }}
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                          <div class="invalid-feedback d-block">{{ form.title.errors.as_text }}</div>
+                        {% endif %}
+                      </div>
+      
+                      <div class="mb-3">
+                        {{ form.content.label_tag }}
+                        {{ form.content }}
+                        {% if form.content.errors %}
+                          <div class="invalid-feedback d-block">{{ form.content.errors.as_text }}</div>
+                        {% endif %}
+                      </div>
+      
+                      <div class="mb-3">
+                        <label for="id_images_staff">Images (maximum 10)</label>
+                        <input type="file" name="images" id="id_images_staff" class="form-control" multiple accept="image/jpeg, image/png, image/gif">
+                        {{ form.images.errors }}
+                        <div id="image-preview-staff" class="mt-2"></div>
+                      </div>
+      
+                      <button type="submit" name="form_type" value="add_post" class="btn btn-primary">Create Post</button>
+                    </form>
+                  </div>
+                </div>
+      
+                <script>
+                  document.getElementById('staff-post-form').addEventListener('submit', function(e){
+                    const files = document.getElementById('id_images_staff').files;
+                    if(files.length > 10){
+                        e.preventDefault();
+                        Swal.fire('Error','You can upload maximum 10 images','error');
+                    }
+                    const checked = this.querySelector('.star-rating input[type="radio"]:checked');
+                    if(checked){
+                      const hidden = document.getElementById('id_rating');
+                      if(hidden) hidden.value = checked.value;
+                    }
+                  });
+                </script>
+              {% endif %}
         {% if event.posts.count == 0 %}
         <h3 class="h3">No posts so far!</h3>
         {% else %}

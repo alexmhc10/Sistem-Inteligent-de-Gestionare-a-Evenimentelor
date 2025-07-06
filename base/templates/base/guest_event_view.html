@@ -857,7 +857,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                             {{ form.title.errors.as_text }}
                                         </div>
                                         {% endif %}
-                                    </div>
+                                      </div>
                                       
                                       <div class="mb-3">
                                         {{ form.content.label_tag }}
@@ -867,16 +867,16 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                             {{ form.content.errors.as_text }}
                                         </div>
                                         {% endif %}
-                                    </div>
+                                      </div>
               
-                                    <div class="mb-3">
-                                      <label for="id_images">Images (maximum 10)</label>
-                                      <input type="file" name="images" id="id_images" 
-                                            class="form-control" multiple
-                                            accept="image/jpeg, image/png, image/gif">
-                                      {{ form.images.errors }}
-                                      <div id="image-preview" class="mt-2"></div>
-                                    </div>
+                                      <div class="mb-3">
+                                        <label for="id_images">Images (maximum 10)</label>
+                                        <input type="file" name="images" id="id_images" 
+                                              class="form-control" multiple
+                                              accept="image/jpeg, image/png, image/gif">
+                                        {{ form.images.errors }}
+                                        <div id="image-preview" class="mt-2"></div>
+                                      </div>
                                       
                                       <button type="submit" name="form_type" value="add_post" class="btn btn-primary">Create Post</button>
                                       <a href="{% url 'guest_event_view' event.id %}" class="btn btn-danger">Cancel</a>
