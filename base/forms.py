@@ -256,7 +256,7 @@ class EventPostForm(forms.ModelForm):
     def clean_images(self):
             images = self.files.getlist('images')
             if len(images) > 10:
-                raise forms.ValidationError("Puteți încărca maxim 10 imagini.")
+                raise forms.ValidationError("You can upload a maximum of 10 images.")
             return images
 
 

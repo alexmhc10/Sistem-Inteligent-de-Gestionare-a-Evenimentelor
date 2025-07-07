@@ -92,14 +92,18 @@ def send_welcome_email(sender, instance, **kwargs):
         send_email_task.delay(subject, text_body, html_body, instance.email)
         Profile.objects.filter(pk=instance.pk).update(welcome_email_sent=True)
     elif instance.user_type == 'staff':
-        staff_home_path = reverse('staff_home') if 'staff_home' in [url.name for url in __import__('django.urls').get_resolver().url_patterns] else '/'
+        try:
+            staff_home_path = reverse('personal_eveniment_home')
+        except Exception:
+            staff_home_path = '/'
+
         staff_home_url = f"{base_url}{staff_home_path}"
         context = {
             "staff": instance,
             "site_url": base_url,
             "staff_home_url": staff_home_url,
         }
-        subject = "Now you can accest you'r staff account! Welcome to EventEase!"
+        subject = "Welcome to your new staff account on EventEase!"
         html_body = render_to_string("base/welcome_staff.html", context)
         text_body = render_to_string("base/welcome_staff.txt", context)
         send_email_task.delay(subject, text_body, html_body, instance.email)

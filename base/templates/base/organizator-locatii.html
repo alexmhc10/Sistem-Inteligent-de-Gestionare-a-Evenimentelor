@@ -478,9 +478,7 @@
 <script>
     var charts = document.querySelectorAll(".chart-seller8");
 
-    // Funcție pentru a obține numărul de evenimente pe lună pentru o locație
     function getEventsCountByMonth(locationEvents) {
-        // Creează un obiect pentru a număra evenimentele pe luni
         var eventCounts = {
             'Ian': 0, 'Feb': 0, 'Mar': 0, 'Apr': 0, 'Mai': 0,
             'Iun': 0, 'Iul': 0, 'Aug': 0, 'Sep': 0, 'Oct': 0,
@@ -488,29 +486,22 @@
         };
 
         locationEvents.forEach(function(event) {
-            // Extrage luna din data evenimentului (în format YYYY-MM-DD)
-            var eventMonth = event.event_date.split('-')[1]; // Extragem luna (al doilea element după '-')
+            var eventMonth = event.event_date.split('-')[1];
 
-            // Mapează numerele lunilor la numele lunii
             var monthNames = ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            var monthIndex = parseInt(eventMonth) - 1; // Transformă numărul lunii (01-12) într-un index de listă (0-11)
+            var monthIndex = parseInt(eventMonth) - 1; 
 
             if (monthIndex >= 0 && monthIndex < monthNames.length) {
-                eventCounts[monthNames[monthIndex]]++; // Incrementează numărul de evenimente pentru luna respectivă
+                eventCounts[monthNames[monthIndex]]++; 
             }
         });
 
-        // Returnează datele pentru grafice
         return Object.values(eventCounts);
     }
 
     charts.forEach(function(chartElement) {
-        var locationEvents = []; // Acesta ar trebui să fie lista de evenimente pentru locația respectivă
+        var locationEvents = []; 
 
-        // Înlocuiește această linie cu datele reale pentru fiecare locație
-        // Ex: locationEvents = getEventsForLocation(location_id); 
-
-        // Exemplu de eveniment pentru test:
         var locationEvents = [
         { event_date: '2025-01-27' },
         { event_date: '2025-01-27' },
@@ -519,16 +510,15 @@
         { event_date: '2025-03-27' }
 ];
 
-        // Obține numărul de evenimente pentru fiecare lună
         var eventData = getEventsCountByMonth(locationEvents);
 
         var options = {
             chart: {
                 type: 'line',
                 height: 200,
-                background: 'transparent',  // Elimină fundalul
+                background: 'transparent',  
                 toolbar: {
-                    show: false  // Ascunde bara de instrumente
+                    show: false 
                 }
             },
             series: [{
@@ -536,26 +526,26 @@
                 data: eventData
             }],
             xaxis: {
-                categories: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // Include toate lunile
+                categories: ['Ian', 'Feb', 'Mar', 'Apr', 'Mai', 'Iun', 'Iul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 
                 axisBorder: {
-                    show: false  // Ascunde linia axei
+                    show: false 
                 },
                 axisTicks: {
-                    show: false  // Ascunde marcajele de pe axa X
+                    show: false 
                 }
             },
             yaxis: {
-                show: false  // Ascunde axa Y
+                show: false  
             },
             grid: {
-                show: false  // Ascunde grila
+                show: false  
             },
             stroke: {
-                curve: 'smooth',  // Liniile vor fi netede
-                width: 2  // Grosimea liniei
+                curve: 'smooth', 
+                width: 2  
             },
             markers: {
-                size: 0  // Ascunde marcajele de pe linie
+                size: 0  
             }
         };
 

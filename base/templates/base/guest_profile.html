@@ -451,7 +451,7 @@
                       <h6 class="mb-0">Email</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="email" class="form-control mb-0" value="{{ profile.email }}">
+                      <input type="email" name="email" class="form-control mb-0" value="{{ profile.email }}">
                     </div>
                   </div>
                   <div class="row mb-3 align-items-center">
@@ -459,7 +459,7 @@
                       <h6 class="mb-0">Phone</h6>
                     </div>
                     <div class="col-sm-9 text-secondary">
-                      <input type="text" name="number" class="form-control mb-0" value="{{ profile.number }}">
+                      <input type="tel" pattern="\d{10}" name="number" class="form-control mb-0" value="{{ profile.number }}">
                     </div>
                   </div>
                   <div class="row">

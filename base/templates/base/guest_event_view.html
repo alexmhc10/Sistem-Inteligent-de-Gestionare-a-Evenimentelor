@@ -472,7 +472,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 const selects = form.querySelectorAll('select');
                                 const selectionsList = document.getElementById('selections-list');
     
-                                // Restaurare stare salvată
                                 function restoreSelections() {
                                   const savedSelections = JSON.parse(localStorage.getItem('eventMenuSelections')) || {};
                                   selects.forEach(select => {
@@ -483,7 +482,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                   updateSelectionsDisplay();
                                 }
     
-                                // Actualizare afișaj selecții
                                 function updateSelectionsDisplay() {
                                   selectionsList.innerHTML = '';
                                   selects.forEach(select => {
@@ -495,7 +493,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                   });
                                 }
     
-                                // Salvare automată la schimbare
                                 selects.forEach(select => {
                                   select.addEventListener('change', function() {
                                     const currentSelections = JSON.parse(localStorage.getItem('eventMenuSelections')) || {};
@@ -505,7 +502,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                   });
                                 });
     
-                                // Trimitere formular
                                 form.addEventListener('submit', function(e) {
                                   e.preventDefault();
                                   
@@ -529,7 +525,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                   });
                                 });
     
-                                // Inițializare
                                 restoreSelections();
                               });
     
@@ -538,7 +533,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <script>
                                 function setupFoodSelection(selectId, detailsContainerId, nameId, allergensId, typeId, imageId, stepId) {
                                   const selectElem = document.getElementById(selectId);
-                                  if(!selectElem) return; // element missing
+                                  if(!selectElem) return; 
 
                                   selectElem.addEventListener("change", function() {
                                     let foodId = this.value;
@@ -714,7 +709,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                 {% endfor %}
                                               {% else %}
                                                 {% for i in "54321" %}
-                                                  <input type="radio" id="organized-{{ event.organized_by.id }}-{{ i }}" name="rating-{{ event.organized_by.id }}" value="{{ i }}">
+                                                  <input type="radio" id="organized-{{ event.organized_by.id }}-{{ i }}" name="rating-{{ event.organized_by.id }}" value="{{ i }}" required
+                                                    {% if review_organizer and review_organizer.organizer_stars >= i|add:'0' %}checked{% endif %}>
                                                   <label for="organized-{{ event.organized_by.id }}-{{ i }}" title="{{ i }} stars">★</label>
                                                 {% endfor %}
                                               {% endif %}
@@ -734,7 +730,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                 {% endfor %}
                                               {% else %}
                                                 {% for i in "54321" %}
-                                                  <input type="radio" id="location-{{ event.location.id }}-{{ i }}" name="rating-{{ event.location.id }}" value="{{ i }}">
+                                                  <input type="radio" id="location-{{ event.location.id }}-{{ i }}" name="rating-{{ event.location.id }}" value="{{ i }}" required
+                                                    {% if review_location and review_location.location_stars >= i|add:'0' %}checked{% endif %}>
                                                   <label for="location-{{ event.location.id }}-{{ i }}" title="{{ i }} stars">★</label>
                                                 {% endfor %}
                                               {% endif %}
@@ -767,7 +764,8 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                                   {% csrf_token %}
                                                     <div class="star-rating" data-dish-id="{{ dish.id }}">
                                                       {% for i in "54321" %}
-                                                        <input type="radio" id="star-{{ dish.id }}-{{ i }}" name="rating-{{ dish.id }}" value="{{ i }}">
+                                                        <input type="radio" id="star-{{ dish.id }}-{{ i }}" name="rating-{{ dish.id }}" value="{{ i }}" required
+                                                          {% if dish.rating >= i|add:'0' %}checked{% endif %}>
                                                         <label for="star-{{ dish.id }}-{{ i }}" title="{{ i }} stars">★</label>
                                                       {% endfor %}
                                                     </div>
@@ -827,7 +825,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                               <div class="card mt-4">
                                 <div class="card-body">
                                   <h3 class="h3">Create a post for - {{ event.event_name }}</h3>
-                                  <form method="post" id="post-form" enctype="multipart/form-data">
+                                  <form method="post" id="post-form-0" enctype="multipart/form-data">
                                       {% csrf_token %}
                                       {{ form.non_field_errors }}
                                       
@@ -835,7 +833,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                         <label class="form-label">Rating:</label>
                                         <div class="star-rating">
                                           {% for i in "54321" %}
-                                          <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}"
+                                          <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}" required
                                                 {% if form.rating.value == i %}checked{% endif %}>
                                           <label for="star-{{ i }}" title="{{ i }} stele">★</label>
                                           {% endfor %}
@@ -896,7 +894,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                           <label class="form-label">Rating:</label>
                                           <div class="star-rating">
                                             {% for i in "54321" %}
-                                            <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}"
+                                            <input type="radio" id="star-{{ i }}" name="rating" value="{{ i }}" required
                                                   {% if form.rating.value == i %}checked{% endif %}>
                                             <label for="star-{{ i }}" title="{{ i }} stele">★</label>
                                             {% endfor %}
@@ -946,25 +944,28 @@ data-sidebar-position="fixed" data-header-position="fixed">
                                 </div>
                             {% endif %}
                               <script>
-                                document.querySelector('form').addEventListener('submit', function(e) {
-                                  const files = document.getElementById('id_images').files;
-                                  if (files.length > 10) {
-                                      e.preventDefault();
-                                      alert('You can upload maximum 10 images.');
-                                  }
-                              });
+                                document.querySelectorAll('form[id^="post-form"]').forEach(function (form) {
+                                    form.addEventListener('submit', function (e) {
+                                        const fileInput = form.querySelector('#id_images');
+                                        if (fileInput && fileInput.files.length > 10) {
+                                            e.preventDefault();
+                                            Swal.fire('You can upload maximum 10 images.');
+                                        }
+                                    });
+                                });
               
-                                document.addEventListener('DOMContentLoaded', function() {
-                                    const stars = document.querySelectorAll('.star-rating input');
-                                    const hiddenInput = document.getElementById('id_rating');
-                                    
-                                    stars.forEach(star => {
+                                (function() {
+                                    const stars = document.querySelectorAll('.star-rating input[type="radio"]');
+                                    stars.forEach(function(star) {
                                         star.addEventListener('change', function() {
-                                            hiddenInput.value = this.value;
+                                            const form = this.closest('form');
+                                            const hiddenInput = form.querySelector('input[type="hidden"][name="rating"]');
+                                            if (hiddenInput) {
+                                                hiddenInput.value = this.value;
+                                            }
                                         });
                                     });
-                                
-                                });
+                                })();
               
               
                               </script>
@@ -1361,7 +1362,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
 
 
 <script>
-  // Global constants accessible to all functions
   const GLOBAL_MEDIA_URL = "{{ MEDIA_URL }}";
   const ALL_DISHES = JSON.parse('{{ all_dishes_json|escapejs }}');
   const GUEST_ALLERGENS = JSON.parse('{{ guest_allergens_json|escapejs }}');
@@ -1380,11 +1380,10 @@ data-sidebar-position="fixed" data-header-position="fixed">
         }
      });
 
-  // Delegated change handler for initial dish selection grid (generate-menu flow)
   document.addEventListener('change',function(e){
       if(!e.target.classList.contains('dish-option')) return;
       const radio=e.target;
-      const cat = radio.name; // name attribute holds category in initial grid
+      const cat = radio.name;
       selectedDishes[cat]=parseInt(radio.value);
 
       const required=["appetizer","main","dessert","drink"];
@@ -1454,7 +1453,7 @@ data-sidebar-position="fixed" data-header-position="fixed">
   }
 
   function openEditModal(category){
-    category = category.toLowerCase(); // normalizează cheia
+    category = category.toLowerCase(); 
     console.log('category:', category);
     if(!ALL_DISHES[category]){
          console.error('No dishes list for category',category);
@@ -1490,13 +1489,11 @@ data-sidebar-position="fixed" data-header-position="fixed">
          if(radio) radio.checked = true;
       }
 
-      // Save handler
       document.getElementById('save-dish-btn').onclick=function(){
           const selected = list.querySelector("input[name='dish-choice']:checked");
           if(!selected){Swal.fire('Select a dish first'); return;}
           const dishId=parseInt(selected.value);
           const dishObj = ALL_DISHES[category].find(d=>d.id===dishId);
-          // Update chosenMenu array
           const idx = chosenMenu.findIndex(m=>m.category===category);
           if(idx>-1){
              chosenMenu[idx]={
@@ -1508,11 +1505,9 @@ data-sidebar-position="fixed" data-header-position="fixed">
                diet_type:dishObj.diet_type
              };
           }
-          // update chosenMenu + table
           buildMenuSummary(chosenMenu);
           syncSelectedDishes();
 
-          // if all categories selected, persist to server immediately
           const required=["appetizer","main","dessert","drink"];
           const allSelected = required.every(cat=>selectedDishes[cat]);
           if(allSelected){
@@ -1536,7 +1531,6 @@ data-sidebar-position="fixed" data-header-position="fixed">
       };
   }
 
-  // Build menu table on first load so it appears after refresh
   document.addEventListener('DOMContentLoaded',()=>{
       if(Array.isArray(chosenMenu) && chosenMenu.length){
           buildMenuSummary(chosenMenu);

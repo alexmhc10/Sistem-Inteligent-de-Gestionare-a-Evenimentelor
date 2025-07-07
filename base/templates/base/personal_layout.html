@@ -296,7 +296,6 @@ document.addEventListener('DOMContentLoaded', function() {
         {% endfor %}
     ];
 
-    // Draw tables
     tables.forEach(function(table) {
         createTable(table);
     });
@@ -368,7 +367,6 @@ document.addEventListener('DOMContentLoaded', function() {
         layer.draw();
     }
 
-    // Add new table
     document.getElementById('addTableForm').addEventListener('submit', function(e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -398,7 +396,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Save table changes
     document.getElementById('saveTableChanges').addEventListener('click', function() {
         const formData = new FormData(document.getElementById('editTableForm'));
         
@@ -433,7 +430,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Delete table
     document.getElementById('deleteTable').addEventListener('click', function() {
         if (confirm('Are you sure you want to delete this table?')) {
             const tableId = document.getElementById('editTableId').value;
@@ -466,7 +462,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // --- Special Elements Definitions ---
     const specialElements = {
         entrance: {
             shape: 'rect', color: 'green', width: 60, height: 20, icon: '', label: 'Entrance'
@@ -546,10 +541,8 @@ document.addEventListener('DOMContentLoaded', function() {
         group.add(label);
         layer.add(group);
         layer.draw();
-        // End of element creation
     }
 
-    // --- Save layout (include rotation) ---
     document.getElementById('save-positions').addEventListener('click', function() {
         const positions = [];
         const specialElements = [];
@@ -600,7 +593,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // --- Load special elements from backend context (include rotation) ---
     const specialElementsFromBackend = [
         {% for el in special_elements %}
         {
@@ -619,8 +611,6 @@ document.addEventListener('DOMContentLoaded', function() {
         addSpecialElementToCanvas(el.type, el.x * width / 100, el.y * height / 100, el.rotation, el.width, el.height, el.radius, el.label);
     });
 
-    // --- Load special elements on page load ---
-    // (loadSpecialElements call removed)
 
     let selectedGroup = null;
     let rotateHandle = null;
@@ -631,17 +621,14 @@ document.addEventListener('DOMContentLoaded', function() {
     function selectGroup(group) {
         deselectGroup();
         selectedGroup = group;
-        // Attach Konva.Transformer for this group
         transformer.nodes([group]);
         transformer.getLayer().batchDraw();
         const bbox = group.getClientRect({ relativeTo: group.getLayer() });
-        // Update panel langa forma
         const canvasRect = stage.container().getBoundingClientRect();
         editPanel.style.display = 'block';
         editPanelTitle.textContent = group._tableData ? 'Table #' + group._tableData.table_number : group._specialLabel;
         editPanel.style.left = (canvasRect.left + bbox.x + bbox.width + 30) + 'px';
         editPanel.style.top = (canvasRect.top + bbox.y) + 'px';
-        // Bind delete
         editPanelDelete.onclick = function() {
             Swal.fire({
                 title: 'Are you sure?',

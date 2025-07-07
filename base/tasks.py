@@ -17,7 +17,6 @@ class DummyStyle:
 
 @shared_task
 def run_optimization_task():
-    """Task that runs the optimization command"""
     logger.info("Starting optimization task via Celery...")
     try:
         call_command('optimise_events')

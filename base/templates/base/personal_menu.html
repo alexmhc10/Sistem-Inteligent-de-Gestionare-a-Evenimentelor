@@ -537,7 +537,6 @@
 
                                     document.getElementById("foodCuisine").value = data.cuisine;
                                     document.getElementById("foodCuisine").innerText = data.cuisine;
-                                    document.getElementById("foodVegan").checked = data.diet_type.toLowerCase()==="vegan";
                                     document.getElementById("foodVegan").value = data.diet_type;
 
                                     document.getElementById("foodCategorySelect").value = data.category;
@@ -610,7 +609,6 @@
                     
                     formData.append("item_name", document.getElementById("foodName").value);
                     formData.append("item_cuisine", document.getElementById("foodCuisineSelect").value);
-                    formData.append("item_vegan", document.getElementById("foodVegan").checked ? "true" : "false");
                     
                     const imageInput = document.getElementById("foodImageUpload");
                     if (imageInput.files[0]) {

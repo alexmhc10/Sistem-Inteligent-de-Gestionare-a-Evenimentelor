@@ -2234,6 +2234,7 @@ def personal_profile(request):
             request.user.email = request.POST.get('email')
             profile.email = request.POST.get('email')
             profile.number = request.POST.get('number')
+            location_owned.number = request.POST.get('number')
             location_owned.location = request.POST.get('adress')
             profile.save()
             location_owned.save()
@@ -2710,6 +2711,16 @@ def search_food(request):
             allergen_filters |= Q(allergens__name__icontains=allergen_name)
         foods = foods.filter(allergen_filters)
 
+    top_stats = []
+    for code, label in Menu.CATEGORY_CHOICES:
+        podium = (
+            Menu.objects.filter(category=code)
+            .annotate(sel_count=Count('menu_choices', distinct=True), avg_rating=Avg('ratings__rating'))
+            .order_by('-sel_count')[:5]
+        )
+        if podium:
+          top_stats.append({'code': code, 'label': label, 'dishes': list(podium)})
+
     context = {
         "menu_items": foods,
         "query": query,
@@ -2722,6 +2733,7 @@ def search_food(request):
         "spicy_choices": Menu.SPICY_LEVELS,
         "temp_choices": TEMP_CHOICES,
         "cooking_choices": COOKING_METHOD_CHOICES,
+        "top_stats": top_stats,
     }
     return render(request, "base/personal_menu.html", context)   
 
@@ -3246,7 +3258,7 @@ def guest_event_view(request, pk):
 
     if request.method == 'POST' and request.POST.get("form_type") == "add_post":
         print("se executa")
-        form = EventPostForm(request.POST, event=event, user=request.user)
+        form = EventPostForm(request.POST, request.FILES, event=event, user=request.user)
         if form.is_valid():
             print("Form valid")
             try:
@@ -3254,6 +3266,11 @@ def guest_event_view(request, pk):
                 post.event = event
                 post.author = request.user
                 post.save()
+
+                images = request.FILES.getlist('images')
+                if len(images) > 10:
+                    messages.error(request, "Maximum 10 images allowed.")
+                    return redirect('guest_event_view', pk=pk)
                 
                 for i, image in enumerate(request.FILES.getlist('images')):
                     PostImage.objects.create(
@@ -3672,7 +3689,6 @@ def update_food(request, food_id):
             food.item_cuisine = request.POST.get('item_cuisine') or food.item_cuisine
 
             food.diet_type = request.POST.get('diet_type') or food.diet_type
-            food.item_vegan = (request.POST.get('item_vegan') == 'true') if request.POST.get('item_vegan') is not None else food.item_vegan
 
             food.category = request.POST.get('category') or food.category
             food.spicy_level = request.POST.get('spicy_level') or food.spicy_level

@@ -316,19 +316,16 @@ data-sidebar-position="fixed" data-header-position="fixed">
     const canvas = document.getElementById('canvas');
     const captureButton = document.getElementById('capture');
 
-    // Pornirea camerei
     navigator.mediaDevices.getUserMedia({ video: true })
         .then(stream => video.srcObject = stream)
         .catch(err => console.error('Camera error: ', err));
 
-    // Capturarea imaginii
     captureButton.addEventListener('click', () => {
         const context = canvas.getContext('2d');
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Trimiterea imaginii la server
         const imageData = canvas.toDataURL('image/png');
         fetch('/validate-face/', {
             method: 'POST',
