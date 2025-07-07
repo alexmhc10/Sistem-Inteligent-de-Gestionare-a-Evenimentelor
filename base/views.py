@@ -1499,6 +1499,12 @@ def admin_edit_location(request, pk):
 ).exclude(user__username="defaultuser").select_related('user')
     if request.method == 'POST':
         name = request.POST.get('name')
+        if any(char.isdigit() for char in name):
+            messages.error(request, "Name can't contain any letters.")
+            return redirect('admin_edit_location', pk=pk)
+        if not name.replace(" ", "").isalpha():
+            messages.error(request, "Location's name can't contain special characters or numbers.")
+            return redirect('admin_edit_location', pk=pk)
         description = request.POST.get('description')
         organizer = request.POST.get('organizer')
         County = request.POST.get('County')
@@ -1522,8 +1528,8 @@ def admin_edit_location(request, pk):
                 location=location,
                 image=image
             )
-
-    messages.success(request, "Location updated successfully!")
+        messages.success(request, "Location updated successfully!")
+        return redirect('admin-locations')
 
     context={
         'organizers':organizers,
