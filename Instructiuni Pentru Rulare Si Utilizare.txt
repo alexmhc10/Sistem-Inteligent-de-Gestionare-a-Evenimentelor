@@ -1,0 +1,13 @@
+Pornire Aplicatie:
+Comanda :.\env\Scripts\activate
+Comanda: python manage.py runserver 0.0.0.0:8000
+
+
+Pornire Redis
+Click pe Sageata ↓ de langa New Terminal > Selectare Ubuntu WSL 
+sudo service redis-server start
+
+
+Pornire Celery:
+Comanda :.\env\Scripts\activate
+Comanda: celery -A sistem_inteligent_de_gestionare_a_evenimentelor worker --loglevel=info --pool=solo
