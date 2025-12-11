@@ -1,4 +1,4 @@
-#  Smart Event Management Platform
+# 🚀 Smart Event Management Platform
 
 > A comprehensive full-stack web solution for managing events, automating reservations, and enhancing guest experience through AI integration.
 
@@ -6,7 +6,7 @@
 ![Django](https://img.shields.io/badge/Django-4.0%2B-green)
 ![Status](https://img.shields.io/badge/Status-Bachelor_Thesis-purple)
 
-##  Overview
+## 📖 Overview
 
 This project addresses the complexity of modern event organization. Beyond standard CRUD operations for events and users, the platform distinguishes itself by integrating **Machine Learning** models to solve real-world logistical problems: reducing queue times via facial recognition and improving user engagement through personalized event recommendations.
 
@@ -18,7 +18,7 @@ This project addresses the complexity of modern event organization. Beyond stand
 
 ---
 
-##  The Team (Credits)
+## 👥 The Team (Credits)
 
 This project was designed and developed as a collaborative Bachelor's Thesis by a team of three students from the **Technical University of Cluj-Napoca (UTCN)**.
 
@@ -45,12 +45,31 @@ The application is built using a robust Monolithic architecture ensuring data co
 
 ---
 
+## 🌟 Feature Spotlight: The Organizer Module
+*Developed by Alex Mihalca*
+
+This module acts as the backbone of the event creation process. I assumed full ownership of this actor, ensuring a seamless experience from database architecture to the frontend interface.
+
+### Key Capabilities:
+1.  **Event Management Dashboard (Frontend):**
+    * Developed a responsive UI using **HTML5, CSS3, and JavaScript**.
+    * Allows organizers to view real-time statistics and manage event details intuitively.
+    * Implemented visual feedback for CRUD operations.
+
+2.  **Database Architecture (SQL Design):**
+    * Designed and implemented the Relational Schema for the event system.
+    * **Data Modeling:** Established One-to-Many relationships between `Organizers` and `Events`, and optimized queries for retrieving attendee lists.
+
+3.  **Backend Logic (Django):**
+    * Wrote custom views and forms to handle complex event data validation.
+    * Implemented security permissions to ensure Organizers can strictly modify only their own assets.
+
+---
+
 ## ⚙️ Installation & Setup
 
 ### Prerequisites
 * Python 3.8+ and Git installed.
-
-Markdown
 
 ### 1. Clone the repository
 ```bash
@@ -71,20 +90,24 @@ pip install -r requirements.txt
 Configure environment variables (e.g., SECRET_KEY, DATABASE_URL). You can create a .env file in the root directory.
 
 3. Database & Migrations
+Initialize the database and apply schemas:
+
 Bash
 
 python manage.py makemigrations
 python manage.py migrate
-If using PostgreSQL, configure DATABASES in sistem_inteligent_de_gestionare_a_evenimentelor/settings.py or use the DATABASE_URL variable in your .env file.
+Note: If using PostgreSQL, configure DATABASES in sistem_inteligent_de_gestionare_a_evenimentelor/settings.py or use the DATABASE_URL variable in your .env file.
 
-4. Required Services
-Redis (Used by Celery/Channels):
+4. Required Services (Redis & Celery)
+This project uses Redis for background tasks (Celery) and real-time features (Channels).
 
-Windows: Use WSL (Windows Subsystem for Linux) or an external Redis service.
+Redis:
+
+Windows: Use WSL (Windows Subsystem for Linux) or run an external Redis service/container.
 
 WSL / Linux: sudo service redis-server start
 
-Celery Worker:
+Celery Worker: Run the worker in a separate terminal:
 
 Bash
 
@@ -92,46 +115,53 @@ celery -A sistem_inteligent_de_gestionare_a_evenimentelor worker --loglevel=info
 Main optimization task: base.tasks.run_optimization_task
 
 5. Start Server
+Run the development server accessible from any network interface:
+
 Bash
 
 python manage.py runserver 0.0.0.0:8000
 Access the application at: http://127.0.0.1:8000
 
 6. Testing & Linting
-Run tests:
+Run unit tests:
 
 Bash
 
 python manage.py test
-Linting (Optional):
+Linting (Optional - using flake8):
 
 Bash
 
 pip install flake8
 flake8 .
-7. Useful Files in Repo
-manage.py
+7. Useful Files Overview
+Key files for understanding the project structure:
 
-requirements.txt
+manage.py - Django command-line utility.
 
-sistem_inteligent_de_gestionare_a_evenimentelor/settings.py
+requirements.txt - Project dependencies.
 
-algoritmi/meniu.py
+sistem_inteligent_de_gestionare_a_evenimentelor/settings.py - Main configuration.
 
-base/views.py
+algoritmi/meniu.py - Custom logic modules.
 
-base/tasks.py
+base/views.py & base/tasks.py - Core views and asynchronous tasks.
 
-sistem_inteligent_de_gestionare_a_evenimentelor/scripts/write.py
+sistem_inteligent_de_gestionare_a_evenimentelor/scripts/write.py - Utility scripts.
 
-Instructiuni Pentru Rulare Si Utilizare.txt
+Instructiuni Pentru Rulare Si Utilizare.txt - Original localized documentation.
 
 8. Contributing
-Fork → feature branch → PR.
+Fork the repository → Create a feature branch → Submit a Pull Request (PR).
 
 Keep commits small and descriptive.
 
-Open an issue for bugs or feature requests.
+Open an issue for any bugs or feature requests before starting work.
 
 9. License
-Add the desired license type (e.g., MIT) in the LICENSE file.
+This project is open-source. Please see the LICENSE file for more details (e.g., MIT License).
+
+📬 Contact
+Alex Mihalca - Full-Stack Developer (Organizer Module) 📧 alexmhc258@gmail.com
+
+Developed as a Bachelor's Thesis at the Faculty of Computer Science - UTCN, Baia Mare.
