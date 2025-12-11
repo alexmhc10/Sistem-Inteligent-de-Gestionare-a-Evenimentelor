@@ -50,77 +50,88 @@ The application is built using a robust Monolithic architecture ensuring data co
 ### Prerequisites
 * Python 3.8+ and Git installed.
 
+Markdown
+
 ### 1. Clone the repository
 ```bash
 git clone [https://github.com/alexmhc10/Sistem-Inteligent-de-Gestionare-a-Evenimentelor.git](https://github.com/alexmhc10/Sistem-Inteligent-de-Gestionare-a-Evenimentelor.git)
 cd Sistem-Inteligent-de-Gestionare-a-Evenimentelor
+2. Local Setup (Windows)
+Create and activate a virtual environment:
 
-### 2. Setup local (Windows)
+Bash
 
-1. Creează și activează un mediu virtual:
-```bash
 python -m venv .env
 .env\Scripts\activate
-```
+Install dependencies:
 
-2. Instalează dependențele:
-```bash
+Bash
+
 pip install -r requirements.txt
-```
+Configure environment variables (e.g., SECRET_KEY, DATABASE_URL). You can create a .env file in the root directory.
 
-3. Configurează variabilele de mediu (ex: SECRET_KEY, DATABASE_URL). Poți crea un fișier `.env` în rădăcină.
+3. Database & Migrations
+Bash
 
-### 3. Bază de date & migrații
-```bash
 python manage.py makemigrations
 python manage.py migrate
-```
+If using PostgreSQL, configure DATABASES in sistem_inteligent_de_gestionare_a_evenimentelor/settings.py or use the DATABASE_URL variable in your .env file.
 
-Dacă folosești PostgreSQL, configurează `DATABASES` în `sistem_inteligent_de_gestionare_a_evenimentelor/settings.py` sau folosește `DATABASE_URL` în `.env`.
+4. Required Services
+Redis (Used by Celery/Channels):
 
-### 4. Servicii necesare
-- Redis (folosit de Celery/Channels)
-  - Windows: folosește WSL sau un serviciu Redis extern.
-  - WSL / Linux: `sudo service redis-server start`
+Windows: Use WSL (Windows Subsystem for Linux) or an external Redis service.
 
-- Celery worker:
-```bash
+WSL / Linux: sudo service redis-server start
+
+Celery Worker:
+
+Bash
+
 celery -A sistem_inteligent_de_gestionare_a_evenimentelor worker --loglevel=info --pool=solo
-```
+Main optimization task: base.tasks.run_optimization_task
 
-Task principal: `base.tasks.run_optimization_task`
+5. Start Server
+Bash
 
-### 5. Pornire server
-```bash
 python manage.py runserver 0.0.0.0:8000
-```
-Accesează: http://127.0.0.1:8000
+Access the application at: http://127.0.0.1:8000
 
-### 6. Testare & lint
-- Rulează testele:
-```bash
+6. Testing & Linting
+Run tests:
+
+Bash
+
 python manage.py test
-```
-- Lint (opțional):
-```bash
+Linting (Optional):
+
+Bash
+
 pip install flake8
 flake8 .
-```
+7. Useful Files in Repo
+manage.py
 
-### 7. Fișiere utile în repo
-- `manage.py`
-- `requirements.txt`
-- `sistem_inteligent_de_gestionare_a_evenimentelor/settings.py`
-- `algoritmi/meniu.py`
-- `base/views.py`
-- `base/tasks.py`
-- `sistem_inteligent_de_gestionare_a_evenimentelor/scripts/write.py`
-- `Instructiuni Pentru Rulare Si Utilizare.txt`
+requirements.txt
 
-### 8. Contribuire
-1. Fork → branch feature → PR.  
-2. Păstrează commituri mici și descriptive.  
-3. Deschide issue pentru bug-uri sau feature requests.
+sistem_inteligent_de_gestionare_a_evenimentelor/settings.py
 
-### 9. Licență
-Adaugă tipul de licență dorit (ex: MIT) în fișier `LICENSE`.
+algoritmi/meniu.py
+
+base/views.py
+
+base/tasks.py
+
+sistem_inteligent_de_gestionare_a_evenimentelor/scripts/write.py
+
+Instructiuni Pentru Rulare Si Utilizare.txt
+
+8. Contributing
+Fork → feature branch → PR.
+
+Keep commits small and descriptive.
+
+Open an issue for bugs or feature requests.
+
+9. License
+Add the desired license type (e.g., MIT) in the LICENSE file.
