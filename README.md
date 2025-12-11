@@ -1,4 +1,4 @@
-# 🚀 Smart Event Management Platform
+#  Smart Event Management Platform
 
 > A comprehensive full-stack web solution for managing events, automating reservations, and enhancing guest experience through AI integration.
 
@@ -6,7 +6,7 @@
 ![Django](https://img.shields.io/badge/Django-4.0%2B-green)
 ![Status](https://img.shields.io/badge/Status-Bachelor_Thesis-purple)
 
-## 📖 Overview
+##  Overview
 
 This project addresses the complexity of modern event organization. Beyond standard CRUD operations for events and users, the platform distinguishes itself by integrating **Machine Learning** models to solve real-world logistical problems: reducing queue times via facial recognition and improving user engagement through personalized event recommendations.
 
@@ -18,7 +18,7 @@ This project addresses the complexity of modern event organization. Beyond stand
 
 ---
 
-## 👥 The Team (Credits)
+##  The Team (Credits)
 
 This project was designed and developed as a collaborative Bachelor's Thesis by a team of three students from the **Technical University of Cluj-Napoca (UTCN)**.
 
